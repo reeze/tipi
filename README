@@ -1,3 +1,10 @@
-Hi, this is a test from er..
+Thinking In PHP Internal
+============================
 
-大家好，我们是三体……哦，不，我们是三子，唔，好吧，我承认，我只想测试一下中文，请无视。
+TIPI is a book about the internal detail of the [php-home]PHP
+
+这是本介绍PHP内部实现的书, 从低层实现来PHP.
+
+
+
+[php-home]: http://php.net/ "PHP"
