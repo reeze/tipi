@@ -1,0 +1,56 @@
+Markdown Extra GeSHi Test Document
+==================================
+
+This is by no means complete, just a quick sample.
+
+Lists
+-----
+
+Ordered list
+
+1. one
+2. two
+3. three
+
+Unordered list
+
+* one
+* two
+* three
+
+Dictionary list
+
+one
+:   the first number
+
+two
+:   the second number
+
+three
+:   the third number
+
+Regular paragraph
+-----------------
+
+Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+
+Code snippets
+-------------
+
+Regular
+
+	$customer = new Customer();
+	$customer->setName('Customer Name');
+	$customer->save();
+
+PHP
+
+	{{lang:php}}
+	$customer = new Customer();
+	$customer->setName('Customer Name');
+	$customer->save();
+
+SQL
+
+	{{lang:sql}}
+	SELECT * FROM customer WHERE name = "Customer Name" LIMIT 1;

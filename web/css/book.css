@@ -1,0 +1,14 @@
+body {
+	background-color: #dedede;
+}
+
+#wrapper {
+	width: 860px;
+	margin: 0 auto;
+}
+
+#content {
+	border: 1px solid #555;
+	background: #efefef;
+	padding: 15px;
+}
