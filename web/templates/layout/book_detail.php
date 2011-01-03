@@ -2,7 +2,7 @@
 
 <head>
 	<title><?php echo $title; ?></title>
-	<link href="../../../../css/book.css" media="screen" rel="stylesheet" type="text/css" />
+	<link href="../css/book.css" media="screen" rel="stylesheet" type="text/css" />
 </head>
 <body>
 	<div id="wrapper">

@@ -1,0 +1,80 @@
+body {
+	background-color: #636260;
+	font: 12px Helvetica, Arial, sans-serif;
+	margin: 0;
+	background: url(../images/bg.png);
+	color: #111;
+	line-height: 28px;
+	text-align: center;
+}
+
+#wrapper, #inner-header {
+	width: 880px;
+	margin: 0 auto;
+	text-align: left;
+}
+
+#header {
+	background-color: #1a1a1a;
+	-webkit-box-shadow: rgba(0,0,0,1) 0px 0px 5px;
+	-moz-box-shadow: rgba(0,0,0,1) 0px 0px 5px;
+	-o-box-shadow: rgba(0,0,0,1) 0px 0px 5px;
+	box-shadow: rgba(0,0,0,1) 0px 0px 5px;
+}
+
+#inner-header ul{
+	margin: 0;
+}
+
+#inner-header ul li {
+	display: inline;
+}
+
+#inner-header ul li a {
+	margin-left: 10px;
+	text-decoration: none;
+	color: #ccc;
+	font-size: 13px;
+}
+
+#inner-header ul li a:hover {
+	color: #fff;
+}
+
+#inner-header {
+	text-align: right;
+	font-size: 2em;
+	font-weight: bold;
+}
+
+/* tmp */
+#start_reading {
+	width: 60%;
+	border: 1px solid #ddd;
+	text-align: center;
+	font-size: 3em;
+}
+
+#start_reading a {
+	display: block;
+	padding: 50px;
+	color: darkorange;
+}
+
+/*----clear fix----*/
+.clearfix:after {
+content: ".";
+display: block;
+height: 0;
+clear: both;
+visibility: hidden;
+}
+.clearfix {
+display: inline-block;
+}
+/* Hide from IE Mac \*/
+.clearfix {
+display: block;
+}
+/* End hide from IE Mac */
+/*------end of clearfix--------*/
