@@ -43,8 +43,8 @@ class SimpieView
 	 *
 	 * @return mixed template's output or null
 	 */
-	public static function include_partial($partial_path, $params, $return=false) {
-		$partial = new self($partial);
+	public static function include_partial($partial_path, $params=array(), $return=false) {
+		$partial = new self($partial_path);
 
 		return $partial->render($params, $return);
 	}
