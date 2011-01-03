@@ -4,7 +4,7 @@
 	* 本书的组织结构和阅读说明
 
 - 第一章 准备工作和背景知识
-	* 第一节 环境搭建
+	* [第一节 环境搭建][build-env]
 	* 第二节 PHP源码布局及阅读方法
 	* 第三节 PHP实现中的常用数据结构
 		+ HashTable, List, Stack ..etc 
@@ -73,3 +73,4 @@
 	* 第三节 扩展PHP语法,为PHP增加语法特性
 
 [01-Introduction]: chapt1/01-Introduction
+[build-env]: ?p=chapt1/01-Introduction
