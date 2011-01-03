@@ -48,7 +48,7 @@ class MarkdownExtraGeshi_Parser extends MarkdownExtra_Parser
 		$codeblock = preg_replace(array('/\A\n+/', '/\s+\z/'), '', $codeblock);
 		
 		$codeblock = preg_replace_callback(
-			'/^(\{\{lang:([\w]+)\}\}\n|)(.*?)$/s', // {{lang:...}}greedy_code
+			'/^(\[([\w]+)\]\n|)(.*?)$/s', // {{lang:...}}greedy_code
 			array($this, 'syntaxHighlight'),
 			$codeblock
 		);
@@ -59,6 +59,7 @@ class MarkdownExtraGeshi_Parser extends MarkdownExtra_Parser
 	function syntaxHighlight($matches)
 	{
 		$geshi = new GeSHi($matches[3], empty($matches[2]) ? "txt" : $matches[2]);
+		$geshi->enable_classes();
 		return $geshi->parse_code();
 	}
 }
