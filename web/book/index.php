@@ -8,6 +8,13 @@ $book_page = isset($_GET['p']) ? $_GET['p'] : 'index';
 $book_base_dir = "../../book";
 $page_file = "{$book_base_dir}/{$book_page}.markdown";
 
+// For security concern. check whether the book page is the real book page
+if(strpos(realpath($page_file), realpath($book_base_dir)) !== 0) {
+	$view = new SimpieView("../templates/book_page_404.php", "../templates/layout/book.php");
+	$view->render(array('book_page' => $book_page, 'title' => "Page Not Found"));
+	die();
+} 
+
 /**
  * 是详细页面还是索引目录页,目录页不需要侧边栏
  */
