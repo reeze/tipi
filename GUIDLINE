@@ -1,0 +1,22 @@
+# 项目说明
+
+## 项目目录结构
+	book  深入理解PHP内核书籍相关的所有内容. 其中内容采用markdown格式维护, 其下的子目录结构如下:
+		index.markdown 本书的索引页面
+		chapt1...chaptN  图书章节的内容
+		images	图书内的插图图片.以章节形式组织
+		sample	书内使用的实例代码片段. 也以章节形式组织
+		A-PHP*	类似附录等内容可以放在这个层级
+	media 		项目相关的一些多媒体素材, 界面设计相关源文件等
+	projects	tipi项目组的一些子项目. 包括但不限于PHP或者PHP底层相关项目
+		
+	web		该目录为项目的web根目录,用于显示项目主页以及阅读TIPI书籍的界面
+		book 		访问书籍的目录
+		templates	未来逻辑视图分类,将试图相关内容都放在templates目录下,支持布局以及markdown视图
+		css			项目中使用的样式文件
+		images		项目中使用到的图片素材文件
+			book    <---> 软链接到项目根目录的book/images文件夹
+					** 注意 ** 为了将图书的图片素材自包含.为了能在web页面下访问到图片. 所以在编辑book/*.markdown文件的时候需要
+					注意图片路径的问题
+		javascript  
+	php-src	该目录为我们在项目中使用的php源文件.该目录为一个子模块. 请参考git submodule
