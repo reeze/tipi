@@ -6,8 +6,9 @@
 
 #book_header p {
 	color: #d8d8d8;
-	margin-top: 4px;
+	margin-top: 0px;
 	font-size: 15px;
+	text-shadow: #000 0 2px 2px;
 }
 
 #book_header h1 {
@@ -17,6 +18,7 @@
 #book_header h1 a {
 	color: #dadada;
 	text-decoration: none;
+	text-shadow: #000 0 2px 2px;
 }
 
 #book_main {

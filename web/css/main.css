@@ -20,6 +20,7 @@ body {
 	-moz-box-shadow: rgba(0,0,0,1) 0px 0px 5px;
 	-o-box-shadow: rgba(0,0,0,1) 0px 0px 5px;
 	box-shadow: rgba(0,0,0,1) 0px 0px 5px;
+	border-bottom: 1px solid #333;
 }
 
 #inner-header ul{
@@ -45,6 +46,7 @@ body {
 	text-align: right;
 	font-size: 2em;
 	font-weight: bold;
+	background: url(../images/logo.png) left center no-repeat;
 }
 
 /* tmp */
