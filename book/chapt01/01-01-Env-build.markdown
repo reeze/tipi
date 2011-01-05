@@ -28,3 +28,13 @@
 
 		return 0;
 	}
+
+再来一个bash的语言
+
+	[bash]
+	#!/usr/bin/bash
+
+	wget -O "http://tipi.reeze.cn/book"
+	DATA=`ps aux`
+
+	echo $DATA
