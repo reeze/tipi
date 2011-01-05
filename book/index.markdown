@@ -73,4 +73,4 @@
 	* 第三节 扩展PHP语法,为PHP增加语法特性
 
 [build-env]: ?p=chapt01/01-01-Env-build
-[data-structs-in-php-src]: ?p=chapt1/01-03-Data-structures-in-php-src
+[data-structs-in-php-src]: ?p=chapt01/01-03-Data-structures-in-php-src
