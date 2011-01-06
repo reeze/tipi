@@ -5,14 +5,8 @@
 
 - 第一章 准备工作和背景知识
 	* [第一节 环境搭建][build-env]
-<<<<<<< HEAD:book/index.markdown
 	* [第二节 PHP源码布局及阅读方法][code-structure]
-	* 第三节 PHP实现中的常用数据结构
-=======
-	* 第二节 PHP源码布局及阅读方法
 	* [第三节 PHP实现中的常用数据结构][data-structs-in-php-src]
->>>>>>> e42a8065bd3daf62a6ccf64a734e43dc7563d570:book/index.markdown
-		+ HashTable, List, Stack ..etc 
 
 - 第二章 概览
 	* 第一节 PHP生命周期及Zend引擎概览
@@ -77,11 +71,6 @@
 	* 第二节 性能监控及优化扩展
 	* 第三节 扩展PHP语法,为PHP增加语法特性
 
-<<<<<<< HEAD:book/index.markdown
-[01-Introduction]: chapt1/01-1-Introduction
-[build-env]: ?p=chapt1/01-1-Introduction
-[code-structure]: ?p=chapt1/01-2-code-structure
-=======
 [build-env]: ?p=chapt01/01-01-Env-build
+[code-structure]: ?p=chapt01/01-2-code-structure
 [data-structs-in-php-src]: ?p=chapt01/01-03-Data-structures-in-php-src
->>>>>>> e42a8065bd3daf62a6ccf64a734e43dc7563d570:book/index.markdown
