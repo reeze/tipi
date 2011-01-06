@@ -1,3 +1,25 @@
+/* default language highlight */
+.imp {font-weight: bold; color: red}
+.st_h {color: #56DB3A}
+.kw1 {color: #FF8400}
+.kw2 {color: #CC7833}
+.kw3 {color: #E2392D}
+.kw4 {color: #1299DA}
+.sy0 {color: #E0882F}
+.co0 {color: #BD48B3}
+.re0, .re1 {color: #6D9CBE}
+.co1 {color: #BC9458; font-style: italic}
+.co2 {color: #BD48B3; font-style: italic}
+.co4 {color: #ccc; font-style: italic}
+.coMULTI {color: #BD48B3; font-style: italic}
+.es0 {color: #ddd}
+.br0 {color: #fff}
+.st0 {color: #99FF00}
+.nu0 {color: #1299DA}
+.me1 {color: #FFFFFF}
+.me2 {color: #FFFFFF}
+.re0 {color: #6D9CBE}
+
 .php .imp {font-weight: bold; color: red}
 .php .st_h {color: #56DB3A}
 .php .kw1 {color: #FF8400}
