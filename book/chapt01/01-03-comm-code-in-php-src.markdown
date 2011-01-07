@@ -16,14 +16,13 @@
     #define INTERNAL_FUNCTION_PARAMETERS int ht, zval *return_value, zval **return_value_ptr, \
     zval *this_ptr, int return_value_used TSRMLS_DC
 
-    //  最后连接起来就是
+    //  预处理器处理完以后PHP_FUCNTION(count);就展开为如下代码
     void zif_count(int ht, zval *return_value, zval **return_value_ptr, zval *this_ptr, int return_value_used TSRMLS_DC)
 
 以上面的代码中只有一个"##"，它的作用一如之前所说，只是一个连接符，将zif和宏的变量name连接起来。
 
 ### **单井号**
-"#"的功能是将其后面的宏参数进行 **字符串化操作** ，简单说就是在对它所引用的宏变量通过替换后在其左右各加上一个双引号，用比较官方的话说就是将语言符号(Token)转
-化为字符串。
+"#"的功能是将其后面的宏参数进行 **字符串化操作** ，简单说就是在对它所引用的宏变量通过替换后在其左右各加上一个双引号，用比较官方的话说就是将语言符号(Token)转化为字符串。
 
   
 ## 2. 关于宏定义中的do-while
@@ -37,7 +36,7 @@
 		GC_ZVAL_INIT(z);								\
 	} while (0)
 
-如上所示的代码，在宏定义中使用了 **do{ }while(0)** 的语句格式。如果我们搜索整个PHP的源码目录，会发现这样的语句格式还有很多。那为什么在宏定义时需要使用while语句呢?  
+如上所示的代码，在宏定义中使用了 **do{ }while(0)** 的语句格式。如果我们搜索整个PHP的源码目录，会发现这样的语句还有很多。那为什么在宏定义时需要使用while语句呢?  
 我们知道do-while循环语句是先执行再判断条件是否成立。当使用do{ }while(0)时，整个代码段在执行到while(0)时就结束了，这表示其执行了一次，而且仅执行了一次。
 这种方式适用于宏定义中存在多语句的情况。如下所示代码：  
 
@@ -66,5 +65,5 @@
     [c]
     #line 838 "Zend/zend_language_scanner.c"
 
-\#line预处理用于改变当前的行号和文件名，如上所示代码，将改变当前的行号为838,文件名Zend/zend_language_scanner.c  
-它的作用体现在编译器的编写中，我们知道编译器对C 源码编译过程中会产生一些中间文件，通过这条指令，可以保证文件名是固定的，不会被这些中间文件代替，有利于进行分析。
+\#line预处理用于改变当前的行号和文件名，如上所示代码，将当前的行号改变为838,文件名Zend/zend_language_scanner.c  
+它的作用体现在编译器的编写中，我们知道编译器对C 源码编译过程中会产生一些中间文件，通过这条指令，可以保证文件名是固定的，不会被这些中间文件代替，有利于进行调试分析。
