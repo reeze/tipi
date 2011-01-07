@@ -58,6 +58,11 @@
 	width: 790px;
 	border-right: 1px dashed rgba(0, 0, 0, 0.1);
 	background: rgba(255, 255, 255, 0.4);
+	font-size: 1.2em;
+}
+
+#book_content p {
+	text-indent: 2em;
 }
 
 #book_index ul li p {
@@ -80,5 +85,5 @@
 	background-color: #333;
 	color: #fff;
 	font: 13px "Bitstream Vera Sans Mono",monospace;
-	overflow: scroll;
+	overflow: auto;
 }

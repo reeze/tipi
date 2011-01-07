@@ -8,6 +8,12 @@ body {
 	text-align: center;
 }
 
+a {
+	color: #1299DA;
+	text-decoration: underline;
+}
+
+
 #wrapper, #inner-header {
 	width: 1000px;
 	margin: 0 auto;
