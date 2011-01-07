@@ -21,14 +21,22 @@ if(strpos(realpath($page_file), realpath($book_base_dir)) !== 0) {
 $is_detail_view = ($book_page != 'index');
 
 // TODO  - Add markdown parse cache
-//		 - 提取当前页的标题
 //	     - 生成上页下一页地址以及自动提取目录信息
 
 // TODO Add markdown parse cache to SimpieView
 try
 {
 	$view = new SimpieView($page_file, "../templates/layout/book.php");
-	$view->render(array('is_detail_view' => $is_detail_view));
+
+	// 获取当前也的标题 默认获取第一行作为标题
+	$fp = @fopen($page_file, "r");
+	$title = "TIPI";
+	if($fp && $title_line = fgets($fp)) {
+		$title = trim($title_line, "# \n\r\0");
+		fclose($fp);
+	}
+
+	$view->render(array('is_detail_view' => $is_detail_view, 'title' => $title));
 }
 catch(SimpieViewNotFoundException $e)
 {
