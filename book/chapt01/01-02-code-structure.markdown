@@ -1,4 +1,4 @@
-# PHP源码结构、阅读代码方法:
+# PHP源码结构、阅读代码方法
 ## PHP源码目录结构:  
 ***
   俗话讲：大巧不工。PHP的源码在结构上非常清晰甚至简单。下面，先简单介绍一下PHP源码的目录结构。
@@ -13,8 +13,6 @@
  * **tests**  测试脚本目录。
  * **win32**  Windows 下编译PHP相关的脚本。  
 
-<br />
-
 
 ## PHP源码阅读方法:  
 ***
@@ -26,11 +24,11 @@ ctags可以将源代码中的各种函数、宏等信息做上标记。这样，
 
 
     [bash]
-    //在PHP源码目录(假定为/server/php-src)执行:
+    #在PHP源码目录(假定为/server/php-src)执行:
     $ cd /server/php-src
     $ ctags -R
 
-    //在~/.vimrc中添加:
+    #在~/.vimrc中添加:
     set tags+=/server/php-src/tags
 
 再用vim打开各种php源码文件时，将光标移到想查看的函数、宏、变量上面，
