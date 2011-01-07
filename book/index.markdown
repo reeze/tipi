@@ -6,8 +6,7 @@
 - 第一章 准备工作和背景知识
 	* [第一节 环境搭建][build-env]
 	* [第二节 PHP源码布局及阅读方法][code-structure]
-	* [第三节 PHP实现中的常用数据结构][data-structs-in-php-src]
-    * [第四节 PHP实现中的常见代码][common-code-in-php-src]
+	* [第三节 PHP实现中的常见代码及数据结构][data-structs-and-common-code-in-php-src]
 
 - 第二章 概览
 	* 第一节 PHP生命周期及Zend引擎概览
@@ -74,6 +73,6 @@
 
 [build-env]: ?p=chapt01/01-01-Env-build
 [code-structure]: ?p=chapt01/01-2-code-structure
-[data-structs-in-php-src]: ?p=chapt01/01-03-Data-structures-in-php-src
+[data-structs-and-common-code-in-php-src]: ?p=chapt01/01-03-data-structs-and-common-code-in-php-src
 [common-code-in-php-src]: ?p=chapt01/01-04-common-code-in-php-src
 
