@@ -72,6 +72,6 @@
 	* 第三节 扩展PHP语法,为PHP增加语法特性
 
 [build-env]: ?p=chapt01/01-01-Env-build
-[code-structure]: ?p=chapt01/01-2-code-structure
+[code-structure]: ?p=chapt01/01-02-code-structure
 [common-code-in-php-src]: ?p=chapt01/01-03-common-code-in-php-src
 
