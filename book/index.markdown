@@ -71,6 +71,6 @@
 	* 第二节 性能监控及优化扩展
 	* 第三节 扩展PHP语法,为PHP增加语法特性
 
-[build-env]: ?p=chapt01/01-01-env-build
+[build-env]: ?p=chapt01/01-01-php-env-building
 [code-structure]: ?p=chapt01/01-02-code-structure
 [common-code-in-php-src]: ?p=chapt01/01-03-comm-code-in-php-src
