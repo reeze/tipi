@@ -80,4 +80,5 @@
 	background-color: #333;
 	color: #fff;
 	font: 13px "Bitstream Vera Sans Mono",monospace;
+	overflow: scroll;
 }
