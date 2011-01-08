@@ -3,10 +3,11 @@
 - 第0章 开篇
 	* 本书的组织结构和阅读说明
 
-- 第一章 准备工作和背景知识
+- [第一章 准备工作和背景知识][prepare-and-background]
 	* [第一节 环境搭建][build-env]
 	* [第二节 PHP源码布局及阅读方法][code-structure]
 	* [第三节 PHP实现中的常用代码][common-code-in-php-src]
+	* [第四节 小结][01-summary]
 
 - 第二章 概览
 	* 第一节 PHP生命周期及Zend引擎概览
@@ -71,6 +72,8 @@
 	* 第二节 性能监控及优化扩展
 	* 第三节 扩展PHP语法,为PHP增加语法特性
 
+[prepare-and-background]: ?p=chapt01/01-index-prepare-and-background
 [build-env]: ?p=chapt01/01-01-php-env-building
 [code-structure]: ?p=chapt01/01-02-code-structure
 [common-code-in-php-src]: ?p=chapt01/01-03-comm-code-in-php-src
+[01-summary]: ?p=chapt01/01-04-summary
