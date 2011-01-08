@@ -6,7 +6,7 @@
 - 第一章 准备工作和背景知识
 	* [第一节 环境搭建][build-env]
 	* [第二节 PHP源码布局及阅读方法][code-structure]
-	* [第三节 PHP实现中的常见代码][common-code-in-php-src]
+	* [第三节 PHP实现中的常用代码][common-code-in-php-src]
 
 - 第二章 概览
 	* 第一节 PHP生命周期及Zend引擎概览
