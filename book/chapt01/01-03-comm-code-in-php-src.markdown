@@ -8,7 +8,6 @@
 
 
     [c]
-    PHP_FUNCTION(count);
     #define PHP_FUNCTION			ZEND_FUNCTION
     #define ZEND_FUNCTION(name)				ZEND_NAMED_FUNCTION(ZEND_FN(name))
     #define ZEND_FN(name) zif_##name
@@ -16,10 +15,12 @@
     #define INTERNAL_FUNCTION_PARAMETERS int ht, zval *return_value, zval **return_value_ptr, \
     zval *this_ptr, int return_value_used TSRMLS_DC
 
-    //  预处理器处理完以后, PHP_FUCNTION(count);就展开为如下代码
+    PHP_FUNCTION(count);
+
+    //  预处理器处理以后, PHP_FUCNTION(count);就展开为如下代码
     void zif_count(int ht, zval *return_value, zval **return_value_ptr, zval *this_ptr, int return_value_used TSRMLS_DC)
 
-以上面的代码中只有一个"##"，它的作用一如之前所说，只是一个连接符，将zif和宏的变量name连接起来。
+宏ZEND_FN(name)中有一个"##"，它的作用一如之前所说，是一个连接符，将zif和宏的变量name得值连接起来。
 
 ### **单井号**
 "#"的功能是将其后面的宏参数进行 **字符串化操作** ，简单说就是在对它所引用的宏变量通过替换后在其左右各加上一个双引号，用比较官方的话说就是将语言符号(Token)转化为字符串。
@@ -36,8 +37,8 @@
 		GC_ZVAL_INIT(z);								\
 	} while (0)
 
-如上所示的代码，在宏定义中使用了 **do{ }while(0)** 的语句格式。如果我们搜索整个PHP的源码目录，会发现这样的语句还有很多。那为什么在宏定义时需要使用do-while语句呢?
-我们知道do-while循环语句是先执行再判断条件是否成立。当使用do{ }while(0)时，整个代码段在执行到while(0)时就结束了，这表示其执行了一次，而且仅执行了一次。
+如上所示的代码，在宏定义中使用了 **do{ }while(0)** 语句格式。如果我们搜索整个PHP的源码目录，会发现这样的语句还有很多。那为什么在宏定义时需要使用do-while语句呢?
+我们知道do-while循环语句是先执行再判断条件是否成立, 所以说至少会执行一次。当使用do{ }while(0)时代码肯定只执行一次, 肯定只执行一次的代码为什么要放在do-while语句里呢?
 这种方式适用于宏定义中存在多语句的情况。如下所示代码：  
 
     [c]
@@ -48,7 +49,7 @@
     else
         do_else();
 
-将代码进行预处理后，会变成：
+代码进行预处理后，会变成：
 
     [c]
     if (expr)
@@ -56,7 +57,9 @@
     else
         do_else();
 
-这样就会出现问题。如果使用do-while就不会出现上面所遇到的这种情况。
+这样if-else的结构就被破坏了: if后面有两个语句, 这样是无法编译通过的, 那为什么非要do-while而不是简单的用{}括起来呢.这样也能保证if后面只有一个语句。
+例如上面的例子,在调用宏TEST的时候后面加了一个分号, 虽然这个分号可有可无, 但是出于习惯我们一般都会写上. 那如果是把宏里的代码用{}括起来,加上最后的那个分号.
+还是不能通过编译. 所以一般的多表达式宏定义中都采用do-while(0)的方式.
 
 
 ## 3. #line 预处理
