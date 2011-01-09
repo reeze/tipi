@@ -66,8 +66,7 @@ class BookPage
 			$found_files = glob("{$base_path}/../chapt{$new_chapt_no}/*");
 
 			if($count=count($found_files)) {
-				$index = (($step + $count) % $count);
-				$index = ($index == 0 ? 0 : $index);
+				$index = ($step == 1 ? 0 : $count -1);
 				$found_page_name = $this->_getPageNameByFileName($found_files[$index]);
 
 				return new self("chapt{$new_chapt_no}/{$found_page_name}");
