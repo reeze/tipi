@@ -17,7 +17,13 @@
 
 			<div id="book_main" class="clearfix">
 				<div id="<?php echo ($is_detail_view ? 'book_content' : 'book_index'); ?>" >
-					<div class="inner-containner"><?php echo $layout_content; ?></div>
+					<div class="inner-containner">
+						<?php echo $layout_content; ?>
+
+						<?php if($is_detail_view): ?>
+							<?php SimpieView::include_partial("../templates/layout/_book_navor.php", array('prev_page' => $page->getPrevPage(), 'next_page' => $page->getNextPage())); ?>
+						<?php endif; ?>
+					</div>
 				</div>
 
 				<?php if($is_detail_view): ?>

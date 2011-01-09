@@ -87,3 +87,17 @@
 	font: 13px "Bitstream Vera Sans Mono",monospace;
 	overflow: auto;
 }
+
+
+#book_page_navor {
+	border-top: 1px solid #999;
+	padding: 8px 0;
+}
+
+#prev_page_link {
+	float: left;
+}
+
+#next_page_link {
+	float: right;
+}
