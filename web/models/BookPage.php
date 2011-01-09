@@ -96,10 +96,10 @@ class BookPage
 		return $this->title;
 	}
 
-	private static function _getTitleFromFileName($file) 
+	private static function _getTitleFromFileName($file, $default='NO_COMPLETED')
 	{
 			$fp = @fopen($file, "r");
-			$title = "TIPI";
+			$title = $default;
 			if($fp && $title_line = fgets($fp)) {
 				// 标题均以#开头.
 				$title = trim($title_line, "# \n\r\0");
@@ -149,7 +149,9 @@ class BookPage
 
 			$sub_list = array();
 			foreach($files as $file) {
-				$title = self::_getTitleFromFileName($file);
+				$title = self::_getTitleFromFileName($file, null);
+
+				if(!$title) continue;
 				$page_name = self::_getPageNameByFileName($file);
 				$sub_list[] = array(
 					'page_name' => "{$chapt_name}/{$page_name}",
@@ -157,9 +159,26 @@ class BookPage
 				);
 			}
 
+			if(empty($sub_list)) continue;
+
 			$index = array_shift($sub_list);
 			$index['list'] = $sub_list;
 			$list[] = $index;
+		}
+
+		// 其他的文件
+		$other_files = glob($base_dir . "/*." . self::extension);
+		foreach($other_files as $file) {
+			$title = self::_getTitleFromFileName($file, null);
+			$page_name = self::_getPageNameByFileName($file);
+
+			if($page_name == 'index' || !$title) continue;
+
+			$list[] = array(
+				'page_name' => $page_name,
+				'title' => $title,
+			);
+		
 		}
 
 		return $list;
