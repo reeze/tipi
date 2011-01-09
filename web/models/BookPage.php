@@ -67,14 +67,14 @@ class BookPage
 
 			if($count=count($found_files)) {
 				$index = ($step == 1 ? 0 : $count -1);
-				$found_page_name = $this->_getPageNameByFileName($found_files[$index]);
+				$found_page_name = self::_getPageNameByFileName($found_files[$index]);
 
 				return new self("chapt{$new_chapt_no}/{$found_page_name}");
 			}
 		}
 	}
 	
-	private function _getPageNameByFileName($file_name)
+	private static function _getPageNameByFileName($file_name)
 	{
 			$found_file_name = array_pop(explode("/", $file_name));
 			list($found_page_name) = explode(".", $found_file_name);
@@ -90,7 +90,15 @@ class BookPage
 	public function getTitle()
 	{
 		if($this->title === null) {
-			$fp = @fopen($this->getPageFilePath(), "r");
+			$this->title = self::_getTitleFromFileName($this->getPageFilePath());
+		}
+
+		return $this->title;
+	}
+
+	private static function _getTitleFromFileName($file) 
+	{
+			$fp = @fopen($file, "r");
 			$title = "TIPI";
 			if($fp && $title_line = fgets($fp)) {
 				// 标题均以#开头.
@@ -98,10 +106,7 @@ class BookPage
 				fclose($fp);
 			}
 
-			$this->title = $title;
-		}
-
-		return $this->title;
+			return $title;
 	}
 
 	/**
@@ -119,6 +124,45 @@ class BookPage
 	public function getPageName()
 	{
 		return $this->page_name;	
+	}
+
+	/**
+	 * 返回章节列表
+	 * TODO add cache
+	 */
+	public static function getChapterList($base_dir = "../../book")
+	{
+		// 只处理两个层级,章/节
+		$list = array();
+
+		$list[] = array(
+			"page_name" => "index",
+			"title" => "目录",
+			"list"  => array()
+		);
+
+		// 生成章列表
+		$top_level_chapters = glob($base_dir . "/chapt*");
+		foreach($top_level_chapters as  $chapt) {
+			$chapt_name = array_pop(explode("/", $chapt));
+			$files = glob($chapt . "/*." . self::extension);
+
+			$sub_list = array();
+			foreach($files as $file) {
+				$title = self::_getTitleFromFileName($file);
+				$page_name = self::_getPageNameByFileName($file);
+				$sub_list[] = array(
+					'page_name' => "{$chapt_name}/{$page_name}",
+					'title' => $title,
+				);
+			}
+
+			$index = array_shift($sub_list);
+			$index['list'] = $sub_list;
+			$list[] = $index;
+		}
+
+		return $list;
 	}
 }
 

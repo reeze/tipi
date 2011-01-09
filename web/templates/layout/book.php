@@ -28,7 +28,7 @@
 
 				<?php if($is_detail_view): ?>
 					<div id="book_sidebar">
-						<div class='inner-containner'><?php SimpieView::include_partial("../templates/layout/_sidebar.php"); ?></div>
+						<div class='inner-containner'><?php SimpieView::include_partial("../templates/layout/_sidebar.php", array('chapt_list' => $chapt_list, 'current_page_name' => $page->getPageName())); ?></div>
 					</div>
 				<?php endif; ?>
 			</div>

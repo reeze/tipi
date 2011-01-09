@@ -56,9 +56,12 @@
 #book_content {
 	float: left;
 	width: 790px;
-	border-right: 1px dashed rgba(0, 0, 0, 0.1);
 	background: rgba(255, 255, 255, 0.4);
 	font-size: 1.2em;
+}
+
+#book_content .inner-containner {
+	border-right: 1px dashed rgba(0, 0, 0, 0.1);
 }
 
 #book_content p {
@@ -72,6 +75,41 @@
 #book_sidebar {
 	float: right;
 	width: 200px;
+}
+
+#book_sidebar .inner-containner {
+	padding: 0px;
+	padding-right: 10px;
+}
+
+#book_sidebar ul {
+	margin: 0;
+	margin-left: 15px;
+	padding: 0;
+	list-style: circle;
+}
+
+#book_sidebar ul a {
+	text-decoration: none;
+	display: block;
+}
+
+#book_sidebar ul a:hover {
+	text-decoration: underline;
+
+}
+
+#book_sidebar ul ul {
+	padding-left: 10px;
+	list-style: circle;
+}
+
+#book_sidebar .current_page {
+	list-style: disc;
+}
+
+#book_sidebar .current_page a {
+	text-decoration: underline;
 }
 
 .inner-containner {
