@@ -72,7 +72,7 @@
 	* 第二节 性能监控及优化扩展
 	* 第三节 扩展PHP语法,为PHP增加语法特性
 
-[prepare-and-background]: ?p=chapt01/01-index-prepare-and-background
+[prepare-and-background]: ?p=chapt01/01-00-prepare-and-background
 [build-env]: ?p=chapt01/01-01-php-env-building
 [code-structure]: ?p=chapt01/01-02-code-structure
 [common-code-in-php-src]: ?p=chapt01/01-03-comm-code-in-php-src
