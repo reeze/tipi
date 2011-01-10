@@ -12,6 +12,7 @@
 - 第二章 概览
 	* 第一节 PHP生命周期及Zend引擎概览
 	* 第二节 SAPI协议以及WebServer: cli/mod_php/fastcgi/fpm
+        + [PHP以模块方式注册到Apache][php-module-in-apache]
 		+ 真实环境中的PHP: PHP和WebServer,命令程序
 		+ Fastcgi/fpm及嵌入式PHP
 	* 第三节 脚本的执行
@@ -77,3 +78,6 @@
 [code-structure]: ?p=chapt01/01-02-code-structure
 [common-code-in-php-src]: ?p=chapt01/01-03-comm-code-in-php-src
 [01-summary]: ?p=chapt01/01-04-summary
+
+[php-module-in-apache]: ?p=chapt02/02-02-01-apache-php-moudle
+
