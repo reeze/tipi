@@ -79,5 +79,5 @@
 [common-code-in-php-src]: ?p=chapt01/01-03-comm-code-in-php-src
 [01-summary]: ?p=chapt01/01-04-summary
 
-[php-module-in-apache]: ?p=chapt02/02-02-01-apache-php-moudle
+[php-module-in-apache]: ?p=chapt02/02-02-01-apache-php-module
 

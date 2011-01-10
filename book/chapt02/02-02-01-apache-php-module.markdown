@@ -43,6 +43,42 @@ Apache2的mod_php5模块包括sapi/apache2handler和sapi/apache2filter两个目�
             /* 注册钩子，此函数通过ap_hoo_开头的函数在一次请求处理过程中对于指定的步骤注册钩子 */
     };
 
+它所对应的是apache的module结构，module的结构定义如下：
+
+    [c]
+    typedef struct module_struct module;
+    struct module_struct {
+        int version;
+        int minor_version;
+        int module_index;
+        const char *name;
+        void *dynamic_load_handle;
+        struct module_struct *next;
+        unsigned long magic;
+        void (*rewrite_args) (process_rec *process);
+        void *(*create_dir_config) (apr_pool_t *p, char *dir);
+        void *(*merge_dir_config) (apr_pool_t *p, void *base_conf, void *new_conf);
+        void *(*create_server_config) (apr_pool_t *p, server_rec *s);
+        void *(*merge_server_config) (apr_pool_t *p, void *base_conf, void *new_conf);
+        const command_rec *cmds;
+        void (*register_hooks) (apr_pool_t *p);
+    }
+
+上面的模块结构与我们在mod_php5.c中所看到的结构有一点不同，这是由于STANDARD20_MODULE_STUFF的原因，这个宏它包含了前面8个字段的定义。
+STANDARD20_MODULE_STUFF宏的定义如下：
+
+    [c]
+    /** Use this in all standard modules */
+    #define STANDARD20_MODULE_STUFF	MODULE_MAGIC_NUMBER_MAJOR, \
+                    MODULE_MAGIC_NUMBER_MINOR, \
+                    -1, \
+                    __FILE__, \
+                    NULL, \
+                    NULL, \
+                    MODULE_MAGIC_COOKIE, \
+                                    NULL      /* rewrite args spot */
+
+
 php_dir_cmds所定义的内容如下：
 
     [c]
@@ -82,7 +118,6 @@ handler挂钩是请求挂钩，它在服务器处理请求时调用。
 Apache的运行分为启动阶段和运行阶段。
 在启动阶段，Apache为了获得系统资源最大的使用权限，将以特权用户root（\*nix系统）或超级管理员Administrator(Windows系统)完成启动，并且整个过程处于一个单进程单线程的环境中，。
 这个阶段包括配置文件解析(如http.conf文件)、模块加载(如mod_php,mod_perl)和系统资源初始化（例如日志文件、共享内存段、数据库连接等）等工作。
-我们在下一部分将要介绍的PHP Module也是在这个阶段完成。
 
 Apache的启动阶段执行了大量的初始化操作，并且将许多比较慢或者花费比较高的操作都集中在这个阶段完成，以减少了后面处理请求服务的压力。
 
