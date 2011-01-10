@@ -16,7 +16,7 @@ Apache中对动态链接库的处理是通过模块mod_so来完成的，因此mo
 
 下面我们以PHP模块的加载为例，分析Apache的模块加载过程。在配置文件中添加了所上所示的指令后，Apache在加载模块时会根据模块名查找模块并加载，
 对于每一个模块，Apache必须保证其文件名是以“mod_”开始的，如php的mod_php5.c。如果命名格式不对，Apache将认为此模块不合法。
-module结构的name属性在最后是通过宏STANDARD20_MODULE_STUFF以\__FILE__体现。  
+module结构的name属性在最后是通过宏STANDARD20_MODULE_STUFF以\__FILE__体现。 关于这点可以在后面介绍mod_php5模块时有看到。
 通过之前指令中指定的路径找到相关的动态链接库文件，Apache通过内部的函数获取动态链接库中的内容，并将模块的内容加载到内存中的指定变量中。  
 在真正激活模块之前，Apache会检查所加载的模块是否为真正的Apache模块，这个检测是通过检查magic字段进行的。而magic字段是通过宏STANDARD20_MODULE_STUFF体现，在这个宏中magic的值为MODULE_MAGIC_COOKIE，MODULE_MAGIC_COOKIE定义如下：
 
