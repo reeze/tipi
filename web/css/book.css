@@ -87,6 +87,7 @@
 	margin-left: 15px;
 	padding: 0;
 	list-style: circle;
+	line-height: 20px;
 }
 
 #book_sidebar ul a {
