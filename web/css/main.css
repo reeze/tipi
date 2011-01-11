@@ -40,8 +40,13 @@ a {
 #inner-header ul li a {
 	margin-left: 10px;
 	text-decoration: none;
-	color: #ccc;
+	color: #aaa;
 	font-size: 13px;
+	text-shadow: 0 0 10px #336699;
+	text-shadow: 0 0 10px rgba(51,102,153,0.8);
+	text-transform: uppercase;
+	-webkit-transition: color 0.1s linear;
+	-moz-transition: color 0.1s linear;
 }
 
 #inner-header ul li a:hover {
