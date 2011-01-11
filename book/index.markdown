@@ -20,7 +20,7 @@
 		+ 词法分析,语法分析及opcode
 
 - 第三章 变量及数据类型
-	* 第一节 变量的内存表示
+	* [第一节 变量的内存表示][variables-in-memory]
 	* 第二节 变量的作用域及其生命周期
 	* 第三节 数据类型及PHP的弱类型实现
 	* 第四接 数据类型转换:现式及隐式转换
@@ -85,4 +85,5 @@
 [embedding-php]: ?p=chapt02/02-02-02-embedding-php
 
 [const-var]: ?p=chapt03/03-07-const-var
+[variables-in-memory]: ?p=chapt03/03-01-var-memory
 
