@@ -20,12 +20,13 @@
 		+ 词法分析,语法分析及opcode
 
 - 第三章 变量及数据类型
-	* 第一节 变量的内存表示
+	* [第一节 变量的内存表示][variables-in-memory]
 	* 第二节 变量的作用域及其生命周期
 	* 第三节 数据类型及PHP的弱类型实现
 	* 第四接 数据类型转换:现式及隐式转换
 	* 第五节 类型提示(Type Hinting)的实现
 	* 第六节 PHP中的全局变量
+    * 第七节 PHP中的常量[const-var]
 
 - 第四章 内存管理
 	* 第一节 内存布局结构
@@ -82,4 +83,7 @@
 
 [php-module-in-apache]: ?p=chapt02/02-02-01-apache-php-module
 [embedding-php]: ?p=chapt02/02-02-02-embedding-php
+
+[const-var]: ?p=chapt03/03-07-const-var
+[variables-in-memory]: ?p=chapt03/03-01-var-memory
 
