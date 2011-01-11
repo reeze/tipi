@@ -98,7 +98,7 @@ ZTS是Zend Thread Safety的简写，与这个相关的有一个TSRM（线程安�
 startup_php函数:
 
     [c]
-     static void startup_php(void)
+    static void startup_php(void)
     {
         int argc = 1;
         char *argv[2] = { "embed5", NULL };
@@ -112,6 +112,7 @@ zend_startup_module函数是PHP的内部API函数，它的作用是注册定义�
 这个注册过程仅仅是将所定义的zend_module_entry结构添加到注册模块列表中。
 
 execute_php函数:
+
     [c]
     static void execute_php(char *filename)
     {
