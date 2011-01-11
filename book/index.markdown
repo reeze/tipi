@@ -26,6 +26,7 @@
 	* 第四接 数据类型转换:现式及隐式转换
 	* 第五节 类型提示(Type Hinting)的实现
 	* 第六节 PHP中的全局变量
+    * 第七节 PHP中的常量[const-var]
 
 - 第四章 内存管理
 	* 第一节 内存布局结构
@@ -82,4 +83,6 @@
 
 [php-module-in-apache]: ?p=chapt02/02-02-01-apache-php-module
 [embedding-php]: ?p=chapt02/02-02-02-embedding-php
+
+[const-var]: ?p=chapt03/03-07-const-var
 
