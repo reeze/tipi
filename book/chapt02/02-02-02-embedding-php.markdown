@@ -92,7 +92,7 @@ ZTS是Zend Thread Safety的简写，与这个相关的有一个TSRM（线程安�
         STANDARD_MODULE_PROPERTIES
     };
 
-以上PHP内部的模块结构声明，此处对于模块初始化，请求初始化等操作均以NULL变量给出，表示不执行这些操作。
+以上PHP内部的模块结构声明，此处对于模块初始化，请求初始化等操作均以NULL变量给出，表示不执行这些操作。不过这些操作在sapi/embed/php_embed.c文件中的php_embed_shutdown等函数中有体现。
 关于模块结构的定义在zend/zend_modules.h中。
 
 startup_php函数:
