@@ -89,6 +89,18 @@
 	line-height: 20px;
 }
 
+#book_sidebar ul li a {
+	color: #0076af;
+	font-weight: bold;
+	font-size: 1.1em;
+}
+
+#book_sidebar ul ul li a {
+	color: #007eba;
+	font-size: 1em;
+	font-weight: normal;
+}
+
 #book_sidebar ul ul {
 	margin-bottom: 10px;
 }
