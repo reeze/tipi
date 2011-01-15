@@ -89,6 +89,10 @@
 	line-height: 20px;
 }
 
+#book_sidebar ul ul {
+	margin-bottom: 10px;
+}
+
 #book_sidebar ul a {
 	text-decoration: none;
 	display: block;
