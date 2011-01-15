@@ -24,7 +24,7 @@ try
 		'is_detail_view' => $is_detail_view,
 	));
 }
-catch(BookPageNotFoundException $e)
+catch(SimpieViewNotFoundException $e)
 {
 	$view = new SimpieView("../templates/book_page_404.php", "../templates/layout/book.php");
 	$view->render(array('book_page' => $page_name, 'title' => "Page Not Found"));

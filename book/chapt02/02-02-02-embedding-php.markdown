@@ -1,5 +1,5 @@
 # 嵌入式PHP
-从目录结构可以看出，嵌入式PHP也只是按照类似CLI,ISAPI等接口的规则的另一种SAPI实现。
+从第一章中对目录结构的介绍中可以看出，嵌入式PHP类似CLI,是ISAPI接口的另一种实现。
 一般情况下，它的一个请求的生命周期也会和其它的SAPI一样：模块初始化=>请求初始化=>处理请求=>关闭请求=>关闭模块。当然，这只是理想情况。
 但是嵌入式PHP的请求可能包括一段或多段代码，这就导致了嵌入式PHP的特殊性。
 
@@ -92,7 +92,7 @@ ZTS是Zend Thread Safety的简写，与这个相关的有一个TSRM（线程安�
         STANDARD_MODULE_PROPERTIES
     };
 
-以上PHP内部的模块结构声明，此处对于模块初始化，请求初始化等操作均以NULL变量给出，表示不执行这些操作。不过这些操作在sapi/embed/php_embed.c文件中的php_embed_shutdown等函数中有体现。
+以上PHP内部的模块结构声明，此处对于模块初始化，请求初始化等函数指针均为NULL, 也就是模块在初始化及请求开始结束等事件发生的时候不执行任何操作。不过这些操作在sapi/embed/php_embed.c文件中的php_embed_shutdown等函数中有体现。
 关于模块结构的定义在zend/zend_modules.h中。
 
 startup_php函数:
@@ -127,6 +127,15 @@ execute_php函数:
 从函数的名称来看，这个函数的功能是执行PHP代码的。
 它通过调用sprrintf函数构造一个include语句，然后再调用zend_eval_string函数执行这个include语句。
 zend_eval_string最终是调用zend_eval_stringl函数，这个函数是流程是一个编译PHP代码，生成zend_op_array类型数据，并执行opcode的过程。
+这段程序相当于下面的这段php程序, 这段程序可以用php命令来执行，虽然下面这段程序没有实际意义，而通过嵌入式PHP中，你可以在一个用C实现的
+系统中嵌入PHP, 然后用PHP来实现功能。
+
+	[php]
+	<?php
+	if($argc < 2) die("Usage: embed4 scriptfile");
+
+	include $argv[1];
+
 
 main函数：
 
@@ -162,7 +171,8 @@ main函数：
       php_embed_shutdown(TSRMLS_C); \
     }
 
-如上两个宏可能会用到你的嵌入式PHP中，从代码中可以看出，它包含了在示例代码中的php_embed_init，zend_first_try，zend_end_try，php_embed_shutdown等。
+如上两个宏可能会用到你的嵌入式PHP中，从代码中可以看出，它包含了在示例代码中的php_embed_init，zend_first_try，zend_end_try，php_embed_shutdown等
+嵌入式PHP中常用的方法。
 大量的使用宏也算是PHP源码的一大特色吧，
 
 
