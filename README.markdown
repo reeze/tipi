@@ -6,7 +6,7 @@
 前往这里阅读在线版本的 [深入理解PHP内核(TIPI)][project-url]
 
 [php-home]: http://php.net/ "PHP"
-[project-url]: http://tipi.reeze.cn/book
+[project-url]: http://www.php-internal.com/book/
 
 ## 目录说明
 
