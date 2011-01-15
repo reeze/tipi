@@ -23,10 +23,20 @@ a {
 #header {
 	background-color: #1a1a1a;
 	-webkit-box-shadow: rgba(0,0,0,1) 0px 0px 5px;
-	-moz-box-shadow: rgba(0,0,0,1) 0px 0px 5px;
+	-moz-box-shadow: rgba(0,0,0,1) -5px 0px 5px; /* Firefox will expand the width spread width */
 	-o-box-shadow: rgba(0,0,0,1) 0px 0px 5px;
 	box-shadow: rgba(0,0,0,1) 0px 0px 5px;
 	border-bottom: 1px solid #333;
+}
+
+#footer {
+	margin: 10px 0;
+}
+
+#copyright {
+	color: #111;
+	text-shadow: 0 1px 1px #ddd;
+	text-shadow: 0 1px 1px rgba(120,120,120,0.8);
 }
 
 #inner-header ul{
@@ -59,6 +69,23 @@ a {
 	font-weight: bold;
 	background: url(../images/logo.png) left center no-repeat;
 	font-family: "Microsoft YaHei", Helvetica, Arial, sans-serif;
+}
+
+h1,h2,h3,h4 {
+	font-weight: normal;
+	font-family: "Microsoft YaHei", Helvetica, Arial, sans-serif;
+}
+
+h1 {
+	font-size: 1.5em;
+}
+
+h2 {
+	font-size: 1.4em;
+}
+
+h3 {
+	font-size: 1.3em;
 }
 
 /* tmp */

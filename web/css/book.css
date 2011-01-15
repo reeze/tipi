@@ -24,7 +24,6 @@
 #book_main {
 	border: 1px solid #555;
 	background: #efefef;
-	margin-bottom: 20px;
 
 	-webkit-border-radius: 4px;
 	-moz-border-radius: 4px;
@@ -68,6 +67,10 @@
 	text-indent: 2em;
 }
 
+#book_content hr {
+	border: 1px dashed #ccc;
+}
+
 #book_index ul li p {
 	margin-bottom: 0;
 }
@@ -77,6 +80,14 @@
 	width: 200px;
 }
 
+#book_content h1 {
+	color: #006ea3;
+	margin: 10px 0;
+	padding-bottom: 10px;
+	font-size: 1.5em;
+	border-bottom: 1px solid #aaa;
+}
+
 #book_sidebar .inner-containner {
 	padding: 0px;
 	padding-right: 10px;
@@ -84,10 +95,30 @@
 
 #book_sidebar ul {
 	margin: 0;
-	margin-left: 15px;
 	padding: 0;
-	list-style: circle;
+	list-style: none;
 	line-height: 20px;
+}
+
+#book_sidebar ul ul {
+	list-style: circle;
+	margin-left: 15px;
+}
+
+#book_sidebar ul li a {
+	color: #0076af;
+	font-weight: bold;
+	font-size: 1.1em;
+}
+
+#book_sidebar ul ul li a {
+	color: #007eba;
+	font-size: 1em;
+	font-weight: normal;
+}
+
+#book_sidebar ul ul {
+	margin-bottom: 10px;
 }
 
 #book_sidebar ul a {
@@ -105,7 +136,7 @@
 	list-style: circle;
 }
 
-#book_sidebar .current_page {
+#book_sidebar ul ul li.current_page {
 	list-style: disc;
 }
 
@@ -123,18 +154,24 @@
 	padding: 10px;
 	background-color: #333;
 	color: #fff;
-	font: 13px "Bitstream Vera Sans Mono",monospace;
+	font: 13px "Bitstream Vera Sans Mono", "DejaVu Sans Mono", "Courier New", monospace;
 	overflow: auto;
+	/* IE pre won't auto fit 100%. Hack it */
+	_width: 730px;
 }
 
 #book_content blockquote {
 	margin: 10px 0;
-	padding-left: 55px;
+	padding-left: 60px;
 	padding-right: 20px;
 	background: #dfdfdf url(../images/quote.png) 15px 10px no-repeat;
 	border: 1px solid #aaa;
 	border-left: 0;
 	border-right: 0;
+}
+
+#book_content blockquote p {
+	text-indent: 0;
 }
 
 #book_content blockquote.note {

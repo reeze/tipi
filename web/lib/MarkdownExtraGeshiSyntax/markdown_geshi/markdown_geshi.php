@@ -60,6 +60,7 @@ class MarkdownExtraGeshi_Parser extends MarkdownExtra_Parser
 	{
 		$geshi = new GeSHi($matches[3], empty($matches[2]) ? "txt" : $matches[2]);
 		$geshi->enable_classes();
+		$geshi->set_overall_style(""); // empty style
 		return $geshi->parse_code();
 	}
 
