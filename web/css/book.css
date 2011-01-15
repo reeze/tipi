@@ -83,10 +83,16 @@
 
 #book_sidebar ul {
 	margin: 0;
-	margin-left: 15px;
 	padding: 0;
-	list-style: circle;
+	list-style: none;
 	line-height: 20px;
+}
+
+#book_sidebar ul ul {
+	list-style: circle;
+	margin-left: 15px;
+	border-bottom: 1px dashed #cfcfcf;
+	padding-bottom: 5px;
 }
 
 #book_sidebar ul li a {
@@ -120,7 +126,7 @@
 	list-style: circle;
 }
 
-#book_sidebar .current_page {
+#book_sidebar ul ul li.current_page {
 	list-style: disc;
 }
 
