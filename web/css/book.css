@@ -24,7 +24,6 @@
 #book_main {
 	border: 1px solid #555;
 	background: #efefef;
-	margin-bottom: 20px;
 
 	-webkit-border-radius: 4px;
 	-moz-border-radius: 4px;
@@ -129,12 +128,16 @@
 
 #book_content blockquote {
 	margin: 10px 0;
-	padding-left: 55px;
+	padding-left: 60px;
 	padding-right: 20px;
 	background: #dfdfdf url(../images/quote.png) 15px 10px no-repeat;
 	border: 1px solid #aaa;
 	border-left: 0;
 	border-right: 0;
+}
+
+#book_content blockquote p {
+	text-indent: 0;
 }
 
 #book_content blockquote.note {

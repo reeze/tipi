@@ -26,7 +26,7 @@
 				<?php endif; ?>
 			</div>
 
-			<div id="footer"></div>
+		<?php SimpieView::include_partial("templates/layout/_footer.php"); ?>
 		</div>
 	</div>
 </body>
