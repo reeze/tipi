@@ -62,6 +62,48 @@ class MarkdownExtraGeshi_Parser extends MarkdownExtra_Parser
 		$geshi->enable_classes();
 		return $geshi->parse_code();
 	}
+
+	static $quote_class = '';
+
+	// Added by tipi-team for tipi book
+	function _doBlockQuotes_callback($matches)
+	{
+
+		$bq = $matches[1];
+		# trim one level of quoting - trim whitespace-only lines
+		$bq = preg_replace('/^[ ]*>[ ]?|^[ ]+$/m', '', $bq);echo $bq;
+		$bq = preg_replace('/^/m', "  ", $bq);
+
+		// add class
+		self::$quote_class = '';
+		$bq = trim($bq);
+		$bq = preg_replace_callback(
+			'/^(\*\*([\w]+)\*\*\n|)(.*?)$/s',
+			array($this, 'blockQuote'),
+			$bq
+			);
+		$quote_class = self::$quote_class ? " class='" . strtolower(self::$quote_class) . "'" : '';
+
+		$bq = $this->runBlockGamut($bq);		# recurse
+
+		# These leading spaces cause problem with <pre> content, 
+		# so we need to fix that:
+
+		$bq = preg_replace_callback('{(\s*<pre>.+?</pre>)}sx', 
+			array(&$this, '_DoBlockQuotes_callback2'), $bq);
+
+		$bq = "\n". $this->hashBlock("<blockquote{$quote_class}>\n$bq\n</blockquote>")."\n\n";
+
+
+
+		return $bq;
+	}
+
+	function blockQuote($matches)
+	{
+		self::$quote_class = empty($matches[2]) ? '' : $matches[2];
+		return $matches[3];	
+	}
 }
 
 ?>
