@@ -16,7 +16,7 @@
         + [嵌入式PHP][embedding-php]
 		+ 真实环境中的PHP: PHP和WebServer,命令程序
 		+ Fastcgi/fpm及
-	* 第三节 脚本的执行 [reeze:20%]
+	* [第三节 脚本的执行][script-execution] [reeze]
 		+ 词法分析,语法分析及opcode
 
 - 第三章 变量及数据类型
@@ -82,6 +82,7 @@
 
 [php-module-in-apache]: ?p=chapt02/02-02-01-apache-php-module
 [embedding-php]: ?p=chapt02/02-02-02-embedding-php
+[script-execution]: ?p=chapt02/02-03-how-php-script-get-executed
 
 [const-var]: ?p=chapt03/03-07-const-var
 [variables-in-memory]: ?p=chapt03/03-01-var-memory
