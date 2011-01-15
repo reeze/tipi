@@ -128,13 +128,21 @@
 }
 
 #book_content blockquote {
-	margin: 0;
+	margin: 10px 0;
 	padding-left: 55px;
 	padding-right: 20px;
-	background: #dfdfdf url(../images/quote.png) 15px 15px no-repeat;
+	background: #dfdfdf url(../images/quote.png) 15px 10px no-repeat;
 	border: 1px solid #aaa;
 	border-left: 0;
 	border-right: 0;
+}
+
+#book_content blockquote.note {
+	background-image: url(../images/note.png);
+}
+
+#book_content blockquote.question {
+	background-image: url(../images/question.png);
 }
 
 
