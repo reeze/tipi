@@ -71,7 +71,7 @@ class MarkdownExtraGeshi_Parser extends MarkdownExtra_Parser
 
 		$bq = $matches[1];
 		# trim one level of quoting - trim whitespace-only lines
-		$bq = preg_replace('/^[ ]*>[ ]?|^[ ]+$/m', '', $bq);echo $bq;
+		$bq = preg_replace('/^[ ]*>[ ]?|^[ ]+$/m', '', $bq);
 		$bq = preg_replace('/^/m', "  ", $bq);
 
 		// add class
