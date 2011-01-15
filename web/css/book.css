@@ -156,8 +156,8 @@
 	color: #fff;
 	font: 13px "Bitstream Vera Sans Mono", "DejaVu Sans Mono", "Courier New", monospace;
 	overflow: auto;
-	/* IE pre won't auto fit 100%. Hack it */
-	_width: 730px;
+	/* Hack for IE pre expand to much */
+	_word-wrap: break-word;
 }
 
 #book_content blockquote {
