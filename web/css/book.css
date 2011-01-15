@@ -67,6 +67,10 @@
 	text-indent: 2em;
 }
 
+#book_content hr {
+	border: 1px dashed #ccc;
+}
+
 #book_index ul li p {
 	margin-bottom: 0;
 }
@@ -74,6 +78,14 @@
 #book_sidebar {
 	float: right;
 	width: 200px;
+}
+
+#book_content h1 {
+	color: #006ea3;
+	margin: 10px 0;
+	padding-bottom: 10px;
+	font-size: 1.5em;
+	border-bottom: 1px solid #aaa;
 }
 
 #book_sidebar .inner-containner {
@@ -91,8 +103,6 @@
 #book_sidebar ul ul {
 	list-style: circle;
 	margin-left: 15px;
-	border-bottom: 1px dashed #cfcfcf;
-	padding-bottom: 5px;
 }
 
 #book_sidebar ul li a {
@@ -144,8 +154,10 @@
 	padding: 10px;
 	background-color: #333;
 	color: #fff;
-	font: 13px "Bitstream Vera Sans Mono",monospace;
+	font: 13px "Bitstream Vera Sans Mono", "DejaVu Sans Mono", "Courier New", monospace;
 	overflow: auto;
+	/* IE pre won't auto fit 100%. Hack it */
+	_width: 730px;
 }
 
 #book_content blockquote {
