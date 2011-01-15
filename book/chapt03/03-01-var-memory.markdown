@@ -36,8 +36,8 @@ PHP是一种弱类型的语言，这就意味着在声明或使用变量的时�
 
 在变量的初始化过程中，ZE会将变量的类型（type）值根据其变量类型置为：IS_NULL, IS_BOOL, IS_LONG, IS_DOUBLE, IS_STRING, IS_ARRAY, IS_OBJECT, IS_RESOURCE 之一。
 
-> **QUESTION**
->PHP的实现中，如何判断变量是属于哪种类型的呢？ 
+>**Question**
+>PHP的实现中，如何判断变量是属于哪种类型的呢？(下节介绍）
 
 <br />
 
