@@ -127,6 +127,31 @@
 	overflow: auto;
 }
 
+#book_content blockquote {
+	margin: 0;
+	padding-left: 55px;
+	padding-right: 20px;
+	background: #dfdfdf url(../images/quote.png) 15px 15px no-repeat;
+	border: 1px solid #aaa;
+	border-left: 0;
+	border-right: 0;
+}
+
+
+#book_content table {
+	border-collapse: collapse;
+}
+
+#book_content th {
+	background-color: #dcdcdc;
+}
+
+#book_content th, #book_content td {
+	padding: 5px;
+	border: 1px solid #aaa;
+}
+
+/* end book content style */
 
 #book_page_navor {
 	border-top: 1px solid #999;
