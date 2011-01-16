@@ -16,7 +16,7 @@
         + [嵌入式PHP][embedding-php]
 		+ 真实环境中的PHP: PHP和WebServer,命令程序
 		+ Fastcgi/fpm及
-	* [第三节 脚本的执行][script-execution] [reeze]
+	* [第三节 脚本的执行][script-execution]
 		+ 词法分析,语法分析及opcode
 
 - 第三章 变量及数据类型
