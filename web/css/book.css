@@ -89,6 +89,11 @@
 	border-bottom: 1px solid #aaa;
 }
 
+#book_content h2, #book_content h3, #book_content h4 {
+	font-weight: bold;
+	color: #333;
+}
+
 #book_sidebar .inner-containner {
 	padding: 0px;
 	padding-right: 10px;

@@ -3,7 +3,7 @@ body {
 	font: 12px Helvetica, Arial, sans-serif;
 	margin: 0;
 	background: url(../images/bg.png);
-	color: #111;
+	color: #222;
 	line-height: 20px;
 	text-align: center;
 }
@@ -82,11 +82,11 @@ h1 {
 }
 
 h2 {
-	font-size: 1.3em;
+	font-size: 1.2em;
 }
 
 h3 {
-	font-size: 1.2em;
+	font-size: 1.1em;
 }
 
 /* tmp */
