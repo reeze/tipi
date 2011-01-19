@@ -11,7 +11,7 @@
 
 - 第二章 概览
 	* 第一节 PHP生命周期及Zend引擎概览
-	* 第二节 SAPI协议以及WebServer: cli/mod_php/fastcgi/fpm
+	* [第二节 SAPI][sapi-overview]
         + [PHP以模块方式注册到Apache][php-module-in-apache]
         + [嵌入式PHP][embedding-php]
         + [Fastcgi/fpm][fastcgi]
@@ -25,7 +25,7 @@
 	* 第三节 数据类型转换:现式及隐式转换
 	* 第四接 类型提示(Type Hinting)的实现
 	* 第五节 PHP中的全局变量
-    * 第六节 PHP中的常量[const-var]
+    * 第六节 [PHP中的常量][const-var]
 
 - 第四章 内存管理
 	* 第一节 内存布局结构
@@ -80,6 +80,7 @@
 [common-code-in-php-src]: ?p=chapt01/01-03-comm-code-in-php-src
 [01-summary]: ?p=chapt01/01-04-summary
 
+[sapi-overview]: ?p=chapt02/02-02-00-overview
 [php-module-in-apache]: ?p=chapt02/02-02-01-apache-php-module
 [embedding-php]: ?p=chapt02/02-02-02-embedding-php
 [fastcgi]: ?p=chapt02/02-02-03-fastcgi
