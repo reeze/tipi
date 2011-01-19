@@ -1,12 +1,12 @@
 
 #book_header {
 	color: #fff;
-	margin-top: 20px;
+	margin-top: 15px;
 }
 
 #book_header p {
 	color: #d8d8d8;
-	margin-top: 0px;
+	margin-top: 4px;
 	font-size: 15px;
 	text-shadow: #000 0 2px 2px;
 }
@@ -19,6 +19,7 @@
 	color: #dadada;
 	text-decoration: none;
 	text-shadow: #000 0 2px 2px;
+	font-size: 1.3em;
 }
 
 #book_main {
@@ -84,8 +85,13 @@
 	color: #006ea3;
 	margin: 10px 0;
 	padding-bottom: 10px;
-	font-size: 1.5em;
+	font-size: 1.4em;
 	border-bottom: 1px solid #aaa;
+}
+
+#book_content h2, #book_content h3, #book_content h4 {
+	font-weight: bold;
+	color: #333;
 }
 
 #book_sidebar .inner-containner {
@@ -164,7 +170,7 @@
 	margin: 10px 0;
 	padding-left: 60px;
 	padding-right: 20px;
-	background: #dfdfdf url(../images/quote.png) 15px 10px no-repeat;
+	background: #dfdfdf url(../images/quote.png) 15px 8px no-repeat;
 	border: 1px solid #aaa;
 	border-left: 0;
 	border-right: 0;
