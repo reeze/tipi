@@ -76,7 +76,7 @@ class BookPage {
      * @return <type>
      */
     private function _createNewFilename($filename, $level, $step) {
-        if ($level == 1) {
+        if ($level <= 1) {
             return NULL;
         }
 
