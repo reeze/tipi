@@ -24,6 +24,67 @@ FastCGI是语言无关的、可伸缩架构的CGI开放扩展，其主要行为�
 ***
 
 PHP的cgi实现是以socket编程实现一个tcp或udp协议的服务器，当启动时，创建tcp/udp协议的服务器的socket监听。
+程序是从cgi_main.c文件的main函数开始，而在main函数中调用了定义在fastcgi.c文件中的初始化，监听等函数。我们从main函数开始，看看PHP对于fastcgi的实现。
+
+我们只取其中的关键函数进行介绍，对整个流程进行简单的说明。
+
+    [c]
+    /* {{{ main
+     */
+    int main(int argc, char *argv[])
+    {
+    ...
+
+    sapi_startup(&cgi_sapi_module); //  1512行 启动sapi,调用sapi全局构造函数，初始化sapi_globals_struct结构体
+    ... //  根据启动参数，初始化信息
+
+    if (cgi_sapi_module.startup(&cgi_sapi_module) == FAILURE) { //  调用php_cgi_startup方法 
+    #ifdef ZTS
+            tsrm_shutdown();
+    #endif
+            return FAILURE;
+    }
+
+    ...
+
+    if (bindpath) {
+        fcgi_fd = fcgi_listen(bindpath, 128);   //  实现socket监听，调用fcgi_init初始化
+            if (fcgi_fd < 0) {
+                fprintf(stderr, "Couldn't create FastCGI listen socket on port %s\n", bindpath);
+    #ifdef ZTS
+                tsrm_shutdown();
+    #endif
+                return FAILURE;
+            }
+            fastcgi = fcgi_is_fastcgi();
+        }
+
+    }
+
+    if (fastcgi) {
+        ...
+		/* library is already initialized, now init our request */
+		fcgi_init_request(&request, fcgi_fd);   //  request内存分配，初始化变量
+    }
+
+    	while (parent) {
+			do {
+				pid = fork();   //  生成新的子进程
+				switch (pid) {
+				case 0:
+					parent = 0;
+
+					/* don't catch our signals */
+					sigaction(SIGTERM, &old_term, 0);
+					sigaction(SIGQUIT, &old_quit, 0);
+					sigaction(SIGINT,  &old_int,  0);
+					break;
+                    ...
+                default:
+					/* Fine */
+					running++;
+					break;
+			} while (parent && (running < children));
 
     [c]
     /* Create, bind socket and start listen on it */
@@ -109,6 +170,56 @@ PHP的cgi实现是以socket编程实现一个tcp或udp协议的服务器，当�
 
 sinaction函数的功能是检查或修改与指定信号相关联的处理动作。此函数取代了unix早期使用的signal函数。
 
+### 启动参数说明
+
+    [shell]
+     php <file> [args...]
+    -a               Run interactively
+    -b <address:port>|<port> Bind Path for external FASTCGI Server mode
+    -C               Do not chdir to the script's directory
+    -c <path>|<file> Look for php.ini file in this directory
+    -n               No php.ini file will be used
+    -d foo[=bar]     Define INI entry foo with value 'bar'
+    -e               Generate extended information for debugger/profiler
+    -f <file>        Parse <file>.  Implies `-q'
+    -h               This help
+    -i               PHP information
+    -l               Syntax check only (lint)
+    -m               Show compiled in modules
+    -q               Quiet-mode.  Suppress HTTP Header output.
+    -s               Display colour syntax highlighted source.
+    -v               Version number
+    -w               Display source with stripped comments and whitespace.
+    -z <file>        Load Zend extension <file>.
+    -T <count>       Measure execution time of script repeated <count> times.
+
+与这些启动参数说明相关的实现在结构体中有体现：
+
+    [c]
+    static const opt_struct OPTIONS[] = {
+        {'a', 0, "interactive"},
+        {'b', 1, "bindpath"},
+        {'C', 0, "no-chdir"},
+        {'c', 1, "php-ini"},
+        {'d', 1, "define"},
+        {'e', 0, "profile-info"},
+        {'f', 1, "file"},
+        {'h', 0, "help"},
+        {'i', 0, "info"},
+        {'l', 0, "syntax-check"},
+        {'m', 0, "modules"},
+        {'n', 0, "no-php-ini"},
+        {'q', 0, "no-header"},
+        {'s', 0, "syntax-highlight"},
+        {'s', 0, "syntax-highlighting"},
+        {'w', 0, "strip"},
+        {'?', 0, "usage"},/* help alias (both '?' and 'usage') */
+        {'v', 0, "version"},
+        {'z', 1, "zend-extension"},
+        {'T', 1, "timing"},
+        {'-', 0, NULL} /* end of args */
+    };
+
 ## PHP-FPM
 ***
 PHP-FPM (FastCGI Process Manager) is an alternative PHP FastCGI implementation with some additional features useful for sites of any size, especially busier sites.
@@ -116,7 +227,7 @@ PHP-FPM (FastCGI Process Manager) is an alternative PHP FastCGI implementation w
 
 ## 参考资料
 ***
-以下为本篇文章对于一些定义引用的参考资料：  
+以下为本篇文章对于一些定义引用的参考资料：
 http://www.fastcgi.com/drupal/node/2  
 http://baike.baidu.com/view/641394.htm
 http://zh.wikipedia.org/zh-cn/%E9%80%9A%E7%94%A8%E7%BD%91%E5%85%B3%E6%8E%A5%E5%8F%A3  
