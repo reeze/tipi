@@ -1,4 +1,8 @@
 # PHP以模块方式注册到Apache
+php5通过在配置文件中添加相关模块，通过注册apache2的ap_hook_post_config挂钩,在apache server启动的时候启动php模块。
+
+下面介绍apache模块加载的基本知识以及PHP对于apache的实现
+
 ## Apache模块加载机制简介
 ***
 Apache的模块可以在运行的时候动态装载，这意味着对服务器可以进行功能扩展而不需要重新对源代码进行编译，甚至根本不需要停止服务器。
@@ -97,7 +101,6 @@ php_dir_cmds所定义的内容如下：
 如果找到，则调用相应的处理函数，如果所有指令表中的模块都不能处理该指令，那么将报错。
 如上可见，php模块仅提供php_value等5个指令。
 
-
 php_ap2_register_hook函数的定义如下：
 
     [c]
@@ -111,7 +114,12 @@ php_ap2_register_hook函数的定义如下：
 
 以上代码声明了pre_config,post_config,handler和child_init 4个挂钩以及对应的处理函数。
 其中pre_config,post_config,child_init是启动挂钩，它们在服务器启动时调用。
-handler挂钩是请求挂钩，它在服务器处理请求时调用。
+handler挂钩是请求挂钩，它在服务器处理请求时调用。其中在post_config挂钩中启动php。
+它通过php_apache_server_startup函数实现。php_apache_server_startup函数通过调用sapi_startup启动sapi,
+并通过调用php_apache2_startup来注册sapi module struct（此结构在本节开头中有说明）,
+最后调用php_module_startup来初始化PHP, 其中又会初始化ZEND引擎,以及填充zend_module_struct中
+的treat_data成员(通过php_startup_sapi_content_types)等。
+
 
 ## Apache的运行过程
 ***

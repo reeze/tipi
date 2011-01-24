@@ -14,8 +14,7 @@
 	* [第二节 SAPI][sapi-overview]
         + [PHP以模块方式注册到Apache][php-module-in-apache]
         + [嵌入式PHP][embedding-php]
-        + [Fastcgi/fpm][fastcgi]
-		+ 真实环境中的PHP: PHP和WebServer,命令程序
+        + [Fastcgi][fastcgi]
 	* [第三节 脚本的执行][script-execution]
 		+ 词法分析,语法分析及opcode
 
