@@ -23,10 +23,14 @@ FastCGI是语言无关的、可伸缩架构的CGI开放扩展，其主要行为�
 ## PHP中的CGI实现
 ***
 
-PHP的cgi实现是以socket编程实现一个tcp或udp协议的服务器，当启动时，创建tcp/udp协议的服务器的socket监听。
+PHP的cgi实现本质是是以socket编程实现一个tcp或udp协议的服务器，当启动时，创建tcp/udp协议的服务器的socket监听，并接收相关请求进行处理。这只是请求的处理，在此基础上添加模块初始化，sapi初始化，模块关闭，sapi关闭等就构成了整个cgi的生命周期。
 程序是从cgi_main.c文件的main函数开始，而在main函数中调用了定义在fastcgi.c文件中的初始化，监听等函数。我们从main函数开始，看看PHP对于fastcgi的实现。
 
-我们只取其中的关键函数进行介绍，对整个流程进行简单的说明。
+这里将整个流程分为初始化操作，请求处理，关闭操作三个部分。
+我们先就整个流程进行简单的说明，在这个之后，我们取其中一些用到的重要函数进行介绍。
+
+### 初始化操作
+ 过程说明代码注释
 
     [c]
     /* {{{ main
@@ -34,31 +38,17 @@ PHP的cgi实现是以socket编程实现一个tcp或udp协议的服务器，当�
     int main(int argc, char *argv[])
     {
     ...
-
     sapi_startup(&cgi_sapi_module); //  1512行 启动sapi,调用sapi全局构造函数，初始化sapi_globals_struct结构体
     ... //  根据启动参数，初始化信息
 
-    if (cgi_sapi_module.startup(&cgi_sapi_module) == FAILURE) { //  调用php_cgi_startup方法 
-    #ifdef ZTS
-            tsrm_shutdown();
-    #endif
-            return FAILURE;
+    if (cgi_sapi_module.startup(&cgi_sapi_module) == FAILURE) { //  模块初始化 调用php_cgi_startup方法
+    ...
     }
 
     ...
-
     if (bindpath) {
         fcgi_fd = fcgi_listen(bindpath, 128);   //  实现socket监听，调用fcgi_init初始化
-            if (fcgi_fd < 0) {
-                fprintf(stderr, "Couldn't create FastCGI listen socket on port %s\n", bindpath);
-    #ifdef ZTS
-                tsrm_shutdown();
-    #endif
-                return FAILURE;
-            }
-            fastcgi = fcgi_is_fastcgi();
-        }
-
+        ...
     }
 
     if (fastcgi) {
@@ -67,37 +57,58 @@ PHP的cgi实现是以socket编程实现一个tcp或udp协议的服务器，当�
 		fcgi_init_request(&request, fcgi_fd);   //  request内存分配，初始化变量
     }
 
+在fcgi_listen函数中关键代码是创建、绑定socket并开始监听
+
+    [c]
+        if ((listen_socket = socket(sa.sa.sa_family, SOCK_STREAM, 0)) < 0 ||
+            ...
+            bind(listen_socket, (struct sockaddr *) &sa, sock_len) < 0 ||
+            listen(listen_socket, backlog) < 0) {
+            ...
+        }
+
+### 请求处理操作流程
+ 过程说明见代码注释
+
+    [c]
     	while (parent) {
 			do {
 				pid = fork();   //  生成新的子进程
 				switch (pid) {
-				case 0:
+				case 0: //  子进程
 					parent = 0;
 
 					/* don't catch our signals */
-					sigaction(SIGTERM, &old_term, 0);
-					sigaction(SIGQUIT, &old_quit, 0);
-					sigaction(SIGINT,  &old_int,  0);
+					sigaction(SIGTERM, &old_term, 0);   //  终止信号
+					sigaction(SIGQUIT, &old_quit, 0);   //  终端退出符
+					sigaction(SIGINT,  &old_int,  0);   //  终端中断符
 					break;
                     ...
-                default:
+                    default:
 					/* Fine */
 					running++;
 					break;
 			} while (parent && (running < children));
 
-    [c]
-    /* Create, bind socket and start listen on it */
-        if ((listen_socket = socket(sa.sa.sa_family, SOCK_STREAM, 0)) < 0 ||
-    #ifdef SO_REUSEADDR
-            setsockopt(listen_socket, SOL_SOCKET, SO_REUSEADDR, (char*)&reuse, sizeof(reuse)) < 0 ||
-    #endif
-            bind(listen_socket, (struct sockaddr *) &sa, sock_len) < 0 ||
-            listen(listen_socket, backlog) < 0) {
+        ...
+        	while (!fastcgi || fcgi_accept_request(&request) >= 0) {
+			SG(server_context) = (void *) &request;
+			init_request_info(TSRMLS_C);
+			CG(interactive) = 0;
+                        ...
+                }
 
-            fprintf(stderr, "Cannot bind/listen socket - [%d] %s.\n",errno, strerror(errno));
-            return -1;
-        }
+### 关闭操作流程
+ 过程说明代码注释
+
+    [c]
+    ...
+    php_request_shutdown((void *) 0);   //  php请求关闭函数
+    ...
+    fcgi_shutdown();    //  fcgi的关闭 销毁fcgi_mgmt_vars变量
+    php_module_shutdown(TSRMLS_C);  //  模块关闭    清空sapi,关闭zend引擎 销毁内存，清除垃圾等
+    sapi_shutdown();    //  sapi关闭  sapi全局变量关闭等
+    ...
 
 写操作：
 
