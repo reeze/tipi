@@ -85,6 +85,6 @@
 [fastcgi]: ?p=chapt02/02-02-03-fastcgi
 [script-execution]: ?p=chapt02/02-03-how-php-script-get-executed
 
-[const-var]: ?p=chapt03/03-07-const-var
+[const-var]: ?p=chapt03/03-06-const-var
 [variables-in-memory]: ?p=chapt03/03-01-var-memory
 
