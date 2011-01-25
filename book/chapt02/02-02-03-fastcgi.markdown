@@ -27,10 +27,10 @@ PHP的cgi实现本质是是以socket编程实现一个tcp或udp协议的服务�
 程序是从cgi_main.c文件的main函数开始，而在main函数中调用了定义在fastcgi.c文件中的初始化，监听等函数。我们从main函数开始，看看PHP对于fastcgi的实现。
 
 这里将整个流程分为初始化操作，请求处理，关闭操作三个部分。
-我们先就整个流程进行简单的说明，在这个之后，我们取其中一些用到的重要函数进行介绍。
+我们就整个流程进行简单的说明，并在其中穿插介绍一些用到的重要函数。
 
 ### 初始化操作
- 过程说明代码注释
+ 过程说明见代码注释
 
     [c]
     /* {{{ main
@@ -98,6 +98,27 @@ PHP的cgi实现本质是是以socket编程实现一个tcp或udp协议的服务�
                         ...
                 }
 
+在fcgi_accept_request函数中，处理连接请求，忽略限制客户请求，调用fcgi_read_request函数（定义在fastcgi.c文件）分析请求的信息，将相关的变量写到对应的变量中。
+其中在读取请求内容时调用了safe_read方法。如下：  
+**[main() -> fcgi_accept_request() -> fcgi_read_request() -> safe_read()]**
+
+    [c]
+    static inline ssize_t safe_read(fcgi_request *req, const void *buf, size_t count)
+    {
+        size_t n = 0;
+        do {
+        ... //  对win32的处理
+            ret = read(req->fd, ((char*)buf)+n, count-n);   //  非win版本的读操作
+        ...
+        } while (n != count);
+
+    }
+
+在请求初始化完成，读取请求完毕后，就该处理请求的PHP文件了。假设此次请求为PHP_MODE_STANDARD则会调用php_execute_script执行PHP文件。
+在此函数中它先初始化此文件相关的一些内容，然后再调用zend_execute_scripts函数，对PHP文件进行词法分析和语法分析，生成中间代码，
+并执行zend_execute函数，从而执行这些中间代码。关于整个脚本的执行请参见第三节 脚本的执行。
+
+
 ### 关闭操作流程
  过程说明代码注释
 
@@ -110,135 +131,10 @@ PHP的cgi实现本质是是以socket编程实现一个tcp或udp协议的服务�
     sapi_shutdown();    //  sapi关闭  sapi全局变量关闭等
     ...
 
-写操作：
-
-    [c]
-    static inline ssize_t safe_write(fcgi_request *req, const void *buf, size_t count)
-
-
-写操作中，针对*nix系统的操作
-
-    [c]
-    ret = write(req->fd, ((char*)buf)+n, count-n);
-
-读操作定义：
-
-    [c]
-    static inline ssize_t safe_read(fcgi_request *req, const void *buf, size_t count)
-
-读操作中，针对*nix系统的操作
-
-    [c]
-    ret = read(req->fd, ((char*)buf)+n, count-n);
-
-**处理请求**
-处理请求的函数定义如下：
-
-    [c]
-    static int fcgi_read_request(fcgi_request *req)
-
-请求的定义：
-
-    [c]
-    typedef struct _fcgi_request {
-        int            listen_socket;
-    #ifdef _WIN32
-        int            tcp;
-    #endif
-        int            fd;
-        int            id;
-        int            keep;
-        int            closed;
-
-        int            in_len;
-        int            in_pad;
-
-        fcgi_header   *out_hdr;
-        unsigned char *out_pos;
-        unsigned char  out_buf[1024*8];
-        unsigned char  reserved[sizeof(fcgi_end_request_rec)];
-
-        HashTable     *env;
-    } fcgi_request;
-
-信号设置
-
-    [c]
-    static void fcgi_setup_signals(void)
-    {
-        struct sigaction new_sa, old_sa;
-
-        sigemptyset(&new_sa.sa_mask);   //  sigemptyset函数初始化信号集合
-        new_sa.sa_flags = 0;
-        new_sa.sa_handler = fcgi_signal_handler;
-        sigaction(SIGUSR1, &new_sa, NULL);  //  SIGUSR1 用户定义的信号
-        sigaction(SIGTERM, &new_sa, NULL);  //  SIGTERM 终止
-        sigaction(SIGPIPE, NULL, &old_sa);  //  SIGPIPE 写到无读进程的管道
-        if (old_sa.sa_handler == SIG_DFL) {
-            sigaction(SIGPIPE, &new_sa, NULL);
-        }
-    }
-
-sinaction函数的功能是检查或修改与指定信号相关联的处理动作。此函数取代了unix早期使用的signal函数。
-
-### 启动参数说明
-
-    [shell]
-     php <file> [args...]
-    -a               Run interactively
-    -b <address:port>|<port> Bind Path for external FASTCGI Server mode
-    -C               Do not chdir to the script's directory
-    -c <path>|<file> Look for php.ini file in this directory
-    -n               No php.ini file will be used
-    -d foo[=bar]     Define INI entry foo with value 'bar'
-    -e               Generate extended information for debugger/profiler
-    -f <file>        Parse <file>.  Implies `-q'
-    -h               This help
-    -i               PHP information
-    -l               Syntax check only (lint)
-    -m               Show compiled in modules
-    -q               Quiet-mode.  Suppress HTTP Header output.
-    -s               Display colour syntax highlighted source.
-    -v               Version number
-    -w               Display source with stripped comments and whitespace.
-    -z <file>        Load Zend extension <file>.
-    -T <count>       Measure execution time of script repeated <count> times.
-
-与这些启动参数说明相关的实现在结构体中有体现：
-
-    [c]
-    static const opt_struct OPTIONS[] = {
-        {'a', 0, "interactive"},
-        {'b', 1, "bindpath"},
-        {'C', 0, "no-chdir"},
-        {'c', 1, "php-ini"},
-        {'d', 1, "define"},
-        {'e', 0, "profile-info"},
-        {'f', 1, "file"},
-        {'h', 0, "help"},
-        {'i', 0, "info"},
-        {'l', 0, "syntax-check"},
-        {'m', 0, "modules"},
-        {'n', 0, "no-php-ini"},
-        {'q', 0, "no-header"},
-        {'s', 0, "syntax-highlight"},
-        {'s', 0, "syntax-highlighting"},
-        {'w', 0, "strip"},
-        {'?', 0, "usage"},/* help alias (both '?' and 'usage') */
-        {'v', 0, "version"},
-        {'z', 1, "zend-extension"},
-        {'T', 1, "timing"},
-        {'-', 0, NULL} /* end of args */
-    };
-
-## PHP-FPM
-***
-PHP-FPM (FastCGI Process Manager) is an alternative PHP FastCGI implementation with some additional features useful for sites of any size, especially busier sites.
-
 
 ## 参考资料
 ***
-以下为本篇文章对于一些定义引用的参考资料：
+以下为本篇文章对于一些定义引用的参考资料：  
 http://www.fastcgi.com/drupal/node/2  
-http://baike.baidu.com/view/641394.htm
-http://zh.wikipedia.org/zh-cn/%E9%80%9A%E7%94%A8%E7%BD%91%E5%85%B3%E6%8E%A5%E5%8F%A3  
+http://baike.baidu.com/view/641394.htm  
+
