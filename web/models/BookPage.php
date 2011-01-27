@@ -46,10 +46,10 @@ class BookPage {
         list($chapt_no) = explode("-", $filename);
         $level = self::_getChapterLevelByFilename($filename);
 
-        $new_file_anme = $this->_createNewFilename($filename, $level, $step);
+        $new_file_name = $this->_createNewFilename($filename, $level, $step);
 
-        if ($new_file_anme) {
-            $found_page_name = $this->_getPageNameByFileName($new_file_anme);
+        if ($new_file_name) {
+            $found_page_name = $this->_getPageNameByFileName($new_file_name);
 
             return new self("{$chapt}/{$found_page_name}");
         } else {
