@@ -1,5 +1,6 @@
 # PHP以模块方式注册到Apache
-php5通过在配置文件中添加相关模块，通过注册apache2的ap_hook_post_config挂钩,在apache server启动的时候启动php模块。
+为了让Apache支持php,我们通常的做法是编译一个apche的php模块, 在配置中配置让mod_php来处理php文件的请求.
+php模块通过注册apache2的ap_hook_post_config挂钩, apache启动的时候启动php模块以接受php的请求.
 
 下面介绍apache模块加载的基本知识以及PHP对于apache的实现
 
