@@ -10,7 +10,7 @@
 	* [第四节 小结][01-summary]
 
 - 第二章 概览
-	* 第一节 PHP生命周期及Zend引擎概览
+	* [第一节 PHP生命周期及Zend引擎概览][php-life-cycle]
 	* [第二节 SAPI][sapi-overview]
         + [PHP以模块方式注册到Apache][php-module-in-apache]
         + [嵌入式PHP][embedding-php]
@@ -79,6 +79,7 @@
 [common-code-in-php-src]: ?p=chapt01/01-03-comm-code-in-php-src
 [01-summary]: ?p=chapt01/01-04-summary
 
+[php-life-cycle]: ?p=chapt02/02-01-php-life-cycle-and-zend-engine
 [sapi-overview]: ?p=chapt02/02-02-00-overview
 [php-module-in-apache]: ?p=chapt02/02-02-01-apache-php-module
 [embedding-php]: ?p=chapt02/02-02-02-embedding-php
