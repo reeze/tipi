@@ -23,8 +23,8 @@
 	* 第二节 变量的作用域及其生命周期(er)
 	* 第三节 数据类型转换:现式及隐式转换
 	* 第四接 类型提示(Type Hinting)的实现
-	* 第五节 PHP中的全局变量
-    * 第六节 [PHP中的常量][const-var](pan)
+	* 第五节 [PHP中的全局变量][global-var](pan)
+    * 第六节 [PHP中的常量][const-var]
 
 - 第四章 内存管理
 	* 第一节 内存布局结构
@@ -86,6 +86,7 @@
 [fastcgi]: ?p=chapt02/02-02-03-fastcgi
 [script-execution]: ?p=chapt02/02-03-how-php-script-get-executed
 
+[global-var]: ?p=chapt03/03-05-global-var
 [const-var]: ?p=chapt03/03-06-const-var
 [variables-in-memory]: ?p=chapt03/03-01-var-memory
 
