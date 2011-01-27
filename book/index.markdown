@@ -17,14 +17,16 @@
         + [Fastcgi][fastcgi]
 	* [第三节 脚本的执行][script-execution]
 		+ 词法分析,语法分析及opcode
+	* 第四节 小结
 
 - 第三章 变量及数据类型
 	* [第一节 变量的内存表示及弱类型实现][variables-in-memory]
 	* 第二节 变量的作用域及其生命周期(er)
-	* 第三节 数据类型转换:现式及隐式转换
+	* [第三节 数据类型转换:现式及隐式转换][type-cast] (reeze)
 	* 第四接 类型提示(Type Hinting)的实现
 	* 第五节 [PHP中的全局变量][global-var](pan)
     * 第六节 [PHP中的常量][const-var]
+	* 第七节 小结
 
 - 第四章 内存管理
 	* 第一节 内存布局结构
@@ -87,6 +89,7 @@
 [script-execution]: ?p=chapt02/02-03-how-php-script-get-executed
 
 [global-var]: ?p=chapt03/03-05-global-var
+[type-cast]: ?p=chapt03/03-02-type-cast
 [const-var]: ?p=chapt03/03-06-const-var
 [variables-in-memory]: ?p=chapt03/03-01-var-memory
 
