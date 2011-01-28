@@ -8,6 +8,7 @@ class BookPage {
     private $title = NULL;
     private $base_dir = NULL;
     private $page_name = NULL;
+    private static $_allArticleList = NULL;
 
     // all pages are written in markdown
     const extension = 'markdown';
@@ -37,64 +38,43 @@ class BookPage {
 
     /**
      * 获取当前页的前一页以及下一页信息. 该方法依赖于文件的组织形式
+     * 得到所有的文章列表，按文件名排序，得到上一页和下一页
+     * 需要确保文件的名称是以章节等排序而成
      */
     private function _getRequestPage($step) {
-        $page_name = $this->page_name;
-        list($chapt, $file) = explode("/", $page_name);
 
-        $filename = basename($page_name);
-        list($chapt_no) = explode("-", $filename);
-        $level = self::_getChapterLevelByFilename($filename);
+        $allArticleList = $this->_getAllArticleList();
 
-        $new_file_name = $this->_createNewFilename($filename, $level, $step);
+        $count = count($allArticleList);
 
-        if ($new_file_name) {
-            $found_page_name = $this->_getPageNameByFileName($new_file_name);
-
-            return new self("{$chapt}/{$found_page_name}");
-        } else {
-
-            // 没有找到则看看是否有下/上一章内容
-            $base_path = dirname($this->getPageFilePath());
-            $new_chapt_no = str_pad($chapt_no + $step, 2, '0', STR_PAD_LEFT);
-            $found_files = glob("{$base_path}/../chapt{$new_chapt_no}/*");
-
-            if ($count = count($found_files)) {
-                $index = ($step == 1 ? 0 : $count - 1);
-                $found_page_name = self::_getPageNameByFileName($found_files[$index]);
-
-                return new self("chapt{$new_chapt_no}/{$found_page_name}");
+        $index = 0;
+        $currentFilename = $this->getPageFilePath();
+        if (is_array($allArticleList)) {
+            foreach ($allArticleList as $key => $row) {
+                if (strpos($row, $currentFilename) !== FALSE) {
+                    $index = $key;
+                    break;
+                }
             }
         }
+        $index = ($index + $step) % $count;
+
+        $filepath = substr($allArticleList[$index], 11, - (strlen(self::extension) + 1));
+        return new self($filepath);
     }
 
     /**
-     * 生成新的文件地址
-     * @param <type> $filename
-     * @param <type> $level
-     * @param <type> $step
-     * @return <type>
+     * 获取所有的文章列表，以存放在base_dir目录，以chapt开头的目录
      */
-    private function _createNewFilename($filename, $level, $step) {
-        if ($level <= 1) {
-            return NULL;
+    private function _getAllArticleList() {
+        if (self::$_allArticleList == NULL) {
+            $articleList = glob($this->base_dir . "/chapt*/*");
+            sort($articleList);
+
+            self::$_allArticleList = $articleList;
         }
 
-        $items = explode("-", $filename);
-
-        $index = intval($items[$level - 1] + $step);
-
-        $items[$level - 1] = str_pad($index, 2, '0', STR_PAD_LEFT);
-
-        $new_page_file = implode("-", array_slice($items, 0, $level)) . "-*." . self::extension;
-        $base_path = dirname($this->getPageFilePath());
-        $found_files = glob("{$base_path}/{$new_page_file}");
-
-        if (isset($found_files[0])) {
-            return $found_files[0];
-        } else {
-            return $this->_createNewFilename($filename, $level - 1, $step);
-        }
+        return self::$_allArticleList;
     }
 
     private static function _getPageNameByFileName($file_name) {
