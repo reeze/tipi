@@ -16,8 +16,7 @@
         + [嵌入式PHP][embedding-php]
         + [Fastcgi][fastcgi]
 	* [第三节 脚本的执行][script-execution]
-		+ 词法分析,语法分析及opcode
-	* 第四节 小结
+	* [第四节 小结][02-summary]
 
 - 第三章 变量及数据类型
 	* [第一节 变量的内存表示及弱类型实现][variables-in-memory]
@@ -87,6 +86,7 @@
 [embedding-php]: ?p=chapt02/02-02-02-embedding-php
 [fastcgi]: ?p=chapt02/02-02-03-fastcgi
 [script-execution]: ?p=chapt02/02-03-how-php-script-get-executed
+[02-summary]: ?p=chapt02/02-04-summary
 
 [global-var]: ?p=chapt03/03-05-global-var
 [type-cast]: ?p=chapt03/03-02-type-cast
