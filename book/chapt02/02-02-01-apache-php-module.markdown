@@ -1,6 +1,6 @@
 # PHP以模块方式注册到Apache
 为了让Apache支持php,我们通常的做法是编译一个apche的php模块, 在配置中配置让mod_php来处理php文件的请求.
-php模块通过注册apache2的ap_hook_post_config挂钩, apache启动的时候启动php模块以接受php的请求.
+php模块通过注册apache2的ap_hook_post_config挂钩, 在apache启动的时候启动php模块以接受php的请求.
 
 下面介绍apache模块加载的基本知识以及PHP对于apache的实现
 
@@ -16,7 +16,7 @@ Apache中对动态链接库的处理是通过模块mod_so来完成的，因此mo
     [c]
     LoadModule php5_module modules/mod_php5.so
 
-该命令的第一个参数是模块的名称，名称可以在模块实现的源码中找到。第二个选项是模块所处的路径。
+该命令的第一个参数是模块的名称，名称可以在模块实现的源码中找到。第二个选项是该模块所处的路径。
 如果需要在服务器运行时加载模块，可以通过发送信号HUP或者AP_SIG_GRACEFUL给服务器，一旦接受到该信号，Apache将重新装载模块，而不需要重新启动服务器。
 
 下面我们以PHP模块的加载为例，分析Apache的模块加载过程。在配置文件中添加了所上所示的指令后，Apache在加载模块时会根据模块名查找模块并加载，

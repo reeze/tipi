@@ -9,7 +9,7 @@
 	* [第三节 PHP实现中的常用代码][common-code-in-php-src]
 	* [第四节 小结][01-summary]
 
-- 第二章 概览
+- [第二章 概览][survey]
 	* [第一节 PHP生命周期及Zend引擎概览][php-life-cycle]
 	* [第二节 SAPI][sapi-overview]
         + [PHP以模块方式注册到Apache][php-module-in-apache]
@@ -19,7 +19,7 @@
 		+ [词法分析][lex]
 		+ [语法分析][yacc]
 		+ [opcode][opcode]
-	* 第四节 小结
+	* [第四节 小结][02-summary]
 
 - 第三章 变量及数据类型
 	* [第一节 变量的内存表示及弱类型实现][variables-in-memory]
@@ -83,6 +83,7 @@
 [common-code-in-php-src]: ?p=chapt01/01-03-comm-code-in-php-src
 [01-summary]: ?p=chapt01/01-04-summary
 
+[survey]: ?p=chapt02/02-00-overview
 [php-life-cycle]: ?p=chapt02/02-01-php-life-cycle-and-zend-engine
 [sapi-overview]: ?p=chapt02/02-02-00-overview
 [php-module-in-apache]: ?p=chapt02/02-02-01-apache-php-module
@@ -92,6 +93,7 @@
 [lex]: ?p=chapt02/02-03-01-lex
 [yacc]: ?p=chapt02/02-03-02-yacc
 [opcode]: ?p=chapt02/02-03-03-opcode
+[02-summary]: ?p=chapt02/02-04-summary
 
 [global-var]: ?p=chapt03/03-05-global-var
 [type-cast]: ?p=chapt03/03-02-type-cast
