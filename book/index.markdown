@@ -16,7 +16,9 @@
         + [嵌入式PHP][embedding-php]
         + [Fastcgi][fastcgi]
 	* [第三节 脚本的执行][script-execution]
-		+ 词法分析,语法分析及opcode
+		+ [词法分析][lex]
+		+ [语法分析][yacc]
+		+ [opcode][opcode]
 	* 第四节 小结
 
 - 第三章 变量及数据类型
@@ -86,7 +88,10 @@
 [php-module-in-apache]: ?p=chapt02/02-02-01-apache-php-module
 [embedding-php]: ?p=chapt02/02-02-02-embedding-php
 [fastcgi]: ?p=chapt02/02-02-03-fastcgi
-[script-execution]: ?p=chapt02/02-03-how-php-script-get-executed
+[script-execution]: ?p=chapt02/02-03-00-how-php-script-get-executed
+[lex]: ?p=chapt02/02-03-01-lex
+[yacc]: ?p=chapt02/02-03-02-yacc
+[opcode]: ?p=chapt02/02-03-03-opcode
 
 [global-var]: ?p=chapt03/03-05-global-var
 [type-cast]: ?p=chapt03/03-02-type-cast
