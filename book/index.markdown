@@ -16,8 +16,7 @@
         + [嵌入式PHP][embedding-php]
         + [Fastcgi][fastcgi]
 	* [第三节 脚本的执行][script-execution]
-		+ [词法分析][lex]
-		+ [语法分析][yacc]
+		+ [词法分析和语法分析][lex-and-yacc]
 		+ [opcode][opcode]
 	* [第四节 小结][02-summary]
 
@@ -90,8 +89,7 @@
 [embedding-php]: ?p=chapt02/02-02-02-embedding-php
 [fastcgi]: ?p=chapt02/02-02-03-fastcgi
 [script-execution]: ?p=chapt02/02-03-00-how-php-script-get-executed
-[lex]: ?p=chapt02/02-03-01-lex
-[yacc]: ?p=chapt02/02-03-02-yacc
+[lex-and-yacc]: ?p=chapt02/02-03-01-lex-and-yacc
 [opcode]: ?p=chapt02/02-03-03-opcode
 [02-summary]: ?p=chapt02/02-04-summary
 
