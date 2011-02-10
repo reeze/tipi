@@ -107,7 +107,7 @@ yacc根据规则进行相应的处理, 如果代码找不到匹配的规则,也�
 例如上例中的echo语句会编译为一条ZEND_ECHO指令, 执行过程中,该指令由C函数zend_print_variable(zval\* z)执行,将传递进来的字符串打印出来.
 为了方便理解, 本例中省去了一些细节,例如opcode指令和处理函数之间的映射关系等. 后面的章节将会详细介绍.
 
-如果想直接查看生成的Opcode，可以使用php的vld扩展查看。扩展下载地址: [http://pecl.php.net/package/vld](http://pecl.php.net/package/vld)
+如果想直接查看生成的Opcode，可以使用php的vld扩展查看。扩展下载地址: [http://pecl.php.net/package/vld](http://pecl.php.net/package/vld)。Win下需要自己编译生成dll文件。
 
 有关PHP脚本编译执行的细节,请阅读后面有关词法分析,语法分析及opcode编译相关内容.
 

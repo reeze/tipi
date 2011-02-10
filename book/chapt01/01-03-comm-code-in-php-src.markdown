@@ -149,25 +149,25 @@ PG宏是PHP的核心全局变量宏。
 
             char *variables_order;  // PHP注册 Environment, GET, POST, Cookie, Server 变量的顺序。
 
-            HashTable rfc1867_protected_variables;
+            HashTable rfc1867_protected_variables;  //  RFC1867保护的变量名，在main/rfc1867.c文件中有用到此变量
 
-            short connection_status;
-            short ignore_user_abort;
+            short connection_status;    //  连接状态，有三个状态，正常，中断，超时
+            short ignore_user_abort;    //  是否即使在用户中止请求后也坚持完成整个请求。
 
-            unsigned char header_is_being_sent;
+            unsigned char header_is_being_sent; //  是否头信息正在发送
 
-            zend_llist tick_functions;
+            zend_llist tick_functions;  //  仅在main目录下的php_ticks.c文件中有用到，此处定义的函数在register_tick_function等函数中有用到。
 
-            zval *http_globals[6];
+            zval *http_globals[6];  // 存放GET、POST、SERVER等信息
 
-            zend_bool expose_php;
+            zend_bool expose_php;   //  是否展示php的信息
 
-            zend_bool register_globals;
-            zend_bool register_long_arrays;
-            zend_bool register_argc_argv;
-            zend_bool auto_globals_jit;
+            zend_bool register_globals; //  是否将 E, G, P, C, S 变量注册为全局变量。
+            zend_bool register_long_arrays; //   是否启用旧式的长式数组(HTTP_*_VARS)。
+            zend_bool register_argc_argv;   //  是否声明$argv和$argc全局变量(包含用GET方法的信息)。
+            zend_bool auto_globals_jit; //  是否仅在使用到$_SERVER和$_ENV变量时才创建(而不是在脚本一启动时就自动创建)。
 
-            zend_bool y2k_compliance;
+            zend_bool y2k_compliance;   //是否强制打开2000年适应(可能在非Y2K适应的浏览器中导致问题)。
 
             char *docref_root;  // 如果打开了html_errors指令，PHP将会在出错信息上显示超连接，
             char *docref_ext;   //指定文件的扩展名(必须含有’.')。
@@ -179,34 +179,34 @@ PG宏是PHP的核心全局变量宏。
 
             zend_bool activated_auto_globals[8];
 
-            zend_bool modules_activated;
-            zend_bool file_uploads;
-            zend_bool during_request_startup;
-            zend_bool allow_url_fopen;
-            zend_bool always_populate_raw_post_data;
-            zend_bool report_zend_debug;
+            zend_bool modules_activated;    //  是否已经激活模块
+            zend_bool file_uploads; //是否允许HTTP文件上传。
+            zend_bool during_request_startup;   //是否在请求初始化过程中
+            zend_bool allow_url_fopen;  //是否允许打开远程文件
+            zend_bool always_populate_raw_post_data;    //是否总是生成$HTTP_RAW_POST_DATA变量(原始POST数据)。
+            zend_bool report_zend_debug;    //  是否打开zend debug，仅在main/main.c文件中有使用。
 
-            int last_error_type;
-            char *last_error_message;
-            char *last_error_file;
-            int  last_error_lineno;
+            int last_error_type;    //  最后的错误类型
+            char *last_error_message;   //  最后的错误信息
+            char *last_error_file;  //  最后的错误文件
+            int  last_error_lineno; //  最后的错误行
 
-            char *disable_functions;
-            char *disable_classes;
-            zend_bool allow_url_include;
-            zend_bool exit_on_timeout;
+            char *disable_functions;    //该指令接受一个用逗号分隔的函数名列表，以禁用特定的函数。
+            char *disable_classes;  //该指令接受一个用逗号分隔的类名列表，以禁用特定的类。
+            zend_bool allow_url_include;    //是否允许include/require远程文件。
+            zend_bool exit_on_timeout;  //  超时则退出
     #ifdef PHP_WIN32
             zend_bool com_initialized;
     #endif
-            long max_input_nesting_level;
-            zend_bool in_user_include;
+            long max_input_nesting_level;   //最大的嵌套层数
+            zend_bool in_user_include;  //是否在用户包含空间
 
-            char *user_ini_filename;
-            long user_ini_cache_ttl;
+            char *user_ini_filename;    //  用户的ini文件名
+            long user_ini_cache_ttl;    //  ini缓存过期限制
 
-            char *request_order;
+            char *request_order;    //  优先级比variables_order高，在request变量生成时用到，个人觉得是历史遗留问题
 
-            zend_bool mail_x_header;
+            zend_bool mail_x_header;    //  仅在ext/standard/mail.c文件中使用，
             char *mail_log;
 
             zend_bool in_error_log;
@@ -214,3 +214,4 @@ PG宏是PHP的核心全局变量宏。
 
 上面的字段很大一部分是与php.ini文件中的配置项对应的。
 如此一来，可以预知在PHP内核启动时，加载php.ini时将会将相关配置项赋值给PG宏。
+此时，想到一个问题，PG宏存在的意义是什么？仅仅是为了保存ini文件中的信息吗？既然这是核心全局变量，那如何区分核心呢？这个界限是什么？
