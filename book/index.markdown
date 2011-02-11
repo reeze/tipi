@@ -24,8 +24,8 @@
 	* [第一节 变量的内存表示及弱类型实现][variables-in-memory]
 	* 第二节 变量的作用域及其生命周期(er)
 	* [第三节 数据类型转换:现式及隐式转换][type-cast] (reeze)
-	* 第四接 类型提示(Type Hinting)的实现
-	* 第五节 [PHP中的全局变量][global-var](pan)
+	* 第四接 类型提示(Type Hinting)的实现(pan)
+	* 第五节 [预定义变量和global语句][global-var]
     * 第六节 [PHP中的常量][const-var]
 	* 第七节 小结
 
