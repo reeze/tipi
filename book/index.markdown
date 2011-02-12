@@ -22,7 +22,7 @@
 
 - 第三章 变量及数据类型
 	* [第一节 变量的内存表示及弱类型实现][variables-in-memory]
-	* 第二节 变量的作用域及其生命周期(er)
+	* [第二节 变量的作用域及其生命周期][scope-circle](er)
 	* [第三节 数据类型转换:现式及隐式转换][type-cast] (reeze)
 	* 第四接 类型提示(Type Hinting)的实现
 	* 第五节 [PHP中的全局变量][global-var](pan)
@@ -94,6 +94,7 @@
 [02-summary]: ?p=chapt02/02-04-summary
 
 [global-var]: ?p=chapt03/03-05-global-var
+[scope-circle]: ?p=chapt03/03-02-php-scope-circle
 [type-cast]: ?p=chapt03/03-02-type-cast
 [const-var]: ?p=chapt03/03-06-const-var
 [variables-in-memory]: ?p=chapt03/03-01-var-memory
