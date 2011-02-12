@@ -1,0 +1,986 @@
+<html>
+<head>
+<title>PHP Opcode Documentation</title>
+</head>
+<body>
+<h2> Documentation and sample code for PHP opcodes </h2>
+<p> This is a list of PHP's opcodes with sample PHP code showing the use of each one. The list is not quite complete.</p>
+<table border=1  ><tr><td bgcolor=#CCCCFF> Number </td><td bgcolor=#CCCCFF> Name</td> <td bgcolor=#CCCCFF> Sample code? </td> </tr><tr><td>0</td><td><a href=#NOP>NOP</a></td><td>yes</td></tr><tr><td>1</td><td><a href=#ADD>ADD</a></td><td>yes</td></tr><tr><td>2</td><td><a href=#SUB>SUB</a></td><td>yes</td></tr><tr><td>3</td><td><a href=#MUL>MUL</a></td><td>yes</td></tr><tr><td>4</td><td><a href=#DIV>DIV</a></td><td>yes</td></tr><tr><td>5</td><td><a href=#MOD>MOD</a></td><td>yes</td></tr><tr><td>6</td><td><a href=#SL>SL</a></td><td>yes</td></tr><tr><td>7</td><td><a href=#SR>SR</a></td><td>yes</td></tr><tr><td>8</td><td><a href=#CONCAT>CONCAT</a></td><td>yes</td></tr><tr><td>9</td><td><a href=#BW_OR>BW_OR</a></td><td>yes</td></tr><tr><td>10</td><td><a href=#BW_AND>BW_AND</a></td><td>yes</td></tr><tr><td>11</td><td><a href=#BW_XOR>BW_XOR</a></td><td>yes</td></tr><tr><td>12</td><td><a href=#BW_NOT>BW_NOT</a></td><td>yes</td></tr><tr><td>13</td><td><a href=#BOOL_NOT>BOOL_NOT</a></td><td>yes</td></tr><tr><td>14</td><td><a href=#BOOL_XOR>BOOL_XOR</a></td><td>yes</td></tr><tr><td>15</td><td><a href=#IS_IDENTICAL>IS_IDENTICAL</a></td><td>yes</td></tr><tr><td>16</td><td><a href=#IS_NOT_IDENTICAL>IS_NOT_IDENTICAL</a></td><td>yes</td></tr><tr><td>17</td><td><a href=#IS_EQUAL>IS_EQUAL</a></td><td>yes</td></tr><tr><td>18</td><td><a href=#IS_NOT_EQUAL>IS_NOT_EQUAL</a></td><td>yes</td></tr><tr><td>19</td><td><a href=#IS_SMALLER>IS_SMALLER</a></td><td>yes</td></tr><tr><td>20</td><td><a href=#IS_SMALLER_OR_EQUAL>IS_SMALLER_OR_EQUAL</a></td><td>yes</td></tr><tr><td>21</td><td><a href=#CAST>CAST</a></td><td>yes</td></tr><tr><td>22</td><td><a href=#QM_ASSIGN>QM_ASSIGN</a></td><td>yes</td></tr><tr><td>23</td><td><a href=#ASSIGN_ADD>ASSIGN_ADD</a></td><td>yes</td></tr><tr><td>24</td><td><a href=#ASSIGN_SUB>ASSIGN_SUB</a></td><td>yes</td></tr><tr><td>25</td><td><a href=#ASSIGN_MUL>ASSIGN_MUL</a></td><td>yes</td></tr><tr><td>26</td><td><a href=#ASSIGN_DIV>ASSIGN_DIV</a></td><td>yes</td></tr><tr><td>27</td><td><a href=#ASSIGN_MOD>ASSIGN_MOD</a></td><td>yes</td></tr><tr><td>28</td><td><a href=#ASSIGN_SL>ASSIGN_SL</a></td><td>yes</td></tr><tr><td>29</td><td><a href=#ASSIGN_SR>ASSIGN_SR</a></td><td>yes</td></tr><tr><td>30</td><td><a href=#ASSIGN_CONCAT>ASSIGN_CONCAT</a></td><td>yes</td></tr><tr><td>31</td><td><a href=#ASSIGN_BW_OR>ASSIGN_BW_OR</a></td><td>yes</td></tr><tr><td>32</td><td><a href=#ASSIGN_BW_AND>ASSIGN_BW_AND</a></td><td>yes</td></tr><tr><td>33</td><td><a href=#ASSIGN_BW_XOR>ASSIGN_BW_XOR</a></td><td>yes</td></tr><tr><td>34</td><td><a href=#PRE_INC>PRE_INC</a></td><td>yes</td></tr><tr><td>35</td><td><a href=#PRE_DEC>PRE_DEC</a></td><td>yes</td></tr><tr><td>36</td><td><a href=#POST_INC>POST_INC</a></td><td>yes</td></tr><tr><td>37</td><td><a href=#POST_DEC>POST_DEC</a></td><td>yes</td></tr><tr><td>38</td><td><a href=#ASSIGN>ASSIGN</a></td><td>yes</td></tr><tr><td>39</td><td><a href=#ASSIGN_REF>ASSIGN_REF</a></td><td>yes</td></tr><tr><td>40</td><td><a href=#ECHO>ECHO</a></td><td>yes</td></tr><tr><td>41</td><td><a href=#PRINT>PRINT</a></td><td>yes</td></tr><tr><td>42</td><td><a href=#not documented>not documented</a></td><td>no</td></tr><tr><td>43</td><td><a href=#JMPZ>JMPZ</a></td><td>yes</td></tr><tr><td>44</td><td><a href=#JMPNZ>JMPNZ</a></td><td>yes</td></tr><tr><td>45</td><td><a href=#JMPZNZ>JMPZNZ</a></td><td>yes</td></tr><tr><td>46</td><td><a href=#JMPZ_EX>JMPZ_EX</a></td><td>yes</td></tr><tr><td>47</td><td><a href=#JMPNZ_EX>JMPNZ_EX</a></td><td>yes</td></tr><tr><td>48</td><td><a href=#CASE>CASE</a></td><td>yes</td></tr><tr><td>49</td><td><a href=#SWITCH_FREE>SWITCH_FREE</a></td><td>yes</td></tr><tr><td>50</td><td><a href=#BRK>BRK</a></td><td>yes</td></tr><tr><td>51</td><td><a href=#not documented>not documented</a></td><td>no</td></tr><tr><td>52</td><td><a href=#BOOL>BOOL</a></td><td>yes</td></tr><tr><td>53</td><td><a href=#INIT_STRING>INIT_STRING</a></td><td>yes</td></tr><tr><td>54</td><td><a href=#ADD_CHAR>ADD_CHAR</a></td><td>yes</td></tr><tr><td>55</td><td><a href=#ADD_STRING>ADD_STRING</a></td><td>yes</td></tr><tr><td>56</td><td><a href=#ADD_VAR>ADD_VAR</a></td><td>yes</td></tr><tr><td>57</td><td><a href=#BEGIN_SILENCE>BEGIN_SILENCE</a></td><td>yes</td></tr><tr><td>58</td><td><a href=#END_SILENCE>END_SILENCE</a></td><td>yes</td></tr><tr><td>59</td><td><a href=#INIT_FCALL_BY_NAME>INIT_FCALL_BY_NAME</a></td><td>yes</td></tr><tr><td>60</td><td><a href=#DO_FCALL>DO_FCALL</a></td><td>yes</td></tr><tr><td>61</td><td><a href=#DO_FCALL_BY_NAME>DO_FCALL_BY_NAME</a></td><td>yes</td></tr><tr><td>62</td><td><a href=#RETURN>RETURN</a></td><td>yes</td></tr><tr><td>63</td><td><a href=#RECV>RECV</a></td><td>yes</td></tr><tr><td>64</td><td><a href=#RECV_INIT>RECV_INIT</a></td><td>yes</td></tr><tr><td>65</td><td><a href=#SEND_VAL>SEND_VAL</a></td><td>yes</td></tr><tr><td>66</td><td><a href=#SEND_VAR>SEND_VAR</a></td><td>yes</td></tr><tr><td>67</td><td><a href=#SEND_REF>SEND_REF</a></td><td>yes</td></tr><tr><td>68</td><td><a href=#NEW>NEW</a></td><td>yes</td></tr><tr><td>69</td><td><a href=#not documented>not documented</a></td><td>no</td></tr><tr><td>70</td><td><a href=#FREE>FREE</a></td><td>yes</td></tr><tr><td>71</td><td><a href=#INIT_ARRAY>INIT_ARRAY</a></td><td>yes</td></tr><tr><td>72</td><td><a href=#ADD_ARRAY_ELEMENT>ADD_ARRAY_ELEMENT</a></td><td>yes</td></tr><tr><td>73</td><td><a href=#INCLUDE_OR_EVAL>INCLUDE_OR_EVAL</a></td><td>yes</td></tr><tr><td>74</td><td><a href=#UNSET_VAR>UNSET_VAR</a></td><td>yes</td></tr><tr><td>75</td><td><a href=#UNSET_DIM>UNSET_DIM</a></td><td>yes</td></tr><tr><td>76</td><td><a href=#UNSET_OBJ>UNSET_OBJ</a></td><td>yes</td></tr><tr><td>77</td><td><a href=#FE_RESET>FE_RESET</a></td><td>yes</td></tr><tr><td>78</td><td><a href=#FE_FETCH>FE_FETCH</a></td><td>yes</td></tr><tr><td>79</td><td><a href=#EXIT>EXIT</a></td><td>yes</td></tr><tr><td>80</td><td><a href=#FETCH_R>FETCH_R</a></td><td>yes</td></tr><tr><td>81</td><td><a href=#FETCH_DIM_R>FETCH_DIM_R</a></td><td>yes</td></tr><tr><td>82</td><td><a href=#FETCH_OBJ_R>FETCH_OBJ_R</a></td><td>yes</td></tr><tr><td>83</td><td><a href=#FETCH_W>FETCH_W</a></td><td>yes</td></tr><tr><td>84</td><td><a href=#FETCH_DIM_W>FETCH_DIM_W</a></td><td>yes</td></tr><tr><td>85</td><td><a href=#FETCH_OBJ_W>FETCH_OBJ_W</a></td><td>yes</td></tr><tr><td>86</td><td><a href=#FETCH_RW>FETCH_RW</a></td><td>yes</td></tr><tr><td>87</td><td><a href=#FETCH_DIM_RW>FETCH_DIM_RW</a></td><td>yes</td></tr><tr><td>88</td><td><a href=#FETCH_OBJ_RW>FETCH_OBJ_RW</a></td><td>yes</td></tr><tr><td>89</td><td><a href=#FETCH_IS>FETCH_IS</a></td><td>yes</td></tr><tr><td>90</td><td><a href=#FETCH_DIM_IS>FETCH_DIM_IS</a></td><td>no</td></tr><tr><td>91</td><td><a href=#FETCH_OBJ_IS>FETCH_OBJ_IS</a></td><td>no</td></tr><tr><td>92</td><td><a href=#FETCH_FUNC_ARG>FETCH_FUNC_ARG</a></td><td>yes</td></tr><tr><td>93</td><td><a href=#FETCH_DIM_FUNC_ARG>FETCH_DIM_FUNC_ARG</a></td><td>yes</td></tr><tr><td>94</td><td><a href=#FETCH_OBJ_FUNC_ARG>FETCH_OBJ_FUNC_ARG</a></td><td>yes</td></tr><tr><td>95</td><td><a href=#FETCH_UNSET>FETCH_UNSET</a></td><td>no</td></tr><tr><td>96</td><td><a href=#FETCH_DIM_UNSET>FETCH_DIM_UNSET</a></td><td>no</td></tr><tr><td>97</td><td><a href=#FETCH_OBJ_UNSET>FETCH_OBJ_UNSET</a></td><td>no</td></tr><tr><td>98</td><td><a href=#FETCH_DIM_TMP_VAR>FETCH_DIM_TMP_VAR</a></td><td>yes</td></tr><tr><td>99</td><td><a href=#FETCH_CONSTANT>FETCH_CONSTANT</a></td><td>yes</td></tr><tr><td>100</td><td><a href=#not documented>not documented</a></td><td>no</td></tr><tr><td>101</td><td><a href=#EXT_STMT>EXT_STMT</a></td><td>no</td></tr><tr><td>102</td><td><a href=#EXT_FCALL_BEGIN>EXT_FCALL_BEGIN</a></td><td>no</td></tr><tr><td>103</td><td><a href=#EXT_FCALL_END>EXT_FCALL_END</a></td><td>no</td></tr><tr><td>104</td><td><a href=#EXT_NOP>EXT_NOP</a></td><td>no</td></tr><tr><td>105</td><td><a href=#TICKS>TICKS</a></td><td>yes</td></tr><tr><td>106</td><td><a href=#SEND_VAR_NO_REF>SEND_VAR_NO_REF</a></td><td>no</td></tr><tr><td>107</td><td><a href=#CATCH>CATCH</a></td><td>yes</td></tr><tr><td>108</td><td><a href=#THROW>THROW</a></td><td>yes</td></tr><tr><td>109</td><td><a href=#FETCH_CLASS>FETCH_CLASS</a></td><td>yes</td></tr><tr><td>110</td><td><a href=#CLONE>CLONE</a></td><td>yes</td></tr><tr><td>111</td><td><a href=#not documented>not documented</a></td><td>no</td></tr><tr><td>112</td><td><a href=#INIT_METHOD_CALL>INIT_METHOD_CALL</a></td><td>yes</td></tr><tr><td>113</td><td><a href=#INIT_STATIC_METHOD_CALL>INIT_STATIC_METHOD_CALL</a></td><td>yes</td></tr><tr><td>114</td><td><a href=#ISSET_ISEMPTY_VAR>ISSET_ISEMPTY_VAR</a></td><td>yes</td></tr><tr><td>115</td><td><a href=#ISSET_ISEMPTY_DIM_OBJ>ISSET_ISEMPTY_DIM_OBJ</a></td><td>yes</td></tr><tr><td>116</td><td><a href=#not documented>not documented</a></td><td>no</td></tr><tr><td>117</td><td><a href=#not documented>not documented</a></td><td>no</td></tr><tr><td>118</td><td><a href=#not documented>not documented</a></td><td>no</td></tr><tr><td>119</td><td><a href=#not documented>not documented</a></td><td>no</td></tr><tr><td>120</td><td><a href=#not documented>not documented</a></td><td>no</td></tr><tr><td>121</td><td><a href=#not documented>not documented</a></td><td>no</td></tr><tr><td>122</td><td><a href=#not documented>not documented</a></td><td>no</td></tr><tr><td>123</td><td><a href=#not documented>not documented</a></td><td>no</td></tr><tr><td>124</td><td><a href=#not documented>not documented</a></td><td>no</td></tr><tr><td>125</td><td><a href=#not documented>not documented</a></td><td>no</td></tr><tr><td>126</td><td><a href=#not documented>not documented</a></td><td>no</td></tr><tr><td>127</td><td><a href=#not documented>not documented</a></td><td>no</td></tr><tr><td>128</td><td><a href=#not documented>not documented</a></td><td>no</td></tr><tr><td>129</td><td><a href=#not documented>not documented</a></td><td>no</td></tr><tr><td>130</td><td><a href=#not documented>not documented</a></td><td>no</td></tr><tr><td>131</td><td><a href=#not documented>not documented</a></td><td>no</td></tr><tr><td>132</td><td><a href=#PRE_INC_OBJ>PRE_INC_OBJ</a></td><td>yes</td></tr><tr><td>133</td><td><a href=#PRE_DEC_OBJ>PRE_DEC_OBJ</a></td><td>yes</td></tr><tr><td>134</td><td><a href=#POST_INC_OBJ>POST_INC_OBJ</a></td><td>yes</td></tr><tr><td>135</td><td><a href=#POST_DEC_OBJ>POST_DEC_OBJ</a></td><td>yes</td></tr><tr><td>136</td><td><a href=#ASSIGN_OBJ>ASSIGN_OBJ</a></td><td>yes</td></tr><tr><td>137</td><td><a href=#not documented>not documented</a></td><td>no</td></tr><tr><td>138</td><td><a href=#INSTANCEOF>INSTANCEOF</a></td><td>yes</td></tr><tr><td>139</td><td><a href=#DECLARE_CLASS>DECLARE_CLASS</a></td><td>yes</td></tr><tr><td>140</td><td><a href=#DECLARE_INHERITED_CLASS>DECLARE_INHERITED_CLASS</a></td><td>yes</td></tr><tr><td>141</td><td><a href=#DECLARE_FUNCTION>DECLARE_FUNCTION</a></td><td>yes</td></tr><tr><td>142</td><td><a href=#RAISE_ABSTRACT_ERROR>RAISE_ABSTRACT_ERROR</a></td><td>yes</td></tr><tr><td>143</td><td><a href=#not documented>not documented</a></td><td>no</td></tr><tr><td>144</td><td><a href=#ADD_INTERFACE>ADD_INTERFACE</a></td><td>no</td></tr><tr><td>145</td><td><a href=#not documented>not documented</a></td><td>no</td></tr><tr><td>146</td><td><a href=#VERIFY_ABSTRACT_CLASS>VERIFY_ABSTRACT_CLASS</a></td><td>no</td></tr><tr><td>147</td><td><a href=#ASSIGN_DIM>ASSIGN_DIM</a></td><td>yes</td></tr><tr><td>148</td><td><a href=#ISSET_ISEMPTY_PROP_OBJ>ISSET_ISEMPTY_PROP_OBJ</a></td><td>yes</td></tr><tr><td>149</td><td><a href=#HANDLE_EXCEPTION>HANDLE_EXCEPTION</a></td><td>yes</td></tr><tr><td>150</td><td><a href=#USER_OPCODE>USER_OPCODE</a></td><td>no</td></tr></table><h2>OPCODE :<a name=ADD>ADD</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=7 cols="130"><?php
+/*
+ * Adds "value1" to "value2" and stores the result into "result".
+ * opcode number: 1
+ */
+echo 1 + 2;
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  none </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> ADD</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td> 1,2</td></tr><tr><td > &nbsp; </td><td> 1</td><td> ECHO</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td></tr><tr><td> 7</td><td> 2</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=ADD_ARRAY_ELEMENT>ADD_ARRAY_ELEMENT</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=8 cols="130"><?php
+/*
+ * Add elem-value as an element to array-value
+ * opcode number: 72
+ */
+$a = array(1,2,3);
+print_r($a);
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  !0=$a </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> INIT_ARRAY</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td> 1</td></tr><tr><td > &nbsp; </td><td> 1</td><td> ADD_ARRAY_ELEMENT</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td> 2</td></tr><tr><td > &nbsp; </td><td> 2</td><td> ADD_ARRAY_ELEMENT</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td> 3</td></tr><tr><td > &nbsp; </td><td> 3</td><td> ASSIGN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !0,~0</td></tr><tr><td> 7</td><td> 4</td><td> SEND_VAR</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !0</td></tr><tr><td > &nbsp; </td><td> 5</td><td> DO_FCALL</td><td > &nbsp; </td><td> 1</td><td > &nbsp; </td><td> 'print_r'</td></tr><tr><td> 8</td><td> 6</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=ADD_CHAR>ADD_CHAR</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=7 cols="130"><?php
+/*
+ * add character value2 to string value1 and store in result
+ * opcode number: 54
+ */
+echo "hello\ world";
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  none </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> ECHO</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 'hello%5C+world'</td></tr><tr><td> 7</td><td> 1</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=ADD_INTERFACE>ADD_INTERFACE</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=6 cols="130"><?php 
+/*
+ * 
+ * opcode number: 144
+ * No sample PHP yet */
+?></textarea></br><h3> PHP opcodes </h3><h2>OPCODE :<a name=ADD_STRING>ADD_STRING</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=7 cols="130"><?php
+/*
+ * add string value2 to string value2 and store in result
+ * opcode number: 55
+ */
+echo "hello$a world";
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  !0=$a </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> ADD_STRING</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td> 'hello'</td></tr><tr><td > &nbsp; </td><td> 1</td><td> ADD_VAR</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td> ~0,!0</td></tr><tr><td > &nbsp; </td><td> 2</td><td> ADD_STRING</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td> ~0,'+world'</td></tr><tr><td > &nbsp; </td><td> 3</td><td> ECHO</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td></tr><tr><td> 7</td><td> 4</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=ADD_VAR>ADD_VAR</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=7 cols="130"><?php
+/*
+ * add contents of variable in value2 to string value1 and store in result
+ * opcode number: 56
+ */
+echo "hello$a world";
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  !0=$a </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> ADD_STRING</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td> 'hello'</td></tr><tr><td > &nbsp; </td><td> 1</td><td> ADD_VAR</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td> ~0,!0</td></tr><tr><td > &nbsp; </td><td> 2</td><td> ADD_STRING</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td> ~0,'+world'</td></tr><tr><td > &nbsp; </td><td> 3</td><td> ECHO</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td></tr><tr><td> 7</td><td> 4</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=ASSIGN>ASSIGN</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=9 cols="130"><?php
+/*
+ * assigns value1 to result
+ * opcode number: 38
+ */
+$a=1;
+$a='a';
+$a=new A();
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  !0=$a </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> ASSIGN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !0,1</td></tr><tr><td> 7</td><td> 1</td><td> ASSIGN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !0,'a'</td></tr><tr><td> 8</td><td> 2</td><td> ZEND_FETCH_CLASS</td><td > &nbsp; </td><td > &nbsp; </td><td> :2</td><td> 'A'</td></tr><tr><td > &nbsp; </td><td> 3</td><td> NEW</td><td > &nbsp; </td><td > &nbsp; </td><td> $3</td><td> :2</td></tr><tr><td > &nbsp; </td><td> 4</td><td> DO_FCALL_BY_NAME</td><td > &nbsp; </td><td> 0</td><td > &nbsp; </td><td > &nbsp; </td></tr><tr><td > &nbsp; </td><td> 5</td><td> ASSIGN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !0,$3</td></tr><tr><td> 9</td><td> 6</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=ASSIGN_ADD>ASSIGN_ADD</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=7 cols="130"><?php
+/*
+ * Add value1 to value2 and store in variable indicated by value1
+ * opcode number: 23
+ */
+$a+=3;
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  !0=$a </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> ASSIGN_ADD</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !0,3</td></tr><tr><td> 7</td><td> 1</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=ASSIGN_BW_AND>ASSIGN_BW_AND</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=7 cols="130"><?php
+/*
+ * Performs binary AND on result and value1 and stores in variable indicated by result.
+ * opcode number: 32
+ */
+$a &= 64;
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  !0=$a </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> ASSIGN_BW_AND</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !0,64</td></tr><tr><td> 7</td><td> 1</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=ASSIGN_BW_OR>ASSIGN_BW_OR</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=7 cols="130"><?php
+/*
+ * Performs binary OR on result and value1 and stores in variable indicated by result.
+ * opcode number: 31
+ */
+$a |= 64;
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  !0=$a </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> ASSIGN_BW_OR</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !0,64</td></tr><tr><td> 7</td><td> 1</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=ASSIGN_BW_XOR>ASSIGN_BW_XOR</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=7 cols="130"><?php
+/*
+ * Performs binary XOR on result and value1and stores in variable indicated by result.
+ * opcode number: 33
+ */
+$a ^= 64;
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  !0=$a </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> ASSIGN_BW_XOR</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !0,64</td></tr><tr><td> 7</td><td> 1</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=ASSIGN_CONCAT>ASSIGN_CONCAT</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=7 cols="130"><?php
+/*
+ * Concats string values result and value1 and store in variable indicated by result
+ * opcode number: 30
+ */
+$a .= 'z';
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  !0=$a </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> ASSIGN_CONCAT</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !0,'z'</td></tr><tr><td> 7</td><td> 1</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=ASSIGN_DIM>ASSIGN_DIM</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=8 cols="130"><?php
+/*
+ * 
+ * opcode number: 147
+ */
+$b = 1;
+$a[1][2] = $b;
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  !0=$b,  !1=$a </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> ASSIGN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !0,1</td></tr><tr><td> 7</td><td> 1</td><td> FETCH_DIM_W</td><td > &nbsp; </td><td > &nbsp; </td><td> $1</td><td> !1,1</td></tr><tr><td > &nbsp; </td><td> 2</td><td> ZEND_ASSIGN_DIM</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> $1,2</td></tr><tr><td > &nbsp; </td><td> 3</td><td> ZEND_OP_DATA</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !0,$3</td></tr><tr><td> 8</td><td> 4</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=ASSIGN_DIV>ASSIGN_DIV</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=7 cols="130"><?php
+/*
+ * Divide result by value1and store in variable indicated by result.
+ * opcode number: 26
+ */
+$a/=3;
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  !0=$a </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> ASSIGN_DIV</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !0,3</td></tr><tr><td> 7</td><td> 1</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=ASSIGN_MOD>ASSIGN_MOD</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=7 cols="130"><?php
+/*
+ * Perform result mod value1 and store in variable indicated by result
+ * opcode number: 27
+ */
+$a %= 3;
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  !0=$a </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> ASSIGN_MOD</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !0,3</td></tr><tr><td> 7</td><td> 1</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=ASSIGN_MUL>ASSIGN_MUL</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=7 cols="130"><?php
+/*
+ * Multiply result by value1 and store in variable indicated by result
+ * opcode number: 25
+ */
+$a*=3;
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  !0=$a </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> ASSIGN_MUL</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !0,3</td></tr><tr><td> 7</td><td> 1</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=ASSIGN_OBJ>ASSIGN_OBJ</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=7 cols="130"><?php
+/*
+ * 
+ * opcode number: 136
+ */
+$obj->a = $otherobj;
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  !0=$obj,  !1=$otherobj </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> ZEND_ASSIGN_OBJ</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !0,'a'</td></tr><tr><td > &nbsp; </td><td> 1</td><td> ZEND_OP_DATA</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !1</td></tr><tr><td> 7</td><td> 2</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=ASSIGN_REF>ASSIGN_REF</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=7 cols="130"><?php
+/*
+ * indicates that variable indicated by value1 is to be treated in the global scope for the remainder of the current scope.
+ * opcode number: 39
+ */
+global $a;
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  !0=$a </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> FETCH_W</td><td> globallock</td><td > &nbsp; </td><td> $0</td><td> 'a'</td></tr><tr><td > &nbsp; </td><td> 1</td><td> ASSIGN_REF</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !0,$0</td></tr><tr><td> 7</td><td> 2</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=ASSIGN_SL>ASSIGN_SL</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=7 cols="130"><?php
+/*
+ * Shift result by value1 bits to left and store in variable indicated by result
+ * opcode number: 28
+ */
+$a <<= 3;
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  !0=$a </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> ASSIGN_SL</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !0,3</td></tr><tr><td> 7</td><td> 1</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=ASSIGN_SR>ASSIGN_SR</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=7 cols="130"><?php
+/*
+ * Shift result by value1 bits to right and store in variable indicated by result
+ * opcode number: 29
+ */
+$a >>= 3;
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  !0=$a </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> ASSIGN_SR</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !0,3</td></tr><tr><td> 7</td><td> 1</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=ASSIGN_SUB>ASSIGN_SUB</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=7 cols="130"><?php
+/*
+ * Subtract value1 from value2 and store in variable indicated by value1
+ * opcode number: 24
+ */
+$a-=3;
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  !0=$a </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> ASSIGN_SUB</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !0,3</td></tr><tr><td> 7</td><td> 1</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=BEGIN_SILENCE>BEGIN_SILENCE</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=9 cols="130"><?php
+/*
+ * prepare to perform function call without displaying error messages
+ * opcode number: 57
+ */
+/* Intentional file error */
+$my_file = @file ('non_existent_file') or
+   die ("error:'$php_errormsg'");
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  !0=$my_file,  !1=$php_errormsg </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 7</td><td> 0</td><td> BEGIN_SILENCE</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td > &nbsp; </td></tr><tr><td > &nbsp; </td><td> 1</td><td> SEND_VAL</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 'non_existent_file'</td></tr><tr><td > &nbsp; </td><td> 2</td><td> DO_FCALL</td><td > &nbsp; </td><td> 1</td><td > &nbsp; </td><td> 'file'</td></tr><tr><td > &nbsp; </td><td> 3</td><td> END_SILENCE</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td></tr><tr><td > &nbsp; </td><td> 4</td><td> ASSIGN</td><td > &nbsp; </td><td > &nbsp; </td><td> $2</td><td> !0,$1</td></tr><tr><td > &nbsp; </td><td> 5</td><td> JMPNZ_EX</td><td > &nbsp; </td><td > &nbsp; </td><td> ~3</td><td> $2,->11</td></tr><tr><td> 8</td><td> 6</td><td> ADD_STRING</td><td > &nbsp; </td><td > &nbsp; </td><td> ~4</td><td> 'error%3A%27'</td></tr><tr><td > &nbsp; </td><td> 7</td><td> ADD_VAR</td><td > &nbsp; </td><td > &nbsp; </td><td> ~4</td><td> ~4,!1</td></tr><tr><td > &nbsp; </td><td> 8</td><td> ADD_CHAR</td><td > &nbsp; </td><td > &nbsp; </td><td> ~4</td><td> ~4,39</td></tr><tr><td > &nbsp; </td><td> 9</td><td> EXIT</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ~4</td></tr><tr><td > &nbsp; </td><td> 10</td><td> BOOL</td><td > &nbsp; </td><td > &nbsp; </td><td> ~3</td><td> true</td></tr><tr><td > &nbsp; </td><td> 11</td><td> FREE</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ~3</td></tr><tr><td> 9</td><td> 12</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=BOOL>BOOL</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=9 cols="130"><?php
+/*
+ * convert value1 to boolean and store in result??????????
+ * opcode number: 52
+ */
+if (1 || 2 || 1) echo "foo";
+//$a = true;
+//if($a) echo "foo";
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  none </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> JMPNZ_EX</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td> 1,->2</td></tr><tr><td > &nbsp; </td><td> 1</td><td> BOOL</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td> 2</td></tr><tr><td > &nbsp; </td><td> 2</td><td> JMPNZ_EX</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td> ~0,->4</td></tr><tr><td > &nbsp; </td><td> 3</td><td> BOOL</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td> 1</td></tr><tr><td > &nbsp; </td><td> 4</td><td> JMPZ</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ~0,->7</td></tr><tr><td > &nbsp; </td><td> 5</td><td> ECHO</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 'foo'</td></tr><tr><td > &nbsp; </td><td> 6</td><td> JMP</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ->7</td></tr><tr><td> 9</td><td> 7</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=BOOL_NOT>BOOL_NOT</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=7 cols="130"><?php
+/*
+ * Boolean (logical) not of "value"
+ * opcode number: 13
+ */
+echo !1;
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  none </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> BOOL_NOT</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td> 1</td></tr><tr><td > &nbsp; </td><td> 1</td><td> ECHO</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td></tr><tr><td> 7</td><td> 2</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=BOOL_XOR>BOOL_XOR</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=7 cols="130"><?php
+/*
+ * Boolean (logical) xor of value1
+ * opcode number: 14
+ */
+echo 1 xor 2;
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  none </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> BOOL_XOR</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td> 1,2</td></tr><tr><td > &nbsp; </td><td> 1</td><td> ECHO</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td></tr><tr><td> 7</td><td> 2</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=BRK>BRK</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=10 cols="130"><?php
+/*
+ * ???  End of a case block exists the current switch block.  Followed by JMP?
+ * opcode number: 50
+ */
+$x = 0;
+while(1) {
+	if($x == 0) break;
+}
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  !0=$x </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> ASSIGN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !0,0</td></tr><tr><td> 7</td><td> 1</td><td> JMPZ</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1,->7</td></tr><tr><td> 8</td><td> 2</td><td> IS_EQUAL</td><td > &nbsp; </td><td > &nbsp; </td><td> ~1</td><td> !0,0</td></tr><tr><td > &nbsp; </td><td> 3</td><td> JMPZ</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ~1,->6</td></tr><tr><td > &nbsp; </td><td> 4</td><td> BRK</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr><tr><td > &nbsp; </td><td> 5</td><td> JMP</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ->6</td></tr><tr><td> 9</td><td> 6</td><td> JMP</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ->1</td></tr><tr><td> 10</td><td> 7</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=BW_AND>BW_AND</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=7 cols="130"><?php
+/*
+ * Bit-wise and of value1 and value2
+ * opcode number: 10
+ */
+echo 1&2;
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  none </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> BW_AND</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td> 1,2</td></tr><tr><td > &nbsp; </td><td> 1</td><td> ECHO</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td></tr><tr><td> 7</td><td> 2</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=BW_NOT>BW_NOT</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=7 cols="130"><?php
+/*
+ * Bit-wise not of "value"
+ * opcode number: 12
+ */
+echo ~15;
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  none </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> BW_NOT</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td> 15</td></tr><tr><td > &nbsp; </td><td> 1</td><td> ECHO</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td></tr><tr><td> 7</td><td> 2</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=BW_OR>BW_OR</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=7 cols="130"><?php
+/*
+ * Bit-wise or of value1 and value2
+ * opcode number: 9
+ */
+echo 1|2;
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  none </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> BW_OR</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td> 1,2</td></tr><tr><td > &nbsp; </td><td> 1</td><td> ECHO</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td></tr><tr><td> 7</td><td> 2</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=BW_XOR>BW_XOR</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=7 cols="130"><?php
+/*
+ * Bit-wise xor of value1 and value2
+ * opcode number: 11
+ */
+echo 1^2;
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  none </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> BW_XOR</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td> 1,2</td></tr><tr><td > &nbsp; </td><td> 1</td><td> ECHO</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td></tr><tr><td> 7</td><td> 2</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=CASE>CASE</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=18 cols="130"><?php
+/*
+ * Set result to true if value1 equals value2.  The value2 must be a constant value?
+ * opcode number: 48
+ */
+$i=0;
+switch ($i) {
+   case 0:
+		 echo "i=0";
+		 break;
+   case 1:
+		 echo "i=1";
+		 break;
+   case 2:
+		 echo "i=2";
+		 break;
+}
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  !0=$i </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> ASSIGN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !0,0</td></tr><tr><td> 8</td><td> 1</td><td> CASE</td><td > &nbsp; </td><td > &nbsp; </td><td> ~1</td><td> !0,0</td></tr><tr><td > &nbsp; </td><td> 2</td><td> JMPZ</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ~1,->6</td></tr><tr><td> 9</td><td> 3</td><td> ECHO</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 'i%3D0'</td></tr><tr><td> 10</td><td> 4</td><td> BRK</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr><tr><td> 11</td><td> 5</td><td> JMP</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ->8</td></tr><tr><td > &nbsp; </td><td> 6</td><td> CASE</td><td > &nbsp; </td><td > &nbsp; </td><td> ~1</td><td> !0,1</td></tr><tr><td > &nbsp; </td><td> 7</td><td> JMPZ</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ~1,->11</td></tr><tr><td> 12</td><td> 8</td><td> ECHO</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 'i%3D1'</td></tr><tr><td> 13</td><td> 9</td><td> BRK</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr><tr><td> 14</td><td> 10</td><td> JMP</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ->13</td></tr><tr><td > &nbsp; </td><td> 11</td><td> CASE</td><td > &nbsp; </td><td > &nbsp; </td><td> ~1</td><td> !0,2</td></tr><tr><td > &nbsp; </td><td> 12</td><td> JMPZ</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ~1,->16</td></tr><tr><td> 15</td><td> 13</td><td> ECHO</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 'i%3D2'</td></tr><tr><td> 16</td><td> 14</td><td> BRK</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr><tr><td> 17</td><td> 15</td><td> JMP</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ->16</td></tr><tr><td> 18</td><td> 16</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=CAST>CAST</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=7 cols="130"><?php
+/*
+ * casts value1 as type value2 (?? Not certain about arguments ??)
+ * opcode number: 21
+ */
+echo (int)1;
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  none </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> CAST</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td> 1</td></tr><tr><td > &nbsp; </td><td> 1</td><td> ECHO</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td></tr><tr><td> 7</td><td> 2</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=CATCH>CATCH</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=19 cols="130"><?php
+/*
+ * 
+ * opcode number: 107
+ */
+try {
+    $error = 'Always throw this error';
+    throw new Exception($error);
+
+    // Code following an exception is not executed.
+    echo 'Never executed';
+
+} catch (Exception $e) {
+    echo 'Caught exception: ',  $e->getMessage(), "\n";
+}
+
+// Continue execution
+echo 'Hello World';
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  !0=$error,  !1=$e </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 7</td><td> 0</td><td> ASSIGN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !0,'Always+throw+this+error'</td></tr><tr><td> 8</td><td> 1</td><td> ZEND_FETCH_CLASS</td><td > &nbsp; </td><td > &nbsp; </td><td> :1</td><td> 'Exception'</td></tr><tr><td > &nbsp; </td><td> 2</td><td> NEW</td><td > &nbsp; </td><td > &nbsp; </td><td> $2</td><td> :1</td></tr><tr><td > &nbsp; </td><td> 3</td><td> SEND_VAR</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !0</td></tr><tr><td > &nbsp; </td><td> 4</td><td> DO_FCALL_BY_NAME</td><td > &nbsp; </td><td> 1</td><td > &nbsp; </td><td > &nbsp; </td></tr><tr><td > &nbsp; </td><td> 5</td><td> ZEND_THROW</td><td > &nbsp; </td><td> 0</td><td > &nbsp; </td><td> $2</td></tr><tr><td> 11</td><td> 6</td><td> ECHO</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 'Never+executed'</td></tr><tr><td> 13</td><td> 7</td><td> JMP</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ->15</td></tr><tr><td > &nbsp; </td><td> 8</td><td> ZEND_FETCH_CLASS</td><td > &nbsp; </td><td > &nbsp; </td><td> :4</td><td> 'Exception'</td></tr><tr><td > &nbsp; </td><td> 9</td><td> ZEND_CATCH</td><td > &nbsp; </td><td> 15</td><td > &nbsp; </td><td> $4,!1</td></tr><tr><td> 14</td><td> 10</td><td> ECHO</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 'Caught+exception%3A+'</td></tr><tr><td > &nbsp; </td><td> 11</td><td> ZEND_INIT_METHOD_CALL</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !1,'getMessage'</td></tr><tr><td > &nbsp; </td><td> 12</td><td> DO_FCALL_BY_NAME</td><td > &nbsp; </td><td> 0</td><td > &nbsp; </td><td > &nbsp; </td></tr><tr><td > &nbsp; </td><td> 13</td><td> ECHO</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> $6</td></tr><tr><td > &nbsp; </td><td> 14</td><td> ECHO</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> '%0A'</td></tr><tr><td> 18</td><td> 15</td><td> ECHO</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 'Hello+World'</td></tr><tr><td> 19</td><td> 16</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=CLONE>CLONE</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=8 cols="130"><?php
+/*
+ * 
+ * opcode number: 110
+ */
+$obj = new A();
+$copy = clone $obj;
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  !0=$obj,  !1=$copy </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> ZEND_FETCH_CLASS</td><td > &nbsp; </td><td > &nbsp; </td><td> :0</td><td> 'A'</td></tr><tr><td > &nbsp; </td><td> 1</td><td> NEW</td><td > &nbsp; </td><td > &nbsp; </td><td> $1</td><td> :0</td></tr><tr><td > &nbsp; </td><td> 2</td><td> DO_FCALL_BY_NAME</td><td > &nbsp; </td><td> 0</td><td > &nbsp; </td><td > &nbsp; </td></tr><tr><td > &nbsp; </td><td> 3</td><td> ASSIGN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !0,$1</td></tr><tr><td> 7</td><td> 4</td><td> ZEND_CLONE</td><td > &nbsp; </td><td > &nbsp; </td><td> $4</td><td> !0</td></tr><tr><td > &nbsp; </td><td> 5</td><td> ASSIGN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !1,$4</td></tr><tr><td> 8</td><td> 6</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=CONCAT>CONCAT</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=7 cols="130"><?php
+/*
+ * Concats string values string1 and string2
+ * opcode number: 8
+ */
+echo "hello" . "world";
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  none </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> CONCAT</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td> 'hello','world'</td></tr><tr><td > &nbsp; </td><td> 1</td><td> ECHO</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td></tr><tr><td> 7</td><td> 2</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=DECLARE_CLASS>DECLARE_CLASS</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=11 cols="130"><?php
+/*
+ * Declare a class with the name of class-name as the implementation specified by ID.
+ * opcode number: 139
+ */
+class A {
+	function methodA(){
+		echo "hello world";
+	}
+}
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  none </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> NOP</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td></tr><tr><td> 11</td><td> 1</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br>Function name: <b>methodA</b></br>Compiled variables:  none </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 8</td><td> 0</td><td> ECHO</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 'hello+world'</td></tr><tr><td> 9</td><td> 1</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> null</td></tr></table></br><h2>OPCODE :<a name=DECLARE_FUNCTION>DECLARE_FUNCTION</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=10 cols="130"><?php
+/*
+ * 
+ * opcode number: 141
+ */
+class A{
+ function funcA(){
+ }
+}
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  none </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> NOP</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td></tr><tr><td> 10</td><td> 1</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br>Function name: <b>funcA</b></br>Compiled variables:  none </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 8</td><td> 0</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> null</td></tr></table></br><h2>OPCODE :<a name=DECLARE_INHERITED_CLASS>DECLARE_INHERITED_CLASS</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=20 cols="130"><?php
+/*
+ * 
+ * opcode number: 140
+ */
+ if($b){
+ class Foo {
+  public static $my_static = 'foo';
+  public function staticValue() {
+	return self::$my_static;
+  }
+ }
+
+ class Bar extends Foo {
+  public function fooStatic() {
+	 echo parent::$my_static;
+  }
+ }
+}
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  !0=$b </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> JMPZ</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !0,->5</td></tr><tr><td> 7</td><td> 1</td><td> ZEND_DECLARE_CLASS</td><td > &nbsp; </td><td > &nbsp; </td><td> $0</td><td> '%00foo%2Fmnt%2Fworkspace%2Fws_phpscripts%2FPHPopcodes%2Fphpsamples%2FDECLARE_INHERITED_CLASS.php0xb7be503b','foo'</td></tr><tr><td> 14</td><td> 2</td><td> ZEND_FETCH_CLASS</td><td > &nbsp; </td><td > &nbsp; </td><td> :1</td><td> 'Foo'</td></tr><tr><td > &nbsp; </td><td> 3</td><td> ZEND_DECLARE_INHERITED_CLASS</td><td > &nbsp; </td><td > &nbsp; </td><td> $2</td><td> '%00bar%2Fmnt%2Fworkspace%2Fws_phpscripts%2FPHPopcodes%2Fphpsamples%2FDECLARE_INHERITED_CLASS.php0xb7be50bc','bar'</td></tr><tr><td> 19</td><td> 4</td><td> JMP</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ->5</td></tr><tr><td> 20</td><td> 5</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br>Function name: <b>staticValue</b></br>Compiled variables:  !0=$my_static </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 10</td><td> 0</td><td> ZEND_FETCH_CLASS</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td></tr><tr><td > &nbsp; </td><td> 1</td><td> FETCH_R</td><td> staticmember</td><td > &nbsp; </td><td> $1</td><td> 'my_static'</td></tr><tr><td > &nbsp; </td><td> 2</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> $1</td></tr><tr><td> 11</td><td> 3</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> null</td></tr></table></br>Function name: <b>fooStatic</b></br>Compiled variables:  !0=$my_static </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 16</td><td> 0</td><td> ZEND_FETCH_CLASS</td><td > &nbsp; </td><td > &nbsp; </td><td> :0</td><td > &nbsp; </td></tr><tr><td > &nbsp; </td><td> 1</td><td> FETCH_R</td><td> staticmember</td><td > &nbsp; </td><td> $1</td><td> 'my_static'</td></tr><tr><td > &nbsp; </td><td> 2</td><td> ECHO</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> $1</td></tr><tr><td> 17</td><td> 3</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> null</td></tr></table></br><h2>OPCODE :<a name=DIV>DIV</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=7 cols="130"><?php
+/*
+ * Divides "value1" by "value2" and stores the result into "result".
+ * opcode number: 4
+ */
+echo 6/3;
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  none </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> DIV</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td> 6,3</td></tr><tr><td > &nbsp; </td><td> 1</td><td> ECHO</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td></tr><tr><td> 7</td><td> 2</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=DO_FCALL>DO_FCALL</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=7 cols="130"><?php
+/*
+ * Call a function.  Following multiple SEND_VAL, SEND_VAR or SEND_REF.
+ * opcode number: 60
+ */
+$a = phpinfo();
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  !0=$a </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> DO_FCALL</td><td > &nbsp; </td><td> 0</td><td > &nbsp; </td><td> 'phpinfo'</td></tr><tr><td > &nbsp; </td><td> 1</td><td> ASSIGN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !0,$0</td></tr><tr><td> 7</td><td> 2</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=DO_FCALL_BY_NAME>DO_FCALL_BY_NAME</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=8 cols="130"><?php
+/*
+ * Call a function by name.  Following INIT_FCALL_BY_NAME and multiple SEND_VAL, SEND_VAR or SEND_REF.
+ * opcode number: 61
+ */
+$x = 'phpinfo';
+$a = $x();
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  !0=$x,  !1=$a </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> ASSIGN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !0,'phpinfo'</td></tr><tr><td> 7</td><td> 1</td><td> INIT_FCALL_BY_NAME</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !0</td></tr><tr><td > &nbsp; </td><td> 2</td><td> DO_FCALL_BY_NAME</td><td > &nbsp; </td><td> 0</td><td > &nbsp; </td><td > &nbsp; </td></tr><tr><td > &nbsp; </td><td> 3</td><td> ASSIGN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !1,$1</td></tr><tr><td> 8</td><td> 4</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=ECHO>ECHO</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=7 cols="130"><?php
+/*
+ * Dump text
+ * opcode number: 40
+ */
+echo "hello world";
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  none </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> ECHO</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 'hello+world'</td></tr><tr><td> 7</td><td> 1</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=END_SILENCE>END_SILENCE</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=8 cols="130"><?php
+/*
+ * no longer surpress error messages
+ * opcode number: 58
+ */
+$my_file = @file ('non_existent_file') or
+   die ("error:'$php_errormsg'");
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  !0=$my_file,  !1=$php_errormsg </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> BEGIN_SILENCE</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td > &nbsp; </td></tr><tr><td > &nbsp; </td><td> 1</td><td> SEND_VAL</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 'non_existent_file'</td></tr><tr><td > &nbsp; </td><td> 2</td><td> DO_FCALL</td><td > &nbsp; </td><td> 1</td><td > &nbsp; </td><td> 'file'</td></tr><tr><td > &nbsp; </td><td> 3</td><td> END_SILENCE</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td></tr><tr><td > &nbsp; </td><td> 4</td><td> ASSIGN</td><td > &nbsp; </td><td > &nbsp; </td><td> $2</td><td> !0,$1</td></tr><tr><td > &nbsp; </td><td> 5</td><td> JMPNZ_EX</td><td > &nbsp; </td><td > &nbsp; </td><td> ~3</td><td> $2,->11</td></tr><tr><td> 7</td><td> 6</td><td> ADD_STRING</td><td > &nbsp; </td><td > &nbsp; </td><td> ~4</td><td> 'error%3A%27'</td></tr><tr><td > &nbsp; </td><td> 7</td><td> ADD_VAR</td><td > &nbsp; </td><td > &nbsp; </td><td> ~4</td><td> ~4,!1</td></tr><tr><td > &nbsp; </td><td> 8</td><td> ADD_CHAR</td><td > &nbsp; </td><td > &nbsp; </td><td> ~4</td><td> ~4,39</td></tr><tr><td > &nbsp; </td><td> 9</td><td> EXIT</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ~4</td></tr><tr><td > &nbsp; </td><td> 10</td><td> BOOL</td><td > &nbsp; </td><td > &nbsp; </td><td> ~3</td><td> true</td></tr><tr><td > &nbsp; </td><td> 11</td><td> FREE</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ~3</td></tr><tr><td> 8</td><td> 12</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=EXIT>EXIT</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=7 cols="130"><?php
+/*
+ * Exit running after dumping "message".
+ * opcode number: 79
+ */
+die("foobar");
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  none </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> EXIT</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 'foobar'</td></tr><tr><td> 7</td><td> 1</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=EXT_FCALL_BEGIN>EXT_FCALL_BEGIN</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=6 cols="130"><?php 
+/*
+ * 
+ * opcode number: 102
+ * No sample PHP yet */
+?></textarea></br><h3> PHP opcodes </h3><h2>OPCODE :<a name=EXT_FCALL_END>EXT_FCALL_END</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=6 cols="130"><?php 
+/*
+ * 
+ * opcode number: 103
+ * No sample PHP yet */
+?></textarea></br><h3> PHP opcodes </h3><h2>OPCODE :<a name=EXT_NOP>EXT_NOP</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=6 cols="130"><?php 
+/*
+ * 
+ * opcode number: 104
+ * No sample PHP yet */
+?></textarea></br><h3> PHP opcodes </h3><h2>OPCODE :<a name=EXT_STMT>EXT_STMT</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=6 cols="130"><?php 
+/*
+ * 
+ * opcode number: 101
+ * No sample PHP yet */
+?></textarea></br><h3> PHP opcodes </h3><h2>OPCODE :<a name=FETCH_CLASS>FETCH_CLASS</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=7 cols="130"><?php
+/*
+ * 
+ * opcode number: 109
+ */
+$obj = new A();
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  !0=$obj </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> ZEND_FETCH_CLASS</td><td > &nbsp; </td><td > &nbsp; </td><td> :0</td><td> 'A'</td></tr><tr><td > &nbsp; </td><td> 1</td><td> NEW</td><td > &nbsp; </td><td > &nbsp; </td><td> $1</td><td> :0</td></tr><tr><td > &nbsp; </td><td> 2</td><td> DO_FCALL_BY_NAME</td><td > &nbsp; </td><td> 0</td><td > &nbsp; </td><td > &nbsp; </td></tr><tr><td > &nbsp; </td><td> 3</td><td> ASSIGN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !0,$1</td></tr><tr><td> 7</td><td> 4</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=FETCH_CONSTANT>FETCH_CONSTANT</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=8 cols="130"><?php
+/*
+ * Fetch the constant value bound to the specified name (name) and stores it into a variable (result).
+ * opcode number: 99
+ */
+define("FOO", "something");
+echo FOO;
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  none </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> SEND_VAL</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 'FOO'</td></tr><tr><td > &nbsp; </td><td> 1</td><td> SEND_VAL</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 'something'</td></tr><tr><td > &nbsp; </td><td> 2</td><td> DO_FCALL</td><td > &nbsp; </td><td> 2</td><td > &nbsp; </td><td> 'define'</td></tr><tr><td> 7</td><td> 3</td><td> FETCH_CONSTANT</td><td > &nbsp; </td><td > &nbsp; </td><td> ~1</td><td> 'FOO'</td></tr><tr><td > &nbsp; </td><td> 4</td><td> ECHO</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ~1</td></tr><tr><td> 8</td><td> 5</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=FETCH_DIM_FUNC_ARG>FETCH_DIM_FUNC_ARG</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=17 cols="130"><?php
+/*
+ * 
+ * opcode number: 93
+ */
+
+function foo(&$x)
+{
+  print($x);
+}
+
+$x = array(0, 1, 2, 3, 4, 5);
+$z = "foo";
+
+$z($x[0]);
+
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  !0=$x,  !1=$z </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 7</td><td> 0</td><td> NOP</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td></tr><tr><td> 12</td><td> 1</td><td> INIT_ARRAY</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td> 0</td></tr><tr><td > &nbsp; </td><td> 2</td><td> ADD_ARRAY_ELEMENT</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td> 1</td></tr><tr><td > &nbsp; </td><td> 3</td><td> ADD_ARRAY_ELEMENT</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td> 2</td></tr><tr><td > &nbsp; </td><td> 4</td><td> ADD_ARRAY_ELEMENT</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td> 3</td></tr><tr><td > &nbsp; </td><td> 5</td><td> ADD_ARRAY_ELEMENT</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td> 4</td></tr><tr><td > &nbsp; </td><td> 6</td><td> ADD_ARRAY_ELEMENT</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td> 5</td></tr><tr><td > &nbsp; </td><td> 7</td><td> ASSIGN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !0,~0</td></tr><tr><td> 13</td><td> 8</td><td> ASSIGN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !1,'foo'</td></tr><tr><td> 15</td><td> 9</td><td> INIT_FCALL_BY_NAME</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !1</td></tr><tr><td > &nbsp; </td><td> 10</td><td> FETCH_DIM_FUNC_ARG</td><td > &nbsp; </td><td > &nbsp; </td><td> $3</td><td> !0,0</td></tr><tr><td > &nbsp; </td><td> 11</td><td> SEND_VAR</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> $3</td></tr><tr><td > &nbsp; </td><td> 12</td><td> DO_FCALL_BY_NAME</td><td > &nbsp; </td><td> 1</td><td > &nbsp; </td><td > &nbsp; </td></tr><tr><td> 17</td><td> 13</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br>Function name: <b>foo</b></br>Compiled variables:  !0=$x </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 7</td><td> 0</td><td> RECV</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr><tr><td> 9</td><td> 1</td><td> PRINT</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td> !0</td></tr><tr><td > &nbsp; </td><td> 2</td><td> FREE</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td></tr><tr><td> 10</td><td> 3</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> null</td></tr></table></br><h2>OPCODE :<a name=FETCH_DIM_IS>FETCH_DIM_IS</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=6 cols="130"><?php 
+/*
+ * 
+ * opcode number: 90
+ * No sample PHP yet */
+?></textarea></br><h3> PHP opcodes </h3><h2>OPCODE :<a name=FETCH_DIM_R>FETCH_DIM_R</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=9 cols="130"><?php
+/*
+ * Fetch the value of the element at "index" in "array-value" to store it in "result".  Read-only?
+ * opcode number: 81
+ */
+$x = array(1,2,3);
+$a = 'x';
+echo $$a[0];
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  !0=$x,  !1=$a </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> INIT_ARRAY</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td> 1</td></tr><tr><td > &nbsp; </td><td> 1</td><td> ADD_ARRAY_ELEMENT</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td> 2</td></tr><tr><td > &nbsp; </td><td> 2</td><td> ADD_ARRAY_ELEMENT</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td> 3</td></tr><tr><td > &nbsp; </td><td> 3</td><td> ASSIGN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !0,~0</td></tr><tr><td> 7</td><td> 4</td><td> ASSIGN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !1,'x'</td></tr><tr><td> 8</td><td> 5</td><td> FETCH_DIM_R</td><td > &nbsp; </td><td > &nbsp; </td><td> $3</td><td> !1,0</td></tr><tr><td > &nbsp; </td><td> 6</td><td> FETCH_R</td><td> local</td><td > &nbsp; </td><td> $4</td><td> $3</td></tr><tr><td > &nbsp; </td><td> 7</td><td> ECHO</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> $4</td></tr><tr><td> 9</td><td> 8</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=FETCH_DIM_RW>FETCH_DIM_RW</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=9 cols="130"><?php
+/*
+ * Fetch the value of the element at "index" in "array-value" to store it in "result".
+ * opcode number: 87
+ */
+$x = array(1,2,3);
+$a = 'x';
+$$a[0]++;
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  !0=$x,  !1=$a </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> INIT_ARRAY</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td> 1</td></tr><tr><td > &nbsp; </td><td> 1</td><td> ADD_ARRAY_ELEMENT</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td> 2</td></tr><tr><td > &nbsp; </td><td> 2</td><td> ADD_ARRAY_ELEMENT</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td> 3</td></tr><tr><td > &nbsp; </td><td> 3</td><td> ASSIGN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !0,~0</td></tr><tr><td> 7</td><td> 4</td><td> ASSIGN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !1,'x'</td></tr><tr><td> 8</td><td> 5</td><td> FETCH_DIM_R</td><td > &nbsp; </td><td > &nbsp; </td><td> $3</td><td> !1,0</td></tr><tr><td > &nbsp; </td><td> 6</td><td> FETCH_RW</td><td> local</td><td > &nbsp; </td><td> $4</td><td> $3</td></tr><tr><td > &nbsp; </td><td> 7</td><td> POST_INC</td><td > &nbsp; </td><td > &nbsp; </td><td> ~5</td><td> $4</td></tr><tr><td > &nbsp; </td><td> 8</td><td> FREE</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ~5</td></tr><tr><td> 9</td><td> 9</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=FETCH_DIM_TMP_VAR>FETCH_DIM_TMP_VAR</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=7 cols="130"><?php
+/*
+ * Fetch an entry of an array from a temporal variable?
+ * opcode number: 98
+ */
+list($x) = array("X");
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  !0=$x </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> INIT_ARRAY</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td> 'X'</td></tr><tr><td > &nbsp; </td><td> 1</td><td> FETCH_DIM_TMP_VAR</td><td > &nbsp; </td><td > &nbsp; </td><td> $1</td><td> ~0,0</td></tr><tr><td > &nbsp; </td><td> 2</td><td> ASSIGN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !0,$1</td></tr><tr><td > &nbsp; </td><td> 3</td><td> FREE</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td></tr><tr><td> 7</td><td> 4</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=FETCH_DIM_UNSET>FETCH_DIM_UNSET</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=6 cols="130"><?php 
+/*
+ * Fetch an entry of an array variable for the purpose of unset() operation.
+ * opcode number: 96
+ * No sample PHP yet */
+?></textarea></br><h3> PHP opcodes </h3><h2>OPCODE :<a name=FETCH_DIM_W>FETCH_DIM_W</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=23 cols="130"><?php
+/*
+ * Fetch the value of the element at "index" in "array-value" to store it in "result".  Write-only?
+ * opcode number: 84
+ */
+$a = 1;
+while($a > 0){
+	$a = 0;
+}
+/*$input =array(1,2,3);
+while (list($var,) = @each($input)){
+	unset($$var);
+}*/
+/*$a = array(1,2,3);
+$x = 'a';
+$$x[0] = 1;*/
+
+/*while ($b = each($a)) {
+  print $b;
+}*/
+
+
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  !0=$a </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> ASSIGN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !0,1</td></tr><tr><td> 7</td><td> 1</td><td> IS_SMALLER</td><td > &nbsp; </td><td > &nbsp; </td><td> ~1</td><td> 0,!0</td></tr><tr><td > &nbsp; </td><td> 2</td><td> JMPZ</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ~1,->5</td></tr><tr><td> 8</td><td> 3</td><td> ASSIGN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !0,0</td></tr><tr><td> 9</td><td> 4</td><td> JMP</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ->1</td></tr><tr><td> 23</td><td> 5</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=FETCH_FUNC_ARG>FETCH_FUNC_ARG</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=16 cols="130"><?php
+/*
+ * 
+ * opcode number: 92
+ */
+function foo($x)
+{
+}
+
+$x = 1;
+$y = "x";
+$z = "foo";
+
+$z($$y);
+
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  !0=$x,  !1=$y,  !2=$z </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> NOP</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td></tr><tr><td> 10</td><td> 1</td><td> ASSIGN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !0,1</td></tr><tr><td> 11</td><td> 2</td><td> ASSIGN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !1,'x'</td></tr><tr><td> 12</td><td> 3</td><td> ASSIGN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !2,'foo'</td></tr><tr><td> 14</td><td> 4</td><td> INIT_FCALL_BY_NAME</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !2</td></tr><tr><td > &nbsp; </td><td> 5</td><td> FETCH_FUNC_ARG</td><td> local</td><td > &nbsp; </td><td> $3</td><td> !1</td></tr><tr><td > &nbsp; </td><td> 6</td><td> SEND_VAR</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> $3</td></tr><tr><td > &nbsp; </td><td> 7</td><td> DO_FCALL_BY_NAME</td><td > &nbsp; </td><td> 1</td><td > &nbsp; </td><td > &nbsp; </td></tr><tr><td> 16</td><td> 8</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br>Function name: <b>foo</b></br>Compiled variables:  !0=$x </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> RECV</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr><tr><td> 8</td><td> 1</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> null</td></tr></table></br><h2>OPCODE :<a name=FETCH_IS>FETCH_IS</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=9 cols="130"><?php
+/*
+ * Fetch the value from variable which is to be used to test if it is set or not, through isset()/isempty().
+ * opcode number: 89
+ */
+echo isset($_SESSION['userid']);
+echo isset($_SESSION['userid'][1]);
+echo isset($_SESSION->prop->prop);
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  none </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> FETCH_IS</td><td > &nbsp; </td><td > &nbsp; </td><td> $0</td><td> '_SESSION'</td></tr><tr><td > &nbsp; </td><td> 1</td><td> ZEND_ISSET_ISEMPTY_DIM_OBJ</td><td > &nbsp; </td><td> 1</td><td> ~1</td><td> $0,'userid'</td></tr><tr><td > &nbsp; </td><td> 2</td><td> ECHO</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ~1</td></tr><tr><td> 7</td><td> 3</td><td> FETCH_IS</td><td > &nbsp; </td><td > &nbsp; </td><td> $2</td><td> '_SESSION'</td></tr><tr><td > &nbsp; </td><td> 4</td><td> FETCH_DIM_IS</td><td > &nbsp; </td><td > &nbsp; </td><td> $3</td><td> $2,'userid'</td></tr><tr><td > &nbsp; </td><td> 5</td><td> ZEND_ISSET_ISEMPTY_DIM_OBJ</td><td > &nbsp; </td><td> 1</td><td> ~4</td><td> $3,1</td></tr><tr><td > &nbsp; </td><td> 6</td><td> ECHO</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ~4</td></tr><tr><td> 8</td><td> 7</td><td> FETCH_IS</td><td > &nbsp; </td><td > &nbsp; </td><td> $5</td><td> '_SESSION'</td></tr><tr><td > &nbsp; </td><td> 8</td><td> FETCH_OBJ_IS</td><td > &nbsp; </td><td > &nbsp; </td><td> $6</td><td> $5,'prop'</td></tr><tr><td > &nbsp; </td><td> 9</td><td> ZEND_ISSET_ISEMPTY_PROP_OBJ</td><td > &nbsp; </td><td > &nbsp; </td><td> ~7</td><td> $6,'prop'</td></tr><tr><td > &nbsp; </td><td> 10</td><td> ECHO</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ~7</td></tr><tr><td> 9</td><td> 11</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=FETCH_OBJ_FUNC_ARG>FETCH_OBJ_FUNC_ARG</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=19 cols="130"><?php
+/*
+ * 
+ * opcode number: 94
+ */
+include './classA.php';
+
+function foo(&$x)
+{
+  print($x);
+}
+
+$z = "foo";
+
+$obj = new A();
+print $obj->num;
+$z($obj->num);
+
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  !0=$z,  !1=$obj </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> INCLUDE_OR_EVAL</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> '.%2FclassA.php',INCLUDE</td></tr><tr><td> 8</td><td> 1</td><td> NOP</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td></tr><tr><td> 13</td><td> 2</td><td> ASSIGN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !0,'foo'</td></tr><tr><td> 15</td><td> 3</td><td> ZEND_FETCH_CLASS</td><td > &nbsp; </td><td > &nbsp; </td><td> :2</td><td> 'A'</td></tr><tr><td > &nbsp; </td><td> 4</td><td> NEW</td><td > &nbsp; </td><td > &nbsp; </td><td> $3</td><td> :2</td></tr><tr><td > &nbsp; </td><td> 5</td><td> DO_FCALL_BY_NAME</td><td > &nbsp; </td><td> 0</td><td > &nbsp; </td><td > &nbsp; </td></tr><tr><td > &nbsp; </td><td> 6</td><td> ASSIGN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !1,$3</td></tr><tr><td> 16</td><td> 7</td><td> FETCH_OBJ_R</td><td > &nbsp; </td><td > &nbsp; </td><td> $6</td><td> !1,'num'</td></tr><tr><td > &nbsp; </td><td> 8</td><td> PRINT</td><td > &nbsp; </td><td > &nbsp; </td><td> ~7</td><td> $6</td></tr><tr><td > &nbsp; </td><td> 9</td><td> FREE</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ~7</td></tr><tr><td> 17</td><td> 10</td><td> INIT_FCALL_BY_NAME</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !0</td></tr><tr><td > &nbsp; </td><td> 11</td><td> FETCH_OBJ_FUNC_ARG</td><td > &nbsp; </td><td > &nbsp; </td><td> $8</td><td> !1,'num'</td></tr><tr><td > &nbsp; </td><td> 12</td><td> SEND_VAR</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> $8</td></tr><tr><td > &nbsp; </td><td> 13</td><td> DO_FCALL_BY_NAME</td><td > &nbsp; </td><td> 1</td><td > &nbsp; </td><td > &nbsp; </td></tr><tr><td> 19</td><td> 14</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br>Function name: <b>foo</b></br>Compiled variables:  !0=$x </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 8</td><td> 0</td><td> RECV</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr><tr><td> 10</td><td> 1</td><td> PRINT</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td> !0</td></tr><tr><td > &nbsp; </td><td> 2</td><td> FREE</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td></tr><tr><td> 11</td><td> 3</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> null</td></tr></table></br>Function name: <b>foo</b></br>Compiled variables:  !0=$x </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 8</td><td> 0</td><td> RECV</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr><tr><td> 10</td><td> 1</td><td> PRINT</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td> !0</td></tr><tr><td > &nbsp; </td><td> 2</td><td> FREE</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td></tr><tr><td> 11</td><td> 3</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> null</td></tr></table></br><h2>OPCODE :<a name=FETCH_OBJ_IS>FETCH_OBJ_IS</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=6 cols="130"><?php 
+/*
+ * 
+ * opcode number: 91
+ * No sample PHP yet */
+?></textarea></br><h3> PHP opcodes </h3><h2>OPCODE :<a name=FETCH_OBJ_R>FETCH_OBJ_R</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=9 cols="130"><?php
+/*
+ * Fetch the "prop-name" property value of this object.  Read-only?
+ * opcode number: 82
+ */
+$x = new A();
+$a = 'x';
+echo $$a->num;
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  !0=$x,  !1=$a </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> ZEND_FETCH_CLASS</td><td > &nbsp; </td><td > &nbsp; </td><td> :0</td><td> 'A'</td></tr><tr><td > &nbsp; </td><td> 1</td><td> NEW</td><td > &nbsp; </td><td > &nbsp; </td><td> $1</td><td> :0</td></tr><tr><td > &nbsp; </td><td> 2</td><td> DO_FCALL_BY_NAME</td><td > &nbsp; </td><td> 0</td><td > &nbsp; </td><td > &nbsp; </td></tr><tr><td > &nbsp; </td><td> 3</td><td> ASSIGN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !0,$1</td></tr><tr><td> 7</td><td> 4</td><td> ASSIGN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !1,'x'</td></tr><tr><td> 8</td><td> 5</td><td> FETCH_R</td><td> local</td><td > &nbsp; </td><td> $5</td><td> !1</td></tr><tr><td > &nbsp; </td><td> 6</td><td> FETCH_OBJ_R</td><td > &nbsp; </td><td > &nbsp; </td><td> $6</td><td> $5,'num'</td></tr><tr><td > &nbsp; </td><td> 7</td><td> ECHO</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> $6</td></tr><tr><td> 9</td><td> 8</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=FETCH_OBJ_RW>FETCH_OBJ_RW</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=9 cols="130"><?php
+/*
+ * Fetch the "prop-name" property value of this object.
+ * opcode number: 88
+ */
+$x = new A();
+$a = 'x';
+$$a->num++;
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  !0=$x,  !1=$a </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> ZEND_FETCH_CLASS</td><td > &nbsp; </td><td > &nbsp; </td><td> :0</td><td> 'A'</td></tr><tr><td > &nbsp; </td><td> 1</td><td> NEW</td><td > &nbsp; </td><td > &nbsp; </td><td> $1</td><td> :0</td></tr><tr><td > &nbsp; </td><td> 2</td><td> DO_FCALL_BY_NAME</td><td > &nbsp; </td><td> 0</td><td > &nbsp; </td><td > &nbsp; </td></tr><tr><td > &nbsp; </td><td> 3</td><td> ASSIGN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !0,$1</td></tr><tr><td> 7</td><td> 4</td><td> ASSIGN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !1,'x'</td></tr><tr><td> 8</td><td> 5</td><td> FETCH_RW</td><td> local</td><td > &nbsp; </td><td> $5</td><td> !1</td></tr><tr><td > &nbsp; </td><td> 6</td><td> ZEND_POST_INC_OBJ</td><td > &nbsp; </td><td > &nbsp; </td><td> ~7</td><td> $5,'num'</td></tr><tr><td > &nbsp; </td><td> 7</td><td> FREE</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ~7</td></tr><tr><td> 9</td><td> 8</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=FETCH_OBJ_UNSET>FETCH_OBJ_UNSET</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=6 cols="130"><?php 
+/*
+ * Fetch a property of an object variable for the purpose of unset() operation.
+ * opcode number: 97
+ * No sample PHP yet */
+?></textarea></br><h3> PHP opcodes </h3><h2>OPCODE :<a name=FETCH_OBJ_W>FETCH_OBJ_W</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=9 cols="130"><?php
+/*
+ * Fetch the "prop-name" property value of this object.  Write-only?
+ * opcode number: 85
+ */
+$x = new A();
+$a = 'x';
+$$a->num = 1;;
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  !0=$x,  !1=$a </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> ZEND_FETCH_CLASS</td><td > &nbsp; </td><td > &nbsp; </td><td> :0</td><td> 'A'</td></tr><tr><td > &nbsp; </td><td> 1</td><td> NEW</td><td > &nbsp; </td><td > &nbsp; </td><td> $1</td><td> :0</td></tr><tr><td > &nbsp; </td><td> 2</td><td> DO_FCALL_BY_NAME</td><td > &nbsp; </td><td> 0</td><td > &nbsp; </td><td > &nbsp; </td></tr><tr><td > &nbsp; </td><td> 3</td><td> ASSIGN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !0,$1</td></tr><tr><td> 7</td><td> 4</td><td> ASSIGN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !1,'x'</td></tr><tr><td> 8</td><td> 5</td><td> FETCH_W</td><td> local</td><td > &nbsp; </td><td> $5</td><td> !1</td></tr><tr><td > &nbsp; </td><td> 6</td><td> ZEND_ASSIGN_OBJ</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> $5,'num'</td></tr><tr><td > &nbsp; </td><td> 7</td><td> ZEND_OP_DATA</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr><tr><td> 9</td><td> 8</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=FETCH_R>FETCH_R</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=9 cols="130"><?php
+/*
+ * Fetch the value of the varible of "name" to assign it to a variable?  Read-only?
+ * opcode number: 80
+ */
+$x = 1;
+$a = 'x';
+echo $$a;
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  !0=$x,  !1=$a </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> ASSIGN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !0,1</td></tr><tr><td> 7</td><td> 1</td><td> ASSIGN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !1,'x'</td></tr><tr><td> 8</td><td> 2</td><td> FETCH_R</td><td> local</td><td > &nbsp; </td><td> $2</td><td> !1</td></tr><tr><td > &nbsp; </td><td> 3</td><td> ECHO</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> $2</td></tr><tr><td> 9</td><td> 4</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=FETCH_RW>FETCH_RW</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=9 cols="130"><?php
+/*
+ * Fetch the value of the varible of "name" to assign it to a variable?
+ * opcode number: 86
+ */
+$x = 1;
+$a = 'x';
+$$a++;
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  !0=$x,  !1=$a </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> ASSIGN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !0,1</td></tr><tr><td> 7</td><td> 1</td><td> ASSIGN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !1,'x'</td></tr><tr><td> 8</td><td> 2</td><td> FETCH_RW</td><td> local</td><td > &nbsp; </td><td> $2</td><td> !1</td></tr><tr><td > &nbsp; </td><td> 3</td><td> POST_INC</td><td > &nbsp; </td><td > &nbsp; </td><td> ~3</td><td> $2</td></tr><tr><td > &nbsp; </td><td> 4</td><td> FREE</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ~3</td></tr><tr><td> 9</td><td> 5</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=FETCH_UNSET>FETCH_UNSET</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=6 cols="130"><?php 
+/*
+ * Fetch a variable for the purpose of unset() operation.
+ * opcode number: 95
+ * No sample PHP yet */
+?></textarea></br><h3> PHP opcodes </h3><h2>OPCODE :<a name=FETCH_W>FETCH_W</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=9 cols="130"><?php
+/*
+ * Fetch the value of the varible of "name" to assign it to a variable?  Write-only?
+ * opcode number: 83
+ */
+$x = 1;
+$a = 'x';
+$$a = 2;
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  !0=$x,  !1=$a </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> ASSIGN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !0,1</td></tr><tr><td> 7</td><td> 1</td><td> ASSIGN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !1,'x'</td></tr><tr><td> 8</td><td> 2</td><td> FETCH_W</td><td> local</td><td > &nbsp; </td><td> $2</td><td> !1</td></tr><tr><td > &nbsp; </td><td> 3</td><td> ASSIGN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> $2,2</td></tr><tr><td> 9</td><td> 4</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=FE_FETCH>FE_FETCH</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=10 cols="130"><?php
+/*
+ * Fetch an element from iterator.  If no element is available, jump to address.  Followed by OP_DATA?
+ * opcode number: 78
+ */
+$a = array(1,2,3);
+foreach($a as $num){
+	print $num;
+}
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  !0=$a,  !1=$num </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> INIT_ARRAY</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td> 1</td></tr><tr><td > &nbsp; </td><td> 1</td><td> ADD_ARRAY_ELEMENT</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td> 2</td></tr><tr><td > &nbsp; </td><td> 2</td><td> ADD_ARRAY_ELEMENT</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td> 3</td></tr><tr><td > &nbsp; </td><td> 3</td><td> ASSIGN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !0,~0</td></tr><tr><td> 7</td><td> 4</td><td> FE_RESET</td><td > &nbsp; </td><td > &nbsp; </td><td> $2</td><td> !0,->11</td></tr><tr><td > &nbsp; </td><td> 5</td><td> FE_FETCH</td><td > &nbsp; </td><td > &nbsp; </td><td> $3</td><td> $2,->11</td></tr><tr><td > &nbsp; </td><td> 6</td><td> ZEND_OP_DATA</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td></tr><tr><td > &nbsp; </td><td> 7</td><td> ASSIGN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !1,$3</td></tr><tr><td> 8</td><td> 8</td><td> PRINT</td><td > &nbsp; </td><td > &nbsp; </td><td> ~5</td><td> !1</td></tr><tr><td > &nbsp; </td><td> 9</td><td> FREE</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ~5</td></tr><tr><td> 9</td><td> 10</td><td> JMP</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ->5</td></tr><tr><td > &nbsp; </td><td> 11</td><td> SWITCH_FREE</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> $2</td></tr><tr><td> 10</td><td> 12</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=FE_RESET>FE_RESET</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=10 cols="130"><?php
+/*
+ * Initialize an iterator on array-value.  If the array is empty, jump to address.  Followed by FE_FETCH.
+ * opcode number: 77
+ */
+$a = array(1,2,3);
+foreach($a as $num){
+	print $num;
+}
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  !0=$a,  !1=$num </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> INIT_ARRAY</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td> 1</td></tr><tr><td > &nbsp; </td><td> 1</td><td> ADD_ARRAY_ELEMENT</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td> 2</td></tr><tr><td > &nbsp; </td><td> 2</td><td> ADD_ARRAY_ELEMENT</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td> 3</td></tr><tr><td > &nbsp; </td><td> 3</td><td> ASSIGN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !0,~0</td></tr><tr><td> 7</td><td> 4</td><td> FE_RESET</td><td > &nbsp; </td><td > &nbsp; </td><td> $2</td><td> !0,->11</td></tr><tr><td > &nbsp; </td><td> 5</td><td> FE_FETCH</td><td > &nbsp; </td><td > &nbsp; </td><td> $3</td><td> $2,->11</td></tr><tr><td > &nbsp; </td><td> 6</td><td> ZEND_OP_DATA</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td></tr><tr><td > &nbsp; </td><td> 7</td><td> ASSIGN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !1,$3</td></tr><tr><td> 8</td><td> 8</td><td> PRINT</td><td > &nbsp; </td><td > &nbsp; </td><td> ~5</td><td> !1</td></tr><tr><td > &nbsp; </td><td> 9</td><td> FREE</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ~5</td></tr><tr><td> 9</td><td> 10</td><td> JMP</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ->5</td></tr><tr><td > &nbsp; </td><td> 11</td><td> SWITCH_FREE</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> $2</td></tr><tr><td> 10</td><td> 12</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=FREE>FREE</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=7 cols="130"><?php
+/*
+ * Release the allocated space of the value.
+ * opcode number: 70
+ */
+ print "Hello World";
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  none </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> PRINT</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td> 'Hello+World'</td></tr><tr><td > &nbsp; </td><td> 1</td><td> FREE</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td></tr><tr><td> 7</td><td> 2</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=HANDLE_EXCEPTION>HANDLE_EXCEPTION</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=6 cols="130"><?php
+/*
+ * 
+ * opcode number: 149
+ */
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  none </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=INCLUDE_OR_EVAL>INCLUDE_OR_EVAL</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=8 cols="130"><?php
+/*
+ * Include the file specified by filename and eval it.
+ * opcode number: 73
+ */
+include("test.php");
+eval("test.php");
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  none </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> INCLUDE_OR_EVAL</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 'test.php',INCLUDE</td></tr><tr><td> 7</td><td> 1</td><td> INCLUDE_OR_EVAL</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 'test.php',EVAL</td></tr><tr><td> 8</td><td> 2</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br>Function name: <b>(null)</b></br>Compiled variables:  none </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 2</td><td> 0</td><td> DO_FCALL</td><td > &nbsp; </td><td> 0</td><td > &nbsp; </td><td> 'phpinfo'</td></tr><tr><td> 3</td><td> 1</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=INIT_ARRAY>INIT_ARRAY</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=8 cols="130"><?php
+/*
+ * Allocate a new array with elem-value as the first element of the array.  Followed by ADD_ARRAY_ELEMENT.
+ * opcode number: 71
+ */
+$a = array(1,2,3);
+print_r($a);
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  !0=$a </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> INIT_ARRAY</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td> 1</td></tr><tr><td > &nbsp; </td><td> 1</td><td> ADD_ARRAY_ELEMENT</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td> 2</td></tr><tr><td > &nbsp; </td><td> 2</td><td> ADD_ARRAY_ELEMENT</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td> 3</td></tr><tr><td > &nbsp; </td><td> 3</td><td> ASSIGN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !0,~0</td></tr><tr><td> 7</td><td> 4</td><td> SEND_VAR</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !0</td></tr><tr><td > &nbsp; </td><td> 5</td><td> DO_FCALL</td><td > &nbsp; </td><td> 1</td><td > &nbsp; </td><td> 'print_r'</td></tr><tr><td> 8</td><td> 6</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=INIT_FCALL_BY_NAME>INIT_FCALL_BY_NAME</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=8 cols="130"><?php
+/*
+ * prepare for a function call to function value1
+ * opcode number: 59
+ */
+$x = 'phpinfo';
+$a = $x();
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  !0=$x,  !1=$a </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> ASSIGN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !0,'phpinfo'</td></tr><tr><td> 7</td><td> 1</td><td> INIT_FCALL_BY_NAME</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !0</td></tr><tr><td > &nbsp; </td><td> 2</td><td> DO_FCALL_BY_NAME</td><td > &nbsp; </td><td> 0</td><td > &nbsp; </td><td > &nbsp; </td></tr><tr><td > &nbsp; </td><td> 3</td><td> ASSIGN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !1,$1</td></tr><tr><td> 8</td><td> 4</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=INIT_METHOD_CALL>INIT_METHOD_CALL</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=16 cols="130"><?php
+/*
+ * Prepare for a method call.  Followed by DO_FCALL.
+ * opcode number: 112
+ */
+class A {
+  var $num;
+	function incrementNum(){
+    $num++;
+  }
+}
+
+$obj = new A();
+$obj->incrementNum();
+
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  !0=$obj </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> NOP</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td></tr><tr><td> 13</td><td> 1</td><td> ZEND_FETCH_CLASS</td><td > &nbsp; </td><td > &nbsp; </td><td> :1</td><td> 'A'</td></tr><tr><td > &nbsp; </td><td> 2</td><td> NEW</td><td > &nbsp; </td><td > &nbsp; </td><td> $2</td><td> :1</td></tr><tr><td > &nbsp; </td><td> 3</td><td> DO_FCALL_BY_NAME</td><td > &nbsp; </td><td> 0</td><td > &nbsp; </td><td > &nbsp; </td></tr><tr><td > &nbsp; </td><td> 4</td><td> ASSIGN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !0,$2</td></tr><tr><td> 14</td><td> 5</td><td> ZEND_INIT_METHOD_CALL</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !0,'incrementNum'</td></tr><tr><td > &nbsp; </td><td> 6</td><td> DO_FCALL_BY_NAME</td><td > &nbsp; </td><td> 0</td><td > &nbsp; </td><td > &nbsp; </td></tr><tr><td> 16</td><td> 7</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br>Function name: <b>incrementNum</b></br>Compiled variables:  !0=$num </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 9</td><td> 0</td><td> POST_INC</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td> !0</td></tr><tr><td > &nbsp; </td><td> 1</td><td> FREE</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td></tr><tr><td> 10</td><td> 2</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> null</td></tr></table></br><h2>OPCODE :<a name=INIT_STATIC_METHOD_CALL>INIT_STATIC_METHOD_CALL</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=13 cols="130"><?php
+/*
+ * 
+ * opcode number: 113
+ */
+class Foo {
+    public static function aStaticMethod() {
+			echo "hello world\n";
+    }
+}
+
+Foo::aStaticMethod();
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  none </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> NOP</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td></tr><tr><td> 12</td><td> 1</td><td> ZEND_INIT_STATIC_METHOD_CALL</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 'Foo','aStaticMethod'</td></tr><tr><td > &nbsp; </td><td> 2</td><td> ZEND_OP_DATA</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 'foo%3A%3Aastaticmethod'</td></tr><tr><td > &nbsp; </td><td> 3</td><td> DO_FCALL_BY_NAME</td><td > &nbsp; </td><td> 0</td><td > &nbsp; </td><td > &nbsp; </td></tr><tr><td> 13</td><td> 4</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br>Function name: <b>aStaticMethod</b></br>Compiled variables:  none </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 8</td><td> 0</td><td> ECHO</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 'hello+world%0A'</td></tr><tr><td> 9</td><td> 1</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> null</td></tr></table></br><h2>OPCODE :<a name=INIT_STRING>INIT_STRING</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=7 cols="130"><?php
+/*
+ * appears to create a string variable in result
+ * opcode number: 53
+ */
+echo "hello$a world";
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  !0=$a </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> ADD_STRING</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td> 'hello'</td></tr><tr><td > &nbsp; </td><td> 1</td><td> ADD_VAR</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td> ~0,!0</td></tr><tr><td > &nbsp; </td><td> 2</td><td> ADD_STRING</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td> ~0,'+world'</td></tr><tr><td > &nbsp; </td><td> 3</td><td> ECHO</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td></tr><tr><td> 7</td><td> 4</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=INSTANCEOF>INSTANCEOF</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=11 cols="130"><?php
+/*
+ * 
+ * opcode number: 138
+ */
+$obj = new A();
+
+if ($obj instanceof A) {
+   echo 'A';
+}
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  !0=$obj </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> ZEND_FETCH_CLASS</td><td > &nbsp; </td><td > &nbsp; </td><td> :0</td><td> 'A'</td></tr><tr><td > &nbsp; </td><td> 1</td><td> NEW</td><td > &nbsp; </td><td > &nbsp; </td><td> $1</td><td> :0</td></tr><tr><td > &nbsp; </td><td> 2</td><td> DO_FCALL_BY_NAME</td><td > &nbsp; </td><td> 0</td><td > &nbsp; </td><td > &nbsp; </td></tr><tr><td > &nbsp; </td><td> 3</td><td> ASSIGN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !0,$1</td></tr><tr><td> 8</td><td> 4</td><td> ZEND_FETCH_CLASS</td><td > &nbsp; </td><td > &nbsp; </td><td> :4</td><td> 'A'</td></tr><tr><td > &nbsp; </td><td> 5</td><td> ZEND_INSTANCEOF</td><td > &nbsp; </td><td > &nbsp; </td><td> ~5</td><td> !0,$4</td></tr><tr><td > &nbsp; </td><td> 6</td><td> JMPZ</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ~5,->9</td></tr><tr><td> 9</td><td> 7</td><td> ECHO</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 'A'</td></tr><tr><td> 10</td><td> 8</td><td> JMP</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ->9</td></tr><tr><td> 11</td><td> 9</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=ISSET_ISEMPTY_DIM_OBJ>ISSET_ISEMPTY_DIM_OBJ</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=7 cols="130"><?php
+/*
+ * Tests if the entry of an array is set or not.
+ * opcode number: 115
+ */
+if(isset($a[0])) return 0;
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  !0=$a </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> ZEND_ISSET_ISEMPTY_DIM_OBJ</td><td > &nbsp; </td><td> 1</td><td> ~0</td><td> !0,0</td></tr><tr><td > &nbsp; </td><td> 1</td><td> JMPZ</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ~0,->4</td></tr><tr><td > &nbsp; </td><td> 2</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 0</td></tr><tr><td > &nbsp; </td><td> 3</td><td> JMP</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ->4</td></tr><tr><td> 7</td><td> 4</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=ISSET_ISEMPTY_PROP_OBJ>ISSET_ISEMPTY_PROP_OBJ</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=8 cols="130"><?php
+/*
+ * 
+ * opcode number: 148
+ */
+$obj = new A();
+if(empty($obj->num)) return 0;
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  !0=$obj </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> ZEND_FETCH_CLASS</td><td > &nbsp; </td><td > &nbsp; </td><td> :0</td><td> 'A'</td></tr><tr><td > &nbsp; </td><td> 1</td><td> NEW</td><td > &nbsp; </td><td > &nbsp; </td><td> $1</td><td> :0</td></tr><tr><td > &nbsp; </td><td> 2</td><td> DO_FCALL_BY_NAME</td><td > &nbsp; </td><td> 0</td><td > &nbsp; </td><td > &nbsp; </td></tr><tr><td > &nbsp; </td><td> 3</td><td> ASSIGN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !0,$1</td></tr><tr><td> 7</td><td> 4</td><td> ZEND_ISSET_ISEMPTY_PROP_OBJ</td><td > &nbsp; </td><td > &nbsp; </td><td> ~4</td><td> !0,'num'</td></tr><tr><td > &nbsp; </td><td> 5</td><td> JMPZ</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ~4,->8</td></tr><tr><td > &nbsp; </td><td> 6</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 0</td></tr><tr><td > &nbsp; </td><td> 7</td><td> JMP</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ->8</td></tr><tr><td> 8</td><td> 8</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=ISSET_ISEMPTY_VAR>ISSET_ISEMPTY_VAR</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=7 cols="130"><?php
+/*
+ * Tests if the value of a variable is set or not.
+ * opcode number: 114
+ */
+if(isset($a)){ return 0;}
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  !0=$a </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> ZEND_ISSET_ISEMPTY_VAR</td><td > &nbsp; </td><td> 5</td><td> ~0</td><td> !0</td></tr><tr><td > &nbsp; </td><td> 1</td><td> JMPZ</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ~0,->4</td></tr><tr><td > &nbsp; </td><td> 2</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 0</td></tr><tr><td > &nbsp; </td><td> 3</td><td> JMP</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ->4</td></tr><tr><td> 7</td><td> 4</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=IS_EQUAL>IS_EQUAL</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=8 cols="130"><?php
+/*
+ * compares if value1 and value2 are equal
+ * opcode number: 17
+ */
+echo (1 == 1);
+echo (1 == 'c');
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  none </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> IS_EQUAL</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td> 1,1</td></tr><tr><td > &nbsp; </td><td> 1</td><td> ECHO</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td></tr><tr><td> 7</td><td> 2</td><td> IS_EQUAL</td><td > &nbsp; </td><td > &nbsp; </td><td> ~1</td><td> 1,'c'</td></tr><tr><td > &nbsp; </td><td> 3</td><td> ECHO</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ~1</td></tr><tr><td> 8</td><td> 4</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=IS_IDENTICAL>IS_IDENTICAL</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=8 cols="130"><?php
+/*
+ * Compares value1 and value2 to see if they are equal AND have the same type
+ * opcode number: 15
+ */
+echo (1===1);
+echo (1==='a');
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  none </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> IS_IDENTICAL</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td> 1,1</td></tr><tr><td > &nbsp; </td><td> 1</td><td> ECHO</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td></tr><tr><td> 7</td><td> 2</td><td> IS_IDENTICAL</td><td > &nbsp; </td><td > &nbsp; </td><td> ~1</td><td> 1,'a'</td></tr><tr><td > &nbsp; </td><td> 3</td><td> ECHO</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ~1</td></tr><tr><td> 8</td><td> 4</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=IS_NOT_EQUAL>IS_NOT_EQUAL</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=7 cols="130"><?php
+/*
+ * compares if value1 and value2 are not equal
+ * opcode number: 18
+ */
+echo (1 != 1);
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  none </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> IS_NOT_EQUAL</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td> 1,1</td></tr><tr><td > &nbsp; </td><td> 1</td><td> ECHO</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td></tr><tr><td> 7</td><td> 2</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=IS_NOT_IDENTICAL>IS_NOT_IDENTICAL</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=7 cols="130"><?php
+/*
+ * compares value1 and value2 to see if they are unequal or of different types
+ * opcode number: 16
+ */
+echo (1 !== 1);
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  none </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> IS_NOT_IDENTICAL</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td> 1,1</td></tr><tr><td > &nbsp; </td><td> 1</td><td> ECHO</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td></tr><tr><td> 7</td><td> 2</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=IS_SMALLER>IS_SMALLER</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=7 cols="130"><?php
+/*
+ * compares if value1 is less than value2
+ * opcode number: 19
+ */
+echo (1 < 2);
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  none </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> IS_SMALLER</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td> 1,2</td></tr><tr><td > &nbsp; </td><td> 1</td><td> ECHO</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td></tr><tr><td> 7</td><td> 2</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=IS_SMALLER_OR_EQUAL>IS_SMALLER_OR_EQUAL</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=7 cols="130"><?php
+/*
+ * compares if value1 is less than or equal to value2
+ * opcode number: 20
+ */
+echo (1 >= 2);
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  none </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> IS_SMALLER_OR_EQUAL</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td> 2,1</td></tr><tr><td > &nbsp; </td><td> 1</td><td> ECHO</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td></tr><tr><td> 7</td><td> 2</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=JMPNZ>JMPNZ</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=9 cols="130"><?php
+/*
+ * Jump to the address if the value is not zero
+ * opcode number: 44
+ */
+for($i=0; $i<3; $i++){ 
+	echo "hi";
+}
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  !0=$i </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> ASSIGN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !0,0</td></tr><tr><td > &nbsp; </td><td> 1</td><td> IS_SMALLER</td><td > &nbsp; </td><td > &nbsp; </td><td> ~1</td><td> !0,3</td></tr><tr><td > &nbsp; </td><td> 2</td><td> JMPZNZ</td><td > &nbsp; </td><td> 6</td><td > &nbsp; </td><td> ~1,->8</td></tr><tr><td > &nbsp; </td><td> 3</td><td> POST_INC</td><td > &nbsp; </td><td > &nbsp; </td><td> ~2</td><td> !0</td></tr><tr><td > &nbsp; </td><td> 4</td><td> FREE</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ~2</td></tr><tr><td > &nbsp; </td><td> 5</td><td> JMP</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ->1</td></tr><tr><td> 7</td><td> 6</td><td> ECHO</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 'hi'</td></tr><tr><td> 8</td><td> 7</td><td> JMP</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ->3</td></tr><tr><td> 9</td><td> 8</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=JMPNZ_EX>JMPNZ_EX</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=7 cols="130"><?php
+/*
+ * Jump to the address if the xor of value1 and value2 is zero .. ???
+ * opcode number: 47
+ */
+if(1^2) return;
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  none </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> BW_XOR</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td> 1,2</td></tr><tr><td > &nbsp; </td><td> 1</td><td> JMPZ</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ~0,->4</td></tr><tr><td > &nbsp; </td><td> 2</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> null</td></tr><tr><td > &nbsp; </td><td> 3</td><td> JMP</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ->4</td></tr><tr><td> 7</td><td> 4</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=JMPZ>JMPZ</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=7 cols="130"><?php
+/*
+ * Jump to the address if the value is zero
+ * opcode number: 43
+ */
+if($a != 0) echo "foo";
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  !0=$a </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> IS_NOT_EQUAL</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td> !0,0</td></tr><tr><td > &nbsp; </td><td> 1</td><td> JMPZ</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ~0,->4</td></tr><tr><td > &nbsp; </td><td> 2</td><td> ECHO</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 'foo'</td></tr><tr><td > &nbsp; </td><td> 3</td><td> JMP</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ->4</td></tr><tr><td> 7</td><td> 4</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=JMPZNZ>JMPZNZ</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=9 cols="130"><?php
+/*
+ * Jump to the address if the value is .. ???
+ * opcode number: 45
+ */
+for($i=0; $i<3; $i++){ 
+	echo "hi";
+}
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  !0=$i </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> ASSIGN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !0,0</td></tr><tr><td > &nbsp; </td><td> 1</td><td> IS_SMALLER</td><td > &nbsp; </td><td > &nbsp; </td><td> ~1</td><td> !0,3</td></tr><tr><td > &nbsp; </td><td> 2</td><td> JMPZNZ</td><td > &nbsp; </td><td> 6</td><td > &nbsp; </td><td> ~1,->8</td></tr><tr><td > &nbsp; </td><td> 3</td><td> POST_INC</td><td > &nbsp; </td><td > &nbsp; </td><td> ~2</td><td> !0</td></tr><tr><td > &nbsp; </td><td> 4</td><td> FREE</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ~2</td></tr><tr><td > &nbsp; </td><td> 5</td><td> JMP</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ->1</td></tr><tr><td> 7</td><td> 6</td><td> ECHO</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 'hi'</td></tr><tr><td> 8</td><td> 7</td><td> JMP</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ->3</td></tr><tr><td> 9</td><td> 8</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=JMPZ_EX>JMPZ_EX</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=7 cols="130"><?php
+/*
+ * Jump to the address if the xor of value1 and value2 is zero .. ???
+ * opcode number: 46
+ */
+ 
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  none </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 7</td><td> 0</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=MOD>MOD</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=7 cols="130"><?php
+/*
+ * Makes the value of "result" congruent to "value1" modulo "value2".
+ * opcode number: 5
+ */
+echo 6 % 3;
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  none </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> MOD</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td> 6,3</td></tr><tr><td > &nbsp; </td><td> 1</td><td> ECHO</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td></tr><tr><td> 7</td><td> 2</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=MUL>MUL</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=7 cols="130"><?php
+/*
+ * Multiplys "value1" by "value2" and stores the result into "result".
+ * opcode number: 3
+ */
+echo 2*3;
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  none </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> MUL</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td> 2,3</td></tr><tr><td > &nbsp; </td><td> 1</td><td> ECHO</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td></tr><tr><td> 7</td><td> 2</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=NEW>NEW</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=7 cols="130"><?php
+/*
+ * Construct an instance of "type" and store the reference to the object into "result".
+ * opcode number: 68
+ */
+$obj = new A();
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  !0=$obj </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> ZEND_FETCH_CLASS</td><td > &nbsp; </td><td > &nbsp; </td><td> :0</td><td> 'A'</td></tr><tr><td > &nbsp; </td><td> 1</td><td> NEW</td><td > &nbsp; </td><td > &nbsp; </td><td> $1</td><td> :0</td></tr><tr><td > &nbsp; </td><td> 2</td><td> DO_FCALL_BY_NAME</td><td > &nbsp; </td><td> 0</td><td > &nbsp; </td><td > &nbsp; </td></tr><tr><td > &nbsp; </td><td> 3</td><td> ASSIGN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !0,$1</td></tr><tr><td> 7</td><td> 4</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=NOP>NOP</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=7 cols="130"><?php
+/*
+ * no operation
+ * opcode number: 0
+ */
+function A(){}; 
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  none </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> NOP</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td></tr><tr><td> 7</td><td> 1</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br>Function name: <b>A</b></br>Compiled variables:  none </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> null</td></tr></table></br><h2>OPCODE :<a name=POST_DEC>POST_DEC</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=7 cols="130"><?php
+/*
+ * decrements variable indicated by value1 by 1 (after performing other operations) and stores in result
+ * opcode number: 37
+ */
+$a--;
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  !0=$a </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> POST_DEC</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td> !0</td></tr><tr><td > &nbsp; </td><td> 1</td><td> FREE</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td></tr><tr><td> 7</td><td> 2</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=POST_DEC_OBJ>POST_DEC_OBJ</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=8 cols="130"><?php
+/*
+ * 
+ * opcode number: 135
+ */
+$obj = new A();
+$obj->num--;
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  !0=$obj </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> ZEND_FETCH_CLASS</td><td > &nbsp; </td><td > &nbsp; </td><td> :0</td><td> 'A'</td></tr><tr><td > &nbsp; </td><td> 1</td><td> NEW</td><td > &nbsp; </td><td > &nbsp; </td><td> $1</td><td> :0</td></tr><tr><td > &nbsp; </td><td> 2</td><td> DO_FCALL_BY_NAME</td><td > &nbsp; </td><td> 0</td><td > &nbsp; </td><td > &nbsp; </td></tr><tr><td > &nbsp; </td><td> 3</td><td> ASSIGN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !0,$1</td></tr><tr><td> 7</td><td> 4</td><td> ZEND_POST_DEC_OBJ</td><td > &nbsp; </td><td > &nbsp; </td><td> ~5</td><td> !0,'num'</td></tr><tr><td > &nbsp; </td><td> 5</td><td> FREE</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ~5</td></tr><tr><td> 8</td><td> 6</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=POST_INC>POST_INC</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=7 cols="130"><?php
+/*
+ * increments variable indicated by value1 by 1 (after performing other operations) and stores in result
+ * opcode number: 36
+ */
+$a++;
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  !0=$a </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> POST_INC</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td> !0</td></tr><tr><td > &nbsp; </td><td> 1</td><td> FREE</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td></tr><tr><td> 7</td><td> 2</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=POST_INC_OBJ>POST_INC_OBJ</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=8 cols="130"><?php
+/*
+ * Increment the property value specified by prop-name and store the original value into result.
+ * opcode number: 134
+ */
+$obj = new A();
+$obj->num++;
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  !0=$obj </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> ZEND_FETCH_CLASS</td><td > &nbsp; </td><td > &nbsp; </td><td> :0</td><td> 'A'</td></tr><tr><td > &nbsp; </td><td> 1</td><td> NEW</td><td > &nbsp; </td><td > &nbsp; </td><td> $1</td><td> :0</td></tr><tr><td > &nbsp; </td><td> 2</td><td> DO_FCALL_BY_NAME</td><td > &nbsp; </td><td> 0</td><td > &nbsp; </td><td > &nbsp; </td></tr><tr><td > &nbsp; </td><td> 3</td><td> ASSIGN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !0,$1</td></tr><tr><td> 7</td><td> 4</td><td> ZEND_POST_INC_OBJ</td><td > &nbsp; </td><td > &nbsp; </td><td> ~5</td><td> !0,'num'</td></tr><tr><td > &nbsp; </td><td> 5</td><td> FREE</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ~5</td></tr><tr><td> 8</td><td> 6</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=PRE_DEC>PRE_DEC</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=7 cols="130"><?php
+/*
+ * decrements variable indicated by value1 by 1 (before performing other operations) and stores in results
+ * opcode number: 35
+ */
+--$a;
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  !0=$a </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> PRE_DEC</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !0</td></tr><tr><td> 7</td><td> 1</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=PRE_DEC_OBJ>PRE_DEC_OBJ</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=8 cols="130"><?php
+/*
+ * 
+ * opcode number: 133
+ */
+$obj = new A();
+--$obj->num;
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  !0=$obj </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> ZEND_FETCH_CLASS</td><td > &nbsp; </td><td > &nbsp; </td><td> :0</td><td> 'A'</td></tr><tr><td > &nbsp; </td><td> 1</td><td> NEW</td><td > &nbsp; </td><td > &nbsp; </td><td> $1</td><td> :0</td></tr><tr><td > &nbsp; </td><td> 2</td><td> DO_FCALL_BY_NAME</td><td > &nbsp; </td><td> 0</td><td > &nbsp; </td><td > &nbsp; </td></tr><tr><td > &nbsp; </td><td> 3</td><td> ASSIGN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !0,$1</td></tr><tr><td> 7</td><td> 4</td><td> ZEND_PRE_DEC_OBJ</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !0,'num'</td></tr><tr><td> 8</td><td> 5</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=PRE_INC>PRE_INC</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=7 cols="130"><?php
+/*
+ * increments variable indicated by value1 by 1 (before performing other operations) and stores in result
+ * opcode number: 34
+ */
+++$a;
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  !0=$a </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> PRE_INC</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !0</td></tr><tr><td> 7</td><td> 1</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=PRE_INC_OBJ>PRE_INC_OBJ</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=8 cols="130"><?php
+/*
+ * 
+ * opcode number: 132
+ */
+$obj = new A();
+++$obj->num;
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  !0=$obj </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> ZEND_FETCH_CLASS</td><td > &nbsp; </td><td > &nbsp; </td><td> :0</td><td> 'A'</td></tr><tr><td > &nbsp; </td><td> 1</td><td> NEW</td><td > &nbsp; </td><td > &nbsp; </td><td> $1</td><td> :0</td></tr><tr><td > &nbsp; </td><td> 2</td><td> DO_FCALL_BY_NAME</td><td > &nbsp; </td><td> 0</td><td > &nbsp; </td><td > &nbsp; </td></tr><tr><td > &nbsp; </td><td> 3</td><td> ASSIGN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !0,$1</td></tr><tr><td> 7</td><td> 4</td><td> ZEND_PRE_INC_OBJ</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !0,'num'</td></tr><tr><td> 8</td><td> 5</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=PRINT>PRINT</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=7 cols="130"><?php
+/*
+ * 
+ * opcode number: 41
+ */
+print "Hello World";
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  none </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> PRINT</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td> 'Hello+World'</td></tr><tr><td > &nbsp; </td><td> 1</td><td> FREE</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td></tr><tr><td> 7</td><td> 2</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=QM_ASSIGN>QM_ASSIGN</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=14 cols="130"><?php
+/*
+ * Question Mark Assign, used twice inside a question mark assign to temporarily assign result as value1  (this is followed up with an ASSIGN bytecode)
+ * opcode number: 22
+ */
+function A(){
+ echo 1?2:3;
+}
+
+function B(){
+ $b = 0;
+ $a = $b > 1 ? 10: 11;
+}
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  none </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> NOP</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td></tr><tr><td> 10</td><td> 1</td><td> NOP</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td></tr><tr><td> 14</td><td> 2</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br>Function name: <b>A</b></br>Compiled variables:  none </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 7</td><td> 0</td><td> JMPZ</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1,->3</td></tr><tr><td > &nbsp; </td><td> 1</td><td> QM_ASSIGN</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td> 2</td></tr><tr><td > &nbsp; </td><td> 2</td><td> JMP</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ->4</td></tr><tr><td > &nbsp; </td><td> 3</td><td> QM_ASSIGN</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td> 3</td></tr><tr><td > &nbsp; </td><td> 4</td><td> ECHO</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td></tr><tr><td> 8</td><td> 5</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> null</td></tr></table></br>Function name: <b>B</b></br>Compiled variables:  !0=$b,  !1=$a </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 11</td><td> 0</td><td> ASSIGN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !0,0</td></tr><tr><td> 12</td><td> 1</td><td> IS_SMALLER</td><td > &nbsp; </td><td > &nbsp; </td><td> ~1</td><td> 1,!0</td></tr><tr><td > &nbsp; </td><td> 2</td><td> JMPZ</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ~1,->5</td></tr><tr><td > &nbsp; </td><td> 3</td><td> QM_ASSIGN</td><td > &nbsp; </td><td > &nbsp; </td><td> ~2</td><td> 10</td></tr><tr><td > &nbsp; </td><td> 4</td><td> JMP</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ->6</td></tr><tr><td > &nbsp; </td><td> 5</td><td> QM_ASSIGN</td><td > &nbsp; </td><td > &nbsp; </td><td> ~2</td><td> 11</td></tr><tr><td > &nbsp; </td><td> 6</td><td> ASSIGN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !1,~2</td></tr><tr><td> 13</td><td> 7</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> null</td></tr></table></br><h2>OPCODE :<a name=RAISE_ABSTRACT_ERROR>RAISE_ABSTRACT_ERROR</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=24 cols="130"><?php
+/*
+ * 
+ * opcode number: 142
+ */
+
+abstract class fail {
+	abstract function show();
+}
+
+class pass extends fail {
+	function show() {
+		echo "Call to function show()\n";
+	}
+}
+
+$t2 = new pass();
+$t2->show();
+
+$t = new fail();
+$t->show();
+
+echo "Done\n"; // shouldn't be displayed
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  !0=$t2,  !1=$t </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 7</td><td> 0</td><td> NOP</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td></tr><tr><td> 11</td><td> 1</td><td> NOP</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td></tr><tr><td > &nbsp; </td><td> 2</td><td> NOP</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td></tr><tr><td> 17</td><td> 3</td><td> ZEND_FETCH_CLASS</td><td > &nbsp; </td><td > &nbsp; </td><td> :3</td><td> 'pass'</td></tr><tr><td > &nbsp; </td><td> 4</td><td> NEW</td><td > &nbsp; </td><td > &nbsp; </td><td> $4</td><td> :3</td></tr><tr><td > &nbsp; </td><td> 5</td><td> DO_FCALL_BY_NAME</td><td > &nbsp; </td><td> 0</td><td > &nbsp; </td><td > &nbsp; </td></tr><tr><td > &nbsp; </td><td> 6</td><td> ASSIGN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !0,$4</td></tr><tr><td> 18</td><td> 7</td><td> ZEND_INIT_METHOD_CALL</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !0,'show'</td></tr><tr><td > &nbsp; </td><td> 8</td><td> DO_FCALL_BY_NAME</td><td > &nbsp; </td><td> 0</td><td > &nbsp; </td><td > &nbsp; </td></tr><tr><td> 20</td><td> 9</td><td> ZEND_FETCH_CLASS</td><td > &nbsp; </td><td > &nbsp; </td><td> :9</td><td> 'fail'</td></tr><tr><td > &nbsp; </td><td> 10</td><td> NEW</td><td > &nbsp; </td><td > &nbsp; </td><td> $10</td><td> :9</td></tr><tr><td > &nbsp; </td><td> 11</td><td> DO_FCALL_BY_NAME</td><td > &nbsp; </td><td> 0</td><td > &nbsp; </td><td > &nbsp; </td></tr><tr><td > &nbsp; </td><td> 12</td><td> ASSIGN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !1,$10</td></tr><tr><td> 21</td><td> 13</td><td> ZEND_INIT_METHOD_CALL</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !1,'show'</td></tr><tr><td > &nbsp; </td><td> 14</td><td> DO_FCALL_BY_NAME</td><td > &nbsp; </td><td> 0</td><td > &nbsp; </td><td > &nbsp; </td></tr><tr><td> 23</td><td> 15</td><td> ECHO</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 'Done%0A'</td></tr><tr><td> 24</td><td> 16</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br>Function name: <b>show</b></br>Compiled variables:  none </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 8</td><td> 0</td><td> ZEND_RAISE_ABSTRACT_ERROR</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td></tr><tr><td > &nbsp; </td><td> 1</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> null</td></tr></table></br>Function name: <b>show</b></br>Compiled variables:  none </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 13</td><td> 0</td><td> ECHO</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 'Call+to+function+show%28%29%0A'</td></tr><tr><td> 14</td><td> 1</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> null</td></tr></table></br><h2>OPCODE :<a name=RECV>RECV</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=7 cols="130"><?php
+/*
+ * Receive a functoin argument of "argument-number" and store the argument value into a variable of "argument-number".  (e.g. $1 for 1)
+ * opcode number: 63
+ */
+function hello($a){}
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  none </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> NOP</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td></tr><tr><td> 7</td><td> 1</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br>Function name: <b>hello</b></br>Compiled variables:  !0=$a </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> RECV</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr><tr><td > &nbsp; </td><td> 1</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> null</td></tr></table></br><h2>OPCODE :<a name=RECV_INIT>RECV_INIT</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=7 cols="130"><?php
+/*
+ * Initialize a function argument with "value" if not received from caller.  Otherwise same as RECV.
+ * opcode number: 64
+ */
+function hello($a=5){}
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  none </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> NOP</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td></tr><tr><td> 7</td><td> 1</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br>Function name: <b>hello</b></br>Compiled variables:  !0=$a </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> RECV_INIT</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1,5</td></tr><tr><td > &nbsp; </td><td> 1</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> null</td></tr></table></br><h2>OPCODE :<a name=RETURN>RETURN</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=7 cols="130"><?php
+/*
+ * Return value from a funciton.
+ * opcode number: 62
+ */
+return 1;
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  none </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr><tr><td> 7</td><td> 1</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=SEND_REF>SEND_REF</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=7 cols="130"><?php
+/*
+ * Pass the reference value as an actual parameter to a function.  DO_FCALL follows.
+ * opcode number: 67
+ */
+@each($input);
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  none </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> BEGIN_SILENCE</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td > &nbsp; </td></tr><tr><td > &nbsp; </td><td> 1</td><td> FETCH_W</td><td> local</td><td > &nbsp; </td><td> $1</td><td> 'input'</td></tr><tr><td > &nbsp; </td><td> 2</td><td> SEND_REF</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> $1</td></tr><tr><td > &nbsp; </td><td> 3</td><td> DO_FCALL</td><td > &nbsp; </td><td> 1</td><td > &nbsp; </td><td> 'each'</td></tr><tr><td > &nbsp; </td><td> 4</td><td> END_SILENCE</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td></tr><tr><td> 7</td><td> 5</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=SEND_VAL>SEND_VAL</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=13 cols="130"><?php
+/*
+ * Pass the constant value as an actual parameter to a function.  DO_FCALL follows.
+ * opcode number: 65
+ */
+function funcA($msg){
+	print $msg;
+}
+
+funcA('HELLO');
+
+defined('IN_PHPBB');
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  none </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> NOP</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td></tr><tr><td> 10</td><td> 1</td><td> SEND_VAL</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 'HELLO'</td></tr><tr><td > &nbsp; </td><td> 2</td><td> DO_FCALL</td><td > &nbsp; </td><td> 1</td><td > &nbsp; </td><td> 'funca'</td></tr><tr><td> 12</td><td> 3</td><td> SEND_VAL</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 'IN_PHPBB'</td></tr><tr><td > &nbsp; </td><td> 4</td><td> DO_FCALL</td><td > &nbsp; </td><td> 1</td><td > &nbsp; </td><td> 'defined'</td></tr><tr><td> 13</td><td> 5</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br>Function name: <b>funcA</b></br>Compiled variables:  !0=$msg </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> RECV</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr><tr><td> 7</td><td> 1</td><td> PRINT</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td> !0</td></tr><tr><td > &nbsp; </td><td> 2</td><td> FREE</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td></tr><tr><td> 8</td><td> 3</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> null</td></tr></table></br><h2>OPCODE :<a name=SEND_VAR>SEND_VAR</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=8 cols="130"><?php
+/*
+ * Pass the variable value as an actual parameter to a function.  DO_FCALL follows.
+ * opcode number: 66
+ */
+$a = array(1,2,3);
+if(is_array($a)){ return 0; }
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  !0=$a </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> INIT_ARRAY</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td> 1</td></tr><tr><td > &nbsp; </td><td> 1</td><td> ADD_ARRAY_ELEMENT</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td> 2</td></tr><tr><td > &nbsp; </td><td> 2</td><td> ADD_ARRAY_ELEMENT</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td> 3</td></tr><tr><td > &nbsp; </td><td> 3</td><td> ASSIGN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !0,~0</td></tr><tr><td> 7</td><td> 4</td><td> SEND_VAR</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !0</td></tr><tr><td > &nbsp; </td><td> 5</td><td> DO_FCALL</td><td > &nbsp; </td><td> 1</td><td > &nbsp; </td><td> 'is_array'</td></tr><tr><td > &nbsp; </td><td> 6</td><td> JMPZ</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> $2,->9</td></tr><tr><td > &nbsp; </td><td> 7</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 0</td></tr><tr><td > &nbsp; </td><td> 8</td><td> JMP</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ->9</td></tr><tr><td> 8</td><td> 9</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=SEND_VAR_NO_REF>SEND_VAR_NO_REF</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=6 cols="130"><?php 
+/*
+ * 
+ * opcode number: 106
+ * No sample PHP yet */
+?></textarea></br><h3> PHP opcodes </h3><h2>OPCODE :<a name=SL>SL</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=7 cols="130"><?php
+/*
+ * Shift value1 by balue2 bits to left
+ * opcode number: 6
+ */
+echo 8 << 2;
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  none </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> SL</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td> 8,2</td></tr><tr><td > &nbsp; </td><td> 1</td><td> ECHO</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td></tr><tr><td> 7</td><td> 2</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=SR>SR</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=7 cols="130"><?php
+/*
+ * Shift bits to right
+ * opcode number: 7
+ */
+echo 8 >> 2;
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  none </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> SR</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td> 8,2</td></tr><tr><td > &nbsp; </td><td> 1</td><td> ECHO</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td></tr><tr><td> 7</td><td> 2</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=SUB>SUB</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=7 cols="130"><?php
+/*
+ * Subtracts "value2" from "value1" and stores the result into "result".
+ * opcode number: 2
+ */
+echo 1-2;
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  none </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> SUB</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td> 1,2</td></tr><tr><td > &nbsp; </td><td> 1</td><td> ECHO</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td></tr><tr><td> 7</td><td> 2</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=SWITCH_FREE>SWITCH_FREE</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=10 cols="130"><?php
+/*
+ * Release the allocated space of "value"?
+ * opcode number: 49
+ */
+$a = array(1,2,3);
+foreach($a as $num){
+	print $num;
+}
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  !0=$a,  !1=$num </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> INIT_ARRAY</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td> 1</td></tr><tr><td > &nbsp; </td><td> 1</td><td> ADD_ARRAY_ELEMENT</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td> 2</td></tr><tr><td > &nbsp; </td><td> 2</td><td> ADD_ARRAY_ELEMENT</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td> 3</td></tr><tr><td > &nbsp; </td><td> 3</td><td> ASSIGN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !0,~0</td></tr><tr><td> 7</td><td> 4</td><td> FE_RESET</td><td > &nbsp; </td><td > &nbsp; </td><td> $2</td><td> !0,->11</td></tr><tr><td > &nbsp; </td><td> 5</td><td> FE_FETCH</td><td > &nbsp; </td><td > &nbsp; </td><td> $3</td><td> $2,->11</td></tr><tr><td > &nbsp; </td><td> 6</td><td> ZEND_OP_DATA</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td></tr><tr><td > &nbsp; </td><td> 7</td><td> ASSIGN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !1,$3</td></tr><tr><td> 8</td><td> 8</td><td> PRINT</td><td > &nbsp; </td><td > &nbsp; </td><td> ~5</td><td> !1</td></tr><tr><td > &nbsp; </td><td> 9</td><td> FREE</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ~5</td></tr><tr><td> 9</td><td> 10</td><td> JMP</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ->5</td></tr><tr><td > &nbsp; </td><td> 11</td><td> SWITCH_FREE</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> $2</td></tr><tr><td> 10</td><td> 12</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=THROW>THROW</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=19 cols="130"><?php
+/*
+ * 
+ * opcode number: 108
+ */
+try {
+    $error = 'Always throw this error';
+    throw new Exception($error);
+
+    // Code following an exception is not executed.
+    echo 'Never executed';
+
+} catch (Exception $e) {
+    echo 'Caught exception: ',  $e->getMessage(), "\n";
+}
+
+// Continue execution
+echo 'Hello World';
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  !0=$error,  !1=$e </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 7</td><td> 0</td><td> ASSIGN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !0,'Always+throw+this+error'</td></tr><tr><td> 8</td><td> 1</td><td> ZEND_FETCH_CLASS</td><td > &nbsp; </td><td > &nbsp; </td><td> :1</td><td> 'Exception'</td></tr><tr><td > &nbsp; </td><td> 2</td><td> NEW</td><td > &nbsp; </td><td > &nbsp; </td><td> $2</td><td> :1</td></tr><tr><td > &nbsp; </td><td> 3</td><td> SEND_VAR</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !0</td></tr><tr><td > &nbsp; </td><td> 4</td><td> DO_FCALL_BY_NAME</td><td > &nbsp; </td><td> 1</td><td > &nbsp; </td><td > &nbsp; </td></tr><tr><td > &nbsp; </td><td> 5</td><td> ZEND_THROW</td><td > &nbsp; </td><td> 0</td><td > &nbsp; </td><td> $2</td></tr><tr><td> 11</td><td> 6</td><td> ECHO</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 'Never+executed'</td></tr><tr><td> 13</td><td> 7</td><td> JMP</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ->15</td></tr><tr><td > &nbsp; </td><td> 8</td><td> ZEND_FETCH_CLASS</td><td > &nbsp; </td><td > &nbsp; </td><td> :4</td><td> 'Exception'</td></tr><tr><td > &nbsp; </td><td> 9</td><td> ZEND_CATCH</td><td > &nbsp; </td><td> 15</td><td > &nbsp; </td><td> $4,!1</td></tr><tr><td> 14</td><td> 10</td><td> ECHO</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 'Caught+exception%3A+'</td></tr><tr><td > &nbsp; </td><td> 11</td><td> ZEND_INIT_METHOD_CALL</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !1,'getMessage'</td></tr><tr><td > &nbsp; </td><td> 12</td><td> DO_FCALL_BY_NAME</td><td > &nbsp; </td><td> 0</td><td > &nbsp; </td><td > &nbsp; </td></tr><tr><td > &nbsp; </td><td> 13</td><td> ECHO</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> $6</td></tr><tr><td > &nbsp; </td><td> 14</td><td> ECHO</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> '%0A'</td></tr><tr><td> 18</td><td> 15</td><td> ECHO</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 'Hello+World'</td></tr><tr><td> 19</td><td> 16</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=TICKS>TICKS</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=24 cols="130"><?php
+/*
+ * 
+ * opcode number: 105
+ */
+// A function that records the time when it is called
+function profile()
+{
+   echo "profile function is called\n";
+}
+
+// Set up a tick handler
+register_tick_function("profile");
+
+// Initialize the function before the declare block
+profile();
+
+// Run a block of code, throw a tick every 2nd statement
+declare(ticks=2) {
+   for ($x = 0; $x < 10; ++$x) {
+		 echo "hello world\n";
+   }
+}
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  !0=$x </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 7</td><td> 0</td><td> NOP</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td></tr><tr><td> 13</td><td> 1</td><td> SEND_VAL</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 'profile'</td></tr><tr><td > &nbsp; </td><td> 2</td><td> DO_FCALL</td><td > &nbsp; </td><td> 1</td><td > &nbsp; </td><td> 'register_tick_function'</td></tr><tr><td> 16</td><td> 3</td><td> DO_FCALL</td><td > &nbsp; </td><td> 0</td><td > &nbsp; </td><td> 'profile'</td></tr><tr><td> 20</td><td> 4</td><td> ASSIGN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !0,0</td></tr><tr><td > &nbsp; </td><td> 5</td><td> IS_SMALLER</td><td > &nbsp; </td><td > &nbsp; </td><td> ~3</td><td> !0,10</td></tr><tr><td > &nbsp; </td><td> 6</td><td> JMPZNZ</td><td > &nbsp; </td><td> 9</td><td > &nbsp; </td><td> ~3,->13</td></tr><tr><td > &nbsp; </td><td> 7</td><td> PRE_INC</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !0</td></tr><tr><td > &nbsp; </td><td> 8</td><td> JMP</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ->5</td></tr><tr><td> 21</td><td> 9</td><td> ECHO</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 'hello+world%0A'</td></tr><tr><td > &nbsp; </td><td> 10</td><td> TICKS</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 2</td></tr><tr><td> 22</td><td> 11</td><td> TICKS</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 2</td></tr><tr><td > &nbsp; </td><td> 12</td><td> JMP</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> ->7</td></tr><tr><td > &nbsp; </td><td> 13</td><td> TICKS</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 2</td></tr><tr><td> 23</td><td> 14</td><td> TICKS</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 2</td></tr><tr><td> 24</td><td> 15</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br>Function name: <b>profile</b></br>Compiled variables:  none </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 9</td><td> 0</td><td> ECHO</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 'profile+function+is+called%0A'</td></tr><tr><td> 10</td><td> 1</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> null</td></tr></table></br><h2>OPCODE :<a name=UNSET_DIM>UNSET_DIM</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=8 cols="130"><?php
+/*
+ * Unset the entry of array-value, which is specified by index, and store the original element value into "result".
+ * opcode number: 75
+ */
+$a = array(1,2,3);
+unset($a[0]);
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  !0=$a </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> INIT_ARRAY</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td> 1</td></tr><tr><td > &nbsp; </td><td> 1</td><td> ADD_ARRAY_ELEMENT</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td> 2</td></tr><tr><td > &nbsp; </td><td> 2</td><td> ADD_ARRAY_ELEMENT</td><td > &nbsp; </td><td > &nbsp; </td><td> ~0</td><td> 3</td></tr><tr><td > &nbsp; </td><td> 3</td><td> ASSIGN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !0,~0</td></tr><tr><td> 7</td><td> 4</td><td> UNSET_DIM</td><td > &nbsp; </td><td > &nbsp; </td><td> $2</td><td> !0,0</td></tr><tr><td> 8</td><td> 5</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=UNSET_OBJ>UNSET_OBJ</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=8 cols="130"><?php
+/*
+ * Unset the property of the current object (this) and store the original value into "result".
+ * opcode number: 76
+ */
+$obj = new A();
+unset($obj->num);
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  !0=$obj </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> ZEND_FETCH_CLASS</td><td > &nbsp; </td><td > &nbsp; </td><td> :0</td><td> 'A'</td></tr><tr><td > &nbsp; </td><td> 1</td><td> NEW</td><td > &nbsp; </td><td > &nbsp; </td><td> $1</td><td> :0</td></tr><tr><td > &nbsp; </td><td> 2</td><td> DO_FCALL_BY_NAME</td><td > &nbsp; </td><td> 0</td><td > &nbsp; </td><td > &nbsp; </td></tr><tr><td > &nbsp; </td><td> 3</td><td> ASSIGN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !0,$1</td></tr><tr><td> 7</td><td> 4</td><td> UNSET_OBJ</td><td > &nbsp; </td><td > &nbsp; </td><td> $4</td><td> !0,'num'</td></tr><tr><td> 8</td><td> 5</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=UNSET_VAR>UNSET_VAR</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=9 cols="130"><?php
+/*
+ * Unset the variable and store the original value into "result".
+ * opcode number: 74
+ */
+$x = 1;
+$a='x';
+unset($$a);
+?></textarea></br><h3> PHP opcodes </h3>Function name: <b>(null)</b></br>Compiled variables:  !0=$x,  !1=$a </br><table width="80%" border=1  ><tr><td bgcolor=#9966FF> line</td><td bgcolor=#9966FF> #</td><td bgcolor=#9966FF> op</td><td bgcolor=#9966FF> fetch</td><td bgcolor=#9966FF> ext</td><td bgcolor=#9966FF> return</td><td bgcolor=#9966FF> operands</td></tr><tr><td> 6</td><td> 0</td><td> ASSIGN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !0,1</td></tr><tr><td> 7</td><td> 1</td><td> ASSIGN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> !1,'x'</td></tr><tr><td> 8</td><td> 2</td><td> UNSET_VAR</td><td > &nbsp; </td><td > &nbsp; </td><td> $2</td><td> !1</td></tr><tr><td> 9</td><td> 3</td><td> RETURN</td><td > &nbsp; </td><td > &nbsp; </td><td > &nbsp; </td><td> 1</td></tr></table></br><h2>OPCODE :<a name=USER_OPCODE>USER_OPCODE</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=6 cols="130"><?php 
+/*
+ * 
+ * opcode number: 150
+ * No sample PHP yet */
+?></textarea></br><h3> PHP opcodes </h3><h2>OPCODE :<a name=VERIFY_ABSTRACT_CLASS>VERIFY_ABSTRACT_CLASS</a></h2><h3> PHP source code </h3><textarea style="background-color: #FFFF66" rows=6 cols="130"><?php 
+/*
+ * 
+ * opcode number: 146
+ * No sample PHP yet */
+?></textarea></br><h3> PHP opcodes </h3></body>
+</html>
