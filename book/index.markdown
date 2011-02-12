@@ -24,9 +24,9 @@
 	* [第一节 变量的内存表示及弱类型实现][variables-in-memory]
 	* [第二节 变量的作用域及其生命周期][scope-circle](er)
 	* [第三节 数据类型转换:现式及隐式转换][type-cast] (reeze)
-	* 第四接 类型提示(Type Hinting)的实现(pan)
-	* 第五节 [预定义变量和global语句][global-var]
-    * 第六节 [PHP中的常量][const-var]
+	* [第四接 类型提示(Type Hinting)的实现][receive-arg](pan)
+	* [第五节 预定义变量和global语句][global-var]
+    * [第六节 PHP中的常量][const-var]
 	* 第七节 小结
 
 - 第四章 内存管理
@@ -93,6 +93,7 @@
 [opcode]: ?p=chapt02/02-03-03-opcode
 [02-summary]: ?p=chapt02/02-04-summary
 
+[receive-arg]: ?p=chapt03/03-04-receive-arg
 [global-var]: ?p=chapt03/03-05-global-var
 [scope-circle]: ?p=chapt03/03-02-php-scope-circle
 [type-cast]: ?p=chapt03/03-02-type-cast
