@@ -96,7 +96,7 @@
 [receive-arg]: ?p=chapt03/03-04-receive-arg
 [global-var]: ?p=chapt03/03-05-global-var
 [scope-circle]: ?p=chapt03/03-02-php-scope-circle
-[type-cast]: ?p=chapt03/03-02-type-cast
+[type-cast]: ?p=chapt03/03-03-type-cast
 [const-var]: ?p=chapt03/03-06-const-var
 [variables-in-memory]: ?p=chapt03/03-01-var-memory
 
