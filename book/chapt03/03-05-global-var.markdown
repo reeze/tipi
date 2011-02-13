@@ -165,10 +165,12 @@ $\_GET, $\_POST, $\_SERVER等这些变量, 我们自己并没有定义这样的�
 
 
 ## global语句
+global语句的作用是定义全局变量, 例如如果想在函数内访问全局作用域内的变量则可以通过global声明来定义. 那global是怎么实现跨作用域的变量访问的呢?
+下面从语法解释开始分析.
 ***
 **1. 词法解析**
 
-查看 zend/zend_language_scanner.l文件，搜索 global关键字。我们可以找到如下代码：
+查看 Zend/zend_language_scanner.l文件，搜索 global关键字。我们可以找到如下代码：
 
     [c]
     <ST_IN_SCRIPTING>"global" {
@@ -177,7 +179,7 @@ $\_GET, $\_POST, $\_SERVER等这些变量, 我们自己并没有定义这样的�
 
 **2. 语法解析**
 
-在词法解析完后，获得了token,此时通过这个token，我们去zend/zend_language_parser.y文件中查找。找到相关代码如下：
+在词法解析完后，获得了token,此时通过这个token，我们去Zend/zend_language_parser.y文件中查找。找到相关代码如下：
 
     [c]
     |	T_GLOBAL global_var_list ';'
@@ -189,7 +191,7 @@ $\_GET, $\_POST, $\_SERVER等这些变量, 我们自己并没有定义这样的�
 
 上面代码中的**$3**是指global_var（如果不清楚yacc的语法，可以查阅yacc入门类的文章。）
 
-从上面的代码可以知道，对于全局变量的声明调用的是zend_do_fetch_global_variable函数，查找此函数的实现在zend/zend_compile.c文件。
+从上面的代码可以知道，对于全局变量的声明调用的是zend_do_fetch_global_variable函数，查找此函数的实现在Zend/zend_compile.c文件。
 
     [c]
     void zend_do_fetch_global_variable(znode *varname, const znode *static_assignment, int fetch_type TSRMLS_DC) /* {{{ */

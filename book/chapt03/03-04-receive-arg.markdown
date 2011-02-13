@@ -1,7 +1,7 @@
-# 类型提示的实现
+# 第四节 类型提示的实现
 
-PHP是弱类型语言，向方法传递参数时候也不太区分类型。
-PHP中提供了一些函数，来判断数值的类型。例如，我们可使用is_numeric()。判断是否是一个数值或者可转换为数值的字符串。
+PHP是弱类型语言，向方法传递参数时候一般也不太区分数据类型。
+PHP中提供了一些函数，来判断数据的类型。例如，我们可使用is_numeric()。判断是否是一个数值或者可转换为数值的字符串。
 为了避免对象类型不规范引起的问题，PHP5中引入了类型提示这个概念。
 在定义方法参数时，同时定义参数的对象类型。
 如果在调用的时候，传入参数的类型不对会报错。这样保证了数据的安全性。
@@ -9,7 +9,7 @@ PHP中提供了一些函数，来判断数值的类型。例如，我们可使�
 
 ## 1、词法解析
 
-类型提示是作用于function，我们从function语句起查找类型提示的实现。如下所示，为function在 zend/zend_language_scanner.l文件中体现。
+类型提示是作用于function，我们从function语句起查找类型提示的实现。如下所示，为function在 Zend/zend_language_scanner.l文件中体现。
 
     [c]
     <ST_IN_SCRIPTING>"function" {
@@ -18,7 +18,7 @@ PHP中提供了一些函数，来判断数值的类型。例如，我们可使�
 
 ## 2、语法解析
 
-在词法解析完成后，查找zend/zend_language_parser.y文件，查找T_FUNCTION，并查找对应的参数列表。如下整个查找过程。
+在词法解析完成后，查找Zend/zend_language_parser.y文件，查找T_FUNCTION，并查找对应的参数列表。如下整个查找过程。
 
     [c]
     expr_without_variable:
@@ -92,7 +92,7 @@ PHP中提供了一些函数，来判断数值的类型。例如，我们可使�
 
 从以上代码可以看出：其opcode为ZEND_RECV。
 
-在zend/zend_vm_opcodes.h文件中查找ZEND_RECV，得到如下结果：
+在Zend/zend_vm_opcodes.h文件中查找ZEND_RECV，得到如下结果：
 
     [c]
     #define ZEND_RECV                             63
@@ -130,6 +130,7 @@ PHP中提供了一些函数，来判断数值的类型。例如，我们可使�
     {
        ...//省略
 
+		// 数据类型为某个类的对象
         if (cur_arg_info->class_name) {
             const char *class_name;
 
@@ -137,12 +138,14 @@ PHP中提供了一些函数，来判断数值的类型。例如，我们可使�
                 need_msg = zend_verify_arg_class_kind(cur_arg_info, fetch_type, &class_name, &ce TSRMLS_CC);
                 return zend_verify_arg_error(zf, arg_num, cur_arg_info, need_msg, class_name, "none", "" TSRMLS_CC);
             }
-            if (Z_TYPE_P(arg) == IS_OBJECT) {
+            if (Z_TYPE_P(arg) == IS_OBJECT) { // 既然是类对象参数, 传递的参数需要是对象类型
+				// 下面检查这个对象是否是参数提示类的实例对象, 这里是允许传递子类实力对象
                 need_msg = zend_verify_arg_class_kind(cur_arg_info, fetch_type, &class_name, &ce TSRMLS_CC);
                 if (!ce || !instanceof_function(Z_OBJCE_P(arg), ce TSRMLS_CC)) {
                     return zend_verify_arg_error(zf, arg_num, cur_arg_info, need_msg, class_name, "instance of ", Z_OBJCE_P(arg)->name TSRMLS_CC);
                 }
-            } else if (Z_TYPE_P(arg) != IS_NULL || !cur_arg_info->allow_null) {
+            } else if (Z_TYPE_P(arg) != IS_NULL || !cur_arg_info->allow_null) { // 参数为NULL, 也是可以通过检查的,
+			                                                                    // 如果函数定义了参数默认值, 不传递参数调用也是可以通过检查的
                 need_msg = zend_verify_arg_class_kind(cur_arg_info, fetch_type, &class_name, &ce TSRMLS_CC);
                 return zend_verify_arg_error(zf, arg_num, cur_arg_info, need_msg, class_name, zend_zval_type_name(arg), "" TSRMLS_CC);
             }
