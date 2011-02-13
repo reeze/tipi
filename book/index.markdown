@@ -15,7 +15,7 @@
         + [PHP以模块方式注册到Apache][php-module-in-apache]
         + [嵌入式PHP][embedding-php]
         + [Fastcgi][fastcgi]
-	* [第三节 脚本的执行][script-execution]
+	* [第三节 脚本的执行][script-execution] (reeze)
 		+ [词法分析和语法分析][lex-and-yacc]
 		+ [opcode][opcode]
 	* [第四节 小结][02-summary]
@@ -23,10 +23,10 @@
 - 第三章 变量及数据类型
 	* [第一节 变量的内存表示及弱类型实现][variables-in-memory]
 	* [第二节 变量的作用域及其生命周期][scope-circle](er)
-	* [第三节 数据类型转换:现式及隐式转换][type-cast] (reeze)
-	* [第四接 类型提示(Type Hinting)的实现][receive-arg]
+	* [第三节 数据类型转换:自动及强制类型转换][type-cast]
+	* [第四节 类型提示(Type Hinting)的实现][receive-arg]
 	* [第五节 预定义变量和global语句][global-var]
-        * [第六节 PHP中的常量][const-var]
+    * [第六节 PHP中的常量][const-var]
 	* 第七节 小结
 
 - 第四章 内存管理
