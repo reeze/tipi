@@ -123,6 +123,8 @@
 	font-weight: normal;
 }
 
+
+
 #book_sidebar ul ul {
 	margin-bottom: 10px;
 }
@@ -135,6 +137,10 @@
 #book_sidebar ul a:hover {
 	text-decoration: underline;
 
+}
+
+#book_sidebar ul a:visited {
+	color: #225e79;
 }
 
 #book_sidebar ul ul {
