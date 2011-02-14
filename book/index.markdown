@@ -22,7 +22,7 @@
 
 - 第三章 变量及数据类型
 	* [第一节 变量的内存表示][variables-in-memory]
-	* [第二节 变量的作用域][scope-circle](er)
+	* [第二节 变量的作用域][scope-circle]
 	* [第三节 数据类型转换:自动及强制类型转换][type-cast]
 	* [第四节 类型提示(Type Hinting)的实现][receive-arg]
 	* [第五节 预定义变量][global-var]
