@@ -21,11 +21,11 @@
 	* [第四节 小结][02-summary]
 
 - 第三章 变量及数据类型
-	* [第一节 变量的内存表示及弱类型实现][variables-in-memory]
-	* [第二节 变量的作用域及其生命周期][scope-circle](er)
+	* [第一节 变量的内存表示][variables-in-memory]
+	* [第二节 变量的作用域][scope-circle](er)
 	* [第三节 数据类型转换:自动及强制类型转换][type-cast]
 	* [第四节 类型提示(Type Hinting)的实现][receive-arg]
-	* [第五节 预定义变量和global语句][global-var]
+	* [第五节 预定义变量][global-var]
     * [第六节 PHP中的常量][const-var]
 	* 第七节 小结
 
