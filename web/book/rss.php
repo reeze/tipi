@@ -1,5 +1,6 @@
 <?php
 
+require_once "../config.php";
 require_once "../lib/FeedWriter/FeedWriter.php";
 require_once "../lib/SimpieView.php";
 require_once "../models/BookPage.php";
