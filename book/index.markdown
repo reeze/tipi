@@ -24,7 +24,7 @@
 	* [第一节 变量的内部结构][variables-in-memory]
     * [第二节 常量][const-var]
 	* [第三节 预定义变量][global-var]
-	* 第四节 静态变量
+	* [第四节 静态变量][static-var]
 	* [第五节 类型提示(Type Hinting)的实现][receive-arg]
 	* [第六节 变量的作用域][var-scope]
 	* [第七节 数据类型转换][type-cast]
@@ -100,6 +100,7 @@
 [variables-in-memory]: 	?p=chapt03/03-01-var-memory
 [const-var]: 			?p=chapt03/03-02-const-var
 [global-var]: 			?p=chapt03/03-03-global-var
+[static-var]:           ?p=chapt03/03-04-static-var
 [receive-arg]: 			?p=chapt03/03-05-receive-arg
 [var-scope]: 			?p=chapt03/03-06-php-scope
 [type-cast]: 			?p=chapt03/03-07-type-cast
