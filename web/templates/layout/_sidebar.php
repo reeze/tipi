@@ -1,4 +1,4 @@
-<h3>章节列表</h3>
+<div id="feed_subscribe"><a href="rss.php">想要追踪TIPI的更新? 订阅吧</div></div>
 <ul>
     <?php
     foreach ($chapt_list as $chapt) {

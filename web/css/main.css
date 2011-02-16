@@ -72,6 +72,22 @@ a {
 	font-family: "Microsoft YaHei", Helvetica, Arial, sans-serif;
 }
 
+
+#feed_subscribe {
+	margin-top: 10px;
+	margin-bottom: 10px;
+	border-bottom: 1px #ccc solid;
+	padding: 5px;
+}
+
+#feed_subscribe a {
+	display: block;
+	background: url("../images/feed.png") left center no-repeat;
+	padding-left: 40px;
+	font-size: 1.1em;
+	text-decoration: none;
+}
+
 h1,h2,h3,h4 {
 	font-weight: normal;
 	font-family: "Microsoft YaHei", Helvetica, Arial, sans-serif;

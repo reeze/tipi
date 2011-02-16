@@ -1,0 +1,14 @@
+
+
+/* Book content style */
+pre {
+	padding: 10px;
+	background-color: #333;
+	color: #fff;
+	font: 13px "Bitstream Vera Sans Mono", "DejaVu Sans Mono", "Courier New", monospace;
+	overflow: auto;
+	border: 1px 0;
+	border-color: #333;
+	/* Hack for IE pre expand to much */
+	_word-wrap: break-word;
+}

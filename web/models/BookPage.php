@@ -97,6 +97,15 @@ class BookPage {
         return $this->title;
     }
 
+	public function getPageContent($render=null) {
+		if($render) {
+			return $render->render(null, true);
+		}
+		else {
+			return file_get_contents($this->getPageFilePath());	
+		}
+	}
+
     private static function _getTitleFromFileName($file, $default='NO_COMPLETED') {
         $fp = @fopen($file, "r");
         $title = $default;
@@ -168,6 +177,27 @@ class BookPage {
 
         return $list;
     }
+
+	public static function getFlatPages($chapt_lists=null) {
+		if($chapt_lists === null) {
+			$chapt_lists = self::getChapterList();
+		}
+		if(empty($chapt_lists)) return array();
+
+		$pages = array();
+		foreach($chapt_lists as $chapt) {
+			$pages[] = array('title' => $chapt['title'], 'page_name' => $chapt['page_name']);
+			if(isset($chapt['list'])) {
+				$pages = array_merge(
+					$pages,
+					self::getFlatPages($chapt['list'])
+				);
+			}
+		}
+
+		return $pages;
+	}
+
 
     /**
      * 获取子章节列表
