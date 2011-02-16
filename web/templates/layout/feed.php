@@ -5,4 +5,4 @@ echo $layout_content;
 ?>
 
 <hr />
-Copyright &copy; Tipi-team. All right reserved.
+Copyright &copy; TIPI-Team. All right reserved.
