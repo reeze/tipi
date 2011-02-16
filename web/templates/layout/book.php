@@ -22,6 +22,7 @@
 
 						<?php if($is_detail_view): ?>
 							<?php SimpieView::include_partial("../templates/layout/_book_navor.php", array('prev_page' => $page->getPrevPage(), 'next_page' => $page->getNextPage())); ?>
+							<?php SimpieView::include_partial("../templates/layout/_comment.php"); ?>
 						<?php endif; ?>
 					</div>
 				</div>
