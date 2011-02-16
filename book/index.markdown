@@ -21,13 +21,14 @@
 	* [第四节 小结][02-summary]
 
 - 第三章 变量及数据类型
-	* [第一节 变量的内存表示][variables-in-memory]
-	* [第二节 变量的作用域][scope-circle]
-	* [第三节 数据类型转换:自动及强制类型转换][type-cast]
-	* [第四节 类型提示(Type Hinting)的实现][receive-arg]
-	* [第五节 预定义变量][global-var]
-    * [第六节 PHP中的常量][const-var]
-	* 第七节 小结
+	* [第一节 变量的内部结构][variables-in-memory]
+    * [第二节 常量][const-var]
+	* [第三节 预定义变量][global-var]
+	* 第四节 静态变量
+	* [第五节 类型提示(Type Hinting)的实现][receive-arg]
+	* [第六节 变量的作用域][var-scope]
+	* [第七节 数据类型转换][type-cast]
+	* 第八节 小结
 
 
 - 第四章 函数的实现
@@ -79,27 +80,27 @@
 	* 第二节 性能监控及优化扩展
 	* 第三节 扩展PHP语法,为PHP增加语法特性
 
-[prepare-and-background]: ?p=chapt01/01-00-prepare-and-background
-[build-env]: ?p=chapt01/01-01-php-env-building
-[code-structure]: ?p=chapt01/01-02-code-structure
-[common-code-in-php-src]: ?p=chapt01/01-03-comm-code-in-php-src
-[01-summary]: ?p=chapt01/01-04-summary
+[prepare-and-background]: 	?p=chapt01/01-00-prepare-and-background
+[build-env]: 				?p=chapt01/01-01-php-env-building
+[code-structure]: 			?p=chapt01/01-02-code-structure
+[common-code-in-php-src]: 	?p=chapt01/01-03-comm-code-in-php-src
+[01-summary]: 				?p=chapt01/01-04-summary
 
-[survey]: ?p=chapt02/02-00-overview
-[php-life-cycle]: ?p=chapt02/02-01-php-life-cycle-and-zend-engine
-[sapi-overview]: ?p=chapt02/02-02-00-overview
+[survey]: 				?p=chapt02/02-00-overview
+[php-life-cycle]: 		?p=chapt02/02-01-php-life-cycle-and-zend-engine
+[sapi-overview]: 		?p=chapt02/02-02-00-overview
 [php-module-in-apache]: ?p=chapt02/02-02-01-apache-php-module
-[embedding-php]: ?p=chapt02/02-02-02-embedding-php
-[fastcgi]: ?p=chapt02/02-02-03-fastcgi
-[script-execution]: ?p=chapt02/02-03-00-how-php-script-get-executed
-[lex-and-yacc]: ?p=chapt02/02-03-01-lex-and-yacc
-[opcode]: ?p=chapt02/02-03-03-opcode
-[02-summary]: ?p=chapt02/02-04-summary
+[embedding-php]: 		?p=chapt02/02-02-02-embedding-php
+[fastcgi]: 				?p=chapt02/02-02-03-fastcgi
+[script-execution]: 	?p=chapt02/02-03-00-how-php-script-get-executed
+[lex-and-yacc]: 		?p=chapt02/02-03-01-lex-and-yacc
+[opcode]: 				?p=chapt02/02-03-03-opcode
+[02-summary]: 			?p=chapt02/02-04-summary
 
-[receive-arg]: ?p=chapt03/03-04-receive-arg
-[global-var]: ?p=chapt03/03-05-global-var
-[scope-circle]: ?p=chapt03/03-02-php-scope-circle
-[type-cast]: ?p=chapt03/03-03-type-cast
-[const-var]: ?p=chapt03/03-06-const-var
-[variables-in-memory]: ?p=chapt03/03-01-var-memory
+[variables-in-memory]: 	?p=chapt03/03-01-var-memory
+[const-var]: 			?p=chapt03/03-02-const-var
+[global-var]: 			?p=chapt03/03-03-global-var
+[receive-arg]: 			?p=chapt03/03-05-receive-arg
+[var-scope]: 			?p=chapt03/03-06-php-scope
+[type-cast]: 			?p=chapt03/03-07-type-cast
 
