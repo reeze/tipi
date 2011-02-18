@@ -20,7 +20,7 @@
 		+ [opcode][opcode]
 	* [第四节 小结][02-summary]
 
-- 第三章 变量及数据类型
+- [第三章 变量及数据类型][variables]
 	* [第一节 变量的内部结构][variables-in-memory]
     * [第二节 常量][const-var]
 	* [第三节 预定义变量][global-var]
@@ -97,6 +97,7 @@
 [opcode]: 				?p=chapt02/02-03-03-opcode
 [02-summary]: 			?p=chapt02/02-04-summary
 
+[variables]:            ?p=chapt03/03-00-variable-and-data-types
 [variables-in-memory]: 	?p=chapt03/03-01-var-memory
 [const-var]: 			?p=chapt03/03-02-const-var
 [global-var]: 			?p=chapt03/03-03-global-var
