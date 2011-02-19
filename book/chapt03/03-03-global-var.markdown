@@ -1,7 +1,7 @@
 # 第三节 预定义变量
 
-大家都知道PHP脚本在执行的时候用户变量(在用户空间显式定义的变量)会保存在一个HashTable数据类型的符号表(symbol_table)中, 在PHP中有一些比较特殊的全局变量例如:
-$\_GET, $\_POST, $\_SERVER等这些变量, 我们自己并没有定义这样的一些变量, 那这些变量是从何而来的呢? 既然变量是保存在符号表中, 那PHP应该是在脚本运行之前就将这些
+大家都知道PHP脚本在执行的时候用户全局变量(在用户空间显式定义的变量)会保存在一个HashTable数据类型的符号表(symbol_table)中, 在PHP中有一些比较特殊的全局变量例如:
+$\_GET, $\_POST, $\_SERVER等变量, 我们自己并没有定义这样的一些变量, 那这些变量是从何而来的呢? 既然变量是保存在符号表中, 那PHP应该是在脚本运行之前就将这些
 特殊的变量加入到了符号表中了吧? 事实就是这样.
 
 ## 预定义变量$GLOBALS的初始化
@@ -23,13 +23,16 @@ $\_GET, $\_POST, $\_SERVER等这些变量, 我们自己并没有定义这样的�
 		Z_SET_ISREF_P(globals);
 		Z_TYPE_P(globals) = IS_ARRAY;
 		Z_ARRVAL_P(globals) = &EG(symbol_table);
-		zend_hash_update(&EG(symbol_table), "GLOBALS", sizeof("GLOBALS"), &globals, sizeof(zval *), NULL);
+		zend_hash_update(&EG(symbol_table), "GLOBALS", sizeof("GLOBALS"), &globals, sizeof(zval *), NULL);      //  添加全局变量GLOBALS
 	}
     ... //  省略
 
+上面的代码的关键点zend_hash_update函数的调用，它将变量名为GLOBALS的变量注册到EG(symbol_table)中，EG(symbol_table)是一个HashTable的结构，用来存放所有的全局变量。
+这在下面将要提到的$_GET等变量初始化时也会用到。
 
 ## $_GET、$_POST等变量的初始化
 ***
+
 **$_GET、$_COOKIE、$_SERVER、$_ENV、$_FILES、$_REQUEST**这六个变量都是通过如下的调用序列进行初始化。
 **[main() -> php_request_startup() -> php_hash_environment()  ]**  
 在请求初始化时，通过调用 **php_hash_environment** 函数初始化以上的六个预定义的变量。如下所示为php_hash_environment函数的代码。在代码之后我们以$_POST为例说明整个初始化的过程。
@@ -153,9 +156,12 @@ $\_GET, $\_POST, $\_SERVER等这些变量, 我们自己并没有定义这样的�
             return SUCCESS;
     }
 
-以$_POST为例，首先以 **auto_global_record** 初始化在后面将要用到的名称等。
+以$_POST为例，首先以 **auto_global_record** 数组形式定义好将要初始化的变量的相关信息。
 在变量初始化完成后，按照PG(variables_order)指定的顺序（在php.ini中指定），通过调用sapi_module.treat_data处理数据。
-(从PHP实现的架构设计看，treat_data函数在SAPI目录下不同的服务器应该有不同的实现，只是现在大部分都是使用的默认实现。)
+
+
+>从PHP实现的架构设计看，treat_data函数在SAPI目录下不同的服务器应该有不同的实现，只是现在大部分都是使用的默认实现。
+
 在treat_data后，如果打开了PG(register_globals)，则会调用php_autoglobal_merge将相关变量的值写到符号表。
 
 
