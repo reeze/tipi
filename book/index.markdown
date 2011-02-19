@@ -28,7 +28,7 @@
 	* [第五节 类型提示(Type Hinting)的实现][receive-arg]
 	* [第六节 变量的作用域][var-scope]
 	* [第七节 数据类型转换][type-cast]
-	* 第八节 小结
+	* [第八节 小结][03-summary]
 
 
 - 第四章 函数的实现
@@ -105,6 +105,7 @@
 [receive-arg]: 			?p=chapt03/03-05-receive-arg
 [var-scope]: 			?p=chapt03/03-06-php-scope
 [type-cast]: 			?p=chapt03/03-07-type-cast
+[03-summary]: 			?p=chapt03/03-08-summary
 
 
 [function-define]:   ?p=chapt04/04-02-function-define-param-return
