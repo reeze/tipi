@@ -1,7 +1,26 @@
 # 第四节 静态变量
+静态变量，我们常见的应该是静态局部变量。局部变量只有在函数执行时才会存在。
+通常，当一个函数执行完毕，它的局部变量的值就已经不存在，而且变量所占据的内存也被释放。
+当下一次执行该过程时，它的所有局部变量将重新初始化。当把局部变量定义成静态的，从而保留变量的值。
+在函数内部用 static 关键字声明一个或多个变量，其用法如下：
+
+    [php]
+    function t() {
+        static $i = 0;
+        $i++;
+        echo $i, ' ';
+    }
+
+    t();
+    t();
+    t();
+
+上面的程序会输出1 2 3。从这个示例可以看出，$i变量是独立于其它局部变量的。那么这个独立性是如何实现的，下面我们一起来探索静态变量的实现过程。
+
+static是PHP语言的一个语句，我们需要从词法分析，语法分析，中间代码生成到执行中间代码这几个部分探讨整个实现过程。
 
 **词法分析**
-查看 Zend/zend_language_scanner.l文件，搜索 static关键字。我们可以找到如下代码：
+首先查看 Zend/zend_language_scanner.l文件，搜索 static关键字。我们可以找到如下代码：
 
     [c]
     <ST_IN_SCRIPTING>"static" {
@@ -23,7 +42,10 @@
 
     ;
 
-从上面可知，PHP在解释static变量赋值生成中间是调用zend_do_fetch_static_variable函数。zend_do_fetch_static_variable代码如下：
+从上面代码可知，PHP在解释static变量赋值生成中间是调用zend_do_fetch_static_variable函数。
+
+**3. 生成中间代码**
+调用zend_do_fetch_static_variable函数其实是生成中间代码的过程。其代码如下：
 
     [c]
     void zend_do_fetch_static_variable(znode *varname, const znode *static_assignment, int fetch_type TSRMLS_DC)
@@ -74,11 +96,11 @@
     }
 
 从上面的代码我们可知，在解释成中间代码时，静态变量是存放在CG(active_op_array)->static_variables中的。
-并且生成的中间代码为：**ZEND_FETCH_W** 和 **ZEND_ASSIGN_REF**
+并且生成的中间代码为：**ZEND_FETCH_W** 和 **ZEND_ASSIGN_REF** 。
+其中ZEND_FETCH_W中间代码是在zend_do_fetch_static_variable中直接赋值，而ZEND_ASSIGN_REF中间代码是在zend_do_fetch_static_variable中调用zend_do_assign_ref生成的。
 
-**3. 生成并执行中间代码**
-
-在Zend/zend_vm_opcodes.h文件中，这两个的定义如下：
+**4. 执行中间代码**
+在生成完中间代码后，ZE会调用执行中间代码。而中间代码会先查看中间代码的编号。在Zend/zend_vm_opcodes.h文件中，这两个的定义如下：
 
     [c]
     #define ZEND_FETCH_W                          83
@@ -117,14 +139,7 @@
                 }
             }
             switch (opline->op2.u.EA.type) {
-                case ZEND_FETCH_GLOBAL:
-                    if (IS_CV != IS_TMP_VAR) {
-
-                    }
-                    break;
-                case ZEND_FETCH_LOCAL:
-
-                    break;
+                ...//省略
                 case ZEND_FETCH_STATIC:
                     zval_update_constant(retval, (void*) 1 TSRMLS_CC);
                     break;
@@ -136,11 +151,10 @@
             }
         }
 
-
         ...//省略
     }
 
-如下为取符号表的代码实现。
+在上面的代码中有一个关键的函数zend_get_target_symbol_table。它的作用是取目标符号表，如下为本次调用的部分代码实现。
 
     [c]
     static inline HashTable *zend_get_target_symbol_table(const zend_op *opline, const temp_variable *Ts, int type, const zval *variable TSRMLS_DC)
@@ -159,4 +173,7 @@
         return NULL;
     }
 
-在前面的zend_do_fetch_static_variable执行时，op2.u.EA.type的值为ZEND_FETCH_STATIC，从而这zend_get_target_symbol_table函数中我们取EG(active_op_array)->static_variables的值返回。
+在前面的zend_do_fetch_static_variable执行时，op2.u.EA.type的值为ZEND_FETCH_STATIC，
+从而这zend_get_target_symbol_table函数中我们取EG(active_op_array)->static_variables的值返回。
+
+从上面的实现可以看出静态变量在生成中间代码以及在执行时都是以一个HashTable类型的变量static_variables独立存在，这就是静态变量与其它变量不同所在。
