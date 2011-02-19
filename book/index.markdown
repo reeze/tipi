@@ -33,7 +33,7 @@
 
 - 第四章 函数的实现
     * 第一节 函数的内部结构
-    * 第二节 函数的定义,传参及返回值(pan)
+    * [第二节 函数的定义,传参及返回值][function-define](pan)
     * 第三节 函数的调用和执行
     * 第四节 匿名函数(create_function, clouser)
     * 第五节 小结
@@ -105,4 +105,7 @@
 [receive-arg]: 			?p=chapt03/03-05-receive-arg
 [var-scope]: 			?p=chapt03/03-06-php-scope
 [type-cast]: 			?p=chapt03/03-07-type-cast
+
+
+[function-define]:   ?p=chapt04/04-02-function-define-param-return
 
