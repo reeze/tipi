@@ -67,6 +67,11 @@ $PHP_SRC/Zend/zend_language_scanner.l 文件是re2c的规则文件, 所以如果
 
 
 ### Yacc/Bison
+
+>**NOTE**
+>PHP在后续的版本中[可能会使用Lemon作为语法分析器](http://wiki.php.net/rfc/lemon), [Lemon](http://www.sqlite.org/src/doc/trunk/doc/lemon.html)是SQLite作者为SQLite中SQL所编写的词法分析器.
+>Lemno具有线程安全以及可重入等特点, 也能提供更直观的错误提示信息.
+
 Bison和Flex类似, 也是使用%%作为分界不过Bison接受的是标记(token)序列, 根据定义的语法规则,来执行一些动作,
 Bison使用巴科斯范式([BNF](http://baike.baidu.com/view/1137652.htm))来描述语法, php中echo语句可以接受多个参数, 这几个参数之间可以使用逗号分隔,
 在PHP的语法规则:
@@ -80,4 +85,5 @@ Bison使用巴科斯范式([BNF](http://baike.baidu.com/view/1137652.htm))来描
 其中echo_expr_list规则为一个递归规则, 这样就允许接受多个表达式作为参数.
 在每个规则后面有一段大括号起来的语句, 这个称为动作,在上面的例子当中echo时会执行zend_do_echo函数,
 函数中的参数可能看起来比较奇怪, 其中的$3 表示前面规则的第三个定义,也就是expr这个表达式的值,
-zend_do_echo函数则更具表达式的信息编译opcode, php中其他的语法规则也是类似, 下面将介绍继续介绍PHP中的opcode.
+zend_do_echo函数则根据表达式的信息编译opcode, php中其他的语法规则也是类似, 下面将介绍继续介绍PHP中的opcode.
+
