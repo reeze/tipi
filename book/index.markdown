@@ -94,7 +94,7 @@
 [fastcgi]: 				?p=chapt02/02-02-03-fastcgi
 [script-execution]: 	?p=chapt02/02-03-00-how-php-script-get-executed
 [lex-and-yacc]: 		?p=chapt02/02-03-01-lex-and-yacc
-[opcode]: 				?p=chapt02/02-03-03-opcode
+[opcode]: 				?p=chapt02/02-03-02-opcode
 [02-summary]: 			?p=chapt02/02-04-summary
 
 [variables]:            ?p=chapt03/03-00-variable-and-data-types
