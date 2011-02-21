@@ -34,7 +34,7 @@
 - 第四章 函数的实现
     * 第一节 函数的内部结构
     * [第二节 函数的定义,传参及返回值][function-define](pan)
-    * 第三节 函数的调用和执行
+    * [第三节 函数的调用和执行][function-call](er)
     * 第四节 匿名函数(create_function, clouser)
     * 第五节 小结
 
@@ -108,5 +108,6 @@
 [03-summary]: 			?p=chapt03/03-08-summary
 
 
-[function-define]:   ?p=chapt04/04-02-function-define-param-return
+[function-define]:   	?p=chapt04/04-02-function-define-param-return
+[function-call]:   		?p=chapt04/04-03-function-call
 
