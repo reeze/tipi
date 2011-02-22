@@ -34,7 +34,7 @@
 	* [第八节 小结][03-summary]
 
 
-- 第四章 函数的实现
+- [第四章 函数的实现][function]
     * [第一节 函数的内部结构][function-struct]
     * [第二节 函数的定义,传参及返回值][function-define](pan)
     * [第三节 函数的调用和执行][function-call](er)
@@ -113,6 +113,7 @@
 [03-summary]: 			?p=chapt03/03-08-summary
 
 
+[function]:            	?p=chapt04/04-00-php-function
 [function-struct]:   	?p=chapt04/04-01-function-struct
 [function-define]:   	?p=chapt04/04-02-function-define-param-return
 [function-call]:   		?p=chapt04/04-03-function-call
