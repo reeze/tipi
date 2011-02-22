@@ -48,7 +48,8 @@ static是PHP语言的一个语句，我们需要从词法分析，语法分析�
 调用zend_do_fetch_static_variable函数其实是生成中间代码的过程。其代码如下：
 
     [c]
-    void zend_do_fetch_static_variable(znode *varname, const znode *static_assignment, int fetch_type TSRMLS_DC)
+    void zend_do_fetch_static_variable(znode *varname, const znode
+            *static_assignment, int fetch_type TSRMLS_DC)
     {
         zval *tmp;
         zend_op *opline;
@@ -68,7 +69,8 @@ static是PHP语言的一个语句，我们需要从词法分析，语法分析�
             zend_hash_init(CG(active_op_array)->static_variables, 2, NULL, ZVAL_PTR_DTOR, 0);
         }
         //  将新的静态变量放进来
-        zend_hash_update(CG(active_op_array)->static_variables, varname->u.constant.value.str.val, varname->u.constant.value.str.len+1, &tmp, sizeof(zval *), NULL);
+        zend_hash_update(CG(active_op_array)->static_variables, varname->u.constant.value.str.val,
+            varname->u.constant.value.str.len+1, &tmp, sizeof(zval *), NULL);
 
         ...//省略
         opline = get_next_op(CG(active_op_array) TSRMLS_CC);

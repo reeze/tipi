@@ -217,15 +217,19 @@ PHP是一种弱类型的语言，这就意味着在声明或使用变量的时�
 
 			/* 类句柄 */
 			zend_object_value (*create_object)(zend_class_entry *class_type TSRMLS_DC);
-			zend_object_iterator *(*get_iterator)(zend_class_entry *ce, zval *object,intby_ref TSRMLS_DC);
+			zend_object_iterator *(*get_iterator)(zend_class_entry *ce, zval *object,
+                intby_ref TSRMLS_DC);
 
 			/* 类声明的接口 */
-			int(*interface_gets_implemented)(zend_class_entry *iface, zend_class_entry *class_type TSRMLS_DC);
+			int(*interface_gets_implemented)(zend_class_entry *iface,
+                    zend_class_entry *class_type TSRMLS_DC);
 
 
 			/* 序列化回调函数指针 */
-			int(*serialize)(zval *object, unsignedchar**buffer, zend_uint *buf_len, zend_serialize_data *data TSRMLS_DC);
-			int(*unserialize)(zval **object, zend_class_entry *ce,constunsignedchar*buf, zend_uint buf_len, zend_unserialize_data *data TSRMLS_DC);
+			int(*serialize)(zval *object, unsignedchar**buffer, zend_uint *buf_len,
+                     zend_serialize_data *data TSRMLS_DC);
+			int(*unserialize)(zval **object, zend_class_entry *ce,constunsignedchar*buf,
+                    zend_uint buf_len, zend_unserialize_data *data TSRMLS_DC);
 
 
 			zend_class_entry **interfaces;

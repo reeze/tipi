@@ -1,0 +1,106 @@
+# Opcode
+
+Opcode在wikipedia中的[解释](http://en.wikipedia.org/wiki/Opcode)是: opcode是计算机指令中的一部分, 用于指定要执行的操作,
+指令的格式和规范由处理器的指令规范指定. 除了指令本身以外通常还有指令所需要的操作数, 可能有的指令不需要显式的操作数.
+这些操作数可能是寄存器中的值, 堆栈中的值, 某块内存的值或者IO端口中的值等等.
+
+通常opcode还有另一种称谓: 字节码(byte codes). 例如Java虚拟机(JVM), .NET的通用中间语言(CIL: Common Intermeditate Language)等等.
+
+
+## PHP的opcode
+PHP中的opcode则属于前面介绍中的后着, PHP是构建在Zend虚拟机(Zend VM)之上的. PHP中的opcode就相当于Zend虚拟机中的指令.
+
+>**NOTE**
+>有关Zend虚拟机的介绍请阅读后面相关内容
+
+opcode在PHP的内部实现表示如下：
+
+	[c]
+	struct _zend_op {
+		opcode_handler_t handler; // 执行该opcode时调用的处理函数
+		znode result;
+		znode op1;
+		znode op2;
+		ulong extended_value;
+		uint lineno;
+		zend_uchar opcode;  // opcode代码
+	};
+
+和CPU的指令类似, 有一个标示指令的opcode字段, 以及这个opcode所操作的操作数, PHP不像汇编那么底层, 在脚本实际执行的时候可能还需要其他更多的信息,
+extended_value字段就保存了这类信息, 其中的result域则是保存该指令执行完成后的结果.
+
+例如如下代码时在编译器遇到print语句的时候进行编译的函数:
+
+	[c]
+	void zend_do_print(znode *result, const znode *arg TSRMLS_DC)
+	{
+		zend_op *opline = get_next_op(CG(active_op_array) TSRMLS_CC);
+
+		opline->result.op_type = IS_TMP_VAR;
+		opline->result.u.var = get_temporary_variable(CG(active_op_array));
+		opline->opcode = ZEND_PRINT;
+		opline->op1 = *arg;
+		SET_UNUSED(opline->op2);
+		*result = opline->result;
+	}
+
+这个函数新创建一条zend_op, 将返回值的类型设置为临时变量(IS_TMP_VAR), 并为临时变量申请空间, 随后指定opcode为ZEND_PRINT, 并将传递进来的参数赋值给
+这条opcode的第一个操作数.
+
+下面这个函数是在编译器遇到echo语句的时候进行编译的函数:
+
+	[c]
+	void zend_do_echo(const znode *arg TSRMLS_DC)
+	{
+		zend_op *opline = get_next_op(CG(active_op_array) TSRMLS_CC);
+
+		opline->opcode = ZEND_ECHO;
+		opline->op1 = *arg;
+		SET_UNUSED(opline->op2);
+	}   
+
+可以看到echo处理除了指定opcode以外,还将echo的参数传递给op1, 这里并没有设置opcode的result结果字段。
+从这里我们也能看出print和echo的区别来, print有返回值,而echo没有, 这里的没有和返回null是不同的, 如果尝试将echo的值赋值给某个变量或者传递给函数都会出现语法错误.
+
+PHP脚本编译为opcode保存在op_array中, 其内部存储的结构如下:
+
+	[c]
+	struct _zend_op_array {
+		/* Common elements */
+		zend_uchar type;
+		char *function_name;  // 如果是用户定义的函数则, 这里将保存函数的名字
+		zend_class_entry *scope;
+		zend_uint fn_flags;
+		union _zend_function *prototype;
+		zend_uint num_args;
+		zend_uint required_num_args;
+		zend_arg_info *arg_info;
+		zend_bool pass_rest_by_reference;
+		unsigned char return_reference;
+		/* END of common elements */
+
+		zend_bool done_pass_two;
+
+		zend_uint *refcount;
+
+		zend_op *opcodes;  // opcode数组
+
+		zend_uint last, size;
+
+		zend_compiled_variable *vars;
+		int last_var, size_var;
+		
+		// ...
+	}
+
+如上面的注释, opcodes保存在这里, 在执行的时候由下面的execute函数执行:
+
+	[c]
+	ZEND_API void execute(zend_op_array *op_array TSRMLS_DC)
+	{
+		// ... 循环执行op_array中的opcode或者执行其他op_array中的opcode
+	}
+
+
+前面提到每条opcode都有一个opcode_handler_t的函数指针字段,用于执行该opcode, 这里并没有给没有指定处理函数, 那在执行的时候该由哪个函数来执行呢?
+更多信息请参考Zend虚拟机相关章节的详细介绍.

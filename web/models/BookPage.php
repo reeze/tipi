@@ -97,6 +97,72 @@ class BookPage {
         return $this->title;
     }
 
+	
+	/**
+	 * 返回完整的章节名称, 例如在RSS输出等地方需要完整的章节名称.
+     *
+	 * @return string
+	 */
+	public function getAbsTitle($html_encode=false) {
+		// "chapt02/02-03-page-sample  or index etc.
+		list($page, $real_page) = explode('/', $this->page_name);
+		if($real_page) {
+			$page = $real_page;
+		}
+		list($chapt_seq, $sect_seq, $sub_seq) = explode('-', $page);
+
+		$num_chs_map = array(
+			'01' => "一",
+			'02' => '二',
+			'03' => '三',
+			'04' => '四',
+			'05' => '五',
+			'06' => '六',
+			'07' => '七',
+			'08' => '八',
+			'09' => '九',
+			'10' => '十',
+			'11' => '十一',
+			'12' => '十二',
+			'13' => '十三',
+			'14' => '十四',
+			'15' => '十五',
+			'16' => '十六',
+			'17' => '十七',
+			'18' => '十八',
+			'19' => '十九',
+			'20' => '二十',
+		);
+		
+		$title = $this->getTitle();
+
+		// 类似目录以及附录等页面
+		$is_index_page = ((int)$chapt_seq == 0);
+
+		// 三级页面
+		$is_sub_section_page = ($sub_seq != null && (int)$sub_seq > 0);
+
+		// 每章的介绍页面
+		$is_section_index_page = (!$is_index_page && !$is_sub_section_page && $sect_seq == '00');
+		
+		// 小节页面
+		$is_section_page = (!$is_section_index_page && (int)$sect_seq > 0);
+
+
+		if($is_sub_section_page) {
+			$prefix = "第" . (isset($num_chs_map[$chapt_seq]) ? $num_chs_map[$chapt_seq] : $chapt_seq) . "章 > ";
+			$prefix .= "第" . (isset($num_chs_map[$sect_seq]) ? $num_chs_map[$sect_seq] : $sect_seq) . "节 > ";
+			$title = $prefix . $title;
+		}
+		else if($is_section_page) {
+			$title = "第" . (isset($num_chs_map[$chapt_seq]) ? $num_chs_map[$chapt_seq] : $chapt_seq) . "章 > " . $title; 
+		}
+
+		// $is_section_index_page and $is_index_page and all other page
+		// return the page's title
+		return ($html_encode ? htmlentities($title) : $title);
+	}
+
 	public function getPageContent($render=null) {
 		if($render) {
 			return $render->render(null, true);

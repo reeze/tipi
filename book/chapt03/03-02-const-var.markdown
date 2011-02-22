@@ -38,7 +38,8 @@ define是PHP的内置函数，在Zend/zend_builtin_functions.c文件中定义了
        Define a new constant */
     ZEND_FUNCTION(define)
     {
-            if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "sz|b", &name, &name_len, &val, &non_cs) == FAILURE) {
+            if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "sz|b", &name,
+                    &name_len, &val, &non_cs) == FAILURE) {
                     return;
             }
 
@@ -125,7 +126,8 @@ zend_register_long_constant函数将常量中值的类型，值，名称及模�
 **[php_cgi_startup() -> php_module_startup() -> zend_startup() -> zend_register_standard_constants() -> zend_register_constant]**
 
     [c]
-    ZEND_API void zend_register_long_constant(const char *name, uint name_len, long lval, int flags, int module_number TSRMLS_DC)
+    ZEND_API void zend_register_long_constant(const char *name, uint name_len,
+            long lval, int flags, int module_number TSRMLS_DC)
     {
         zend_constant c;
 
@@ -142,7 +144,8 @@ zend_register_constant函数首先根据常量中的c->flags判断是否区分�
 然后将调用下面的语句将当前常量添加到EG(zend_constants)。EG(zend_constants)是一个HashTable（这在前面的章节中说明），下面的代码是将常量添加到这个HashTable中。
 
     [c]
-    zend_hash_add(EG(zend_constants), name, c->name_len, (void *) c, sizeof(zend_constant), NULL)==FAILURE)
+    zend_hash_add(EG(zend_constants), name, c->name_len, (void *) c,
+            sizeof(zend_constant), NULL)==FAILURE)
 
 在php_module_startup函数中，除了zend_startup函数中有注册标准的常量，它本身体通过宏REGISTER_MAIN_LONG_CONSTANT等注册了一些常量，如：PHP_VERSION，PHP_OS等。
 

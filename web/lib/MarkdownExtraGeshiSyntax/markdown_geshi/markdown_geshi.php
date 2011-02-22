@@ -163,7 +163,7 @@ class MarkdownExtraGeshi_Parser extends MarkdownExtra_Parser
 	function __tipi_web_image_repalce($url) {
 		// don't replace the absolute urls
 		if(strpos($url, ':') === false) {
-			return str_replace('images/', 'images/book/', $url);
+			return str_replace('images/', 'book/images/', $url);
 		}
 
 		return $url;
