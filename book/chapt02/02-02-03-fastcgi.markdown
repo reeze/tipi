@@ -1,4 +1,4 @@
-# FastCGI
+ # FastCGI
 
 ## FastCGI简介
 ***
@@ -38,10 +38,12 @@ PHP的cgi实现本质是是以socket编程实现一个tcp或udp协议的服务�
     int main(int argc, char *argv[])
     {
     ...
-    sapi_startup(&cgi_sapi_module); //  1512行 启动sapi,调用sapi全局构造函数，初始化sapi_globals_struct结构体
+    sapi_startup(&cgi_sapi_module);
+        //  1512行 启动sapi,调用sapi全局构造函数，初始化sapi_globals_struct结构体
     ... //  根据启动参数，初始化信息
 
-    if (cgi_sapi_module.startup(&cgi_sapi_module) == FAILURE) { //  模块初始化 调用php_cgi_startup方法
+    if (cgi_sapi_module.startup(&cgi_sapi_module) == FAILURE) {
+        //  模块初始化 调用php_cgi_startup方法
     ...
     }
 

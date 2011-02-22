@@ -23,7 +23,8 @@ $\_GET, $\_POST, $\_SERVER等变量, 我们自己并没有定义这样的一些�
 		Z_SET_ISREF_P(globals);
 		Z_TYPE_P(globals) = IS_ARRAY;
 		Z_ARRVAL_P(globals) = &EG(symbol_table);
-		zend_hash_update(&EG(symbol_table), "GLOBALS", sizeof("GLOBALS"), &globals, sizeof(zval *), NULL);      //  添加全局变量GLOBALS
+		zend_hash_update(&EG(symbol_table), "GLOBALS", sizeof("GLOBALS"),
+            &globals, sizeof(zval *), NULL);      //  添加全局变量GLOBALS
 	}
     ... //  省略
 

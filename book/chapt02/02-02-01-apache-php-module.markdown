@@ -89,11 +89,16 @@ php_dir_cmds所定义的内容如下：
     [c]
     const command_rec php_dir_cmds[] =
     {
-        AP_INIT_TAKE2("php_value", php_apache_value_handler, NULL, OR_OPTIONS, "PHP Value Modifier"),
-        AP_INIT_TAKE2("php_flag", php_apache_flag_handler, NULL, OR_OPTIONS, "PHP Flag Modifier"),
-        AP_INIT_TAKE2("php_admin_value", php_apache_admin_value_handler, NULL, ACCESS_CONF|RSRC_CONF, "PHP Value Modifier (Admin)"),
-        AP_INIT_TAKE2("php_admin_flag", php_apache_admin_flag_handler, NULL, ACCESS_CONF|RSRC_CONF, "PHP Flag Modifier (Admin)"),
-        AP_INIT_TAKE1("PHPINIDir", php_apache_phpini_set, NULL, RSRC_CONF, "Directory containing the php.ini file"),
+        AP_INIT_TAKE2("php_value", php_apache_value_handler, NULL,
+            OR_OPTIONS, "PHP Value Modifier"),
+        AP_INIT_TAKE2("php_flag", php_apache_flag_handler, NULL,
+            OR_OPTIONS, "PHP Flag Modifier"),
+        AP_INIT_TAKE2("php_admin_value", php_apache_admin_value_handler,
+            NULL, ACCESS_CONF|RSRC_CONF, "PHP Value Modifier (Admin)"),
+        AP_INIT_TAKE2("php_admin_flag", php_apache_admin_flag_handler,
+            NULL, ACCESS_CONF|RSRC_CONF, "PHP Flag Modifier (Admin)"),
+        AP_INIT_TAKE1("PHPINIDir", php_apache_phpini_set, NULL,
+            RSRC_CONF, "Directory containing the php.ini file"),
         {NULL}
     };
 
