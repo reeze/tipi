@@ -60,7 +60,7 @@ extended_value字段就保存了这类信息, 其中的result域则是保存该�
 	}   
 
 可以看到echo处理指定opcode以外,将echo的参数传递给op1, 这里并没有设置opcode的result结果字段, 这里也能看出print和echo的区别来, print有返回值,
-恩echo没有, 这里的没有和返回null是不同的, 如果尝试将echo的值赋值给某个变量或者传递给函数都会出现语法错误.
+而echo没有, 这里的没有和返回null是不同的, 如果尝试将echo的值赋值给某个变量或者传递给函数都会出现语法错误.
 
 PHP脚本编译为opcode保存在op_array中, 由如下结构体保存:
 
@@ -83,7 +83,7 @@ PHP脚本编译为opcode保存在op_array中, 由如下结构体保存:
 
 		zend_uint *refcount;
 
-		zend_op *opcodes;  // 一个op_array中的所以opcode作为一个数组保存在这里
+		zend_op *opcodes;  // opcode数组
 
 		zend_uint last, size;
 
@@ -93,7 +93,7 @@ PHP脚本编译为opcode保存在op_array中, 由如下结构体保存:
 		// ...
 	}
 
-如上面的注释, opcodes保存在这里, 在执行的时候由下面的函数执行:
+如上面的注释, opcodes保存在这里, 在执行的时候由下面的execute函数执行:
 
 	[c]
 	ZEND_API void execute(zend_op_array *op_array TSRMLS_DC)
