@@ -1,7 +1,7 @@
 <html>
 
 <head>
-	<title><?php echo $title; ?> | 深入理解PHP内核(TIPI) </title>
+	<title><?php echo $page->getAbsTitle(); ?> | 深入理解PHP内核(TIPI) </title>
 	<meta http-equiv="Content-type" content="text/html; charset=utf-8">
 	<link href="../css/book.css" media="screen" rel="stylesheet" type="text/css" />
 	<link href="../css/main.css" media="screen" rel="stylesheet" type="text/css" />

@@ -34,7 +34,7 @@ foreach($section_pages as $page) {
 	$render = new SimpieView($book_file_path, '../templates/layout/feed.php');
 
 	$feed_item = $feed->createNewItem();
-	$feed_item->setTitle($page['title']);
+	$feed_item->setTitle($book_page->getAbsTitle());
 	$feed_item->setLink($home_page . "/book/?p=" . $page['page_name']);
 	$feed_item->setDescription($book_page->getPageContent($render));
   	$feed_item->setDate($last_updated_at);
