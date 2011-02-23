@@ -1,4 +1,4 @@
-# 第三节 PHP实现中的常用代码
+# 第三节 常用代码
 在PHP的源码中经常会看到一些宏或一些对于刚开始看源码的童鞋比较纠结的代码。这里提取中间的一些进行说明。
 ## 1. 关于"##"和"#"
 ***
@@ -18,7 +18,8 @@
     PHP_FUNCTION(count);
 
     //  预处理器处理以后, PHP_FUCNTION(count);就展开为如下代码
-    void zif_count(int ht, zval *return_value, zval **return_value_ptr, zval *this_ptr, int return_value_used TSRMLS_DC)
+    void zif_count(int ht, zval *return_value, zval **return_value_ptr,
+            zval *this_ptr, int return_value_used TSRMLS_DC)
 
 宏ZEND_FN(name)中有一个"##"，它的作用一如之前所说，是一个连接符，将zif和宏的变量name得值连接起来。
 
@@ -73,9 +74,8 @@
 它的作用体现在编译器的编写中，我们知道编译器对C 源码编译过程中会产生一些中间文件，通过这条指令，可以保证文件名是固定的，不会被这些中间文件代替，有利于进行调试分析。
 
 
-## 4.EG\CG\SG\PG宏
+## 4.PG宏
 ***
-###  PG宏
 PG宏的定义在main/php_globals.h文件。
 PG宏是PHP的核心全局变量宏。
 如下所示代码为其定义。

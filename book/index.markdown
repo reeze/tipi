@@ -5,8 +5,8 @@
 
 - [第一章 准备工作和背景知识][prepare-and-background]
 	* [第一节 环境搭建][build-env]
-	* [第二节 PHP源码布局及阅读方法][code-structure]
-	* [第三节 PHP实现中的常用代码][common-code-in-php-src]
+	* [第二节 源码布局及阅读方法][code-structure]
+	* [第三节 常用代码][common-code-in-php-src]
 	* [第四节 小结][01-summary]
 
 - [第二章 概览][survey]
