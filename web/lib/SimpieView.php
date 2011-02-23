@@ -75,10 +75,17 @@ class SimpieView
 
 	private function _render_markdown($view_path, $params=array(), $return=false)
 	{
-		require_once "MarkdownExtraGeshiSyntax/markdown_geshi/markdown_geshi.php";
-		
-		$output = Markdown(file_get_contents($view_path));
+		require_once "TipiMarkdownExt.php";
 
+		static $parser;
+		if (!isset($parser)) {
+			$parser_class = MARKDOWN_PARSER_CLASS;
+			$parser = new $parser_class;
+		}
+
+		# Transform text using parser.
+		$output = $parser->transform(file_get_contents($view_path));
+		
 		if($return)	{
 			return $output;
 		}
