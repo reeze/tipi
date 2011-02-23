@@ -82,6 +82,9 @@ class BookPage extends MarkdownPage
         $index = ($index + $step) % $count;
 
         $filepath = substr($allArticleList[$index], 11, - (strlen(self::extension) + 1));
+
+		if(!$filepath) return NULL;
+
         return new self($filepath);
     }
 
@@ -112,7 +115,6 @@ class BookPage extends MarkdownPage
      * @return string
      */
     public function getTitle() {
-		// TODO get title from headers
         if ($this->title === NULL) {
 			if(isset($this->headers[0]) && $this->headers[0]['level'] == 1) {
 				$this->title = $this->headers[0]['text'];	
