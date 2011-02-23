@@ -6,7 +6,7 @@
 ### 1.获取PHP源码
 为了学习PHP的实现，首先我们要下载源代码.下载源码首选是去[PHP官方网站 http://php.net/downloads.php](http://php.net/downloads.php)下载,
 如果你喜欢是用类似svn/git这些版本控制软件,喜欢svn的读者可以去[http://www.php.net/svn.php](http://www.php.net/svn.php)上
-签出源代码,或者如果你喜欢用git, 则可以去[http://github.com/php/php-src](http://github.com/php/php-src)上clone一个. 个人比较喜欢用版本控制软件签出代码,
+签出源代码,或者如果你喜欢用git, 则可以去[http://github.com/php/php-src](http://github.com/php/php-src)上clone一个. 笔者比较喜欢用版本控制软件签出代码,
 这样的好处是能看到php每次修改的内容及日志信息, 如果自己修改了其中的某些内容也能快速的查看到.
 
 ### 2.准备编译环境
