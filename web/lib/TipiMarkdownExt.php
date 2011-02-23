@@ -1,49 +1,40 @@
 <?php
-/**
- * Adds GeSHi support to markdown / markdown extra code blocks.  Simply precede
- * the code block with "{{lang:LANGUAGE}}."
- * 
- * Example:
- * 
- * <code>
- * Hi, I'm a markdown document.
- * 
- *     {{lang:php}}
- *     echo("And I'm PHP");
- * 
- * Easy.
- * </code>
- * 
- * Thanks to Dougal Stanton for posting about Markdown and GeSHi in WordPress:
- * http://www.dougalstanton.net/blog/index.php/2007/12/15/syntax-highlighting-with-markdown-in-wordpress/
- * 
- * @author Anthony Bush
- * @since 2009-03-06
- * @version 1.0
- **/
 
 /**
- * Define DocBlock
- **/
+ * TIPI Project's markdown extension based on  Anthony Bush's Markdown geshi support
+ *
+ * - GeShi Code highlight
+ * - Url rewrite
+ * - Header extract
+ */
+
+
+define('MARKDOWN_PARSER_CLASS',  'TipiMarkdownExt');
 
 // Load unmodified geshi: http://qbnz.com/highlighter/
-include(dirname(dirname(__FILE__)) . '/geshi/geshi.php');
+include(dirname(__FILE__) . '/geshi/geshi.php');
 
 // Load umodified Michel Fortin's PHP Markdown Extra: http://michelf.com/projects/php-markdown/
-define('MARKDOWN_PARSER_CLASS',  'MarkdownExtraGeshi_Parser');
-include(dirname(dirname(__FILE__)) . '/markdown_extra/markdown.php');
+include(dirname(__FILE__) . '/markdown_extra/markdown.php');
 
-// Override code block parsing to use GeSHi for syntax highlighting.  By
-// extending the class and overriding only what we need we increase ability to
-// upgrade markdown.php indepently from this file.
-class MarkdownExtraGeshi_Parser extends MarkdownExtra_Parser
+class TipiMarkdownExt extends MarkdownExtra_Parser 
 {
+	/**
+	 * Store the headers from the markdown
+	 */
+	private $_headers = array();
+
+
+	function getHeaders()
+	{
+		return $this->_headers;
+	}
+
 	function _doCodeBlocks_callback($matches)
 	{
 		$codeblock = $matches[1];
 		
 		$codeblock = $this->outdent($codeblock);
-		
 		// trim leading newlines and trailing whitespace
 		$codeblock = preg_replace(array('/\A\n+/', '/\s+\z/'), '', $codeblock);
 		
@@ -168,6 +159,26 @@ class MarkdownExtraGeshi_Parser extends MarkdownExtra_Parser
 
 		return $url;
 	}
-}
 
-?>
+	// Header 
+	function _doHeaders_callback_setext($matches) {
+		# Terrible hack to check we haven't found an empty list item.
+		if ($matches[2] == '-' && preg_match('{^-(?: |$)}', $matches[1]))
+			return $matches[0];
+		
+		$level = $matches[2]{0} == '=' ? 1 : 2;
+		$block = "<h$level>".$this->runSpanGamut($matches[1]). "<a name='{$matches[1]}'></a>" . "</h$level>";
+
+		$this->_headers[] = array('text' => $matches[1], 'level' => $level);
+		return "\n" . $this->hashBlock($block) . "\n\n";
+	}
+
+	function _doHeaders_callback_atx($matches) {
+		$level = strlen($matches[1]);
+		$block = "<h$level>".$this->runSpanGamut($matches[2]). "<a name='{$matches[2]}'></a>" . "</h$level>";
+
+		$this->_headers[] = array('text' => $matches[2], 'level' => $level);
+		return "\n" . $this->hashBlock($block) . "\n\n";
+	}
+
+}

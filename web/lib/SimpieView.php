@@ -9,11 +9,16 @@ class SimpieView
 {
 	protected $layout;
 	protected $view;
+	protected $raw_view;
 
-	public function __construct($view, $layout=null)
+	// when this passes to constructor, $view will be treated as raw text intead of parse it
+	const IS_RAW_TEXT = true;
+
+	public function __construct($view, $layout=null, $raw_view=false)
 	{
 		$this->view   = $view;
 		$this->layout = $layout;
+		$this->raw_view = $raw_view;
 	}
 
 	/**
@@ -26,7 +31,13 @@ class SimpieView
 	 */
 	public function render($params=array(), $return=false)
 	{
-		$view_result = $this->_render($this->view, $params, $this->layout || $return);
+		// view May direct output
+		if($this->raw_view) {
+			$view_result = $this->view;
+		}
+		else {
+			$view_result = $this->_render($this->view, $params, $this->layout || $return);
+		}
 		if($this->layout) {
 			$params['layout_content'] = $view_result;
 			return $this->_render($this->layout, $params, $return);
@@ -75,10 +86,17 @@ class SimpieView
 
 	private function _render_markdown($view_path, $params=array(), $return=false)
 	{
-		require_once "MarkdownExtraGeshiSyntax/markdown_geshi/markdown_geshi.php";
-		
-		$output = Markdown(file_get_contents($view_path));
+		require_once "TipiMarkdownExt.php";
 
+		static $parser;
+		if (!isset($parser)) {
+			$parser_class = MARKDOWN_PARSER_CLASS;
+			$parser = new $parser_class;
+		}
+
+		# Transform text using parser.
+		$output = $parser->transform(file_get_contents($view_path));
+		
 		if($return)	{
 			return $output;
 		}
