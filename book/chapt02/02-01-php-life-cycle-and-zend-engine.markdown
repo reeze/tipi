@@ -52,19 +52,19 @@ CLI/CGI模式的PHP属于单进程的SAPI模式. 这类的请求在处理一次�
 接口就完成了其生命周期。如图2.1所示：
 
 
-![图2.1 单进程SAPI生命周期](../../images/chapt02/02-01-01-cgi-lift-cycle.png)
+![图2.1 单进程SAPI生命周期](../images/chapt02/02-01-01-cgi-lift-cycle.png)
 
 ### 多进程SAPI生命周期
 通常PHP是编译为apache的一个模块来处理PHP请求. Apache一般会采用多进程模式, Apache启动后会fork出多个子进程, 每个进程的内存空间独立,
 每个子进程都会经过开始和结束环节,不过每个进程的开始阶段只在进程fork出来以来后进行, 在整个进程的生命周期内可能会处理多个请求. 只有
 在Apache关闭或者进程被结束之后才会进行关闭阶段,在这两个阶段之间会随着每个请求重复请求开始-请求关闭的环节。如图2.2所示：
 
-![图2.2 多进程SAPI生命周期](../../images/chapt02/02-01-02-multiprocess-life-cycle.png)
+![图2.2 多进程SAPI生命周期](../images/chapt02/02-01-02-multiprocess-life-cycle.png)
 
 ### 多线程的SAPI生命周期
 多线程模式和多进程中的某个进程类似,不同的是在整个进程的生命周期内会**并行**的重复着 请求开始-请求关闭的环节
 
-![图2.3 多线程SAPI生命周期](../../images/chapt02/02-01-013-multithreaded-lift-cycle.png)
+![图2.3 多线程SAPI生命周期](../images/chapt02/02-01-013-multithreaded-lift-cycle.png)
 
 
 ## Zend引擎
