@@ -1,4 +1,4 @@
- # FastCGI
+# FastCGI
 
 ## FastCGI简介
 ***
