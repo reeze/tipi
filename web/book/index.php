@@ -17,7 +17,7 @@ try
 	// 章节列表
 	$chapt_list = BookPage::getChapterList();
 
-	$view = new SimpieView($page_file, "../templates/layout/book.php");
+	$view = new SimpieView($page->toHtml(), "../templates/layout/book.php", SimpieView::IS_RAW_TEXT);
 	$view->render(array(
 		'title' => $page->getTitle(),
 		'page'  => $page,

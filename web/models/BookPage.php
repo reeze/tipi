@@ -1,17 +1,19 @@
 <?php
 
+require_once '../lib/MarkdownPage.php';
+
 /**
  * 图书页逻辑
  */
-class BookPage {
+class BookPage extends MarkdownPage
+{
 
-    private $title = NULL;
-    private $base_dir = NULL;
-    private $page_name = NULL;
+    private $title 		= NULL;
+    private $base_dir 	= NULL;
+    private $page_name 	= NULL;
     private static $_allArticleList = NULL;
 
-    // all pages are written in markdown
-    const extension = 'markdown';
+	private $headers 	= array();
 
     /**
      * @param string $page_path 	书籍页面的路径, 例如chapt01/01-04-summary
@@ -24,7 +26,27 @@ class BookPage {
         if ($title = $this->getTitle()) {
             $this->title = $title;
         }
+
+		parent::__construct(array('file' => $this->getPageFilePath()));
+
+		// markdown文件的大纲标题信息
+		$this->headers = is_array($this->meta['headers']) ? $this->meta['headers'] : array();
     }
+
+	public function getHeaders() {
+		return $this->headers;
+	}
+
+	public function getOutlineHeaders() {
+		$headers = $this->headers;
+
+		// 第一个是标题,就不显示了
+		if(isset($headers[0]) && $headers[0]['level'] == 1) {
+			array_shift($headers);
+		}
+
+		return $headers;
+	}
 
     public function getPrevPage() {
         // 返回上一页文件
@@ -90,8 +112,11 @@ class BookPage {
      * @return string
      */
     public function getTitle() {
+		// TODO get title from headers
         if ($this->title === NULL) {
-            $this->title = self::_getTitleFromFileName($this->getPageFilePath());
+			if(isset($this->headers[0]) && $this->headers[0]['level'] == 1) {
+				$this->title = $this->headers[0]['text'];	
+			}
         }
 
         return $this->title;

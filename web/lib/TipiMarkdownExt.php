@@ -160,4 +160,25 @@ class TipiMarkdownExt extends MarkdownExtra_Parser
 		return $url;
 	}
 
+	// Header 
+	function _doHeaders_callback_setext($matches) {
+		# Terrible hack to check we haven't found an empty list item.
+		if ($matches[2] == '-' && preg_match('{^-(?: |$)}', $matches[1]))
+			return $matches[0];
+		
+		$level = $matches[2]{0} == '=' ? 1 : 2;
+		$block = "<h$level>".$this->runSpanGamut($matches[1]). "<a name='{$matches[1]}'></a>" . "</h$level>";
+
+		$this->_headers[] = array('text' => $matches[1], 'level' => $level);
+		return "\n" . $this->hashBlock($block) . "\n\n";
+	}
+
+	function _doHeaders_callback_atx($matches) {
+		$level = strlen($matches[1]);
+		$block = "<h$level>".$this->runSpanGamut($matches[2]). "<a name='{$matches[2]}'></a>" . "</h$level>";
+
+		$this->_headers[] = array('text' => $matches[2], 'level' => $level);
+		return "\n" . $this->hashBlock($block) . "\n\n";
+	}
+
 }
