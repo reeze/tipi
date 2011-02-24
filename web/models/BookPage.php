@@ -177,12 +177,12 @@ class BookPage extends MarkdownPage
 
 
 		if($is_sub_section_page) {
-			$prefix = "第" . (isset($num_chs_map[$chapt_seq]) ? $num_chs_map[$chapt_seq] : $chapt_seq) . "章 > ";
-			$prefix .= "第" . (isset($num_chs_map[$sect_seq]) ? $num_chs_map[$sect_seq] : $sect_seq) . "节 > ";
+			$prefix = "第" . (isset($num_chs_map[$chapt_seq]) ? $num_chs_map[$chapt_seq] : $chapt_seq) . "章 » ";
+			$prefix .= "第" . (isset($num_chs_map[$sect_seq]) ? $num_chs_map[$sect_seq] : $sect_seq) . "节 » ";
 			$title = $prefix . $title;
 		}
 		else if($is_section_page) {
-			$title = "第" . (isset($num_chs_map[$chapt_seq]) ? $num_chs_map[$chapt_seq] : $chapt_seq) . "章 > " . $title; 
+			$title = "第" . (isset($num_chs_map[$chapt_seq]) ? $num_chs_map[$chapt_seq] : $chapt_seq) . "章 » " . $title; 
 		}
 
 		// $is_section_index_page and $is_index_page and all other page
