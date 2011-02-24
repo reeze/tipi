@@ -4,7 +4,7 @@
 类是一种复合型的结构，其需要存储较多元化的数据，如属性，方法，以及自身的一些性质。类在PHP中是使用一种名为zend_class_entry的结构体来进行处理：
 
 	[c]
-		struct_zend_class_entry {
+		struct _zend_class_entry {
 			chartype;     // 类型：ZEND_INTERNAL_CLASS / ZEND_USER_CLASS
 			char*name;// 类名称
 			zend_uint name_length;                  // 即sizeof(name) - 1
