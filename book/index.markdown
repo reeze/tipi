@@ -42,6 +42,9 @@
     * 第五节 小结
 
 - 第五章 类和面向对象
+    * [第一节 类和接口的内部结构][class-struct]
+    * 第二节 类和接口的继承
+    * 第三节 对象的创建
 
 - 第六章 内存管理
 	* 第一节 内存布局结构
@@ -118,5 +121,5 @@
 [function-define]:   	?p=chapt04/04-02-function-define-param-return
 [function-call]:   		?p=chapt04/04-03-function-call
 
-
+[class-struct]:         ?p=chapt05/05-01-class-struct
 [none]:		?

@@ -7,7 +7,7 @@
 为了学习PHP的实现，首先我们要下载源代码.下载源码首选是去[PHP官方网站 http://php.net/downloads.php](http://php.net/downloads.php)下载,
 如果你喜欢是用类似svn/git这些版本控制软件,喜欢svn的读者可以去[http://www.php.net/svn.php](http://www.php.net/svn.php)上
 签出源代码,或者如果你喜欢用git, 则可以去[http://github.com/php/php-src](http://github.com/php/php-src)上clone一个. 笔者比较喜欢用版本控制软件签出代码,
-这样的好处是能看到php每次修改的内容及日志信息, 如果自己修改了其中的某些内容也能快速的查看到.
+这样的好处是能看到PHP每次修改的内容及日志信息, 如果自己修改了其中的某些内容也能快速的查看到.
 
 ### 2.准备编译环境
 在*nix环境下，首先需要gcc编译构建环境. 如果你是用的是Ubuntu或者是用apt做为包管理的系统,可以通过如下命令快速安装.
@@ -15,7 +15,7 @@
 	[bash]
 	sudo apt-get install build-essential
 
-如果用的是Mac OS的话，则需要安装Xcode。Xcode可以在Mac OS X的安装盘中找到，如果你有Apple ID的话，也可以登陆苹果开发者网站[http://developer.apple.com/](http://developer.apple.com/)下载。
+如果你使用的是Mac OS，则需要安装Xcode。Xcode可以在Mac OS X的安装盘中找到，如果你有Apple ID的话，也可以登陆苹果开发者网站[http://developer.apple.com/](http://developer.apple.com/)下载。
 
 
 ### 3. 编译

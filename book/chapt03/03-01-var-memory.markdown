@@ -11,7 +11,7 @@ PHP是一种弱类型的语言，这就意味着在声明或使用变量的时�
 * 复合类型： *array*   *object*
 * 特殊类型： *resource*   *NULL*
 
-在变量声明的开始，ZE判断用户变量的类型，并存入到以下zval结构体中：
+在变量声明的开始，ZE判断用户变量的类型，并存入到以下zval结构体中。zval结构体定义在Zend/zend.h文件，其代码如下：
 
 	[c]
 	typedef struct _zval_struct zval;
@@ -37,7 +37,7 @@ PHP是一种弱类型的语言，这就意味着在声明或使用变量的时�
 |type 		  |	记录变量的内部类型			||
 
 >**NOTE**
-> 在PHP5.3之后，由于引入了垃圾收集机制，引用计数和是否为引用的属性名为refount_gc和is_ref_gc。在此之前为refcount和is_ref。
+> 在PHP5.3之后，由于引入了垃圾收集机制，引用计数和是否为引用的属性名为refount__gc和is_ref_gc。在此之前为refcount和is__ref。
 
 在变量的初始化过程中，ZE会将变量的类型（type）值根据其变量类型置为：IS_NULL, IS_BOOL, IS_LONG, IS_DOUBLE, IS_STRING, IS_ARRAY, IS_OBJECT, IS_RESOURCE 之一。
 
@@ -174,80 +174,15 @@ PHP是一种弱类型的语言，这就意味着在声明或使用变量的时�
 
 * 对象Object
 
-对象是一种复合型的数据，其需要存储较多元化的数据，如属性，方法，以及自身的一些性质。对象在PHP中是使用一种名为zend_class_entry的结构体来进行处理的，其结构也相对于上面的其他变量要复杂一点：
+对象是一种复合型的数据，其需要存储较多元化的数据，如属性，方法，以及自身的一些性质。对象在PHP中是使用一种zend_object_value的结构体来存放。其代码如下：
 
-	[c]
-		struct_zend_class_entry {
-			chartype;     // 类型：ZEND_INTERNAL_CLASS / ZEND_USER_CLASS
-			char*name;// 类名称
-			zend_uint name_length;                  // 即sizeof(name) - 1
-			struct_zend_class_entry *parent; // 继承的父类
-			intrefcount;  // 引用数
-			zend_bool constants_updated; 
+    [c]
+    typedef struct _zend_object_value {
+        zend_object_handle handle;  //  unsigned int类型，是
+        zend_object_handlers *handlers;
+    } zend_object_value;
 
-			zend_uint ce_flags; // ZEND_ACC_IMPLICIT_ABSTRACT_CLASS: 类存在abstract方法
-			// ZEND_ACC_EXPLICIT_ABSTRACT_CLASS: 在类名称前加了abstract关键字
-			// ZEND_ACC_FINAL_CLASS
-			// ZEND_ACC_INTERFACE          
-			HashTable function_table;      // 方法
-			HashTable default_properties;          // 默认属性
-			HashTable properties_info;     // 属性信息
-			HashTable default_static_members;// 静态变量
-			HashTable *static_members; // type == ZEND_USER_CLASS时，取&default_static_members;
-			// type == ZEND_INTERAL_CLASS时，设为NULL
-			HashTable constants_table;     // 常量
-			struct_zend_function_entry *builtin_functions;// 方法定义入口
-
-
-			union_zend_function *constructor;
-			union_zend_function *destructor;
-			union_zend_function *clone;
-
-
-			/* 魔术方法 */
-			union_zend_function *__get;
-			union_zend_function *__set;
-			union_zend_function *__unset;
-			union_zend_function *__isset;
-			union_zend_function *__call;
-			union_zend_function *__tostring;
-			union_zend_function *serialize_func;
-			union_zend_function *unserialize_func;
-			zend_class_iterator_funcs iterator_funcs;// 迭代
-
-			/* 类句柄 */
-			zend_object_value (*create_object)(zend_class_entry *class_type TSRMLS_DC);
-			zend_object_iterator *(*get_iterator)(zend_class_entry *ce, zval *object,
-                intby_ref TSRMLS_DC);
-
-			/* 类声明的接口 */
-			int(*interface_gets_implemented)(zend_class_entry *iface,
-                    zend_class_entry *class_type TSRMLS_DC);
-
-
-			/* 序列化回调函数指针 */
-			int(*serialize)(zval *object, unsignedchar**buffer, zend_uint *buf_len,
-                     zend_serialize_data *data TSRMLS_DC);
-			int(*unserialize)(zval **object, zend_class_entry *ce,constunsignedchar*buf,
-                    zend_uint buf_len, zend_unserialize_data *data TSRMLS_DC);
-
-
-			zend_class_entry **interfaces;
-			zend_uint num_interfaces;
-
-
-			char*filename;
-			zend_uint line_start;
-			zend_uint line_end;
-			char*doc_comment;
-			zend_uint doc_comment_len;
-
-
-			struct_zend_module_entry *module; // 类所在的模块入口：EG(current_module)
-		};
-
-
-
+handle字段是 EG(objects_store).object_buckets的索引，用来存取对应对象的相关数据。zend_object_handlers是一个包含许多方法指针的结构体。关于这个结构体及对象相关的类的结构_zend_class_entry，将在第五章节作详细介绍。
 
 
 
