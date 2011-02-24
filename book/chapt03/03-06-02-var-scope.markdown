@@ -1,6 +1,8 @@
-# 变量的作用域及定义方式
+# 变量的生命周期与作用域
 
-通过前面章节的描述，我们已经知道了PHP中变量的存储方式－－所有的变量都保存在zval结构中。下面介绍一下PHP内核如何实现变量的作用域以及变量的定义方式。
+通过前面章节的描述，我们已经知道了PHP中变量的存储方式－－所有的变量都保存在zval结构中。下面介绍一下PHP内核如何实现变量的定义方式以及作用域。
+
+##变量的生命周期
 
 在ZE进行词法和语法的分析之后,生成具体的opcode,这些opcode最终被execute函数(Zend/zend_vm_execute.h:46)解释执行。在excute函数中，有以下代码：
 
@@ -38,7 +40,7 @@
 	//_sapi_globals_struct SAPI的信息
 	sapi_globals_struct      *sapi_globals; 
 
-其中，变量名及指针主要存储于_zend_executor_globals，它的相关代码：
+在执行的过程中，变量名及指针主要存储于_zend_executor_globals的符号表中，_zend_executor_globals的结构这样的：
  	
 	[c]
 	struct _zend_executor_globals {
@@ -55,9 +57,40 @@
 
     HashTable included_files;   /* files already included */
 	...
+
 	}
 
-symbol_table就是全局符号表，其中保存了在顶层作用域中的变量。同样，函数或者对象的方法在被调用时会创建active_symbol_table来保存局部变量。当程序在顶层中使用某个变量时，ZE就会在symbol_table中进行遍历，同理，每个函数也会有对应的active_symbol_table来供程序使用。程序执行完毕， HashTable会被FREE_HASHTABLE()释放掉。 如果程序使用了unset语句来主动消毁变量，则会调用ZEND_UNSET_VAR_SPEC_CV_HANDLER来将变量销毁，回收内存，这部分内存可以参考《第六章 内存管理》的内容。
+在执行的过程中，active_symbol_table会根据执行的具体语句不断发生变化(详请见本节下半部分)，针对线程安全的EG宏就是用来取此变量中的值。
+ZE将op_array执行完毕以后，HashTable会被FREE_HASHTABLE()释放掉。 如果程序使用了unset语句来主动消毁变量，则会调用ZEND_UNSET_VAR_SPEC_CV_HANDLER来将变量销毁，回收内存，这部分内存可以参考《第六章 内存管理》的内容。
 
-由于变量的作用域是使用不同的符号表来实现，所以说顶层的全局变量在函数内部使用时，需要先使用global语句进行变量的跨域操作。
+##变量的作用域
+
+_zend_executor_globals结构中的symbol_table就是全局符号表，其中保存了在顶层作用域中的变量。同样，函数或者对象的方法在被调用时会创建active_symbol_table来保存局部变量。当程序在顶层中使用某个变量时，ZE就会在symbol_table中进行遍历，同理，每个函数也会有对应的active_symbol_table来供程序使用。
+
+ZE使用_zend_execute_data来存储某个单独的op_array（每个函数都会生成单独的op_array)执行过程中所需要的信息，它的结构如下：
+
+	[c]
+	struct _zend_execute_data {
+		struct _zend_op *opline;
+		zend_function_state function_state;
+		zend_function *fbc; /* Function Being Called */
+		zend_class_entry *called_scope;
+		zend_op_array *op_array;
+		zval *object;
+		union _temp_variable *Ts;
+		zval ***CVs;
+		HashTable *symbol_table;
+		struct _zend_execute_data *prev_execute_data;
+		zval *old_error_reporting;
+		zend_bool nested;
+		zval **original_return_value;
+		zend_class_entry *current_scope;
+		zend_class_entry *current_called_scope;
+		zval *current_this;
+		zval *current_object;
+		struct _zend_op *call_opline;
+	};
+
+函数中的局部变量就存储在_zend_execute_data的symbol_table中，在执行当前函数的op_array时，全局zend_executor_globals中的*active_symbol_table会指向当前_zend_execute_data中的*symbol_table。而此时，其他函数中的symbol_table不会出现在当前的active_symbol_table中，如此便实现了局部变量。
+所以，变量的作用域是使用不同的符号表来实现的，于是顶层的全局变量在函数内部使用时，需要先使用上一节中提到的global语句进行变量的跨域操作。
 
