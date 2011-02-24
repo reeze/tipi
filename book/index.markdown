@@ -15,7 +15,7 @@
         + [PHP以模块方式注册到Apache][php-module-in-apache]
         + [嵌入式PHP][embedding-php]
         + [Fastcgi][fastcgi]
-	* [第三节 脚本的执行][script-execution] (reeze)
+	* [第三节 脚本的执行][script-execution]
 		+ [词法分析和语法分析][lex-and-yacc]
 		+ [opcode][opcode]
 	* [第四节 小结][02-summary]
@@ -37,7 +37,7 @@
     * [第一节 函数的内部结构][function-struct]
     * [第二节 函数的定义,传参及返回值][function-define](pan)
     * [第三节 函数的调用和执行][function-call](er)
-    * 第四节 匿名函数(create_function, clouser)
+    * [第四节 匿名函数(create_function, clouser)][anonymous-function] (reeze)
     * 第五节 小结
 
 - 第五章 类和面向对象
@@ -118,6 +118,7 @@
 [function-struct]:   	?p=chapt04/04-01-function-struct
 [function-define]:   	?p=chapt04/04-02-function-define-param-return
 [function-call]:   		?p=chapt04/04-03-function-call
+[anonymous-function]:   ?p=chapt04/04-04-anonymous-function
 
 [class-struct]:         ?p=chapt05/05-01-class-struct
 [none]:		?
