@@ -119,6 +119,15 @@ h3 {
 	color: darkorange;
 }
 
+
+.fl {
+	float: left;
+}
+
+.fr {
+	float: right;
+}
+
 /*----clear fix----*/
 .clearfix:after {
 content: ".";

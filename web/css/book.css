@@ -83,15 +83,30 @@
 
 #book_content h1 {
 	color: #006ea3;
-	margin: 10px 0;
-	padding-bottom: 10px;
+	margin: 20px 0;
 	font-size: 1.4em;
-	border-bottom: 1px solid #aaa;
 }
 
-#book_content h2, #book_content h3, #book_content h4 {
+#book_content h2, #book_content h3, #book_content h4, #book_content h5 {
 	font-weight: bold;
 	color: #333;
+	padding: 5px 0;
+	border-bottom: 1px solid #888;
+}
+
+#book_content h3, #book_content h4, #book_content h5 {
+	border-bottom-color: #cdcdcd;
+	padding: 3px 0;
+}
+
+#book_body {
+	padding-top: 5px;
+}
+
+#book_body img {
+	background-color: #fff;
+	padding: 5px;
+	border: 1px solid #ddd;
 }
 
 #book_sidebar .inner-containner {
@@ -152,6 +167,10 @@
 	list-style: disc;
 }
 
+#book_sidebar li.current_page li a {
+	text-decoration: none;
+}
+
 #book_sidebar .current_page a {
 	text-decoration: underline;
 }
@@ -164,12 +183,36 @@
 /* Book content style */
 #book_content pre {
 	padding: 10px;
+	border: 1px solid #eee;
 	background-color: #333;
 	color: #fff;
 	font: 13px "Bitstream Vera Sans Mono", "DejaVu Sans Mono", "Courier New", monospace;
 	overflow: auto;
+
+	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
+	-o-border-radius: 4px;
+	border-radius: 4px;
+
+	-webkit-box-shadow: rgba(160,160,160,1) 2px 2px 5px;
+	-moz-box-shadow: rgba(160,160,160,1) 2px 2px 5px;
+	-o-box-shadow: rgba(160,160,160,1) 2px 2px 5px;
+	box-shadow: rgba(160,160,160,1) 2px 2px 5px;
+
 	/* Hack for IE pre expand to much */
 	_word-wrap: break-word;
+}
+
+.shadow {
+	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
+	-o-border-radius: 4px;
+	border-radius: 4px;
+
+	-webkit-box-shadow: rgba(180,180,180,1) 0px 2px 5px;
+	-moz-box-shadow: rgba(180,180,180,1) 2px 2px 5px;
+	-o-box-shadow: rgba(180,180,180,1) 2px 2px 5px;
+	box-shadow: rgba(180,180,180,1) 2px 2px 5px;
 }
 
 #book_content blockquote {
@@ -222,3 +265,107 @@
 #next_page_link {
 	float: right;
 }
+
+
+/* Book tools style */
+#book_tools {
+	margin: 10px;
+	margin-bottom: 0;
+	padding: 6px;
+	border-bottom: 1px solid #ccc;
+}
+
+#comment_link {
+	background: url(../images/tools/comment_off.png) center center no-repeat;
+}
+
+#comment_link:hover {
+	background-image: url(../images/tools/comment.png);
+}
+
+#font_size_changer {
+	background: url(../images/tools/font_resize_off.png) center center no-repeat;
+}
+
+#font_size_changer:hover {
+	background-image: url(../images/tools/font_resize.png);
+}
+
+#share_page {
+	background: url(../images/tools/share_off.png) center center no-repeat;
+}
+
+#share_page:hover {
+	background-image: url(../images/tools/share.png);
+}
+
+#page_outline_button {
+	background: url(../images/tools/PrefReading.png) center center no-repeat;
+	position: relative;
+}
+
+#page_outline {
+	display:none;
+	background-color: #efefef;
+	border: 1px solid #aaa;
+	position: absolute;
+	right: 10px;
+	top: 23px;
+}
+
+#page_outline ul, #page_outline li {
+	padding: 0;
+	margin: 0;
+	white-space: nowrap;
+	list-style:none;
+	display: inline;
+}
+
+#page_outline a {
+	display: block;
+	padding: 3px 10px;
+	text-decoration: none;
+	color: #333;
+}
+
+#page_outline a:hover {
+	background-color: #dedede;
+	color: #1299DA;
+}
+
+#back_to_top {
+	visibility: hidden;
+}
+
+/* 工具栏第一个分割 */
+.first_border_tool {
+	border-left: 1px solid #999;
+}
+
+#book_path_navor {
+	color: #777;
+}
+
+#book_item_tools {
+	height: 23px;
+}
+
+#book_item_tools .tool_item {
+	display: inline-block;
+	width: 45px;
+	height: 20px;
+}
+
+#back_to_top.tool_item {
+	padding-left: 10px;
+	width: 12px;
+}
+
+.tool_item:active {
+	outline: 0;
+}
+
+.tool_item span {
+	display: none;
+}
+

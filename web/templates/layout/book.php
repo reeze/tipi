@@ -6,6 +6,12 @@
 	<link href="../css/book.css" media="screen" rel="stylesheet" type="text/css" />
 	<link href="../css/main.css" media="screen" rel="stylesheet" type="text/css" />
 	<link href="../css/highlight.css" media="screen" rel="stylesheet" type="text/css" />
+
+	<link href="../css/tipsy.css" media="screen" rel="stylesheet" type="text/css" />
+
+	<script src="../javascripts/jquery-1.5.min.js" type="text/javascript"></script>
+	<script src="../javascripts/jquery.tipsy.js" type="text/javascript"></script>
+	<script src="../javascripts/book.js" type="text/javascript"></script>
 </head>
 <body>
 	<?php SimpieView::include_partial("../templates/layout/_header.php"); ?>
@@ -17,7 +23,8 @@
 
 			<div id="book_main" class="clearfix">
 				<div id="<?php echo ($is_detail_view ? 'book_content' : 'book_index'); ?>" >
-					<div class="inner-containner">
+					<?php SimpieView::include_partial("../templates/layout/_book_tools.php", array('page' => $page)); ?>
+					<div id="book_body" class="inner-containner">
 						<?php echo $layout_content; ?>
 
 						<?php if($is_detail_view): ?>
