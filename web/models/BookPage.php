@@ -226,13 +226,57 @@ class BookPage extends MarkdownPage
         return $this->page_name;
     }
 
+	/**
+	 * 返回当前页的父级页面, 主要使用来得到页面的导航信息
+	 */
+	public function getPagePath() {
+		$chapt_lists = self::getChapterList();
+		return $this->_find_parent_path($chapt_lists, $this->page_name);
+	}
+
+	private function _find_parent_path($list, $page_name) {
+		$path = array();
+		foreach($list as $l) {
+			if($l['page_name'] == $page_name) {
+				$path[] = $l;
+
+				return $path;
+			}
+
+			if($l['list']) {
+				foreach($l['list'] as $s_l) {
+					if($s_l['page_name'] == $page_name)	{
+						$path[] = $l;
+						$path[] = $s_l;
+						return $path;
+					}
+
+					if($s_l['list']) {
+						foreach($s_l['list'] as $sub_l) {
+							if($sub_l['page_name'] == $page_name) {
+								$path[] = $l;
+								$path[] = $s_l;
+								$path[] = $sub_l;
+
+								return $path;
+							}
+						}
+					}
+				}
+			}
+		}
+		return $path;
+	}
+
     /**
      * 返回章节列表
      * TODO add cache
      */
     public static function getChapterList($base_dir = "../../book") {
         // 只处理两个层级,章/节
-        $list = array();
+        static $list = array();
+
+		if(!empty($list)) return $list;
 
         $list[] = array(
             "page_name" => "index",
