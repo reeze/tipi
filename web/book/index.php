@@ -3,6 +3,7 @@
 require_once "../config.php";
 require_once "../lib/SimpieView.php";
 require_once "../models/BookPage.php";
+require_once "../helpers/common_helper.php";
 require_once "../helpers/book_helper.php";
 
 $page_name = (isset($_GET['p']) && $_GET['p']) ? $_GET['p'] : 'index';

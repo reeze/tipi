@@ -13,7 +13,17 @@ $(function() {
 		return false;
 	});
 
-	$("#font_size_changer").click(function() {	
+	$("#share_page").click(function() {	
+		$("#share_page_pannel").toggle();
+
+		return false;
+	});
+
+	$("#share_page_pannel a").click(function() {
+		$('#share_page_pannel').hide();	
+	});
+
+	$("#font_size_changer").click(function() {
 		$("#font_size_pannel").toggle();
 
 		return false;

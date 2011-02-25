@@ -304,6 +304,32 @@
 	background-image: url(../images/tools/share.png);
 }
 
+#share_page_pannel {
+	display: none;
+	position: absolute;
+	right: 50px;
+	top: 23px;
+	width: 300px;
+	padding: 12px;
+}
+
+#share_page_pannel a {
+	color: #777;
+	text-decoration: none;
+	display: block;
+	float: left;
+	width: 80px;
+	height: 16px !important;
+	padding-left: 20px;
+	background: url(../images/jiathis_ico.png) left center no-repeat;
+	background-position: 0 -16px;
+	margin-top: 10px;
+}
+
+#share_page_pannel a:hover {
+	text-decoration: underline;
+}
+
 #page_outline_button {
 	background: url(../images/tools/outline_off.png) center center no-repeat;
 }
@@ -396,7 +422,7 @@
 }
 
 #font_size_pannel a {
-	color: #aaa;
+	color: #666;
 	text-decoration: none;
 	font-weight: bold;
 	display: block;
@@ -412,9 +438,13 @@
 }
 
 #font_size_default, #font_size_incr {
-	border-left: 1px solid #777;
+	border-left: 1px solid #888;
 }
 
 #font_size_pannel a#font_size_decr {
 	font-size: 30px;
+}
+
+.bottom_border {
+	border-bottom: 1px solid #aaa;
 }
