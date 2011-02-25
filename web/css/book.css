@@ -300,8 +300,11 @@
 }
 
 #page_outline_button {
-	background: url(../images/tools/PrefReading.png) center center no-repeat;
-	position: relative;
+	background: url(../images/tools/outline_off.png) center center no-repeat;
+}
+
+#page_outline_button:hover {
+	background-image: url(../images/tools/outline.png);
 }
 
 #page_outline {
