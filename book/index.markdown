@@ -35,7 +35,10 @@
 
 - [第四章 函数的实现][function]
     * [第一节 函数的内部结构][function-struct]
-    * [第二节 函数的定义,传参及返回值][function-define](pan)
+    * [第二节 函数的定义,参数及返回值][function-define-pr](pan)
+        + [函数的定义][function-define]
+		+ [函数的参数][function-param]
+        + [函数的返回][function-return]
     * [第三节 函数的调用和执行][function-call](er)
     * [第四节 匿名函数(create_function, clouser)][anonymous-function] (reeze)
     * 第五节 小结
@@ -117,7 +120,10 @@
 
 [function]:            	?p=chapt04/04-00-php-function
 [function-struct]:   	?p=chapt04/04-01-function-struct
-[function-define]:   	?p=chapt04/04-02-function-define-param-return
+[function-define-pr]:  	?p=chapt04/04-02-00-function-define-param-return
+[function-define]:  	?p=chapt04/04-02-01-function-define
+[function-param]:       ?p=chapt04/04-02-02-function-param
+[function-return]:       ?p=chapt04/04-02-03-function-return
 [function-call]:   		?p=chapt04/04-03-function-call
 [anonymous-function]:   ?p=chapt04/04-04-anonymous-function
 
