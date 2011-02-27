@@ -73,6 +73,5 @@ Zend引擎作为PHP实现的核心,提供了语言实现上的基础设施.例�
 而PHP则提供了请求处理和其他Web服务器的接口(SAPI).
 
 ## 参考文献
-*****
 Extending and Embedding PHP
 

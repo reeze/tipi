@@ -5,7 +5,6 @@ php模块通过注册apache2的ap_hook_post_config挂钩, 在apache启动的时�
 下面介绍apache模块加载的基本知识以及PHP对于apache的实现
 
 ## Apache模块加载机制简介
-***
 Apache的模块可以在运行的时候动态装载，这意味着对服务器可以进行功能扩展而不需要重新对源代码进行编译，甚至根本不需要停止服务器。
 我们所需要做的仅仅是给服务器发送信号HUP或者AP_SIG_GRACEFUL通知服务器重新载入模块。
 但是在动态加载之前，我们需要将模块编译成为动态链接库。此时的动态加载就是加载动态链接库。  
@@ -31,7 +30,6 @@ module结构的name属性在最后是通过宏STANDARD20_MODULE_STUFF以\__FILE_
 最后Apache会调用相关函数(ap_add_loaded_module)将模块激活，此处的激活就是将模块放入相应的链表中(ap_top_modules链表：ap_top_modules链表用来保存Apache中所有的被激活的模块，包括默认的激活模块和激活的第三方模块。）
 
 ## Apache2的mod_php5模块说明
-***
 Apache2的mod_php5模块包括sapi/apache2handler和sapi/apache2filter两个目录
 在apache2_handle/mod_php5.c文件中，模块定义的相关代码如下：
 
@@ -128,7 +126,6 @@ handler挂钩是请求挂钩，它在服务器处理请求时调用。其中在p
 
 
 ## Apache的运行过程
-***
 Apache的运行分为启动阶段和运行阶段。
 在启动阶段，Apache为了获得系统资源最大的使用权限，将以特权用户root（\*nix系统）或超级管理员Administrator(Windows系统)完成启动，并且整个过程处于一个单进程单线程的环境中，。
 这个阶段包括配置文件解析(如http.conf文件)、模块加载(如mod_php,mod_perl)和系统资源初始化（例如日志文件、共享内存段、数据库连接等）等工作。
@@ -142,7 +139,6 @@ Post-Read-Request，URI Translation，Header Parsing，Access Control，Authenti
 
 
 ## Apache Hook机制
-***
 Apache 的Hook机制是指：Apache 允许模块(包括内部模块和外部模块，例如mod_php5.so,mod_perl.so等)将自定义的函数注入到请求处理循环中。换句话说，模块可以在 Apache的任何一个处理阶段中挂接(Hook)上自己的处理函数，从而参与Apache的请求处理过程。
 mod_php5.so/ php5apache2.dll就是将所包含的自定义函数，通过Hook机制注入到Apache中，在Apache处理流程的各个阶段负责处理php请求。
 关于Hook机制在Windows系统开发也经常遇到，在Windows开发既有系统级的钩子，又有应用级的钩子。
@@ -150,7 +146,6 @@ mod_php5.so/ php5apache2.dll就是将所包含的自定义函数，通过Hook机
 以上介绍了apache的加载机制，hook机制，apache的运行过程以及php5模块的相关知识，下面简单的说明在查看源码中的一些常用对象。
 
 ## Apache常用对象
-*** 
 在说到Apache的常用对象时，我们不得不先说下httpd.h文件。httpd.h文件包含了Apache的所有模块都需要的核心API。
 它定义了许多系统常量。但是更重要的是它包含了下面一些对象的定义。
 
@@ -169,6 +164,5 @@ conn_rec对象是TCP连接在Apache的内部体现。
 它在客户端连接到服务器时创建，在连接断开时释放。
 
 
-# 参考资料
-***
+## 参考资料
 《The Apache Modules Book--Application Development with Apache》

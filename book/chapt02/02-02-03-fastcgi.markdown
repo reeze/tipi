@@ -1,7 +1,6 @@
 # FastCGI
 
 ## FastCGI简介
-***
 
 ### 什么是CGI
 CGI全称是“通用网关接口”(Common Gateway Interface)，
@@ -21,7 +20,6 @@ FastCGI是语言无关的、可伸缩架构的CGI开放扩展，其主要行为�
    1. FastCGI子进程完成处理后将标准输出和错误信息从同一连接返回Web Server。当FastCGI子进程关闭连接时，请求便告处理完成。FastCGI子进程接着等待并处理来自FastCGI进程管理器(运行在Web Server中)的下一个连接。 在CGI模式中，php-cgi在此便退出了。
 
 ## PHP中的CGI实现
-***
 
 PHP的cgi实现本质是是以socket编程实现一个tcp或udp协议的服务器，当启动时，创建tcp/udp协议的服务器的socket监听，并接收相关请求进行处理。这只是请求的处理，在此基础上添加模块初始化，sapi初始化，模块关闭，sapi关闭等就构成了整个cgi的生命周期。
 程序是从cgi_main.c文件的main函数开始，而在main函数中调用了定义在fastcgi.c文件中的初始化，监听等函数。我们从main函数开始，看看PHP对于fastcgi的实现。
@@ -135,7 +133,6 @@ fcgi_listen函数主要用于创建、绑定socket并开始监听
 
 
 ## 参考资料
-***
 以下为本篇文章对于一些定义引用的参考资料：  
 http://www.fastcgi.com/drupal/node/2  
 http://baike.baidu.com/view/641394.htm  
