@@ -280,6 +280,14 @@
 	border-bottom: 1px solid #ccc;
 }
 
+#page_outline_pannel .header_level3 {
+	padding-left: 20px;
+}
+
+#page_outline_pannel .header_level4 {
+	padding-left: 40px;
+}
+
 #comment_link {
 	background: url(../images/tools/comment_off.png) center center no-repeat;
 }
@@ -288,11 +296,11 @@
 	background-image: url(../images/tools/comment.png);
 }
 
-#font_size_changer {
+#font_size{
 	background: url(../images/tools/font_resize_off.png) center center no-repeat;
 }
 
-#font_size_changer:hover {
+#font_size:hover {
 	background-image: url(../images/tools/font_resize.png);
 }
 
@@ -330,22 +338,22 @@
 	text-decoration: underline;
 }
 
-#page_outline_button {
+#page_outline{
 	background: url(../images/tools/outline_off.png) center center no-repeat;
 }
 
-#page_outline_button:hover {
+#page_outline:hover {
 	background-image: url(../images/tools/outline.png);
 }
 
-#page_outline {
+#page_outline_pannel {
 	display:none;
 	position: absolute;
 	right: 10px;
 	top: 23px;
 }
 
-#page_outline ul, #page_outline li {
+#page_outline_pannel ul, #page_outline_pannel li {
 	padding: 0;
 	margin: 0;
 	white-space: nowrap;
@@ -353,14 +361,14 @@
 	display: inline;
 }
 
-#page_outline a {
+#page_outline_pannel a {
 	display: block;
 	padding: 3px 10px;
 	text-decoration: none;
 	color: #333;
 }
 
-#page_outline a:hover {
+#page_outline_pannel a:hover {
 	background-color: #dedede;
 	color: #1299DA;
 }
@@ -419,6 +427,7 @@
 	position: absolute;
 	right: 74px;
 	top: 23px;
+	width: 93px;
 }
 
 #font_size_pannel a {
@@ -438,7 +447,7 @@
 }
 
 #font_size_default, #font_size_incr {
-	border-left: 1px solid #888;
+	border-left: 1px solid #ccc;
 }
 
 #font_size_pannel a#font_size_decr {

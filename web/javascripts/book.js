@@ -2,38 +2,54 @@
  * Book.js
  */
 
-
 (function($) {
 $(function() {
+	/* Start book page tool bar */
 	$("#book_tools a").tipsy();
 
-	$("#page_outline_button").click(function() {	
-		$("#page_outline").toggle();
+	var z_index = 300;
 
-		return false;
-	});
+	var toggle_pannel = function(pannel_id, button) {
+		// hide all other dialog_boxes
+		$(".dialog_box").hide();
 
-	$("#share_page").click(function() {	
-		$("#share_page_pannel").toggle();
+		pannel = $('#' + pannel_id);
 
-		return false;
+		var width = $('#book_item_tools').width();
+		var right = width - ($(button).position().left + $(button).width());
+
+		// font size changer are center aligned
+		if(pannel_id == 'font_size_pannel') {
+			right -= (pannel.width()	- $(button).width()) / 2;
+		}
+
+		pannel.css('right', right);
+		pannel.css('z-index', ++z_index);
+
+		pannel.fadeIn('fast');
+	}
+
+	$.each(['page_outline', 'share_page', 'font_size'], function(index, id) {
+		$('#' + id).hover(function() {
+			toggle_pannel(id + '_pannel', this);	
+
+			$('#' + id + '_pannel').mouseleave(function() {
+				$(this).fadeOut();
+			});
+		}, function() {
+			console.log("fasf");
+		});
 	});
 
 	$("#share_page_pannel a").click(function() {
 		$('#share_page_pannel').hide();	
 	});
 
-	$("#font_size_changer").click(function() {
-		$("#font_size_pannel").toggle();
-
-		return false;
+	$("#page_outline_pannel a").click(function() {
+		$("#page_outline_pannel").toggle();	
 	});
 
-	$("#page_outline a").click(function() {
-		$("#page_outline").toggle();	
-	});
-
-
+	// change the font-size of the book body
 	var change_font_size = function(delta) {
 		var book_body = $("#book_body");
 		var org_font_size = book_body.css("font-size");
@@ -57,5 +73,6 @@ $(function() {
 	$("#font_size_default").click(function() {
 		change_font_size();
 	});
+	/* End book page tool bar */
 });
 })(jQuery);
