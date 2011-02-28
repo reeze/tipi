@@ -12,7 +12,7 @@ require_once "../models/BookPage.php";
 $home_page = "http://{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}/../..";
 
 $feed = new FeedWriter(RSS2);
-$feed->setTitle("TIPI: 深入理解PHP内核");
+$feed->setTitle(SITE_NAME);
 $feed->setLink($home_page);
 $feed->setDescription("TIPI是一本关于PHP内核实现方方面面的书籍, 有关Zend引擎, PHP扩展编写等等");
 $feed->setChannelElement('language', 'zh-cn');

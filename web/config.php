@@ -4,6 +4,7 @@ date_default_timezone_set('Asia/Shanghai');
 
 
 define('DISQUS_SHORT_NAME', 'tipiphp');
+define('SITE_NAME', 'TIPI: 深入理解PHP内核');
 
 
 /**

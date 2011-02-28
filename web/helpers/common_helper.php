@@ -22,7 +22,7 @@ function get_jia_this($title='') {
 		'gmail' 	=> array('name' => 'Gmail', 'offset' => -272),
 	);
 
-	$title 	= urlencode($title . " | TIPI:深入理解PHP内核");
+	$title 	= urlencode($title . " | " . SITE_NAME);
 	$url 	= urlencode("http://{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}");
 
 	$return = '';
