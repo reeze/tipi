@@ -1,6 +1,6 @@
 <div id="footer">
 	<div id="copyright">
-		&copy; <?php echo date("Y"); ?> TIPI-Team. All rights reserved.
+		&copy; <?php echo date("Y"); ?> TIPI-Team <a href='http://www.php-internal.com'>http://www.php-internal.com/</a>. All rights reserved.
 	</div>
 
 </div>

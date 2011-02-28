@@ -33,7 +33,8 @@ a {
 	margin: 10px 0;
 }
 
-#copyright {
+#copyright, #copyright a {
+	text-decoration: none;
 	color: #111;
 	text-shadow: 0 1px 1px #ddd;
 	text-shadow: 0 1px 1px rgba(120,120,120,0.8);

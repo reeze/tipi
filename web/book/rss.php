@@ -4,12 +4,14 @@ require_once "../config.php";
 require_once "../lib/FeedWriter/FeedWriter.php";
 require_once "../lib/SimpieView.php";
 require_once "../models/BookPage.php";
+require_once "../helpers/book_helper.php";
 
 /**
  * Used for user to subscribe tipi's update
  */
 
-$home_page = "http://{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}/../..";
+$book_path = substr($_SERVER['REQUEST_URI'], 0, -7); // trim 'rss.php'
+$home_page = "http://{$_SERVER['HTTP_HOST']}{$book_path}";
 
 $feed = new FeedWriter(RSS2);
 $feed->setTitle(SITE_NAME);
@@ -35,7 +37,7 @@ foreach($section_pages as $page) {
 
 	$feed_item = $feed->createNewItem();
 	$feed_item->setTitle($book_page->getAbsTitle());
-	$feed_item->setLink($home_page . "/book/?p=" . $page['page_name']);
+	$feed_item->setLink($home_page . url_for_book($page['page_name']));
 	$feed_item->setDescription($book_page->getPageContent($render));
   	$feed_item->setDate($last_updated_at);
 	$feed_item->addElement('author', 'Tipi-Team');

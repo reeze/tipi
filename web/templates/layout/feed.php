@@ -5,4 +5,4 @@ echo $layout_content;
 ?>
 
 <hr />
-Copyright &copy; TIPI-Team. All right reserved.
+<?php SimpieView::include_partial("../templates/layout/_footer.php"); ?>
