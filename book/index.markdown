@@ -35,7 +35,7 @@
 
 - [第四章 函数的实现][function]
     * [第一节 函数的内部结构][function-struct]
-    * [第二节 函数的定义,参数及返回值][function-define-pr](pan)
+    * [第二节 函数的定义,参数及返回值][function-define-pr]
         + [函数的定义][function-define]
 		+ [函数的参数][function-param]
         + [函数的返回][function-return]
