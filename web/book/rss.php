@@ -48,5 +48,9 @@ foreach($section_pages as $page) {
 // set the last modify time
 $feed->setChannelElement('pubDate', date(DATE_RSS, $book_updated_at));
 
+// fix html entriy problem in feedwriter
+ob_start();
 $feed->genarateFeed();
-
+$xml = ob_get_clean();
+$xml = str_replace('&raquo;', '&#187;', $xml);
+echo $xml;

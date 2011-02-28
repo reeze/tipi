@@ -209,7 +209,6 @@
 	private function printHead()
 	{
 		$out  = '<?xml version="1.0" encoding="utf-8"?>' . "\n";
-		$out  = '<!DOCTYPE ROOT_XML_ELEMENT [ <!ENTITY raquo "&#187;"> ]>' . "\n";
 		
 		if($this->version == RSS2)
 		{
