@@ -16,4 +16,7 @@
     var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
   })();
 
+  // Add baidu tongji
+  var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+  document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3F55edc0fd041e7397c5c660b97fedc9d6' type='text/javascript'%3E%3C/script%3E"));
 </script>
