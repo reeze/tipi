@@ -1,12 +1,12 @@
 <?php
-$page_path = $page->getPagePath();
+$page_path = ($page ? $page->getPagePath() : array());
 $page_path_count = count($page_path);
 ?>
 
 <div id="book_tools" class="clearfix">
 	<div id="book_path_navor" class="fl">
 		<?php if($page_path_count == 0) : ?>
-			<?php echo $page->getTitle(); ?>
+			<?php echo ($page ? $page->getTitle() : 'Page Not Found'); ?>
 		<?php else: ?>
 			<?php foreach($page_path as $i => $p): ?>
 				<a href='<?php echo url_for_book($p['page_name']); ?>'><?php echo $p['title']; ?></a>
@@ -14,7 +14,7 @@ $page_path_count = count($page_path);
 			<?php endforeach; ?>
 		<?php endif; ?>
 	</div>
-	<?php $headers = $page->getOutlineHeaders(); ?>
+	<?php $headers = ($page ? $page->getOutlineHeaders() : array()); ?>
 	<div id="book_item_tools" class="fr" style="position: relative">
 		<a href='#comment' id="comment_link" class="tool_item" title="有想法? 那就说点神马吧!"><span>Comment</span></a>
 		<a href='javascript:void(0);' id="font_size" class="tool_item"><span>Font Size</span></a>
@@ -26,7 +26,7 @@ $page_path_count = count($page_path);
 		<a href='javascript:void(0);' id="share_page" class="tool_item"><span>Share</span></a>
 		<div id="share_page_pannel" class="dialog_box">
 			<div class="bottom_border">分享到:</div>
-			<?php echo get_jia_this($page->getAbsTitle()); ?>
+			<?php echo get_jia_this(($page ? $page->getAbsTitle() : '')); ?>
 		</div>
 
 		<?php if(count($headers)): ?>

@@ -23,6 +23,7 @@ class MarkdownPage
 		$this->text = isset($data['text']) ? $data['text'] : NULL;	
 
 		if($this->file) {
+			if(!file_exists($this->file)) throw new PageNotFoundException("Page Not Found");
 			$this->text = file_get_contents($this->file);	
 		}
 
@@ -36,4 +37,8 @@ class MarkdownPage
 	{
 		return $this->output;	
 	}
+}
+
+class PageNotFoundException extends Exception 
+{
 }

@@ -1,7 +1,7 @@
 <html>
 
 <head>
-	<title><?php echo $page->getAbsTitle(); ?> | <?php echo SITE_NAME; ?> </title>
+	<title><?php echo ($page ? $page->getAbsTitle() : 'Page Not Found'); ?> | <?php echo SITE_NAME; ?> </title>
 	<meta http-equiv="Content-type" content="text/html; charset=utf-8">
 	<link href="../css/book.css" media="screen" rel="stylesheet" type="text/css" />
 	<link href="../css/main.css" media="screen" rel="stylesheet" type="text/css" />
@@ -28,7 +28,7 @@
 						<?php echo $layout_content; ?>
 
 						<?php if($is_detail_view): ?>
-							<?php SimpieView::include_partial("../templates/layout/_book_navor.php", array('prev_page' => $page->getPrevPage(), 'next_page' => $page->getNextPage())); ?>
+							<?php SimpieView::include_partial("../templates/layout/_book_navor.php", array('page' => $page)); ?>
 							<?php SimpieView::include_partial("../templates/layout/_comment.php"); ?>
 						<?php endif; ?>
 					</div>
@@ -36,7 +36,7 @@
 
 				<?php if($is_detail_view): ?>
 					<div id="book_sidebar">
-						<div class='inner-containner'><?php SimpieView::include_partial("../templates/layout/_sidebar.php", array('chapt_list' => $chapt_list, 'current_page_name' => $page->getPageName())); ?></div>
+						<div class='inner-containner'><?php SimpieView::include_partial("../templates/layout/_sidebar.php", array('chapt_list' => $chapt_list, 'current_page_name' => ($page ? $page->getPageName() : ''))); ?></div>
 					</div>
 				<?php endif; ?>
 			</div>
