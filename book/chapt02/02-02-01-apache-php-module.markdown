@@ -1,8 +1,8 @@
-# PHP以模块方式注册到Apache
-为了让Apache支持php,我们通常的做法是编译一个apche的php模块, 在配置中配置让mod_php来处理php文件的请求.
-php模块通过注册apache2的ap_hook_post_config挂钩, 在apache启动的时候启动php模块以接受php的请求.
+# Apache模块
+为了让PHP在让Apache服务器上可以运行,我们通常的做法是编译一个Apache的PHP模块(mod_php5)，让此模块来处理PHP文件的所有请求.
+当在配置中配置好PHP模块后，PHP模块通过注册apache2的ap_hook_post_config挂钩, 在Apache启动的时候启动mod_php5模块以接受PHP文件的请求.
 
-下面介绍apache模块加载的基本知识以及PHP对于apache的实现
+PHP模块是如何加载到Apache中的？
 
 ## Apache模块加载机制简介
 Apache的模块可以在运行的时候动态装载，这意味着对服务器可以进行功能扩展而不需要重新对源代码进行编译，甚至根本不需要停止服务器。
@@ -21,13 +21,17 @@ Apache中对动态链接库的处理是通过模块mod_so来完成的，因此mo
 下面我们以PHP模块的加载为例，分析Apache的模块加载过程。在配置文件中添加了所上所示的指令后，Apache在加载模块时会根据模块名查找模块并加载，
 对于每一个模块，Apache必须保证其文件名是以“mod_”开始的，如php的mod_php5.c。如果命名格式不对，Apache将认为此模块不合法。
 module结构的name属性在最后是通过宏STANDARD20_MODULE_STUFF以\__FILE__体现。 关于这点可以在后面介绍mod_php5模块时有看到。
-通过之前指令中指定的路径找到相关的动态链接库文件，Apache通过内部的函数获取动态链接库中的内容，并将模块的内容加载到内存中的指定变量中。  
-在真正激活模块之前，Apache会检查所加载的模块是否为真正的Apache模块，这个检测是通过检查magic字段进行的。而magic字段是通过宏STANDARD20_MODULE_STUFF体现，在这个宏中magic的值为MODULE_MAGIC_COOKIE，MODULE_MAGIC_COOKIE定义如下：
+通过之前指令中指定的路径找到相关的动态链接库文件，Apache通过内部的函数获取动态链接库中的内容，并将模块的内容加载到内存中的指定变量中。
+
+在真正激活模块之前，Apache会检查所加载的模块是否为真正的Apache模块，这个检测是通过检查magic字段进行的。
+而magic字段是通过宏STANDARD20_MODULE_STUFF体现，在这个宏中magic的值为MODULE_MAGIC_COOKIE，MODULE_MAGIC_COOKIE定义如下：
 
     [c]
     #define MODULE_MAGIC_COOKIE 0x41503232UL /* "AP22" */
 
 最后Apache会调用相关函数(ap_add_loaded_module)将模块激活，此处的激活就是将模块放入相应的链表中(ap_top_modules链表：ap_top_modules链表用来保存Apache中所有的被激活的模块，包括默认的激活模块和激活的第三方模块。）
+
+Apache加载的是PHP模块，那么这个模块是如何实现的呢到我们以Apache2的mod_php5模块为例进行说明。
 
 ## Apache2的mod_php5模块说明
 Apache2的mod_php5模块包括sapi/apache2handler和sapi/apache2filter两个目录

@@ -10,10 +10,10 @@
 	* [第四节 小结][01-summary]
 
 - [第二章 概览][survey]
-	* [第一节 PHP生命周期及Zend引擎概览][php-life-cycle]
+	* [第一节 生命周期及Zend引擎概览][php-life-cycle]
 	* [第二节 SAPI][sapi-overview]
-        + [PHP以模块方式注册到Apache][php-module-in-apache]
-        + [嵌入式PHP][embedding-php]
+        + [Apache模块][php-module-in-apache]
+        + [嵌入式][embedding-php]
         + [Fastcgi][fastcgi]
 	* [第三节 脚本的执行][script-execution]
 		+ [词法分析和语法分析][lex-and-yacc]

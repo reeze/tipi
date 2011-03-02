@@ -1,4 +1,4 @@
-# 第一节 PHP生命周期和Zend引擎
+# 第一节 生命周期和Zend引擎
 
 ## 一切的开始: SAPI接口
 通常我们编写PHP Web程序都是通过Apache或者Nginx这类Web服务器来测试脚本. 或者在命令行下通过php程序来执行PHP脚本.
