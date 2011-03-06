@@ -39,6 +39,10 @@
 	background: url(../images/background-dark.png);
 }
 
+#book_main .inner-wrapper {
+	background: url(../images/book_bg.png) left top repeat-y;
+}
+
 #book_index {
 	font-size: 1.2em;
 }
@@ -56,12 +60,7 @@
 #book_content {
 	float: left;
 	width: 790px;
-	background: rgba(255, 255, 255, 0.4);
 	font-size: 1.2em;
-}
-
-#book_content .inner-containner {
-	border-right: 1px dashed rgba(0, 0, 0, 0.1);
 }
 
 #book_content p {
@@ -277,7 +276,8 @@
 	margin: 10px;
 	margin-bottom: 0;
 	padding: 6px;
-	border-bottom: 1px solid #ccc;
+	00border-bottom: 1px solid #ccc;
+	background: url(../images/book_toolbar_sep.png) left 10px no-repeat;
 }
 
 #page_outline_pannel .header_level3 {
