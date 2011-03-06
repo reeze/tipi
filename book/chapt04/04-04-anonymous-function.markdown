@@ -210,4 +210,142 @@ PHP使用闭包(Closure)来实现匿名函数, 匿名函数最强大的功能也
 
 
 ### 闭包的实现
-前面提到匿名函数是通过闭包来实现的, 现在我们开始看看闭包(类)是怎么实现的.
+前面提到匿名函数是通过闭包来实现的, 现在我们开始看看闭包(类)是怎么实现的. 匿名函数和普通函数除了是否有变量名以外并没有区别,
+闭包的实现代码在$PHP_SRC/Zend/zend_closure.c. 匿名函数"对象化"的问题已经通过Closure实现, 而对于匿名是怎么样访问到创建该匿名函数时的变量的呢?
+
+例如如下这段代码:
+
+	[php]
+	<?php
+	$i=100;
+	$counter = function() use($i) {
+		debug_zval_dump($i);
+	};  
+
+	$counter();
+
+通过VLD来查看这段编码编译什么样的opcode了
+
+	$ php -dvld.active=1 closure.php
+
+	vars:  !0 = $i, !1 = $counter
+	# *  op                           fetch          ext  return  operands
+	------------------------------------------------------------------------
+	0  >   ASSIGN                                                   !0, 100
+	1      ZEND_DECLARE_LAMBDA_FUNCTION                             '%00%7Bclosure
+	2      ASSIGN                                                   !1, ~1
+	3      INIT_FCALL_BY_NAME                                       !1
+	4      DO_FCALL_BY_NAME                              0          
+	5    > RETURN                                                   1
+
+	function name:  {closure}
+	number of ops:  5
+	compiled vars:  !0 = $i
+	line     # *  op                           fetch          ext  return  operands
+	--------------------------------------------------------------------------------
+	  3     0  >   FETCH_R                      static              $0      'i'
+			1      ASSIGN                                                   !0, $0
+	  4     2      SEND_VAR                                                 !0
+			3      DO_FCALL                                      1          'debug_zval_dump'
+	  5     4    > RETURN                                                   null
+
+上面根据情况去掉了一些无关的输出, 从上到下, 第1开始将100赋值给!0也就是变量$i, 随后执行ZEND_DECLARE_LAMBDA_FUNCTION,
+那我们去相关的opcode执行函数中看看这里是怎么执行的, 这个opcode的处理函数位于$PHP_SRC/Zend/zend_vm_execute.h中:
+
+	[c]
+	static int ZEND_FASTCALL  ZEND_DECLARE_LAMBDA_FUNCTION_SPEC_CONST_CONST_HANDLER(ZEND_OPCODE_HANDLER_ARGS)
+	{
+		zend_op *opline = EX(opline);
+		zend_function *op_array;
+			  
+		if (zend_hash_quick_find(EG(function_table), Z_STRVAL(opline->op1.u.constant), Z_STRLEN(opline->op1.u.constant), Z_LVAL(opline->op2.u.constant), (void *) &op_arra
+	y) == FAILURE ||
+			op_array->type != ZEND_USER_FUNCTION) {
+			zend_error_noreturn(E_ERROR, "Base lambda function for closure not found");
+		}
+
+		zend_create_closure(&EX_T(opline->result.u.var).tmp_var, op_array TSRMLS_CC);
+
+		ZEND_VM_NEXT_OPCODE();
+	}   
+
+该函数调用了zend_create_closure()函数来创建一个闭包对象, 那我们继续看看位于$PHP_SRC/Zend/zend_closures.c的zend_create_closure()函数都做了些什么.
+
+	[c]
+	ZEND_API void zend_create_closure(zval *res, zend_function *func TSRMLS_DC)
+	{
+		zend_closure *closure;
+
+		object_init_ex(res, zend_ce_closure);
+
+		closure = (zend_closure *)zend_object_store_get_object(res TSRMLS_CC);
+
+		closure->func = *func;
+
+		if (closure->func.type == ZEND_USER_FUNCTION) { // 如果是用户定义的匿名函数
+			if (closure->func.op_array.static_variables) {
+				HashTable *static_variables = closure->func.op_array.static_variables;
+
+				// 为函数申请存储静态变量的哈希表空间
+				ALLOC_HASHTABLE(closure->func.op_array.static_variables); 
+				zend_hash_init(closure->func.op_array.static_variables, zend_hash_num_elements(static_variables), NULL, ZVAL_PTR_DTOR, 0);
+				
+				// 循环当前静态变量列表, 使用zval_copy_static_var方法处理
+				zend_hash_apply_with_arguments(static_variables TSRMLS_CC, (apply_func_args_t)zval_copy_static_var, 1, closure->func.op_array.static_variables);
+			}
+			(*closure->func.op_array.refcount)++;
+		}
+
+		closure->func.common.scope = NULL;
+	}
+
+如上段代码注释中所说, 继续看看zval_copy_static_var()函数的实现:
+
+	[c]
+	static int zval_copy_static_var(zval **p TSRMLS_DC, int num_args, va_list args, zend_hash_key *key) /* {{{ */
+	{
+		HashTable *target = va_arg(args, HashTable*);
+		zend_bool is_ref;
+
+		// 只对通过use语句类型的静态变量进行取值操作, 否则匿名函数体内的静态变量也会影响到作用域之外的变量
+		if (Z_TYPE_PP(p) & (IS_LEXICAL_VAR|IS_LEXICAL_REF)) {
+			is_ref = Z_TYPE_PP(p) & IS_LEXICAL_REF;
+
+			if (!EG(active_symbol_table)) {
+				zend_rebuild_symbol_table(TSRMLS_C);
+			}
+			// 如果当前作用域内没有这个变量
+			if (zend_hash_quick_find(EG(active_symbol_table), key->arKey, key->nKeyLength, key->h, (void **) &p) == FAILURE) {
+				if (is_ref) {
+					zval *tmp;
+
+					// 如果是引用变量, 则创建一个零时变量一边在匿名函数定义之后对该变量进行操作
+					ALLOC_INIT_ZVAL(tmp);
+					Z_SET_ISREF_P(tmp);
+					zend_hash_quick_add(EG(active_symbol_table), key->arKey, key->nKeyLength, key->h, &tmp, sizeof(zval*), (void**)&p);
+				} else {
+					// 如果不是引用则表示这个变量不存在
+					p = &EG(uninitialized_zval_ptr);
+					zend_error(E_NOTICE,"Undefined variable: %s", key->arKey);
+				}
+			} else {
+				// 如果存在这个变量, 则根据是否是引用, 对变量进行引用或者复制
+				if (is_ref) {
+					SEPARATE_ZVAL_TO_MAKE_IS_REF(p);
+				} else if (Z_ISREF_PP(p)) {
+					SEPARATE_ZVAL(p);
+				}
+			}
+		}
+		if (zend_hash_quick_add(target, key->arKey, key->nKeyLength, key->h, p, sizeof(zval*), NULL) == SUCCESS) {
+			Z_ADDREF_PP(p);
+		}
+		return ZEND_HASH_APPLY_KEEP;
+	}
+
+这个函数作为一个回调函数传递给zend_hash_apply_with_arguments()函数, 每次读取到hash表中的值之后由这个函数进行处理,
+而这个函数对所有use语句定义的变量值赋值给这个匿名函数的静态变量, 这样匿名函数就能访问到use的变量了.
+
+
+
+
