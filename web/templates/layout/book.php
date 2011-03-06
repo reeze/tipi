@@ -22,23 +22,25 @@
 			</div>
 
 			<div id="book_main" class="clearfix">
-				<div id="<?php echo ($is_detail_view ? 'book_content' : 'book_index'); ?>" >
-					<?php SimpieView::include_partial("../templates/layout/_book_tools.php", array('page' => $page)); ?>
-					<div id="book_body" class="inner-containner">
-						<?php echo $layout_content; ?>
+				<div class="<?php if($is_detail_view) {echo 'inner-wrapper';} ?> clearfix">
+					<div id="<?php echo ($is_detail_view ? 'book_content' : 'book_index'); ?>" >
+						<?php SimpieView::include_partial("../templates/layout/_book_tools.php", array('page' => $page)); ?>
+						<div id="book_body" class="inner-containner">
+							<?php echo $layout_content; ?>
 
-						<?php if($is_detail_view): ?>
-							<?php SimpieView::include_partial("../templates/layout/_book_navor.php", array('page' => $page)); ?>
-							<?php SimpieView::include_partial("../templates/layout/_comment.php"); ?>
-						<?php endif; ?>
+							<?php if($is_detail_view): ?>
+								<?php SimpieView::include_partial("../templates/layout/_book_navor.php", array('page' => $page)); ?>
+								<?php SimpieView::include_partial("../templates/layout/_comment.php"); ?>
+							<?php endif; ?>
+						</div>
 					</div>
+
+					<?php if($is_detail_view): ?>
+						<div id="book_sidebar">
+							<div class='inner-containner'><?php SimpieView::include_partial("../templates/layout/_sidebar.php", array('chapt_list' => $chapt_list, 'current_page_name' => ($page ? $page->getPageName() : ''))); ?></div>
+						</div>
+					<?php endif; ?>
 				</div>
-
-				<?php if($is_detail_view): ?>
-					<div id="book_sidebar">
-						<div class='inner-containner'><?php SimpieView::include_partial("../templates/layout/_sidebar.php", array('chapt_list' => $chapt_list, 'current_page_name' => ($page ? $page->getPageName() : ''))); ?></div>
-					</div>
-				<?php endif; ?>
 			</div>
 			
 		<?php SimpieView::include_partial("../templates/layout/_footer.php"); ?>
