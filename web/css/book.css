@@ -276,8 +276,7 @@
 	margin: 10px;
 	margin-bottom: 0;
 	padding: 6px;
-	00border-bottom: 1px solid #ccc;
-	background: url(../images/book_toolbar_sep.png) left 10px no-repeat;
+	border-bottom: 1px solid #ccc;
 }
 
 #page_outline_pannel .header_level3 {
