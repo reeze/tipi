@@ -75,15 +75,15 @@ a {
 
 
 #feed_subscribe {
-	margin-top: 10px;
 	margin-bottom: 10px;
 	border-bottom: 1px #ccc solid;
-	padding: 5px;
+	padding: 5px 5px 0;
 }
 
 #feed_subscribe a {
 	display: block;
 	background: url("../images/feed.png") left center no-repeat;
+	padding: 10px;
 	padding-left: 45px;
 	font-size: 1.1em;
 	text-decoration: none;

@@ -1,4 +1,4 @@
-<div id="feed_subscribe"><a href="rss.php">想要追踪TIPI的更新? 订阅吧</div></div>
+<div id="feed_subscribe"><a href="rss.php">订阅TIPI的更新吧!</div></div>
 <ul>
     <?php
     foreach ($chapt_list as $chapt) {
