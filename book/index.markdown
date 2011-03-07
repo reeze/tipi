@@ -26,7 +26,7 @@
 	* [第三节 预定义变量][init-var]
 	* [第四节 静态变量][static-var]
 	* [第五节 类型提示(Type Hinting)的实现][receive-arg]
-	* [第六节 变量的作用域][none]
+	* [第六节 变量的作用域][var-scope]
 		+ [global语句][var-global]
 		+ [生命周期与作用域][var-scope]
 	* [第七节 数据类型转换][type-cast]
@@ -40,8 +40,8 @@
 		+ [函数的参数][function-param]
         + [函数的返回][function-return]
     * [第三节 函数的调用和执行][function-call](er)
-    * [第四节 匿名函数(create_function, clouser)][anonymous-function] (reeze)
-    * 第五节 小结
+    * [第四节 匿名函数(create_function, clouser)][anonymous-function]
+    * [第五节 小结][04-summary]
 
 - 第五章 类和面向对象
     * [第一节 类和接口的内部结构][class-struct]
@@ -126,6 +126,7 @@
 [function-return]:       ?p=chapt04/04-02-03-function-return
 [function-call]:   		?p=chapt04/04-03-function-call
 [anonymous-function]:   ?p=chapt04/04-04-anonymous-function
+[04-summary]:   		?p=chapt04/04-05-summary
 
 [class-struct]:         ?p=chapt05/05-01-class-struct
 [none]:		?
