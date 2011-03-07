@@ -5,10 +5,9 @@
 }
 
 #book_header p {
-	color: #d8d8d8;
+	color: #777;
 	margin-top: 4px;
 	font-size: 15px;
-	text-shadow: #000 0 2px 2px;
 }
 
 #book_header h1 {
@@ -16,14 +15,13 @@
 }
 
 #book_header h1 a {
-	color: #dadada;
+	color: #333;
 	text-decoration: none;
-	text-shadow: #000 0 2px 2px;
 	font-size: 1.3em;
 }
 
 #book_main {
-	border: 1px solid #555;
+	border: 1px solid #fff;
 	background: #efefef;
 
 	-webkit-border-radius: 4px;
@@ -31,12 +29,10 @@
 	-o-border-radius: 4px;
 	border-radius: 4px;
 
-	-webkit-box-shadow: rgba(0,0,0,1) 0px 0px 5px;
-	-moz-box-shadow: rgba(0,0,0,1) 0px 0px 5px;
-	-o-box-shadow: rgba(0,0,0,1) 0px 0px 5px;
-	box-shadow: rgba(0,0,0,1) 0px 0px 5px;
-
-	background: url(../images/background-dark.png);
+	-webkit-box-shadow: rgba(100,100,100,1) 0px 0px 6px;
+	-moz-box-shadow: rgba(100,100,100,1) 0px 0px 6px;
+	-o-box-shadow: rgba(100,100,100,1) 0px 0px 6px;
+	box-shadow: rgba(100,100,100,1) 0px 0px 6px;
 }
 
 #book_main .inner-wrapper {
@@ -215,8 +211,8 @@
 
 	border: 1px solid #aaa;
 
-	background-color: #fff;
 	background-color: rgba(255, 255, 255, 0.9);
+	background-color: #fff;
 }
 
 #book_content blockquote {

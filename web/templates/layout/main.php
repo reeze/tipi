@@ -8,26 +8,26 @@
 </head>
 <body>
 	<?php SimpieView::include_partial("templates/layout/_header.php"); ?>
-	<div id="wrapper">
-			<div id="book_header">
-				<h1><a href='.'>深入理解PHP内核</a></h1>
-				<p>Thinking In PHP Internal</p>
+	<div id="home_page" class='body-wrapper'>
+		<div id="main_logo">
+			<img src="images/main-logo.png" />
+		</div>
+
+		<div id="get-it">
+			<a class='read' href='book/'><span>阅读</span></a>
+			<span id="get-it-sep"></span>
+			<a class='downloads' href='downloads/'><span>下载</span></a>
+		</div>
+
+		<div id="get-started" class="clearfix">
+			<div class='fl'>
 			</div>
 
-			<div id="book_main" class="clearfix">
-				<div id="<?php echo ($is_detail_view ? 'book_content' : 'book_index'); ?>" >
-					<div class="inner-containner"><?php echo $layout_content; ?></div>
-				</div>
-
-				<?php if($is_detail_view): ?>
-					<div id="book_sidebar">
-						<div class='inner-containner'><?php SimpieView::include_partial("../templates/layout/_sidebar.php"); ?></div>
-					</div>
-				<?php endif; ?>
+			<div class='fl'>
+			
 			</div>
-
-		<?php SimpieView::include_partial("templates/layout/_footer.php"); ?>
 		</div>
 	</div>
+	<?php SimpieView::include_partial("templates/layout/_footer.php"); ?>
 </body>
 </html>

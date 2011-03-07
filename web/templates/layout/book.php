@@ -42,9 +42,8 @@
 					<?php endif; ?>
 				</div>
 			</div>
-			
-		<?php SimpieView::include_partial("../templates/layout/_footer.php"); ?>
 		</div>
 	</div>
+	<?php SimpieView::include_partial("../templates/layout/_footer.php"); ?>
 </body>
 </html>

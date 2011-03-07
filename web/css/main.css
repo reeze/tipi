@@ -1,8 +1,8 @@
 body {
-	background-color: #636260;
+	background-color: #fff;
 	font: 12px Helvetica, Arial, sans-serif;
 	margin: 0;
-	background: url(../images/bg.png);
+	background: url(../images/bg.png) left top repeat-x;
 	color: #222;
 	line-height: 20px;
 	text-align: center;
@@ -14,7 +14,7 @@ a {
 }
 
 
-#wrapper, #inner-header {
+#wrapper, #inner-header, .body-wrapper {
 	width: 1000px;
 	margin: 0 auto;
 	text-align: left;
@@ -26,18 +26,90 @@ a {
 	-moz-box-shadow: rgba(0,0,0,1) -5px 0px 5px; /* Firefox will expand the width spread width */
 	-o-box-shadow: rgba(0,0,0,1) 0px 0px 5px;
 	box-shadow: rgba(0,0,0,1) 0px 0px 5px;
-	border-bottom: 1px solid #333;
+	border-bottom: 1px solid #999;
 }
+
+#main_logo {
+	text-align: center;
+	padding: 50px 0;
+	padding-bottom: 20px;
+}
+
+#get-it {
+	padding: 10px;
+	padding-right: 60px;
+	text-align: right;
+}
+
+#get-it a {
+	display: inline-block;
+	height: 51px;
+	width: 135px;
+	background-image: url(../images/get-it-button.png);
+}
+
+#get-it a span {
+	display:none;
+	text-indent: -9999px;
+}
+
+#get-it #get-it-sep {
+	display: inline-block;
+	width: 30px;
+	height: 51px;
+	background: url(../images/get-it-button.png) center center no-repeat;
+}
+
+#get-it .read {
+	background-position: left center;
+}
+
+#get-it .downloads {
+	background-position: right center;
+}
+
+#get-started {
+	background: url(../images/main-sep.png) center top no-repeat;
+	padding: 40px;
+}
+
+#search-input {
+	padding: 3px;
+	width: 110px;
+	border: 0;
+	background-color: #999;
+	margin-left: 10px;
+
+	-webkit-border-radius: 2px;
+	-moz-border-radius: 2px;
+	-o-border-radius: 2px;
+	border-radius: 2px;
+}
+
+#search-input:focus {
+	outline: none;
+	background-color: #ddd;
+}
+
 
 #footer {
-	margin: 10px 0;
+	color: #666;
+	margin-top: 30px;
+	border-top: 1px solid #dfdfdf;
 }
 
-#copyright, #copyright a {
+#footer .inner-wrapper {
+	padding: 20px;
+	border-top: 1px solid #b7b7b7;
+}
+
+#footer a {
+	color: #777;
 	text-decoration: none;
-	color: #111;
-	text-shadow: 0 1px 1px #ddd;
-	text-shadow: 0 1px 1px rgba(120,120,120,0.8);
+}
+
+#footer a:hover {
+	text-decoration: underline;
 }
 
 #inner-header ul{
@@ -118,6 +190,10 @@ h3 {
 	display: block;
 	padding: 50px;
 	color: darkorange;
+}
+
+#copyright {
+	width: 48%;
 }
 
 
