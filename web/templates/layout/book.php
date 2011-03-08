@@ -1,7 +1,7 @@
 <html>
 
 <head>
-	<title><?php echo ($page ? $page->getAbsTitle() : 'Page Not Found'); ?> | <?php echo SITE_NAME; ?> </title>
+	<title><?php echo ($page ? $page->getAbsTitle() : ($title ? $title : 'Page Not Found')); ?> | <?php echo SITE_NAME; ?> </title>
 	<meta http-equiv="Content-type" content="text/html; charset=utf-8">
 	<link href="../css/book.css" media="screen" rel="stylesheet" type="text/css" />
 	<link href="../css/main.css" media="screen" rel="stylesheet" type="text/css" />
@@ -24,14 +24,14 @@
 			<div id="book_main" class="clearfix">
 				<div class="<?php if($is_detail_view) {echo 'inner-wrapper';} ?> clearfix">
 					<div id="<?php echo ($is_detail_view ? 'book_content' : 'book_index'); ?>" >
-						<?php SimpieView::include_partial("../templates/layout/_book_tools.php", array('page' => $page)); ?>
+						<?php SimpieView::include_partial("../templates/layout/_book_tools.php", array('page' => $page, 'extra' => array('title' => ($title ? $title : '')))); ?>
 						<div id="book_body" class="inner-containner">
 							<?php echo $layout_content; ?>
 
 							<?php if($is_detail_view): ?>
 								<?php SimpieView::include_partial("../templates/layout/_book_navor.php", array('page' => $page)); ?>
-								<?php SimpieView::include_partial("../templates/layout/_comment.php"); ?>
 							<?php endif; ?>
+							<?php SimpieView::include_partial("../templates/layout/_comment.php"); ?>
 						</div>
 					</div>
 
