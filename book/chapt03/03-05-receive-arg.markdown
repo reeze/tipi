@@ -65,7 +65,7 @@ PHP中提供了一些函数，来判断数据的类型。例如，我们可使�
         |	namespace_name T_NS_SEPARATOR T_STRING { zend_do_build_namespace_name(&$$, &$1, &$3 TSRMLS_CC); }
 
 
-##　3、查找中间代码及其对应的实现
+## 3、查找中间代码及其对应的实现
 
 从上面的代码中我们可以看到关于类型提示的检测最后调用的是：
 

@@ -1,5 +1,5 @@
 # 第一节 函数的内部结构
-在PHP中，函数有自己的作用域，同时在其内部可以实现各种语句的执行，最后返回最终结果值。在PHP的源码是可以发现，PHP内核将函数分为以下类型：
+在PHP中，函数有自己的作用域，同时在其内部可以实现各种语句的执行，最后返回最终结果值。在PHP的源码中可以发现，PHP内核将函数分为以下类型：
 
 	[c]
 	#define ZEND_INTERNAL_FUNCTION              1
@@ -69,13 +69,14 @@
 	} zend_function;
 
 *zend_function*的结构中的op_array存储了该函数中所有的操作，当函数被调用时，ZE就会将这个op_array中的opline一条条顺次执行，并将最后的返回值返回。
+从VLD扩展的显示的关于函数的信息可以看出，函数的定义和执行是分开的，一个函数可以作为一个独立的运行单元而存在。
 
 
 
 #### 2.内部函数（*ZEND_INTERNAL_FUNCTION*）:
+ZEND_INTERNAL_FUNCTION函数是由扩展或者Zend/PHP内核提供的，用“C/C++”编写的，可以直接执行的函数。如下为内部函数的结构：
 
-
-	[c]
+    [c]
 	typedef struct _zend_internal_function {
 		/* Common elements */
 		zend_uchar type;
@@ -93,6 +94,16 @@
 		void (*handler)(INTERNAL_FUNCTION_PARAMETERS);
 		struct _zend_module_entry *module;
 	} zend_internal_function;
+
+最常见的操作是在模块初始化时，ZE会遍历每个载入的扩展模块，然后将模块中function_entry中指明的每一个函数(module->functions)，
+创建一个zend_internal_function结构， 并将其type设置为ZEND_INTERNAL_FUNCTION, 将这个结构填入全局的函数表(HashTable结构）;
+函数设置及注册过程见 Zend/zend_API.c文件中的 **zend_register_functions**函数。这个函数除了处理函数，也处理类的方法，包括那些魔术方法。
+
+内部函数的结构与用户自定义的函数结构基本类似，有一些不同，
+
+* 调用方法，handler字段. 如果是ZEND_INTERNAL_FUNCTION， 那么ZE就调用zend_execute_internal,通过zend_internal_function.handler来执行这个函数。而用户自定义的函数需要生成中间代码，然后通过中间代码映射到相对就把方法调用。
+* 内置函数在结构中多了一个module字段，表示属于哪个模块。不同的扩展其模块不同。
+* type字段，在用户自定义的函数中，type字段几科无用，而内置函数中的type字段作为几种内部函数的区分。
 
 
 [var-scope]:            ?p=chapt03/03-06-php-scope
