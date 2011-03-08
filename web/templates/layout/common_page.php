@@ -21,11 +21,13 @@
 				<p>Thinking In PHP Internal</p>
 			</div>
 
-			<div class="clearfix">
+			<div id='common-main' class="clearfix">
+				<div class='clearfix'>
 				<?php SimpieView::include_partial("../templates/layout/_common_sidebar.php"); ?>
 				<div id="page-body">
 					<?php echo $layout_content; ?>
 					<?php SimpieView::include_partial("../templates/layout/_comment.php"); ?>
+				</div>
 				</div>
 			</div>
 		</div>

@@ -198,6 +198,78 @@ a {
 	color: #ddd;
 }
 
+#common-main {
+	background: url(../images/main-sep.png) center top no-repeat;
+	margin-top: 30px;
+}
+
+#common-main .clearfix {
+	padding-top: 25px;
+	background: url(../images/v-main-sep.png) 200px 5px no-repeat;
+}
+
+#common-sidebar {
+	font-size: 1.6em;
+	line-height: 1.8em;
+	width: 202px;
+	margin-right: 30px;
+}
+
+#common-sidebar ul {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	text-align: right;
+}
+
+#common-sidebar a {
+	display: block;
+	text-decoration: none;
+	padding-right: 20px;
+}
+
+#common-sidebar a span {
+	color: #aaa;
+	margin-right: 10px;
+}
+
+#common-sidebar a:hover {
+}
+
+#common-sidebar a:hover span {
+	color: green;
+}
+
+#page-body {
+	width: 760px;
+}
+
+#page-body h1 {
+	margin-top: 0;
+	padding: 5px 0;
+	border-bottom: 1px solid #ccc;
+}
+
+
+/* Search related styles */
+.gsc-input input.gsc-input {
+	font-size: 1.1em;
+	height: 35px;
+}
+
+.gsc-search-button input.gsc-search-button {
+	font-size: 1.1em;
+	height: 35px;
+}
+
+table.gsc-branding {
+	display: none;
+}
+
+.gsc-resultsRoot {
+	margin-top: 20px;
+}
+
 h1,h2,h3,h4 {
 	font-weight: normal;
 	font-family: "Microsoft YaHei", Helvetica, Arial, sans-serif;
