@@ -6,7 +6,7 @@
 	<link href="css/main.css" media="screen" rel="stylesheet" type="text/css" />
 	<link href="css/book.css" media="screen" rel="stylesheet" type="text/css" />
 </head>
-<body>
+<body id="home">
 	<?php SimpieView::include_partial("templates/layout/_header.php"); ?>
 	<div id="home_page" class='body-wrapper'>
 		<div id="main_logo">

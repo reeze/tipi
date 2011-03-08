@@ -73,9 +73,18 @@ a {
 	padding: 40px;
 }
 
+
+#search-form {
+	display: inline;
+}
+
+#search-submit {
+	display: none;
+}
+
 #search-input {
 	padding: 3px;
-	width: 110px;
+	width: 120px;
 	border: 0;
 	background-color: #999;
 	margin-left: 10px;
@@ -84,6 +93,14 @@ a {
 	-moz-border-radius: 2px;
 	-o-border-radius: 2px;
 	border-radius: 2px;
+
+	border: 1px solid #bfbfbf;
+	border-top: 0;
+	border-left: 0;
+}
+
+#search-input:hover {
+	background-color: #aaa;
 }
 
 #search-input:focus {
@@ -91,6 +108,17 @@ a {
 	background-color: #ddd;
 }
 
+#common-sidebar {
+	float: left;
+}
+
+#page-body {
+	float: left;
+}
+
+#page-body .gsc-control {
+	width: 600px;
+}
 
 #footer {
 	color: #666;
@@ -159,6 +187,15 @@ a {
 	padding-left: 45px;
 	font-size: 1.1em;
 	text-decoration: none;
+}
+
+
+#home #home-link {
+	color: #ddd;
+}
+
+#book #book-link {
+	color: #ddd;
 }
 
 h1,h2,h3,h4 {

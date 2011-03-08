@@ -1,12 +1,14 @@
 <?php
 $page_path = ($page ? $page->getPagePath() : array());
 $page_path_count = count($page_path);
+
+$title = ($page ? $page->getTitle() : ($extra['title'] ? $extra['title'] : 'Page Not Found'));
 ?>
 
 <div id="book_tools" class="clearfix">
 	<div id="book_path_navor" class="fl">
 		<?php if($page_path_count == 0) : ?>
-			<?php echo ($page ? $page->getTitle() : 'Page Not Found'); ?>
+			<?php echo $title; ?>
 		<?php else: ?>
 			<?php foreach($page_path as $i => $p): ?>
 				<a href='<?php echo url_for_book($p['page_name']); ?>'><?php echo $p['title']; ?></a>
