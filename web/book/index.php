@@ -6,10 +6,15 @@ require_once "../models/BookPage.php";
 require_once "../helpers/common_helper.php";
 require_once "../helpers/book_helper.php";
 
-$page_name = (isset($_GET['p']) && $_GET['p']) ? $_GET['p'] : 'index';
+$page_name = (isset($_GET['p']) && $_GET['p']) ? trim($_GET['p']) : 'index';
 
 try
 {
+	// 基本的安全检查,防止主动修改文件路径
+	if(!$page_name || $page_name[0] == '/' || strpos($page_name, '..')) {
+		throw new PageNotFoundException("页面不存在");	
+	}
+
 	// 章节列表
 	$chapt_list = BookPage::getChapterList();
 
