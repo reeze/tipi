@@ -74,6 +74,7 @@
 #book_sidebar {
 	float: right;
 	width: 200px;
+	padding-bottom: 25px;
 }
 
 #book_content h1 {
@@ -114,6 +115,8 @@
 	padding: 0;
 	list-style: none;
 	line-height: 20px;
+	padding-right: 5px;
+	padding-left: 5px;
 }
 
 #book_sidebar ul ul {

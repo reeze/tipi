@@ -1,7 +1,7 @@
 <html>
 
 <head>
-	<title><?php echo $title; ?> | TIPI Project </title>
+	<title><?php echo $title; ?> | <?php echo SITE_NAME; ?></title>
 	<meta http-equiv="Content-type" content="text/html; charset=utf-8">
 	<link href="css/main.css" media="screen" rel="stylesheet" type="text/css" />
 	<link href="css/book.css" media="screen" rel="stylesheet" type="text/css" />
@@ -14,9 +14,9 @@
 		</div>
 
 		<div id="get-it">
-			<a class='read' href='book/'><span>阅读</span></a>
+			<a class='read' href='<?php echo url_for("/book/"); ?>'><span>阅读</span></a>
 			<span id="get-it-sep"></span>
-			<a class='downloads' href='downloads/'><span>下载</span></a>
+			<a class='downloads' href='<?php echo url_for("/downloads/"); ?>'><span>下载</span></a>
 		</div>
 
 		<div id="get-started" class="clearfix">
