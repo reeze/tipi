@@ -4,11 +4,11 @@
 			<div id="footer_nav" class='fl'>
 				<div>
 					TIPI
-					<a href=''>首页</a>
-					<a href=''>开始阅读</a>
-					<a href=''>项目</a>
-					<a href=''>下载</a>
-					<a href='' class='last'>关于</a>
+					<a href='<?php echo url_for("/"); ?>'>首页</a>
+					<a href='<?php echo url_for("/book/"); ?>'>开始阅读</a>
+					<a href='<?php echo url_for("/projects/"); ?>'>项目</a>
+					<a href='<?php echo url_for("/downloads/"); ?>'>下载</a>
+					<a href='<?php echo url_for("/about/"); ?>' class='last'>关于</a>
 				</div>
 				&copy; <?php echo date("Y"); ?> TIPI-Team <a href='http://www.php-internal.com'>http://www.php-internal.com/</a>. All rights reserved.
 			</div>
