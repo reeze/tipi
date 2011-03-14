@@ -11,7 +11,7 @@ function javascript_include_tag($script_name)
 		return $tags;
 	}
 
-	$url = (strpos($script_name, "http:") === 0 || strpos($script_name, "https:") === 0) ? $script_name : url_for("/javascripts/{$script_name}");
+	$url = __is_url_external($script_name) ?  $script_name : url_for("/javascripts/{$script_name}");
 	return '<script src="' . $url . '" type="text/javascript"></script>';
 }
 
@@ -26,6 +26,12 @@ function stylesheet_include_tag($style_name)
 		return $tags;
 	}
 
-	$url = (strpos($style_name, "http:") === 0 || strpos($style_name, "https:") === 0) ? $style_name : url_for("/css/{$style_name}");
+	$url = __is_url_external($style_name) ? $style_name : url_for("/css/{$style_name}");
 	return '<link href="' . $url . '" media="screen" rel="stylesheet" type="text/css" />';
+}
+
+
+function __is_url_external($url)
+{
+	return (strpos($url, "http:") === 0 || strpos($url, "https:") === 0);
 }
