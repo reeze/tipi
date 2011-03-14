@@ -3,8 +3,9 @@
 <head>
 	<title><?php echo $title; ?> | <?php echo SITE_NAME; ?></title>
 	<meta http-equiv="Content-type" content="text/html; charset=utf-8">
-	<link href="css/main.css" media="screen" rel="stylesheet" type="text/css" />
-	<link href="css/book.css" media="screen" rel="stylesheet" type="text/css" />
+	<?php
+		echo stylesheet_include_tag(array('book.css', 'main.css'));
+	?>
 </head>
 <body id="home">
 	<?php SimpieView::include_partial("templates/layout/_header.php"); ?>

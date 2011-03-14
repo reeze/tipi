@@ -1,10 +1,9 @@
 <?php
 
-require_once "../config.php";
+
+require_once "../lib/common.inc.php";
 require_once "../lib/SimpieView.php";
 require_once "../models/BookPage.php";
-require_once "../helpers/common_helper.php";
-require_once "../helpers/book_helper.php";
 
 try
 {

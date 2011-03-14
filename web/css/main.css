@@ -201,11 +201,12 @@ a {
 #common-main {
 	background: url(../images/main-sep.png) center top no-repeat;
 	margin-top: 30px;
+	padding-top: 5px;
 }
 
 #common-main .clearfix {
 	padding-top: 25px;
-	background: url(../images/v-main-sep.png) 200px 5px no-repeat;
+	background: url(../images/v-main-sep.png) 200px bottom no-repeat;
 }
 
 #common-sidebar {
