@@ -40,12 +40,12 @@
 		+ [函数的参数][function-param]
         + [函数的返回][function-return]
     * [第三节 函数的调用和执行][function-call](er)
-    * [第四节 匿名函数(create_function, clouser)][anonymous-function]
+    * [第四节 匿名函数及闭包][anonymous-function]
     * [第五节 小结][04-summary]
 
 - 第五章 类和面向对象
     * [第一节 类和接口的内部结构][class-struct]
-    * 第二节 类的成员变量及方法
+    * [第二节 类的成员变量及方法][class-member-variables-and-methods]
     * 第三节 访问控制的实现
     * 第四节 类的继承, 多态及抽象类
     * 第五节 魔术方法,延迟绑定及静态成员
@@ -134,4 +134,5 @@
 [04-summary]:   		?p=chapt04/04-05-summary
 
 [class-struct]:         ?p=chapt05/05-01-class-struct
+[class-member-variables-and-methods]: ?p=chapt05/05-02-class-member-variables-and-methods
 [none]:		?
