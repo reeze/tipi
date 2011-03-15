@@ -1,10 +1,37 @@
-# 类的结构和实现
+# 类的结构
 
+在PHP中类的定义以class关键字开始，后面接类名，类名可以是任何非PHP保留字的名字。
+在类名后面紧跟着一对花括号，类的成员函数和成员变量定义在这里。类是一种复合型的结构，其需要存储较多元化的数据，如属性，方法，以及自身的一些性质。
+如下一段PHP代码：
 
+    [php]
+    class ParentClass {
+    }
 
-## 类的结构
-类是一种复合型的结构，其需要存储较多元化的数据，如属性，方法，以及自身的一些性质。
-类在PHP中是使用一种名为zend_class_entry的结构体来进行处理：
+    interface Ifce {
+            public function iMethod();
+    }
+
+    final class Tipi extends ParentClass implements Ifce{
+            public static $sa = 'aaa';
+            const CA = 'bbb';
+
+            public function __constrct() {
+            }
+
+            public function iMethod() {
+            }
+
+            private function _access() {
+            }
+
+            public static function access() {
+            }
+    }
+
+这展现了PHP中面向对象编程中的接口，继承，静态成员变量，静态方法，常量，访问控制等内容。这些也许已经比较熟悉了，那么这些结构在Zend引擎内部是如何实现的？类的这些方法、成员变量是如何存储的？这些访问控制，静态成员是如何标记的？
+
+我们在PHP的源码中很容易找到类的结构是存放在zend_class_entry结构体中：
 
 	[c]
 		struct _zend_class_entry {
@@ -62,13 +89,13 @@
                     zend_uint buf_len, zend_unserialize_data *data TSRMLS_DC);
 
 
-			zend_class_entry **interfaces;
-			zend_uint num_interfaces;
+			zend_class_entry **interfaces;	//	类实现的接口
+			zend_uint num_interfaces;	//	类实现的接口数
 
 
-			char*filename;
-			zend_uint line_start;
-			zend_uint line_end;
+			char*filename;	//	类的存放文件地址 绝对地址
+			zend_uint line_start;	//	类定义的开始行
+			zend_uint line_end;	//	类定义的结束行
 			char*doc_comment;
 			zend_uint doc_comment_len;
 
@@ -77,7 +104,7 @@
 		};
 
 
-## 示例的存储内容
+在开头的PHP代码在
 
 
 
@@ -86,4 +113,4 @@
 
 
 
-
+判断类名是否正确的方法是哪个？
