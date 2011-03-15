@@ -2,16 +2,14 @@
 <head>
 	<title><?php echo ($page ? $page->getAbsTitle() : ($title ? $title : 'Page Not Found')); ?> | <?php echo SITE_NAME; ?> </title>
 	<meta http-equiv="Content-type" content="text/html; charset=utf-8">
-	<link href="../css/book.css" media="screen" rel="stylesheet" type="text/css" />
-	<link href="../css/main.css" media="screen" rel="stylesheet" type="text/css" />
-	<link href="../css/highlight.css" media="screen" rel="stylesheet" type="text/css" />
-	<link href="../css/tipsy.css" media="screen" rel="stylesheet" type="text/css" />
 
-	<script src="../javascripts/jquery-1.5.min.js" type="text/javascript"></script>
-	<script src="../javascripts/jquery.tipsy.js" type="text/javascript"></script>
-	<script src="../javascripts/book.js" type="text/javascript"></script>
+	<?php
+		echo stylesheet_include_tag(array('book.css', 'main.css', 'highlight.css', 'tipsy.css'));
+		echo javascript_include_tag(array('jquery-1.5.min.js', 'jquery.tipsy.js', 'book.js'));
 
-	<script src="http://www.google.com/jsapi?key=AIzaSyDP4wJCphYhYAWaqAecUh1hiB7zzbJMqPs" type="text/javascript"></script>
+		// google search api
+		echo javascript_include_tag("http://www.google.com/jsapi?key=AIzaSyDP4wJCphYhYAWaqAecUh1hiB7zzbJMqPs");
+	?>
 </head>
 <body>
 	<?php SimpieView::include_partial("../templates/layout/_header.php"); ?>
