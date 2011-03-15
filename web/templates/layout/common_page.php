@@ -11,7 +11,7 @@
 		echo javascript_include_tag("http://www.google.com/jsapi?key=AIzaSyDP4wJCphYhYAWaqAecUh1hiB7zzbJMqPs");
 	?>
 </head>
-<body>
+<body<?php echo (isset($current_page) ? " id=\"{$current_page}\"" : ''); ?>>
 	<?php SimpieView::include_partial("../templates/layout/_header.php"); ?>
 	<div id="wrapper">
 			<div id="book_header">

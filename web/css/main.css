@@ -214,10 +214,26 @@ a {
 	background: url(../images/main-sep.png) center top no-repeat;
 	margin-top: 30px;
 	padding-top: 5px;
+	line-height: 30px;
+}
+
+#page-body {
+	font-size: 1.1em;
+}
+
+#page-body ul {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+#page-body ul li {
+	padding-left: 22px;
+	background: url("../images/list.png") left 7px no-repeat;
 }
 
 #common-main .clearfix {
-	padding-top: 25px;
+	padding-top: 10px;
 	background: url(../images/v-main-sep.png) 200px bottom no-repeat;
 }
 

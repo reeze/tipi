@@ -10,15 +10,19 @@ class SimpieView
 	protected $layout;
 	protected $view;
 	protected $raw_view;
+	protected $file_type;
 
 	// when this passes to constructor, $view will be treated as raw text intead of parse it
 	const IS_RAW_TEXT = true;
 
-	public function __construct($view, $layout=null, $raw_view=false)
+	const MARKDOWN_VIEW = 'markdown';
+
+	public function __construct($view, $layout=null, $raw_view=false, $file_type=null)
 	{
 		$this->view   = $view;
 		$this->layout = $layout;
 		$this->raw_view = $raw_view;
+		$this->file_type = $file_type;
 	}
 
 	/**
@@ -36,11 +40,11 @@ class SimpieView
 			$view_result = $this->view;
 		}
 		else {
-			$view_result = $this->_render($this->view, $params, $this->layout || $return);
+			$view_result = $this->_render($this->view, $params, $this->layout || $return, $this->file_type);
 		}
 		if($this->layout) {
 			$params['layout_content'] = $view_result;
-			return $this->_render($this->layout, $params, $return);
+			return $this->_render($this->layout, $params, $return, 'php'); // layout must be php
 		}
 
 		return $view_result;
@@ -60,13 +64,21 @@ class SimpieView
 		return $partial->render($params, $return);
 	}
 
-	private function _render($view_path, $params=array(), $return=false) 
+	private function _render($view_path, $params=array(), $return=false, $file_type=null)
 	{
 		if(!file_exists($view_path)) {
 			throw new SimpieViewNotFoundException("View path:{$view_path} not found");	
 		}
 
-		$file_type = substr($view_path, strrpos($view_path, '.') + 1);
+		if(!$file_type) {
+			if($this->file_type) {
+				$file_type = $this->file_type;
+			}
+			else {
+				$file_type = substr($view_path, strrpos($view_path, '.') + 1);
+			}
+		}
+
 		$file_type = in_array($file_type, array('php', 'markdown')) ? $file_type : 'php';
 
 		return call_user_func(array($this, "_render_{$file_type}"), $view_path, $params, $return);
