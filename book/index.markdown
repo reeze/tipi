@@ -45,7 +45,6 @@
 
 - 第五章 类和面向对象
     * [第一节 类的结构和实现][class-struct](pan)
-    * [第一节 类和接口的内部结构][class-struct]
     * [第二节 类的成员变量及方法][class-member-variables-and-methods]
     * 第三节 访问控制的实现
     * 第四节 类的继承, 多态及抽象类
