@@ -43,7 +43,7 @@
     * [第四节 匿名函数及闭包][anonymous-function]
     * [第五节 小结][04-summary]
 
-- 第五章 类和面向对象
+- [第五章 类和面向对象][class]
     * [第一节 类的结构和实现][class-struct](pan)
     * [第二节 类的成员变量及方法][class-member-variables-and-methods]
     * 第三节 访问控制的实现
@@ -133,6 +133,7 @@
 [anonymous-function]:   ?p=chapt04/04-04-anonymous-function
 [04-summary]:   		?p=chapt04/04-05-summary
 
+[class]:         ?p=chapt05/05-00-class-and-oop
 [class-struct]:         ?p=chapt05/05-01-class-struct
 [class-member-variables-and-methods]: ?p=chapt05/05-02-class-member-variables-and-methods
 [none]:		?
