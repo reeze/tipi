@@ -120,6 +120,25 @@ a {
 	width: 600px;
 }
 
+#search-zone 
+{
+	line-height: 1.1em;
+	font-size: 1.1em;
+}
+
+#search-zone .gs-title a, #search-zone .gs-title a b {
+	color: #0057a0;
+}
+
+.gs-snippet {
+	line-height: 1.3em;
+}
+
+.gs-result {
+	padding-bottom: 10px;
+	border-bottom: 1px solid #eee;
+}
+
 #footer {
 	color: #555;
 	margin-top: 30px;
