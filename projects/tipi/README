@@ -1,0 +1,42 @@
+# 深入理解PHP内核（Thinking In PHP Internal）辅助扩展
+
+这是一个为《深入理解PHP内核》这本书辅助使用的扩展。
+
+扩展的作用：在不debug源码的情况下，以调用PHP函数的方式实现查看PHP内核内部结构的功能。
+
+函数列表：
+
+## tipi_debug_function_dump
+(PHP 5)
+
+tipi_debug_function_dump -- 查看函数基本信息
+说明
+void tipi_debug_function_dump ( string function_name [, string function_name2 [, string ...]])
+
+查看函数基本信息，支持多参数，以函数名为参数。示例：
+tipi_debug_function_dump('count', 'array_merge');
+
+## tipi_debug_function_dump_all
+(PHP 5)
+
+tipi_debug_function_dump_all -- 查看运行时所有可以调用的函数列表
+说明
+void tipi_debug_function_dump_all()
+
+查看运行时所有可以调用的函数列表，输出其基本信息，无参数。
+
+
+## tipi_debug_class_dump
+(PHP 5)
+
+tipi_debug_class_dump -- 查看类结构
+说明
+void tipi_debug_class_dump ( string class_name [, string class_name2 [, string ...]])
+
+查看类结构，支持多参数，以类名为参数。
+递归输出类的父类，接口等信息，输出方法的基本信息
+示例：
+tipi_debug_class_dump('class_name', 'class_name2');
+
+
+
