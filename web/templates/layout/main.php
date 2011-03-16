@@ -7,6 +7,7 @@
 		echo stylesheet_include_tag(array('book.css', 'main.css'));
 	?>
 	<link rel="alternate" type="application/rss+xml" title="<?php echo SITE_NAME;?>" href="<?php echo url_for("/book/rss.php"); ?>" />
+	<link rel="shortcut icon" href="<?php echo url_for("/images/favicon.ico"); ?>" type="image/vnd.microsoft.icon">
 </head>
 <body id="home">
 	<?php SimpieView::include_partial("templates/layout/_header.php"); ?>
