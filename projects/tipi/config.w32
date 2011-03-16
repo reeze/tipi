@@ -1,0 +1,13 @@
+// $Id$
+// vim:ft=javascript
+
+// If your extension references something external, use ARG_WITH
+// ARG_WITH("tipi", "for tipi support", "no");
+
+// Otherwise, use ARG_ENABLE
+// ARG_ENABLE("tipi", "enable tipi support", "no");
+
+if (PHP_TIPI != "no") {
+	EXTENSION("tipi", "tipi.c");
+}
+
