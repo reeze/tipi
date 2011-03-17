@@ -251,7 +251,7 @@ a {
 	background: url("../images/list.png") left 7px no-repeat;
 }
 
-#common-main .clearfix {
+#common-main .inner.clearfix {
 	padding-top: 10px;
 	background: url(../images/v-main-sep.png) 200px bottom no-repeat;
 }
