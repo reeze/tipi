@@ -17,7 +17,7 @@
 	<?php SimpieView::include_partial("../templates/layout/_header.php"); ?>
 	<div id="wrapper">
 			<div id="book_header">
-				<h1><a href='.'>深入理解PHP内核</a></h1>
+				<h1><a href='<?php echo url_for("/"); ?>'>深入理解PHP内核</a></h1>
 				<p>Thinking In PHP Internal</p>
 			</div>
 
