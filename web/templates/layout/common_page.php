@@ -22,7 +22,7 @@
 			</div>
 
 			<div id='common-main' class="clearfix">
-				<div class='clearfix'>
+				<div class='inner clearfix'>
 				<?php SimpieView::include_partial("../templates/layout/_common_sidebar.php"); ?>
 				<div id="page-body">
 					<?php echo $layout_content; ?>
