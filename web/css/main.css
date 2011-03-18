@@ -274,6 +274,7 @@ a {
 	display: block;
 	text-decoration: none;
 	padding-right: 20px;
+	font-family: "Microsoft YaHei", Helvetica, Arial, sans-serif;
 }
 
 #common-sidebar a span {
@@ -281,11 +282,8 @@ a {
 	margin-right: 10px;
 }
 
-#common-sidebar a:hover {
-}
-
 #common-sidebar a:hover span {
-	color: green;
+	color: #1299DA;
 }
 
 #page-body {
@@ -296,6 +294,16 @@ a {
 	margin-top: 0;
 	padding: 5px 0;
 	border-bottom: 1px solid #ccc;
+}
+
+#about #about-link span,
+#team #team-link span,
+#projects #projects-link span,
+#downloads #downloads-link span,
+#events #events-link span,
+#search #search-link span
+{
+	color: #1299DA;
 }
 
 

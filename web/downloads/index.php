@@ -9,6 +9,7 @@ try
 {
 	$view = new SimpieView('../templates/downloads/index.php', "../templates/layout/common_page.php");
 	$view->render(array(
+		'current_page' => 'downloads',
 		'title' => '下载',
 	));
 }
