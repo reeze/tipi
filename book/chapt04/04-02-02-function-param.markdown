@@ -157,5 +157,4 @@ zend_parse_parameters() 在解析参数的同时会尽可能地转换参数类�
 * ! - 表明剩下的参数允许被设定为 NULL（仅用在 a、o、O、r和z身上）。如果用户传进来了一个 NULL 值，则存储该参数的变量将会设置为 NULL。
 
 
-[receive-arg]: 			?p=chapt03/03-05-receive-arg
-
+[receive-arg]: 			?p=chapt03/03-05-impl-of-type-hint
