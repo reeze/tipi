@@ -7,7 +7,7 @@
 
 首先看下常量与变量的区别，常量是在变量的zval结构的基础上添加了一额外的元素。如下所示为PHP中常量的内部结构。
 
-### 常量的内部结构
+## 常量的内部结构
 
     [c]
     typedef struct _zend_constant {
@@ -29,7 +29,7 @@
 这是一个很常规的常量定义过程，它使用了PHP的内置函数**define**。常量名为TIPI，值为一个字符串，存放在zval结构中。
 从这个例子出发，我们看下define定义常量的过程实现。
 
-### define定义常量的过程
+## define定义常量的过程
 define是PHP的内置函数，在Zend/zend_builtin_functions.c文件中定义了此函数的实现。如下所示为部分源码：
 
     [c]
@@ -92,7 +92,7 @@ define是PHP的内置函数，在Zend/zend_builtin_functions.c文件中定义了
 通过defined函数测试表示，‘^_^’这个常量已经定义好，只是这样的常量无法调用。
 因为在作为语法解析时会显示错误。在上面的代码中有用到一个判断常量是否定义的函数，下面我们看看这个函数是如何实现的。
 
-### defined判断常量是否设置
+## defined判断常量是否设置
 和define一样， defined的实现也在Zend/zend_builtin_functions.c文件，
 其实现是一个读取参数变量，调用 zend_get_constant_ex函数获取常量的值来判断常量是否存在的过程。
 而zend_get_constant_ex函数不仅包括了常规的常规的常量获取，还包括类常量的获取，
@@ -103,7 +103,7 @@ define是PHP的内置函数，在Zend/zend_builtin_functions.c文件中定义了
 
 除此之外，只是调用这个函数之前和之后对name有一些特殊的处理。
 
-### 标准常量的初始化
+## 标准常量的初始化
 以上通过define定义的常量的模块编号都是PHP_USER_CONSTANT，这表示是用户定义的常量。
 除此之外我们在平时使用较多的，如在显示所有级别错误报告时使用的E_ALL常量就有点不同了。
 这里我们以cgi模式为例说明标准常量的定义过程。
