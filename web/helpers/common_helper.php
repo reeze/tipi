@@ -48,7 +48,7 @@ function get_jia_this($title='') {
 	$sites = array(
 		/* offset is the offset of the spirit image file: image/jiathis_icon.png */
 		/* @see http://www.jiathis.com/share/?uid=905000 */
-		'googlereader' => array('name' => "谷歌阅读器", 'offset' => -1088),
+		'googlereader' => array('name' => "谷歌阅读", 'offset' => -1088),
 		'google' 	=> array('name' => 'Google', 'offset' => -352),
 		'twitter' 	=> array('name' => 'Twitter', 'offset' => -704),
 		'douban'  	=> array('name' => '豆 瓣', 'offset' => -560),
