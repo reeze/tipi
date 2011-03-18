@@ -6,7 +6,7 @@ require_once "../models/BookPage.php";
 
 try
 {
-	$view = new SimpieView('../templates/search/placeholder.php', "../templates/layout/common_page.php");
+	$view = new SimpieView('../templates/projects/index.php', "../templates/layout/common_page.php");
 	$view->render(array(
 		'current_page' => 'projects',
 		'title' => '项目',
