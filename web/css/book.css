@@ -22,6 +22,7 @@
 
 #book_main {
 	border: 1px solid #fff;
+	_border: 1px solid #ccc; /* IE fix */
 	background: #efefef;
 
 	-webkit-border-radius: 4px;
@@ -425,7 +426,8 @@
 	position: absolute;
 	right: 74px;
 	top: 23px;
-	width: 93px;
+	width: 94px;
+	_width: 96px
 }
 
 #font_size_pannel a {

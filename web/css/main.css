@@ -270,6 +270,11 @@ a {
 	text-align: right;
 }
 
+#common-sidebar li {
+	/* For IE float bug */
+	display: inline;
+}
+
 #common-sidebar a {
 	display: block;
 	text-decoration: none;
