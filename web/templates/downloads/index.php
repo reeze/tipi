@@ -9,7 +9,7 @@ TIPI项目，主要包括: 深入理解PHP，以及相关的项目,本站所有�
 书的内容还没有完成写完，这也是一个长久的过程。不过我们每次更新：比如写完一章都会发布新的版本，同时提供各种格式的下载。
 </p>
 <p>
-如果你真的急于下载，也没有问题，本站所有的内容都托管在github上： <a href="http://github.com/reeze/tipi">http://github.com/reeze/tipi</a>
+如果你真的急于下载，也没有问题，本站所有的内容都托管在github上,我们目前推荐从： <a href="http://github.com/reeze/tipi">http://github.com/reeze/tipi</a>下载。
 从那里可以轻松的下载所有的内容，你也可以<a href="<?php echo url_for("/book/rss.php");?>">订阅我们的更新</a>，我们每完成一小节都会在这里更新，
 或者我们发布了新版本的移动版本书籍或者有其他消息也会通过RSS输出，所以订阅我们可以随时和我们保持联系，
 也可以点击进入<a href="<?php echo url_for("/");?>">首页</a>， 那里有我们的各种联系方式，比如在twitter上fo我们。等。
