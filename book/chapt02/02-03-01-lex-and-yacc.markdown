@@ -86,4 +86,3 @@ Bison使用巴科斯范式([BNF](http://baike.baidu.com/view/1137652.htm))来描
 在每个规则后面有一段大括号起来的语句, 这个称为动作,在上面的例子当中echo时会执行zend_do_echo函数,
 函数中的参数可能看起来比较奇怪, 其中的$3 表示前面规则的第三个定义,也就是expr这个表达式的值,
 zend_do_echo函数则根据表达式的信息编译opcode, php中其他的语法规则也是类似, 下面将介绍继续介绍PHP中的opcode.
-
