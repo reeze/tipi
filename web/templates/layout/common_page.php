@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
 <head>
 	<title><?php echo ($page ? $page->getAbsTitle() : ($title ? $title : 'Page Not Found')); ?> | <?php echo SITE_NAME; ?> </title>
