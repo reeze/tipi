@@ -30,8 +30,6 @@
 
 #book_main {
 	border: 1px solid #fff;
-	_border: 1px solid #ccc; /* IE fix */
-	+border: 1px solid #ccc; /* IE fix */
 	background: #efefef;
 
 	-webkit-border-radius: 4px;
@@ -43,10 +41,6 @@
 	-moz-box-shadow: rgba(100,100,100,1) 0px 0px 6px;
 	-o-box-shadow: rgba(100,100,100,1) 0px 0px 6px;
 	box-shadow: rgba(100,100,100,1) 0px 0px 6px;
-}
-
-html>body #book_main {
-	border: 1px solid #ccc;
 }
 
 #book_main .inner-wrapper {

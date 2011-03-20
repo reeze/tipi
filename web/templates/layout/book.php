@@ -9,6 +9,7 @@
 	?>
 	<link rel="alternate" type="application/rss+xml" title="<?php echo SITE_NAME;?>" href="<?php echo url_for("/feed/"); ?>" />
 	<link rel="shortcut icon" href="<?php echo url_for("/images/favicon.ico"); ?>" type="image/vnd.microsoft.icon">
+	<!--[if IE]><?php echo stylesheet_include_tag('ie.css'); ?><![endif]-->
 </head>
 <body id='book'>
 	<?php SimpieView::include_partial("../templates/layout/_header.php"); ?>
