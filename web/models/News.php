@@ -2,8 +2,6 @@
 
 require_once '../lib/MarkdownPage.php';
 
-define('NEWS_ROOT_PATH', ROOT_PATH . "/../news");
-
 class News extends MarkdownPage
 {
 	protected static $base_dir = NEWS_ROOT_PATH;

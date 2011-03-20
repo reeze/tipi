@@ -221,13 +221,6 @@ a {
 }
 
 
-#home #home-link {
-	color: #ddd;
-}
-
-#book #book-link {
-	color: #ddd;
-}
 
 #common-main {
 	background: url(../images/main-sep.png) center top no-repeat;
@@ -300,12 +293,22 @@ a {
 	border-bottom: 1px solid #ccc;
 }
 
+#home #nav-home-link,
+#book #nav-book-link,
+#projects #nav-projects-link,
+#news #nav-news-link,
+#about #nav-about-link
+{
+	color: #ddd;
+}
+
 #about #about-link span,
 #team #team-link span,
 #projects #projects-link span,
 #downloads #downloads-link span,
 #events #events-link span,
-#search #search-link span
+#search #search-link span,
+#news #news-link span
 {
 	color: #1299DA;
 }
