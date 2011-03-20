@@ -19,7 +19,7 @@
 
 
 ### 3. 编译
-下一步就可以开始编译了，本文只简单介绍基本的编译过程，不包含apache的php支持以及mysql等模块的编译。相关资料请百度或google之。
+下一步就可以开始编译了，本文只简单介绍基本的编译过程，不包含apache的PHP支持以及mysql等模块的编译。相关资料请百度或google之。
 假设源代码下载到了``~/php-src``的目录中，执行buildconf命令以生成所需要的Makefile文件
 
 	[bash]
@@ -32,14 +32,14 @@
 	./configure --help # 查看可用参数
 
 为了尽快得到可以测试的环境,我们就不加其他参数了.直接执行./configure就可以了. 以后如果需要其他功能可以重新编译.
-如果configure命令出现错误,可能是缺少php所依赖的库,各个系统的环境可能不一样. 出现错误可根据出错信息上网搜索. 直到完成configure.
+如果configure命令出现错误,可能是缺少PHP所依赖的库,各个系统的环境可能不一样. 出现错误可根据出错信息上网搜索. 直到完成configure.
 configure完成后我们就可以开始编译了. 
 
 	[bash]
 	make
 
 在*nix下编译过程序的读者应该都熟悉经典的configure make, make install吧. 执行make之后是否需要make install就取决于你了. 如果install的话
-最好在configure的时候是用prefix参数指定安装目录, 不建议安装到系统目录, 避免和系统原有的php冲突.
+最好在configure的时候是用prefix参数指定安装目录, 不建议安装到系统目录, 避免和系统原有的PHP版本冲突.
 
 在make 完以后，~/php-src目录里就已经有了php的可以执行文件. 执行一下命令：
 

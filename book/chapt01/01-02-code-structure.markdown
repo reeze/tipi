@@ -34,7 +34,7 @@ ctags可以将源代码中的各种函数、宏等信息做上标记。这样，
 使用 **Ctrl+p** 就可以自动跳转至定义，**Ctrl+o** 可以返回上一次查看位置。
 
 ### 使用Visual Studio + editplus查看并追踪源码：
-看源码还是用IDE舒服一些，windows下我们还是用Visual Studio 2010看吧。
+看源码还是用IDE舒服一些，windows下我们用Visual Studio 2010查看源码。
 在win32目录下已经存在了可以直接打开的工程文件，如果由于版本原因无法打开，可以在此源码目录上新建一个基于现有文件的Win32 Console Application工程。
 **常用快捷键**：
 

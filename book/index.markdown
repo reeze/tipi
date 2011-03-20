@@ -1,8 +1,5 @@
 #目录
 
-- 第0章 开篇
-	* 本书的组织结构和阅读说明
-
 - [第一章 准备工作和背景知识][prepare-and-background]
 	* [第一节 环境搭建][build-env]
 	* [第二节 源码布局及阅读方法][code-structure]
