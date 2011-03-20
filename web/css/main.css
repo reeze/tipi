@@ -57,11 +57,14 @@ a {
 	display: inline-block;
 	width: 30px;
 	height: 51px;
-	background: url(../images/get-it-button.png) center center no-repeat;
 }
 
 #get-it .read {
 	background-position: left center;
+}
+
+.get-it li {
+	list-style-image: url(../images/bullet.png);
 }
 
 #get-it .downloads {
@@ -70,7 +73,105 @@ a {
 
 #get-started {
 	background: url(../images/main-sep.png) center top no-repeat;
-	padding: 40px;
+	padding: 10px;
+	font-size: 1.2em;
+	font-family: "Microsoft YaHei", Helvetica, Arial, sans-serif;
+}
+
+#get-started p {
+	text-indent: 2em;
+}
+
+#microblog {
+	margin: 10px 0;
+}
+
+#microblog .t {
+	margin-left: 30px;
+	float: left;
+	display: block;
+	width: 50px;
+	height: 50px;
+	background: url(../images/icons.png) left top no-repeat;
+}
+
+
+#microblog .sina:hover {
+	background-position: left bottom;
+}
+
+#microblog .twitter {
+	background-position: 50% 0;
+}
+
+#microblog .twitter:hover {
+	background-position: 50% bottom;
+}
+
+#microblog .rss {
+	background-position: 100% 0;
+}
+
+#microblog .rss:hover {
+	background-position: 100% bottom;
+}
+
+#microblog .t span {
+	display: none;
+}
+
+#github-link {
+	margin: 15px 0;
+}
+
+#github-link a {
+	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
+	-o-border-radius: 4px;
+	border-radius: 4px;
+
+	border: 1px solid #1299DA;
+
+	font-family: 'Lucida Grande','Lucida Sans Unicode',Verdana,sans-serif;
+	text-decoration: none;
+	color: #fff;
+	font-size: 1.1em;
+	background-color: #1299DA;
+	padding: 4px 15px;
+	padding-left: 15px;
+	margin: 20px 0;
+}
+
+#github-link a:hover {
+	border: 1px solid #006798;
+	background: url(../images/bullet-list.png) 5px center no-repeat #1299DA;
+}
+
+#get-started .inner {
+	padding: 0 15px;
+	margin-top:15px;
+}
+
+#get-started h2 {
+	font-size: 1.5em;
+	color: #444;
+}
+
+#get-started h2 span {
+	color: #bbb;
+	margin-left: 7px;
+}
+
+.get-it, .enjoy-it, .keep-in-touch
+{
+	float: left;
+	width: 33%;
+	**bsorder-right: 1px solid #ccc;
+}
+
+.keep-in-touch {
+	float: right;
+	border-right: none;
 }
 
 
@@ -165,6 +266,7 @@ a {
 
 #footer_nav .copyright-footer {
 	font-family: 'Lucida Grande','Lucida Sans Unicode',Verdana,sans-serif;
+	line-height: 26px;
 }
 
 #inner-header ul{
