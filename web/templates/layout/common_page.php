@@ -25,8 +25,10 @@
 			<div id='common-main' class="clearfix">
 				<div class='inner clearfix'>
 				<?php SimpieView::include_partial("../templates/layout/_common_sidebar.php"); ?>
-				<div id="page-body">
-					<?php echo $layout_content; ?>
+				<div id="common-page-body">
+					<div id="page-body">
+						<?php echo $layout_content; ?>
+					</div>
 					<?php SimpieView::include_partial("../templates/layout/_comment.php"); ?>
 				</div>
 				</div>

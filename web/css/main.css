@@ -112,14 +112,6 @@ a {
 	float: left;
 }
 
-#page-body {
-	float: left;
-}
-
-#page-body .gsc-control {
-	width: 600px;
-}
-
 #search-zone 
 {
 	line-height: 1.1em;
@@ -164,11 +156,15 @@ a {
 	line-height: 35px;
 }
 
-#footer_nav div a
+#footer_nav .links a
 {
 	border-left: 1px solid #ccc;
 	padding-left: 10px;
 	margin-left: 10px;	
+}
+
+#footer_nav .copyright-footer {
+	font-family: 'Lucida Grande','Lucida Sans Unicode',Verdana,sans-serif;
 }
 
 #inner-header ul{
@@ -240,7 +236,7 @@ a {
 
 #page-body ul li {
 	padding-left: 22px;
-	background: url("../images/list.png") left 7px no-repeat;
+	background: url("../images/list.png") left 4px no-repeat;
 }
 
 #common-main .inner.clearfix {
@@ -283,10 +279,18 @@ a {
 	color: #1299DA;
 }
 
-#page-body {
+
+#common-page-body {
 	width: 760px;
+	float: left;
+}
+#page-body {
 	font-size: 1.2em;
 	line-height: 1.7em;
+}
+
+#page-body .gsc-control {
+	width: 600px;
 }
 
 #page-body p {
