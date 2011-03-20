@@ -39,6 +39,12 @@ function url_for($url, $absolute=false)
 	return ($absolute ? "{$protocal}://{$host}" : "" ) . $base_url . $url;
 }
 
+function redirect_to($url, $absolute=false)
+{
+	header('Location: ' . url_for($url, $absolute), 302);
+	exit;
+}
+
 
 /**
  * For www.jiathis.com easy sharing
