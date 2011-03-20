@@ -285,11 +285,22 @@ a {
 
 #page-body {
 	width: 760px;
+	font-size: 1.2em;
+	line-height: 1.7em;
+}
+
+#page-body p {
+	text-indent: 2em;
 }
 
 #page-body h1 {
 	margin-top: 0;
 	padding: 5px 0;
+	border-bottom: 1px solid #bbb;
+	color: #111;
+}
+
+#page-body h2 {
 	border-bottom: 1px solid #ccc;
 }
 
