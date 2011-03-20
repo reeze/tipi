@@ -39,7 +39,7 @@
         + [函数的定义][function-define]
 		+ [函数的参数][function-param]
         + [函数的返回][function-return]
-    * [第三节 函数的调用和执行][function-call](er)
+    * [第三节 函数的调用和执行][function-call]
     * [第四节 匿名函数及闭包][anonymous-function]
     * [第五节 小结][04-summary]
 
