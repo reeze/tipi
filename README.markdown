@@ -6,15 +6,30 @@ TIPI项目是一个自发项目,	项目主要关注PHP的内部实现, 以及PHP
 前往这里阅读在线版本的 [深入理解PHP内核(TIPI)][project-url]
 
 
-## TIPI团队序
-博客哥三者，今聚首于网络一偶，共谋TIPI大计，与诸君共享技术之事：
-向来穷PHP内核之事者或多，却鲜有分享之举。哥三者，常流连于中外博客也，若得一佳作，即欣喜若狂，本乐分享，及有学习总结之心，欲为PHP内核之事穷全身之力。
 
-* [reeze](http://reeze.cn)，博客哥者，好苹果，好开源, 陶醉于Web开发及架构, 为Ruby之美所折服, 甚爱iOS及其开发, 好一切善美之事物. 
-* [er](http://www.zhangabc.com)，博客哥者，稀饭Linux, Web, 2.0, Ajax, C, PHP, Javascript, CSS等。乃一以代码为乐之码农也。 
-* [phppan](http://www.phppan.com/)，博客哥者，好书，好PHP，亲于PHP，C，Ajax，程序架构等
+## 1. 下载
+本站所有内容托管在github<http://github.com/reeze/tipi>上，如果你电脑上安装了git最好，没有的话也不碍，
+在页面右右上角可以下载到项目完整的压缩包，选择你喜欢的压缩格式即可。
 
-是以三人之力行分享之事，转GIT，习markdown，论项目之计于深夜，何怕事之不成？务使PHP内核之事向众人知。
-为此特示。
+## 2. 安装
+将项目解压，目录结构中web目录即为项目的web根目录，项目不强制将你的Web服务器根目录设为web目录的路径，
+可以直接将整个项目解压至你的Web根目录。如果你是Windows用户，有一点需要说明一下，为了保证书籍内容的独立性，
+书籍相关的配图没有放到web目录下，所以你通过web访问书籍的时候可能会看不到图片，我们把/book/images目录链接到了
+/web/images/book目录，因为windows并不能是识别软链接，所以会有问题，要解决这个问题有三个方法：
+
+* 把/book/images目录拷贝到/web/images目录下并重命名为book目录，这样可能比较麻烦，如果我们以后更新了内容，你重新下载会比较麻烦。
+* 另一个方法是使用Web服务器的别名方法，这样你需要修改服务器的配置，具体方法请搜索apache alias
+* 第三个方法就是我们推荐的换系统了。这只是建议，我们更喜欢*nix环境。
+
+## 3. 反馈
+对书有什么意见？如果对某章节有意见或建议可以直接在线留言，如果有其他的内容你也可以直接联系我们.
+
+## 4. 联系作者
+你可以联系以下作者
+
+* reeze <http://reeze.cn>  			reeze.xia###gmail.com
+* er    <http://www.zhangabc.com>   er###zhangabc.com
+* phppan <http://www.phppan.com/>   phppan.p###gmail.com
+
 
 [project-url]: http://www.php-internal.com/

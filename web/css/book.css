@@ -1,13 +1,14 @@
 
 #book_header {
 	color: #fff;
-	margin-top: 15px;
+	margin: 15px 0;
 }
 
 #book_header p {
 	color: #777;
 	margin-top: 4px;
 	font-size: 15px;
+	display: none;
 }
 
 #book_header h1 {
@@ -15,13 +16,21 @@
 }
 
 #book_header h1 a {
-	color: #333;
+	display: inline-block;
+	height: 45px;
+	width: 266px;
 	text-decoration: none;
 	font-size: 1.3em;
+	background: url(../images/common-logo.png) left center no-repeat;
+}
+
+#book_header h1 a span {
+	display: none;
 }
 
 #book_main {
 	border: 1px solid #fff;
+	_border: 1px solid #ccc; /* IE fix */
 	background: #efefef;
 
 	-webkit-border-radius: 4px;
@@ -425,7 +434,8 @@
 	position: absolute;
 	right: 74px;
 	top: 23px;
-	width: 93px;
+	width: 94px;
+	_width: 96px
 }
 
 #font_size_pannel a {
