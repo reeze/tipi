@@ -105,5 +105,78 @@ ZEND_INTERNAL_FUNCTION函数是由扩展或者Zend/PHP内核提供的，用“C/
 * 内置函数在结构中多了一个module字段，表示属于哪个模块。不同的扩展其模块不同。
 * type字段，在用户自定义的函数中，type字段几科无用，而内置函数中的type字段作为几种内部函数的区分。
 
+## 3.变量函数
+PHP 支持变量函数的概念。这意味着如果一个变量名后有圆括号，PHP 将寻找与变量的值同名的函数，并且将尝试执行它。
+除此之外，这个可以被用于实现回调函数，函数表等。
+对比使用变量函数和内部函数的调用：
 
-[var-scope]:            ?p=chapt03/03-06-00-scope.markdown
+变量函数$func
+
+    [php]
+    $func = 'print_r';
+    $func('i am print_r function.');
+
+通过VLD来查看这段代码编译后的中间代码：
+
+    [c]
+    function name:  (null)
+    number of ops:  9
+    compiled vars:  !0 = $func
+    line     # *  op                           fetch          ext  return  operands
+    --------------------------------------------------------------------------------
+    -
+       2     0  >   EXT_STMT
+             1      ASSIGN                                                   !0, 'print_r'
+       3     2      EXT_STMT
+             3      INIT_FCALL_BY_NAME                                       !0
+             4      EXT_FCALL_BEGIN
+             5      SEND_VAL                                                 'i+am+print_r+function.'
+             6      DO_FCALL_BY_NAME                              1
+             7      EXT_FCALL_END
+             8    > RETURN                                                   1
+
+
+内部函数print_r
+
+    [php]
+    print_r('i am print_r function.');
+
+通过VLD来查看这段代码编译后的中间代码：
+
+    [c]
+    function name:  (null)
+    number of ops:  6
+    compiled vars:  none
+    line     # *  op                           fetch          ext  return  operands
+    --------------------------------------------------------------------------------
+    -
+       2     0  >   EXT_STMT
+             1      EXT_FCALL_BEGIN
+             2      SEND_VAL                                                 'i+am+print_r+function.'
+             3      DO_FCALL                                      1          'print_r'
+             4      EXT_FCALL_END
+             5    > RETURN                                                   1
+
+
+对比发现，二者在调用的中间代码上存在一些区别。变量函数是DO_FCALL_BY_NAME，而内部函数是DO_FCALL。这在语法解析时就已经决定了，Zend/zend_complie.c文件的zend_do_end_function_call函数中部分代码：
+
+    [c]
+    if (!is_method && !is_dynamic_fcall && function_name->op_type==IS_CONST) {
+			opline->opcode = ZEND_DO_FCALL;
+			opline->op1 = *function_name;
+			ZVAL_LONG(&opline->op2.u.constant, zend_hash_func(Z_STRVAL(function_name->u.constant), Z_STRLEN(function_name->u.constant) + 1));
+		} else {
+			opline->opcode = ZEND_DO_FCALL_BY_NAME;
+			SET_UNUSED(opline->op1);
+		}
+
+如果不是方法，并且不是动态调用，并且函数名为字符串常量，则其生成的中间代码为ZEND_DO_FCALL。其它情况则为ZEND_DO_FCALL_BY_NAME。
+另外将变量函数作为回调函数，其处理过程在Zend/zend_complie.c文件的zend_do_pass_param函数中。
+最终会体现在中间代码执行过程中的 **ZEND_SEND_VAL_SPEC_CONST_HANDLER**　等函数中。
+
+## 4.匿名函数
+匿名函数是一类不需要指定表示符, 而又可以被调用的函数或子例程, 匿名函数可以方便的作为参数传递给其他函数,
+关于匿名函数的详细信息请阅读 [<<第四节 匿名函数及闭包>>][anonymous-function]
+
+[var-scope]:            ?p=chapt03/03-06-00-scope
+[anonymous-function]:   ?p=chapt04/04-04-anonymous-function
