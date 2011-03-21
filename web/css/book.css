@@ -30,7 +30,6 @@
 
 #book_main {
 	border: 1px solid #fff;
-	_border: 1px solid #ccc; /* IE fix */
 	background: #efefef;
 
 	-webkit-border-radius: 4px;

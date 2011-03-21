@@ -8,10 +8,7 @@ $page_name = (isset($_GET['p']) && $_GET['p']) ? trim($_GET['p']) : 'index';
 
 try
 {
-	// 基本的安全检查,防止主动修改文件路径
-	if(!$page_name || $page_name[0] == '/' || strpos($page_name, '..')) {
-		throw new PageNotFoundException("页面不存在");	
-	}
+	ensure_page_name_safe($page_name);
 
 	// 章节列表
 	$chapt_list = BookPage::getChapterList();
@@ -33,7 +30,6 @@ try
 }
 catch(PageNotFoundException $e)
 {
-	// TODO Suggest the page like the page name
 	$view = new SimpieView("../templates/book_page_404.php", "../templates/layout/book.php");
 	$view->render(array(
 		'book_page' => $page_name,

@@ -11,7 +11,7 @@
 		// google search api
 		echo javascript_include_tag("http://www.google.com/jsapi?key=AIzaSyDP4wJCphYhYAWaqAecUh1hiB7zzbJMqPs");
 	?>
-	<link rel="alternate" type="application/rss+xml" title="<?php echo SITE_NAME;?>" href="<?php echo url_for("/book/rss.php"); ?>" />
+	<link rel="alternate" type="application/rss+xml" title="<?php echo SITE_NAME;?>" href="<?php echo url_for("/feed/"); ?>" />
 	<link rel="shortcut icon" href="<?php echo url_for("/images/favicon.ico"); ?>" type="image/vnd.microsoft.icon">
 </head>
 <body<?php echo (isset($current_page) ? " id=\"{$current_page}\"" : ''); ?>>
@@ -25,8 +25,10 @@
 			<div id='common-main' class="clearfix">
 				<div class='inner clearfix'>
 				<?php SimpieView::include_partial("../templates/layout/_common_sidebar.php"); ?>
-				<div id="page-body">
-					<?php echo $layout_content; ?>
+				<div id="common-page-body">
+					<div id="page-body">
+						<?php echo $layout_content; ?>
+					</div>
 					<?php SimpieView::include_partial("../templates/layout/_comment.php"); ?>
 				</div>
 				</div>

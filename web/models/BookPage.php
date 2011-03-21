@@ -8,12 +8,12 @@ require_once '../lib/MarkdownPage.php';
 class BookPage extends MarkdownPage
 {
 
-    private $title 		= NULL;
-    private $base_dir 	= NULL;
-    private $page_name 	= NULL;
-    private static $_allArticleList = NULL;
+    protected $title 		= NULL;
+    protected $base_dir 	= NULL;
+    protected $page_name 	= NULL;
+    protected static $_allArticleList = NULL;
 
-	private $headers 	= array();
+	protected $headers 	= array();
 
     /**
      * @param string $page_path 	书籍页面的路径, 例如chapt01/01-04-summary
@@ -124,6 +124,11 @@ class BookPage extends MarkdownPage
         return $this->title;
     }
 
+	public function getUrl($absolute=IS_ABSOLUTE_URL)
+	{
+		return url_for_book($this->page_name, $absolute);	
+	}
+
 	
 	/**
 	 * 返回完整的章节名称, 例如在RSS输出等地方需要完整的章节名称.
@@ -190,15 +195,6 @@ class BookPage extends MarkdownPage
 		return ($html_encode ? htmlentities($title) : $title);
 	}
 
-	public function getPageContent($render=null) {
-		if($render) {
-			return $render->render(null, true);
-		}
-		else {
-			return file_get_contents($this->getPageFilePath());	
-		}
-	}
-
     private static function _getTitleFromFileName($file, $default='NO_COMPLETED') {
         $fp = @fopen($file, "r");
         $title = $default;
@@ -217,8 +213,6 @@ class BookPage extends MarkdownPage
      * @return string
      */
     public function getPageFilePath() {
-        // TODO check whether the book page is the real book page
-
         return "{$this->base_dir}/{$this->page_name}." . self::extension;
     }
 
@@ -335,6 +329,14 @@ class BookPage extends MarkdownPage
 		return $pages;
 	}
 
+	public function getFlatPagesArray() {
+		$pages = array();
+		foreach(self::getFlatPages() as $page) {
+			$pages[] = new self($page['page_name']);	
+		}
+	
+		return $pages;
+	}
 
     /**
      * 获取子章节列表

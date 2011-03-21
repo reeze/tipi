@@ -1,5 +1,6 @@
 <div id="common-sidebar">
 	<ul>
+		<li><a id="news-link" href='<?php echo url_for("/news/"); ?>'><span>News</span>新闻</a></li>
 		<li><a id="about-link" href='<?php echo url_for("/about/"); ?>'><span>About</span>关于</a></li>
 		<li><a id="team-link" href='<?php echo url_for("/team/"); ?>'><span>Team</span>团队</a></li>
 		<li><a id="projects-link" href='<?php echo url_for("/projects/"); ?>'><span>Projects</span>项目</a></li>
