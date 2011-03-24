@@ -48,6 +48,7 @@
 }
 
 #book_index {
+	padding-top: 10px;
 	font-size: 1.2em;
 }
 
@@ -65,6 +66,7 @@
 	float: left;
 	width: 790px;
 	font-size: 1.2em;
+	padding-top: 10px;
 }
 
 #book_content p {
@@ -185,6 +187,12 @@
 	padding: 20px;
 }
 
+#book_body.inner-containner {
+	padding: 30px;
+	padding-top: 10px;
+	line-height: 1.7em;
+}
+
 
 /* Book content style */
 #book_content pre {
@@ -280,10 +288,22 @@
 
 /* Book tools style */
 #book_tools {
-	margin: 10px;
-	margin-bottom: 0;
 	padding: 6px;
 	border-bottom: 1px solid #ccc;
+	margin: 0 10px;
+	top: 0px;
+}
+
+.smartscroll #book_tools {
+	position: fixed;
+	border: none;
+	background: url(../images/toolbar_bg.png) center bottom no-repeat;
+}
+
+
+
+.smartscroll #book_index #book_tools {
+	background: url(../images/index_toolbar_bg.png) center bottom no-repeat;
 }
 
 #page_outline_pannel .header_level3 {
@@ -375,7 +395,7 @@
 }
 
 #page_outline_pannel a:hover {
-	background-color: #dedede;
+	background: url(../images/hover_bg.png) left top repeat-x #dedede;
 	color: #1299DA;
 }
 

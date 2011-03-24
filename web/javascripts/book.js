@@ -36,8 +36,6 @@ $(function() {
 			$('#' + id + '_pannel').mouseleave(function() {
 				$(this).fadeOut();
 			});
-		}, function() {
-			console.log("fasf");
 		});
 	});
 
@@ -73,6 +71,29 @@ $(function() {
 	$("#font_size_default").click(function() {
 		change_font_size();
 	});
+
+	/* Make the book toolbar more smart */
+	(function() {
+		var toolbar = $("#book_tools");
+		var tb_width = toolbar.width();
+		var tb_height = toolbar.height();
+		var tb_top = toolbar.position().top;
+		var org_body_margin = $("#book_body").css("margin-top");
+
+		$(window).scroll(function() {
+			if($(window).scrollTop() > tb_top) {
+				$('body').addClass('smartscroll');
+				toolbar.css("width", tb_width);
+				$("#book_body").css('margin-top', tb_height);
+			}
+			else {
+				// restore
+				$('body').removeClass('smartscroll');
+				$("#book_body").css('margin-top', org_body_margin);
+			}
+		});
+	})();
+
 	/* End book page tool bar */
 });
 })(jQuery);
