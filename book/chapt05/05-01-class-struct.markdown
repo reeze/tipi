@@ -141,7 +141,32 @@
     ;
 
 
-从上面的语法说明可以找到关于final和abstract类的说明，这些类的类别的区分就在语法解析时就已经完成了。语法解析完后就可以知道一个类是抽象类还是final类，又或者这是一个普通的类。
+上面的class_entry_type语法说明在语法分析阶段将类分为三种类型：常规类(T_CLASS)，抽象类(T_ABSTRACT T_CLASS)和final类(T_FINAL T_CLASS )。
+这是以在类名前加不同的关键字来。他们分别对应的类型在内核中的体现为:
+
+* 常规类(T_CLASS) 对应的type=0
+* 抽象类(T_ABSTRACT T_CLASS) 对应type=ZEND_ACC_EXPLICIT_ABSTRACT_CLASS
+* final类(T_FINAL T_CLASS) 对应type=ZEND_ACC_FINAL_CLASS
+
+除了上面的三种类型外，类还包含有另两种类型
+
+* 另一种抽象类，它对应的type=ZEND_ACC_IMPLICIT_ABSTRACT_CLASS.
+它在语法分析时并没有分析出来，因为这种类是由于其拥有抽象方法所产生的。
+在PHP源码中，这个类别是在函数注册时判断是抽象方法或继承类时判断是抽象方法时设置的。
+* 接口，其type=ZEND_ACC_INTERFACE.这个在接口关键字解析时设置,见interface_entry:对应的语法说明。
+
+这五种类型在Zend/zend_complie.h文件中定义如下：
+
+    [c]
+    #define ZEND_ACC_IMPLICIT_ABSTRACT_CLASS	0x10
+    #define ZEND_ACC_EXPLICIT_ABSTRACT_CLASS	0x20
+    #define ZEND_ACC_FINAL_CLASS	            0x40
+    #define ZEND_ACC_INTERFACE		            0x80
+
+常规类为0，在这里没有体现。
+
+
+语法解析完后就可以知道一个类是抽象类还是final类，普通的类，又或者接口。
 定义类时调用了zend_do_begin_class_declaration和zend_do_end_class_declaration函数，
 从这两个函数传入的参数，zend_do_begin_class_declaration函数用来处理类名，类的类别和父类,
 zend_do_end_class_declaration函数用来处理接口和类的中间代码
@@ -158,7 +183,7 @@ zend_do_end_class_declaration函数用来处理接口和类的中间代码
 
     }
 
-就会报错: Fatal error: Cannot redeclare class tipi。这个报错是在运行生成中间的代码时显示的。这将在后面说明。
+运行时程序报错: Fatal error: Cannot redeclare class tipi。这个报错是在运行生成中间的代码时显示的。这个判断的过程在后面中间代码生成时说明。
 在此函数中对于一些PHP的关键不能做
 
 
