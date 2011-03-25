@@ -18,14 +18,13 @@
 	* [第四节 小结][02-summary]
 
 - [第三章 变量及数据类型][variables]
-	* [第一节 变量的内部结构][variables-in-memory]
+	* [第一节 变量的内部结构][variables-structure]
     * [第二节 常量][const-var]
-	* [第三节 预定义变量][init-var]
+	* [第三节 预定义变量][pre-defined-variable]
 	* [第四节 静态变量][static-var]
-	* [第五节 类型提示(Type Hinting)的实现][receive-arg]
+	* [第五节 类型提示的实现][type-hint-imp]
 	* [第六节 变量的作用域][var-scope]
 		+ [global语句][var-global]
-		+ [生命周期与作用域][var-scope]
 	* [第七节 数据类型转换][type-cast]
 	* [第八节 小结][03-summary]
 
@@ -109,13 +108,13 @@
 [02-summary]: 			?p=chapt02/02-04-summary
 
 [variables]:            ?p=chapt03/03-00-variable-and-data-types
-[variables-in-memory]: 	?p=chapt03/03-01-var-memory
+[variables-structure]: 	?p=chapt03/03-01-00-variables-structure
 [const-var]: 			?p=chapt03/03-02-const-var
-[init-var]: 			?p=chapt03/03-03-init-var
+[pre-defined-variable]:	?p=chapt03/03-03-pre-defined-variable
 [static-var]:           ?p=chapt03/03-04-static-var
-[receive-arg]: 			?p=chapt03/03-05-receive-arg
+[type-hint-imp]: 			?p=chapt03/03-05-impl-of-type-hint
 [var-global]: 			?p=chapt03/03-06-01-var-global
-[var-scope]: 			?p=chapt03/03-06-02-var-scope
+[var-scope]: 			?p=chapt03/03-06-00-scope
 [type-cast]: 			?p=chapt03/03-07-type-cast
 [03-summary]: 			?p=chapt03/03-08-summary
 

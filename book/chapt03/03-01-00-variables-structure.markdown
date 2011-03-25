@@ -11,7 +11,7 @@ PHP之所以成为一个简单并且强大的语言，很大一部分的原因�
 
 ## 一.PHP变量类型在内核中的存储结构
 PHP是一种弱类型的语言，这就意味着在声明或使用变量的时候，并不需要显式指明其数据类型。
-但是，PHP是由Ｃ来实现的，大家都知道Ｃ对变量的类型管理是非常严格的，强类型的Ｃ是这样实现弱类型的PHP变量类型的:
+但是，PHP是由C来实现的，大家都知道C对变量的类型管理是非常严格的，强类型的C是这样实现弱类型的PHP变量类型的:
 
 ### 1.在PHP中，存在8种变量类型，可以分为三类
 * 标量类型： *boolean*   *integer*   *float(double)*   *string*
@@ -42,7 +42,7 @@ PHP是一种弱类型的语言，这就意味着在声明或使用变量的时�
 |type 		  |	记录变量的内部类型			||
 
 >**NOTE**
-> 在PHP5.3之后，由于引入了垃圾收集机制，引用计数和是否为引用的属性名为refount__gc和is_ref_gc。在此之前为refcount和is__ref。
+> 在PHP5.3之后，由于引入了垃圾收集机制，引用计数和是否为引用的属性名为refcount__gc和is_ref__gc。在此之前为refcount和is__ref。
 
 在变量的初始化过程中，ZE会将变量的类型（type）值根据其变量类型置为：IS_NULL, IS_BOOL, IS_LONG, IS_DOUBLE, IS_STRING, IS_ARRAY, IS_OBJECT, IS_RESOURCE 之一。
 
