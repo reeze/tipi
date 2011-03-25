@@ -166,7 +166,7 @@
 常规类为0，在这里没有体现。
 
 
-语法解析完后就可以知道一个类是抽象类还是final类，一个普通的类，又或者接口。
+语法解析完后就可以知道一个类是抽象类还是final类，普通的类，又或者接口。
 定义类时调用了zend_do_begin_class_declaration和zend_do_end_class_declaration函数，
 从这两个函数传入的参数，zend_do_begin_class_declaration函数用来处理类名，类的类别和父类,
 zend_do_end_class_declaration函数用来处理接口和类的中间代码
@@ -183,7 +183,7 @@ zend_do_end_class_declaration函数用来处理接口和类的中间代码
 
     }
 
-就会报错: Fatal error: Cannot redeclare class tipi。这个报错是在运行生成中间的代码时显示的。这将在后面说明。
+运行时程序报错: Fatal error: Cannot redeclare class tipi。这个报错是在运行生成中间的代码时显示的。这个判断的过程在后面中间代码生成时说明。
 在此函数中对于一些PHP的关键不能做
 
 
