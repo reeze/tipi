@@ -202,7 +202,7 @@ static void tipi_dump_function(zend_function *func)
 
 static void tipi_dump_class_magic_method(zend_function *method, char *method_name)
 {
-	if (method  == NULL) {
+	if (method->common.function_name  == NULL) {
 		zend_printf("magic function %s =  null  |  ", method_name);
 	}else{
 		tipi_dump_function(method);

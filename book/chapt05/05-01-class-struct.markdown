@@ -47,8 +47,8 @@
 			char type;     // 类型：ZEND_INTERNAL_CLASS / ZEND_USER_CLASS
 			char *name;// 类名称
 			zend_uint name_length;                  // 即sizeof(name) - 1
-			struct_zend_class_entry *parent; // 继承的父类
-			intrefcount;  // 引用数
+			struct　_zend_class_entry *parent; // 继承的父类
+			int　refcount;  // 引用数
 			zend_bool constants_updated;
 
 			zend_uint ce_flags; // ZEND_ACC_IMPLICIT_ABSTRACT_CLASS: 类存在abstract方法
@@ -111,6 +111,112 @@
 
 			struct _zend_module_entry *module; // 类所在的模块入口：EG(current_module)
 		};
+
+取上面这个结构的部分字段，我们分析文章最开始的那段PHP代码在内核中的表现。
+如表5.1所示：
+
+<table>
+  <tr>
+    <th scope="col">字段名</th>
+    <th scope="col">字段说明 </th>
+    <th scope="col">ParentClass类</th>
+    <th scope="col">Ifce接口</th>
+    <th scope="col">Tipi类</th>
+  </tr>
+  <tr>
+    <th scope="row">name</th>
+    <td>类名</td>
+    <td>ParentClass</td>
+    <td>Ifce</td>
+    <td>Tipi</td>
+  </tr>
+  <tr>
+    <th scope="row">type</th>
+    <td>类别</td>
+    <td>2</td>
+    <td>2</td>
+    <td>2</td>
+  </tr>
+  <tr>
+    <th scope="row">parent</th>
+    <td>父类</td>
+    <td>空</td>
+    <td>空</td>
+    <td>ParentClass类</td>
+  </tr>
+  <tr>
+    <th scope="row">refcount</th>
+    <td>引用计数</td>
+    <td>1</td>
+    <td>1</td>
+    <td>2</td>
+  </tr>
+  <tr>
+    <th scope="row">ce_flags</th>
+    <td>类的类型</td>
+    <td>0</td>
+    <td>144</td>
+    <td>524352</td>
+  </tr>
+  <tr>
+    <th scope="row">function_table</th>
+    <td>函数列表</td>
+    <td>空</td>
+    <td>
+<ul>
+<li>
+function_name=iMethod  |  type=2  |  fn_flags=258</li>
+<ul>
+  </td>
+
+    <td>
+<ul>
+
+<li>function_name=__construct  |  type=2  |  fn_flags=8448 </li>
+<li>function_name=iMethod  |  type=2  |  fn_flags=65800</li>
+<li>function_name=_access  |  type=2  |  fn_flags=66560 </li>
+<li>function_name=access  |  type=2  |  fn_flags=257  </li>
+
+<ul>
+  </tr>
+  <tr>
+    <th scope="row">interfaces</th>
+    <td>接口列表</td>
+    <td>空</td>
+    <td>空</td>
+    <td>Ifce接口 接口数为1</td>
+  </tr>
+  <tr>
+    <th scope="row">filename</th>
+    <td>存放文件地址</td>
+    <td>/tipi.php</td>
+    <td>/tipi.php</td>
+    <td>/ipi.php</td>
+  </tr>
+  <tr>
+    <th scope="row">line_start</th>
+    <td>类开始行数</td>
+    <td>15</td>
+    <td>18</td>
+    <td>22</td>
+  </tr>
+  <tr>
+    <th scope="row">line_end</th>
+    <td>类结束行数</td>
+    <td>16</td>
+    <td>20</td>
+    <td>38</td>
+  </tr>
+</table>
+
+类的结构中，type有两种类型，数字标记为1和2.在代码中体现为：
+
+    [c]
+    #define ZEND_INTERNAL_CLASS         1
+    #define ZEND_USER_CLASS             2
+
+对于父类和接口，都是以 **struct　_zend_class_entry**　存在。
+常规的成员方法以HashTable的方式存放在函数结构体中，而魔术方法则单独存在.
 
 
 ## 类的实现
