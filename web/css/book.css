@@ -48,7 +48,7 @@
 }
 
 #book_index {
-	padding-top: 10px;
+	padding-top: 4px;
 	font-size: 1.2em;
 }
 
@@ -66,7 +66,7 @@
 	float: left;
 	width: 790px;
 	font-size: 1.2em;
-	padding-top: 10px;
+	padding-top: 4px;
 }
 
 #book_content p {
@@ -288,16 +288,24 @@
 
 /* Book tools style */
 #book_tools {
-	padding: 6px;
-	border-bottom: 1px solid #ccc;
 	margin: 0 10px;
+	padding-bottom: 4px;
 	top: 0px;
+}
+
+#book_tools .inner {
+	padding: 6px;
+	padding-top: 12px;
+	border-bottom: 1px solid #ccc;
 }
 
 .smartscroll #book_tools {
 	position: fixed;
-	border: none;
 	background: url(../images/toolbar_bg.png) center bottom no-repeat;
+}
+
+.smartscroll #book_tools .inner {
+	border: none;
 }
 
 
