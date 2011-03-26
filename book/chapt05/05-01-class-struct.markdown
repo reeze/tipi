@@ -1,15 +1,15 @@
 # 第一节 类的结构和实现
 
-在面向对象编程(OOP)中，我们最先接触的概念应该就是类了（不过在学习的过程中也会有人先接触对象这个概念的）。在平常的工作中，我们经常需要写类，设计类等等。
-那么，类是什么？在PHP中，类是以哪种方式存储的？
+在面向对象编程(OOP)中,我们最先接触的概念应该就是类了（不过在学习的过程中也会有人先接触对象这个概念的）. 在平常的工作中,我们经常需要写类,设计类等等.
+那么,类是什么？在PHP中,类是以哪种方式存储的？
 
 ## 类的结构
-首先，我们看下类是什么。类是用户定义的一种抽象数据类型，它是现实世界中某些具有共性事物的抽象。有时，我们也可以理解其为对象的类别。
-类也可以看作是一种复合型的结构，其需要存储多元化的数据，如属性，方法，以及自身的一些性质等。
+首先,我们看下类是什么. 类是用户定义的一种抽象数据类型,它是现实世界中某些具有共性事物的抽象. 有时,我们也可以理解其为对象的类别.
+类也可以看作是一种复合型的结构,其需要存储多元化的数据,如属性,方法,以及自身的一些性质等.
 
-在PHP中，类的定义以class关键字开始，后面接类名，类名可以是任何非PHP保留字的名字。
-在类名后面紧跟着一对花括号，这个里面就是类的实体了，它包括类所具有的属性，这些属性是对象的状态的抽象，其表现为PHP中支持的数据类型，也可以包括对象本身，通常我们称其为成员变量。
-除了类的属性，类的实体中也包括类所具有的操作，这些操作是对象的行为的抽象，其表现为用操作名和实现该操作的方法，通常我们称其为成员方法或成员函数。看一个PHP写的类示例的代码：
+在PHP中,类的定义以class关键字开始,后面接类名,类名可以是任何非PHP保留字的名字.
+在类名后面紧跟着一对花括号,这个里面就是类的实体了,它包括类所具有的属性,这些属性是对象的状态的抽象,其表现为PHP中支持的数据类型,也可以包括对象本身,通常我们称其为成员变量.
+除了类的属性,类的实体中也包括类所具有的操作,这些操作是对象的行为的抽象,其表现为用操作名和实现该操作的方法,通常我们称其为成员方法或成员函数. 看一个PHP写的类示例的代码：
 
     [php]
     class ParentClass {
@@ -36,11 +36,11 @@
             }
     }
 
-这里定义了一个父类ParentClass，一个接口Ifce，一个子类Tipi。子类继承父类ParentClass，
-实现接口Ifce，并且有一个静态变量$sa，一个类常量 CA，一个公用方法，一个私有方法和一个公用静态方法。
-这些也许已经比较熟悉了，那么这些结构在Zend引擎内部是如何实现的？类的这些方法、成员变量是如何存储的？这些访问控制，静态成员是如何标记的？
+这里定义了一个父类ParentClass,一个接口Ifce,一个子类Tipi. 子类继承父类ParentClass,
+实现接口Ifce,并且有一个静态变量$sa,一个类常量 CA,一个公用方法,一个私有方法和一个公用静态方法.
+这些也许已经比较熟悉了,那么这些结构在Zend引擎内部是如何实现的？类的这些方法、成员变量是如何存储的？这些访问控制,静态成员是如何标记的？
 
-首先，我们看下类的存储结构。我们在PHP的源码中很容易找到类的结构存放在zend_class_entry结构体中，这个结构体在PHP源码中出现的频率很高。
+首先,我们看下类的存储结构. 我们在PHP的源码中很容易找到类的结构存放在zend_class_entry结构体中,这个结构体在PHP源码中出现的频率很高.
 
 	[c]
 		struct _zend_class_entry {
@@ -59,8 +59,8 @@
 			HashTable default_properties;          // 默认属性
 			HashTable properties_info;     // 属性信息
 			HashTable default_static_members;// 静态变量
-			HashTable *static_members; // type == ZEND_USER_CLASS时，取&default_static_members;
-			// type == ZEND_INTERAL_CLASS时，设为NULL
+			HashTable *static_members; // type == ZEND_USER_CLASS时,取&default_static_members;
+			// type == ZEND_INTERAL_CLASS时,设为NULL
 			HashTable constants_table;     // 常量
 			struct _zend_function_entry *builtin_functions;// 方法定义入口
 
@@ -112,7 +112,7 @@
 			struct _zend_module_entry *module; // 类所在的模块入口：EG(current_module)
 		};
 
-取上面这个结构的部分字段，我们分析文章最开始的那段PHP代码在内核中的表现。
+取上面这个结构的部分字段,我们分析文章最开始的那段PHP代码在内核中的表现.
 如表5.1所示：
 
 <table>
@@ -209,19 +209,19 @@ function_name=iMethod  |  type=2  |  fn_flags=258</li>
   </tr>
 </table>
 
-类的结构中，type有两种类型，数字标记为1和2.在代码中体现为：
+类的结构中,type有两种类型,数字标记为1和2.在代码中体现为：
 
     [c]
     #define ZEND_INTERNAL_CLASS         1
     #define ZEND_USER_CLASS             2
 
-对于父类和接口，都是以 **struct　_zend_class_entry**　存在。
-常规的成员方法以HashTable的方式存放在函数结构体中，而魔术方法则单独存在.
+对于父类和接口,都是以 **struct　_zend_class_entry**　存在.
+常规的成员方法以HashTable的方式存放在函数结构体中,而魔术方法则单独存在.
 
 
 ## 类的实现
-类的定义是以class关键字开始，在Zend/zend_language_scanner.l文件中，找到class对应的token为T_CLASS。
-根据此token，在Zend/zend_language_parser.y文件中，找到编译时调用的函数：
+类的定义是以class关键字开始,在Zend/zend_language_scanner.l文件中,找到class对应的token为T_CLASS.
+根据此token,在Zend/zend_language_parser.y文件中,找到编译时调用的函数：
 
     [c]
     unticked_class_declaration_statement:
@@ -247,19 +247,19 @@ function_name=iMethod  |  type=2  |  fn_flags=258</li>
     ;
 
 
-上面的class_entry_type语法说明在语法分析阶段将类分为三种类型：常规类(T_CLASS)，抽象类(T_ABSTRACT T_CLASS)和final类(T_FINAL T_CLASS )。
-这是以在类名前加不同的关键字来。他们分别对应的类型在内核中的体现为:
+上面的class_entry_type语法说明在语法分析阶段将类分为三种类型：常规类(T_CLASS),抽象类(T_ABSTRACT T_CLASS)和final类(T_FINAL T_CLASS ).
+这是以在类名前加不同的关键字来. 他们分别对应的类型在内核中的体现为:
 
 * 常规类(T_CLASS) 对应的type=0
 * 抽象类(T_ABSTRACT T_CLASS) 对应type=ZEND_ACC_EXPLICIT_ABSTRACT_CLASS
 * final类(T_FINAL T_CLASS) 对应type=ZEND_ACC_FINAL_CLASS
 
-除了上面的三种类型外，类还包含有另两种类型
+除了上面的三种类型外,类还包含有另两种类型
 
-* 另一种抽象类，它对应的type=ZEND_ACC_IMPLICIT_ABSTRACT_CLASS.
-它在语法分析时并没有分析出来，因为这种类是由于其拥有抽象方法所产生的。
-在PHP源码中，这个类别是在函数注册时判断是抽象方法或继承类时判断是抽象方法时设置的。
-* 接口，其type=ZEND_ACC_INTERFACE.这个在接口关键字解析时设置,见interface_entry:对应的语法说明。
+* 另一种抽象类,它对应的type=ZEND_ACC_IMPLICIT_ABSTRACT_CLASS.
+它在语法分析时并没有分析出来,因为这种类是由于其拥有抽象方法所产生的.
+在PHP源码中,这个类别是在函数注册时判断是抽象方法或继承类时判断是抽象方法时设置的.
+* 接口,其type=ZEND_ACC_INTERFACE.这个在接口关键字解析时设置,见interface_entry:对应的语法说明.
 
 这五种类型在Zend/zend_complie.h文件中定义如下：
 
@@ -269,16 +269,16 @@ function_name=iMethod  |  type=2  |  fn_flags=258</li>
     #define ZEND_ACC_FINAL_CLASS	            0x40
     #define ZEND_ACC_INTERFACE		            0x80
 
-常规类为0，在这里没有体现。
+常规类为0,在这里没有定义,并且在程序也是直接赋值为0. 
 
 
-语法解析完后就可以知道一个类是抽象类还是final类，普通的类，又或者接口。
-定义类时调用了zend_do_begin_class_declaration和zend_do_end_class_declaration函数，
-从这两个函数传入的参数，zend_do_begin_class_declaration函数用来处理类名，类的类别和父类,
+语法解析完后就可以知道一个类是抽象类还是final类,普通的类,又或者接口.
+定义类时调用了zend_do_begin_class_declaration和zend_do_end_class_declaration函数,
+从这两个函数传入的参数,zend_do_begin_class_declaration函数用来处理类名,类的类别和父类,
 zend_do_end_class_declaration函数用来处理接口和类的中间代码
-这两个函数在Zend/zend_complie.c文件中可以找到其实现。
+这两个函数在Zend/zend_complie.c文件中可以找到其实现.
 
-在zend_do_begin_class_declaration中，首先会对传入的类名作一个转化，统一成小写，这也是为什么类名不区分大小的原因，如下代码
+在zend_do_begin_class_declaration中,首先会对传入的类名作一个转化,统一成小写,这也是为什么类名不区分大小的原因,如下代码
 
     [php]
     <?php
@@ -289,15 +289,24 @@ zend_do_end_class_declaration函数用来处理接口和类的中间代码
 
     }
 
-运行时程序报错: Fatal error: Cannot redeclare class tipi。这个报错是在运行生成中间的代码时显示的。这个判断的过程在后面中间代码生成时说明。
-在此函数中对于一些PHP的关键不能做
+运行时程序报错: Fatal error: Cannot redeclare class tipi. 这个报错是在运行生成中间的代码时显示的.
+这个判断的过程在后面中间代码生成时说明.而关于类的名称的判断则是通过 **T_STRING** token,
+在语法解析时做的判断, 但是这只能识别出类名是一个字符串. 假如类名为一些关键字, 如下代码：
 
+    [php]
+    class self {
+    }
 
-ZEND_DECLARE_CLASS_SPEC_HANDLER
+运行, 程序会显示： Fatal error: Cannot use 'self' as class name as it is reserved in...
 
+以上的这个程序判断也是在 **zend_do_begin_class_declaration** 函数中进行.
+与self一样, 还有parent, static两个关键字.当这个函数执行完后，我们会得到类声明生成的中间代码为：**ZEND_DECLARE_CLASS** 。
+当然，如果我们是声明内部类的话，则生成的中间代码为： **ZEND_DECLARE_INHERITED_CLASS**.
 
+根据生成的中间代码，我们在Zend/zend_vm_execute.h文件中找到其对应的执行函数 **ZEND_DECLARE_CLASS_SPEC_HANDLER**。
+这个函数通过调用 **do_bind_class** 函数将此类加入到 EG(class_table) 。
+在添加到列表的同时，也判断该类是否存在，如果存在，则添加失败，报我们之前出现过类重复声明错误，只是这个判断在编译期是不会生效的。
 
-
-判断类名是否正确的方法是哪个？
-=======
-** TODO **
+类的结构是以 **struct _zend_class_entry** 结构体为核心，类的实现是以class为中心作词法分析、语法分析等，
+在这些过程中识别出类的类别，类的类名等，并将识别出来的结果存放到类的结构中。
+下一节我们一起看看类所包含的成员变量和成员方法。
