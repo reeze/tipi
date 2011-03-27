@@ -23,7 +23,9 @@
 	* [第三节 预定义变量][pre-defined-variable]
 	* [第四节 静态变量][static-var]
 	* [第五节 类型提示的实现][type-hint-imp]
-	* [第六节 变量的作用域][var-scope]
+	* [第六节 变量的生命周期][var-lifecycle]
+		+ [变量的定义,初始化,赋值及销毁][var-define-and-init]
+		+ [变量的作用域][var-scope]
 		+ [global语句][var-global]
 	* [第七节 数据类型转换][type-cast]
 	* [第八节 小结][03-summary]
@@ -112,9 +114,11 @@
 [const-var]: 			?p=chapt03/03-02-const-var
 [pre-defined-variable]:	?p=chapt03/03-03-pre-defined-variable
 [static-var]:           ?p=chapt03/03-04-static-var
-[type-hint-imp]: 			?p=chapt03/03-05-impl-of-type-hint
-[var-global]: 			?p=chapt03/03-06-01-var-global
-[var-scope]: 			?p=chapt03/03-06-00-scope
+[type-hint-imp]: 		?p=chapt03/03-05-impl-of-type-hint
+[var-lifecycle]:		?p=chapt03/03-06-00-var-lifecycle
+[var-define-and-init]:	?p=chapt03/03-06-01-var-define-and-init
+[var-scope]: 			?p=chapt03/03-06-02-var-scope
+[var-global]: 			?p=chapt03/03-06-03-var-global
 [type-cast]: 			?p=chapt03/03-07-type-cast
 [03-summary]: 			?p=chapt03/03-08-summary
 
