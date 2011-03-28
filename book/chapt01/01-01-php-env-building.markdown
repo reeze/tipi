@@ -4,10 +4,20 @@
 (\*nix指的是类Unix环境,比如各种Linux发行版,FreeBSD, OpenSolaris, Mac OS X等操作系统)
 
 ### 1.获取PHP源码
-为了学习PHP的实现，首先我们要下载源代码.下载源码首选是去[PHP官方网站 http://php.net/downloads.php](http://php.net/downloads.php)下载,
-如果你喜欢是用类似svn/git这些版本控制软件,喜欢svn的读者可以去[http://www.php.net/svn.php](http://www.php.net/svn.php)上
-签出源代码,或者如果你喜欢用git, 则可以去[http://github.com/php/php-src](http://github.com/php/php-src)上clone一个. 笔者比较喜欢用版本控制软件签出代码,
-这样的好处是能看到PHP每次修改的内容及日志信息, 如果自己修改了其中的某些内容也能快速的查看到.
+为了学习PHP的实现，我们需要下载PHP的源代码。下载源码首选是去[PHP官方网站 http://php.net/downloads.php](http://php.net/downloads.php)下载,
+如果你喜欢使用类似svn/git这些版本控制软件,还可以使用svn/git来获取最新的源代码。
+
+	[bash]
+	#svn
+	cd ~
+	svn co http://svn.php.net/repository/php/php-src/branches/PHP_5_2 php-src-5.2 #php5.2版本 
+	svn co http://svn.php.net/repository/php/php-src/branches/PHP_5_3 php-src-5.3 #php5.3版本
+
+	#git
+	cd ~
+	git clone git://github.com/php/php-src.git php-src
+
+笔者比较喜欢用版本控制软件签出代码,这样做的好处是能看到PHP每次修改的内容及日志信息, 如果自己修改了其中的某些内容也能快速的查看到.(当然你还可以试着建立属于自己的源代码分支)
 
 ### 2.准备编译环境
 在*nix环境下，首先需要gcc编译构建环境. 如果你是用的是Ubuntu或者是用apt做为包管理的系统,可以通过如下命令快速安装.
@@ -47,7 +57,10 @@ configure完成后我们就可以开始编译了.
 	cd ~/php-src
 	./sapi/cli/php -v
 
-如果看到输出php版本信息则说明咱成功了. 如果是make install的话则执行 $prefix/bin/php 这个路径的php, 当然如果是安装在系统目录或者你的prefix
+如果看到输出php版本信息则说明编译成功. 如果是make install的话则执行 $prefix/bin/php 这个路径的php, 当然如果是安装在系统目录或者你的prefix
 目录在$PATH环境变量里的话,直接执行php就行了.
+
+>**NOTE**
+>如果只是make而不make install的话，只是编译为可执行二进制文件，而不会进行任何安装动作(你懂的)，所以在终端下执行的php-cli所在路径就是``php-src/sapi/cli/php``。
 
 后续的学习中可能会需要重复configure make 或者 make && make install 这几个步骤。
