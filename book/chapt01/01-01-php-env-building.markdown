@@ -61,6 +61,6 @@ configure完成后我们就可以开始编译了.
 目录在$PATH环境变量里的话,直接执行php就行了.
 
 >**NOTE**
->如果只是make而不make install的话，只是编译为可执行二进制文件，而不会进行任何安装动作(你懂的)，所以在终端下执行的php-cli所在路径就是``php-src/sapi/cli/php``。
+>在只进行``make``而不``make install``时，只是编译为可执行二进制文件，而不会进行任何安装动作(你懂的)，所以在终端下执行的php-cli所在路径就是``php-src/sapi/cli/php``。
 
 后续的学习中可能会需要重复configure make 或者 make && make install 这几个步骤。
