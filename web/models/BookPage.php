@@ -329,13 +329,39 @@ class BookPage extends MarkdownPage
 		return $pages;
 	}
 
-	public function getFlatPagesArray() {
+	public static function getFlatPagesArray() {
 		$pages = array();
 		foreach(self::getFlatPages() as $page) {
 			$pages[] = new self($page['page_name']);	
 		}
 	
 		return $pages;
+	}
+
+	/**
+	 * TIPI的目录结构经常会发生变化, 导致地址经常会发生变化, 为此需要对老的地址做一些处理,
+	 * 否则一些用户收藏的地址就会无效, 所以采用两种方式来处理:
+	 *
+	 * 1. 如果能找到和请求的页面地址非常接近的页面, 比如只是修改了一小部分的内容.则自动跳转到新页面
+	 * 2. 如果找到的页面匹配度不够, 则给出比较相近的页面供用户参考.
+	 *
+	 * 这个方法的目的是找到和$page_name比较接近的页. 并求出相似度
+	 *
+	 * @param $page_name string
+	 *
+	 * return array  array('0.8' => 'chapt03/03-01-00-**')
+	 */
+	public static function getSuggestPagesFromName($page_name) {
+		$match_pages = array();
+		$pages = self::getFlatPagesArray();
+		foreach($pages as $page) {
+			// TODO	
+		}
+		return array();	
+	}
+
+	private static function _strDistance($str1, $str2) {
+		// TODO	
 	}
 
     /**
