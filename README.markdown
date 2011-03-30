@@ -8,7 +8,7 @@ TIPI项目是一个自发项目,	项目主要关注PHP的内部实现, 以及PHP
 
 
 ## 1. 下载
-本站所有内容托管在github<http://github.com/reeze/tipi>上，如果你电脑上安装了git最好，没有的话也不碍，
+本站所有内容托管在github<http://github.com/reeze/tipi>上，如果你电脑上安装了[git](http://git-scm.com/)最好，没有的话也不碍，
 在页面右右上角可以下载到项目完整的压缩包，选择你喜欢的压缩格式即可。
 
 ## 2. 安装
@@ -27,9 +27,9 @@ TIPI项目是一个自发项目,	项目主要关注PHP的内部实现, 以及PHP
 ## 4. 联系作者
 你可以联系以下作者
 
-* reeze <http://reeze.cn>  			reeze.xia###gmail.com
-* er    <http://www.zhangabc.com>   er###zhangabc.com
-* phppan <http://www.phppan.com/>   phppan.p###gmail.com
+* reeze <http://reeze.cn>  			reeze.xia<at>gmail.com
+* er    <http://www.zhangabc.com>   er<at>zhangabc.com
+* phppan <http://www.phppan.com/>   phppan.p<at>gmail.com
 
 
 [project-url]: http://www.php-internal.com/
