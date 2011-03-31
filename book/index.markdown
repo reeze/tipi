@@ -19,7 +19,7 @@
 
 - [第三章 变量及数据类型][variables]
 	* [第一节 变量的内部结构][variables-structure]
-		+ [哈希彪(HashTable)][variables-hashtable]
+		+ [哈希表(HashTable)][variables-hashtable]
     * [第二节 常量][const-var]
 	* [第三节 预定义变量][pre-defined-variable]
 	* [第四节 静态变量][static-var]
