@@ -9,3 +9,8 @@ function url_for_book($page_name, $absolute=false) {
 function url_for_news($page_name, $absolute=false) {
 	return url_for("/news/?p=" . $page_name, $absolute);
 }
+
+function is_external_url($url)
+{
+	return (strpos($url, "http:") === 0 || strpos($url, "https:") === 0);
+}

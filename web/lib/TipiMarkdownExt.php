@@ -24,6 +24,13 @@ class TipiMarkdownExt extends MarkdownExtra_Parser
 	 */
 	private $_headers = array();
 
+	private $_callbacks = array();
+
+	public function __construct($callbacks=array()) {
+		parent::__construct();	
+
+		$this->_callbacks = $callbacks;
+	}
 
 	function getHeaders()
 	{
@@ -167,6 +174,9 @@ class TipiMarkdownExt extends MarkdownExtra_Parser
 			return $matches[0];
 		
 		$level = $matches[2]{0} == '=' ? 1 : 2;
+
+		$level = isset($this->_callbacks['header']) ? call_user_func($this->_callbacks['header'], $level) : $level;
+
 		$block = "<h$level>".$this->runSpanGamut($matches[1]). "<a name='{$matches[1]}'></a>" . "</h$level>";
 
 		$this->_headers[] = array('text' => $matches[1], 'level' => $level);
@@ -175,6 +185,8 @@ class TipiMarkdownExt extends MarkdownExtra_Parser
 
 	function _doHeaders_callback_atx($matches) {
 		$level = strlen($matches[1]);
+		$level = isset($this->_callbacks['header']) ? call_user_func($this->_callbacks['header'], $level) : $level;
+
 		$block = "<h$level>".$this->runSpanGamut($matches[2]). "<a name='{$matches[2]}'></a>" . "</h$level>";
 
 		$this->_headers[] = array('text' => $matches[2], 'level' => $level);

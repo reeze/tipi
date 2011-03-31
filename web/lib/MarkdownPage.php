@@ -17,7 +17,7 @@ class MarkdownPage
 
     const extension = 'markdown';
 
-	public function __construct($data)
+	public function __construct($data, $parser=null)
 	{
 		$this->file = isset($data['file']) ? $data['file'] : NULL;	
 		$this->text = isset($data['text']) ? $data['text'] : NULL;	
@@ -27,7 +27,9 @@ class MarkdownPage
 			$this->text = file_get_contents($this->file);	
 		}
 
-		$parser = new TipiMarkdownExt();
+		if(!$parser) {
+			$parser = new TipiMarkdownExt();
+		}
 		$this->output = $parser->transform($this->text);
 
 		$this->meta['headers'] = $parser->getHeaders();

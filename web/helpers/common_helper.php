@@ -16,6 +16,8 @@
  */
 function url_for($url, $absolute=false)
 {
+	if(is_external_url($url)) return $url;
+
 	static $base_url = null;
 	if(!$base_url) {
 		$backtrace = debug_backtrace();
@@ -33,7 +35,7 @@ function url_for($url, $absolute=false)
 		}
 	}
 
-	$protocal = ($_SERVER['HTTP_PORT'] == '443') ? 'https' : 'http';
+	$protocal = (isset($_SERVER['HTTP_PORT']) && $_SERVER['HTTP_PORT'] == '443') ? 'https' : 'http';
 	$host     = $_SERVER['HTTP_HOST'];
 
 	return ($absolute ? "{$protocal}://{$host}" : "" ) . $base_url . $url;

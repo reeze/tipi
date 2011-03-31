@@ -19,7 +19,7 @@ class BookPage extends MarkdownPage
      * @param string $page_path 	书籍页面的路径, 例如chapt01/01-04-summary
      * @param string $book_base_dir 书籍目录地址, 默认值为TIPI项目路径的book目录
      */
-    public function __construct($page_name, $base_dir='../../book') {
+    public function __construct($page_name, $base_dir='../../book', $is_for_print=false) {
         $this->page_name = $page_name;
         $this->base_dir = $base_dir;
 
@@ -27,11 +27,30 @@ class BookPage extends MarkdownPage
             $this->title = $title;
         }
 
-		parent::__construct(array('file' => $this->getPageFilePath()));
+		$parser = $is_for_print ? new TipiMarkdownExt(array('header' => array($this, 'reAssignHeaderLevel'))) : null;
+
+		parent::__construct(array('file' => $this->getPageFilePath()), $parser);
 
 		// markdown文件的大纲标题信息
 		$this->headers = is_array($this->meta['headers']) ? $this->meta['headers'] : array();
     }
+	
+	// Pdf版的内容需要重新对标题级别调整一下以便生成目录
+	public function reAssignHeaderLevel($level) {
+		if($this->isChapterIndex() && $level == 1) return $level; 
+
+		// 所有层级增加一级
+		return $level + $this->getPageLevel() - 1;
+	}
+
+	public function isChapterIndex() {
+		return $this->getPageLevel() <= 1;
+	}
+
+	public function getPageLevel() {
+		$filename = array_pop(explode('/', $this->page_name));
+		return self::_getChapterLevelByFilename($filename);	
+	}
 
 	public function getHeaders() {
 		return $this->headers;
@@ -329,13 +348,17 @@ class BookPage extends MarkdownPage
 		return $pages;
 	}
 
-	public static function getFlatPagesArray() {
+	public static function getFlatPagesArray($is_for_print=false) {
 		$pages = array();
 		foreach(self::getFlatPages() as $page) {
-			$pages[] = new self($page['page_name']);	
+			$pages[] = new self($page['page_name'], '../../book', $is_for_print);
 		}
 	
 		return $pages;
+	}
+
+	public static function getFlatPagesArrayForPrint() {
+		return self::getFlatPagesArray(true);	
 	}
 
 	/**
