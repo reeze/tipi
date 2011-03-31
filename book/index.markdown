@@ -19,13 +19,13 @@
 
 - [第三章 变量及数据类型][variables]
 	* [第一节 变量的内部结构][variables-structure]
-		+ [哈希彪(HashTable)][variables-hashtable]
+		+ [哈希表(HashTable)][variables-hashtable]
     * [第二节 常量][const-var]
 	* [第三节 预定义变量][pre-defined-variable]
 	* [第四节 静态变量][static-var]
 	* [第五节 类型提示的实现][type-hint-imp]
 	* [第六节 变量的生命周期][var-lifecycle]
-		+ [变量的声明,初始化,赋值及销毁][var-define-and-init](pan)
+		+ [变量的赋值和销毁][var-define-and-init]
 		+ [变量的作用域][var-scope]
 		+ [global语句][var-global]
 	* [第七节 数据类型转换][type-cast]
