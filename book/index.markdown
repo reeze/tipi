@@ -25,7 +25,7 @@
 	* [第四节 静态变量][static-var]
 	* [第五节 类型提示的实现][type-hint-imp]
 	* [第六节 变量的生命周期][var-lifecycle]
-		+ [变量的声明,初始化,赋值及销毁][var-define-and-init](pan)
+		+ [变量的赋值和销毁][var-define-and-init]
 		+ [变量的作用域][var-scope]
 		+ [global语句][var-global]
 	* [第七节 数据类型转换][type-cast]
