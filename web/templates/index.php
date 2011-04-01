@@ -26,8 +26,8 @@
 						我们的项目托管在github上:
 						<div id="github-link"><a href="http://github.com/reeze/tipi">http://github.com/reeze/tipi</a></div>
 						<p>
-							欢迎fork, 如果只想下载《深入理解PHP内核》这本书，请点击页面右上部分的下载链接下载，不过项目还处在第一阶段，
-							并没有完成所有的内容.
+							欢迎fork, 如果只想下载《深入理解PHP内核》这本书，请点击页面右上部分的下载链接下载，
+							项目目前并没有完成所有的内容。
 						</p>
 						</div>
 					</p>
@@ -38,7 +38,7 @@
 			<div class="inner">
 				<h2>使用<span>Enjoy It</span></h2>
 				<p>
-					我们提供《深入理解PHP内核》的在线阅读，后续也会提供比如:pdf,epub,chm等格式，这是在我们的计划当中的。
+					我们提供《深入理解PHP内核》的在线阅读及PDF版的下载，后续也会提供比如: epub,chm等格式的离线下载，这是在我们的计划当中的。
 					如果你网络环境不好，或者希望离线阅读，目前您可以下载我们的整个项目. 请参考<a href="<?php echo url_for("/about/"); ?>">关于页面</a>,这里有本地使用的一些说明。
 				</p>
 				<p>
@@ -51,6 +51,7 @@
 			<div class="inner">
 				<h2>保持更新<span>Keep In Touch</span></h2>
 				<div>
+					<div id="lastest-news">现已经提供PDF版本的下载, <a href="<?php echo url_for("/news/?p=2011-04-01-add-sections-typo-fix-and-improvement"); ?>">点击浏览详情</a></div>
 					<div id="microblog" class="clearfix">
 							<a class='sina t' href="http://t.sina.com.cn/tipiteam"><span>新浪微博</span></a>
 							<a class='twitter t' href="http://twitter.com/teamtipi"><span>Twitter</span></a>
@@ -61,7 +62,6 @@
 					</p>
 					<p>
 					如果你喜欢使用类似GReader之类RSS阅读器的话那最好不过了. 点击上面的订阅图标订阅吧.
-
 					当然，我们的RSS输出是全文的(我们恨透了非全文输出)。我们每写完一小节都会通过RSS输出，同时一些相关的信息也可以通过这里获得。
 					</p>
 				</div>

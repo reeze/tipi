@@ -13,6 +13,28 @@ a {
 	text-decoration: underline;
 }
 
+#lastest-news {
+	padding: 8px;
+	border: 1px solid 
+	border: 1px solid #d09007;
+	background-color: #ffaf03;
+
+	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
+	-o-border-radius: 4px;
+	border-radius: 4px;
+
+	-webkit-box-shadow: rgba(255,175,3,1) 0px 0px 5px;
+	-moz-box-shadow: rgba(255,175,3,1) -5px 0px 5px; /* Firefox will expand the width spread width */
+	-o-box-shadow: rgba(255,175,3,1) 0px 0px 5px;
+	box-shadow: rgba(255,175,3,1) 0px 0px 5px;
+}
+
+#lastest-news a {
+	color: #222;
+	font-weight: bold;
+}
+
 
 #wrapper, #inner-header, .body-wrapper {
 	width: 1000px;
@@ -69,6 +91,10 @@ a {
 
 #get-it .downloads {
 	background-position: right center;
+}
+
+#download-list a {
+	display: block;
 }
 
 #get-started {

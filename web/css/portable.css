@@ -19,11 +19,8 @@ a {
 	margin-top: 5em;
 }
 
-#portable-header {
-	background-color: #dedede;
-	padding: 10px;
-	border-bottom: 1px solid #ccc;
-	text-align: right;
+#portable-cover {
+	background: url(../images/bg.png) left top repeat-x;
 }
 
 h1 {
@@ -35,12 +32,14 @@ h1 {
 h1, h2, h3, h4, h5, h6 {
 	border-bottom: 1px solid #ccc;
 	padding: 5px 0;
+	padding-top: 20px;
 }
 
 h1 {
 	margin-top: 15em;
 	color: #006ea3;
 	border-bottom:  1px solid #999;
+	padding-top: 25px;
 }
 
 pre {
@@ -55,20 +54,92 @@ pre {
 	line-height: 1.2em;
 }
 
+#portable pre .me1,
+#portable pre .me2,
+#portable pre .br0
+{
+	color: #222;
+}
+
 p {
 	text-indent: 2em;
 }
 
-#portable-header a {
-	text-decoration: none;
-	color: #666;
+#portable-header {
+	margin:0;
+	padding:0;
 }
 
-#protocal-header a span {
+#portable-header #header {
+	margin-top: -3px;
+	margin-right: -1px;
+	text-align: right;
+	font-size: 0.8em;
+}
+
+#portable-header a {
+	display: block;
+	text-decoration: none;
+	color: #fff;
+	background-color: #333;
+	border-bottom: 1px solid #ccc;
+	padding: 5px;
+}
+
+#portable-header a span {
 	color: #999;
 	margin-left: 5px;
+}
+
+
+/* Cover */
+#cover {
+	margin-top: 200px;
+	background-color: #343434;
+	color: #fff;
+	padding: 70px;
+	margin-bottom: 50px;
+}
+
+#cover h1 {
+	border: 0;
+	margin: 10px 0;
+	font-size: 2.5em;
+	color: #a3d3ff;
+}
+
+#cover p {
+	text-indent: 0;
+	font-size: 2em;
+	font-family: Verdana;
+}
+
+#cover p span {
+	font-size: 0.6em;
+	color: #777;
+	margin-left: 10px;
+}
+
+#cover-extra {
+	text-align: right;
+}
+
+#cover-authors ul {
+	list-style: none;
+	text-align: right;
+	margin-right: 70px;
+}
+
+#cover h1 span {
+	font-size: 0.7em;
+	color: #444;
+}
+
+#cover-author {
+	text-align: right;
 }
 
 .page-break {
 	page-break-before: always;
 }
+

@@ -8,8 +8,10 @@
 	?>
 </head>
 <body id="portable-header">
+	<div id="header">
 		<a href="<?php echo TIPI::getHomeUrlForPdf(); ?>">TIPI:深入理解PHP内核<span><?php echo TIPI::getVersion(); ?></span></a>
 		<?php // TODO 根据当前页面来生成标题 ?>
+	</div>
 </body>
 </html>
 

@@ -8,7 +8,7 @@
 	?>
 </head>
 <body id="portable" class="pdf">
-	<?php foreach($pages as $page): ?>
+	<?php foreach($pages as $i => $page): ?>
 		<div class='page <?php if($page->isChapterIndex()) { echo 'page-break';}; ?>'>
 			<?php echo $page->toHtml(); ?>
 		</div>
