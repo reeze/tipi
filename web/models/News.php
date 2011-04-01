@@ -21,6 +21,7 @@ class News extends MarkdownPage
 	 */
 	public static function findAll() {
 		$news = glob(self::$base_dir . "/20*." . self::extension);
+		$news = array_reverse($news);
 
 		// map the page
 		$news_pages = array();
@@ -31,7 +32,14 @@ class News extends MarkdownPage
 			$news_pages[] = new self($page_name);
 		}
 
+
 		return $news_pages;
+	}
+
+	public function getPubDate() {
+		list($y, $m, $d) = explode('-', $this->page_name);	
+
+		return "$y-$m-$d";
 	}
 
 	public function getUrl($absolute=IS_ABSOLUTE_URL)
