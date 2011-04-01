@@ -211,6 +211,7 @@ class BookPage extends MarkdownPage
 
 		// $is_section_index_page and $is_index_page and all other page
 		// return the page's title
+
 		return ($html_encode ? htmlentities($title) : $title);
 	}
 
