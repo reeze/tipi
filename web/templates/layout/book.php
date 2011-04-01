@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title><?php echo ($page ? $page->getAbsTitle() : ($title ? $title : 'Page Not Found')); ?> | <?php echo SITE_NAME; ?> </title>
+	<title><?php echo (isset($page) && !empty($page) ? $page->getAbsTitle() : ($title ? $title : 'Page Not Found')); ?> | <?php echo SITE_NAME; ?> </title>
 	<meta http-equiv="Content-type" content="text/html; charset=utf-8">
 	<?php
 		echo stylesheet_include_tag(array('book.css', 'main.css', 'highlight.css', 'tipsy.css'));

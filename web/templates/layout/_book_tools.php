@@ -1,8 +1,8 @@
 <?php
-$page_path = ($page ? $page->getPagePath() : array());
+$page_path = (isset($page) && !empty($page) ? $page->getPagePath() : array());
 $page_path_count = count($page_path);
 
-$title = ($page ? $page->getTitle() : ($extra['title'] ? $extra['title'] : 'Page Not Found'));
+$title = (isset($page) && !empty($page) ? $page->getTitle() : ($extra['title'] ? $extra['title'] : 'Page Not Found'));
 ?>
 
 <div id="book_tools">
@@ -17,7 +17,7 @@ $title = ($page ? $page->getTitle() : ($extra['title'] ? $extra['title'] : 'Page
 				<?php endforeach; ?>
 			<?php endif; ?>
 		</div>
-		<?php $headers = ($page ? $page->getOutlineHeaders() : array()); ?>
+		<?php $headers = (isset($page) && !empty($page) ? $page->getOutlineHeaders() : array()); ?>
 		<div id="book_item_tools" class="fr" style="position: relative">
 			<a href='#comment' id="comment_link" class="tool_item" title="有想法? 那就说点神马吧!"><span>Comment</span></a>
 			<a href='javascript:void(0);' id="font_size" class="tool_item"><span>Font Size</span></a>
@@ -29,7 +29,7 @@ $title = ($page ? $page->getTitle() : ($extra['title'] ? $extra['title'] : 'Page
 			<a href='javascript:void(0);' id="share_page" class="tool_item"><span>Share</span></a>
 			<div id="share_page_pannel" class="dialog_box">
 				<div class="bottom_border">分享到:</div>
-				<?php echo get_jia_this(($page ? $page->getAbsTitle() : '')); ?>
+				<?php echo get_jia_this((isset($page) && !empty($page) ? $page->getAbsTitle() : '')); ?>
 			</div>
 
 			<?php if(count($headers)): ?>

@@ -156,11 +156,26 @@ class BookPage extends MarkdownPage
 	 */
 	public function getAbsTitle($html_encode=false) {
 		// "chapt02/02-03-page-sample  or index etc.
-		list($page, $real_page) = explode('/', $this->page_name);
-		if($real_page) {
-			$page = $real_page;
-		}
-		list($chapt_seq, $sect_seq, $sub_seq) = explode('-', $page);
+        if (strpos($this->page_name, '/') === FALSE) {
+            $page = $this->page_name;
+        } else {
+            list($page, $real_page) = explode('/', $this->page_name);
+            if ($real_page) {
+                $page = $real_page;
+            }
+        }
+
+        $chapt_seq = NULL;
+        $sect_seq = NULL;
+        $sub_seq = NULL;
+
+        if (strpos($page, '-') === FALSE) {
+            $chapt_seq = $page;
+        }else{
+            list($chapt_seq, $sect_seq, $sub_seq) = explode('-', $page);
+        }
+
+        
 
 		$num_chs_map = array(
 			'01' => "一",
