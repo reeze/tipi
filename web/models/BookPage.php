@@ -100,11 +100,13 @@ class BookPage extends MarkdownPage
         }
         $index = ($index + $step) % $count;
 
-        $filepath = substr($allArticleList[$index], 11, - (strlen(self::extension) + 1));
+        if (isset($allArticleList[$index])) {
+             $filepath = substr($allArticleList[$index], 11, - (strlen(self::extension) + 1));
+             return new self($filepath);
+        }
+       
 
-		if(!$filepath) return NULL;
-
-        return new self($filepath);
+		return NULL;
     }
 
     /**
