@@ -58,9 +58,9 @@
 			HashTable function_table;      // 方法
 			HashTable default_properties;          // 默认属性
 			HashTable properties_info;     // 属性信息
-			HashTable default_static_members;// 静态变量
+			HashTable default_static_members;// 类本身所具有的静态变量
 			HashTable *static_members; // type == ZEND_USER_CLASS时,取&default_static_members;
-			// type == ZEND_INTERAL_CLASS时,设为NULL
+			// type == ZEND_INTERAL_CLASS时,设为NULL，属于类的所有静态成员变量，包括所有父类的静态成员变量
 			HashTable constants_table;     // 常量
 			struct _zend_function_entry *builtin_functions;// 方法定义入口
 
