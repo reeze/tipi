@@ -129,7 +129,78 @@
 
 
 ## 成员方法
-get_class_methods()
+成员方法从本质上来讲也是一种函数，所以其存储结构也和常规函数一样，存储在zend_function结构体中。
+对于一个类的多个成员方法，它是以HashTalbe的数据结构存储了多个zend_function结构体。
+和前面的成员方法一样，在类声明时也通过调用zend_initialize_class_data方法，初始化了整个HashTable.
+在类中我们定义一个成员方法，一般如下：
+
+    [php]
+    class Tipi{
+        public function t() {
+            echo 1;
+        }
+    }
+
+除去访问控制关键字，一个成员方法和常规函数是一样的，从语法解析中调用的函数一样（都是zend_do_begin_function_declaration函数），
+但是其调用的参数有一些不同，第三个参数，成员方法的赋值为1，表示它作为成员方法的属性。
+在这个函数中，它首先会将这个方法直接添加到类结构的function_talbe字段，
+然后再此成员方法有一系列的判断，其中包括对于Magic Method的特殊赋值处理等。
+
+与成员变量一样，成员方法也有一个返回所有成员方法的函数--get_class_methods()。
+此函数返回由指定的类中定义的方法名所组成的数组。 从 PHP 4.0.6 开始，可以指定对象本身来代替指定的类名。
+它属于PHP内建函数，其整个程序流程就是一个遍历存储了类成员方法的列表，判断是否为符合条件的方法，
+如果是，则将这个方法作为一个元素添加到返回数组中。
+
 
 ## 静态成员方法
 因为类的静态成员方法通常也叫做类方法。
+与静态成员变量不同，静态成员方法与成员方法都存储在类结构的 function_table 字段。
+类的静态成员变量可以通过类名直接访问。
+
+    [php]
+    class Tipi{
+        public static function t() {
+            echo 1;
+        }
+    }
+
+    Tipi::t();
+
+以上的代码在VLD扩展下生成的部分中间代码如如下：
+
+    [c]
+    number of ops:  8
+    compiled vars:  none
+    line     # *  op                           fetch          ext  return  operands
+    ---------------------------------------------------------------------------------
+       2     0  >   EXT_STMT
+             1      NOP
+       8     2      EXT_STMT
+             3      ZEND_INIT_STATIC_METHOD_CALL                             'Tipi','t'
+             4      EXT_FCALL_BEGIN
+             5      DO_FCALL_BY_NAME                              0
+             6      EXT_FCALL_END
+       9     7    > RETURN                                                   1
+
+    branch: #  0; line:     2-    9; sop:     0; eop:     7
+    path #1: 0,
+    Class Tipi:
+    Function t:
+    Finding entry points
+    Branch analysis from position: 0
+
+从以上的内容可以看出整个静态成员方法的调用是一个先查找方法，再调用的过程。
+而对于调用操作，对应的中间代码为 ZEND_INIT_STATIC_METHOD_CALL。由于类名和方法名都是常量，
+于是我们可以知道中间代码对应的函数是ZEND_INIT_STATIC_METHOD_CALL_SPEC_CONST_CONST_HANDLER。
+在这个函数中，它会首先调用zend_fetch_class函数，通过类名在EG(class_table)中查找类，然后再执行静态方法的获取方法。
+
+    if (ce->get_static_method) {
+		EX(fbc) = ce->get_static_method(ce, function_name_strval, function_name_strlen TSRMLS_CC);
+	} else {
+		EX(fbc) = zend_std_get_static_method(ce, function_name_strval, function_name_strlen TSRMLS_CC);
+	}
+
+如果类结构中的get_static_method方法存在，则调用此方法，如果不存在，则调用zend_std_get_static_method。
+在PHP的源码中get_static_method方法一般都是NULL，这里我们重点查看zend_std_get_static_method函数。
+此函数会查找ce->function_table列表，在查找到方法后检查方法的访问控制权限，如果不允许访问，则报错，否则返回函数结构体。
+关于访问控制，我们在后面的小节中说明。
