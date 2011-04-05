@@ -46,7 +46,7 @@
     * [第一节 类的结构和实现][class-struct]
     * [第二节 类的成员变量及方法][class-member-variables-and-methods]
     * [第三节 访问控制的实现][class-visibility]
-    * [第四节 类的继承, 多态及抽象类][class-inherit-abstract](pan)
+    * [第四节 类的继承, 多态及抽象类][class-inherit-abstract]
     * 第五节 魔术方法,延迟绑定及静态成员
     * 第六节 PHP保留类及特殊类:self,static, parent
     * 第七节 对象的创建
