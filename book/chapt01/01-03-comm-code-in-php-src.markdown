@@ -80,7 +80,7 @@
     [c]
     #line 838 "Zend/zend_language_scanner.c"
 
-\#line预处理用于改变当前的行号和文件名。 
+[\#line](http://www.cppreference.com/wiki/preprocessor/line)预处理用于改变当前的行号（\_\_LINE__）和文件名（\_\_FILE__）。 
 如上所示代码，将当前的行号改变为838,文件名Zend/zend_language_scanner.c 
 它的作用体现在编译器的编写中，我们知道编译器对C 源码编译过程中会产生一些中间文件，通过这条指令，可以保证文件名是固定的，不会被这些中间文件代替，有利于进行调试分析。
 
