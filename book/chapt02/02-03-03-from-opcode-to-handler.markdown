@@ -3,7 +3,7 @@
 
 
 >**NOTE**
->从PHP6.1开始,PHP对opcode的分发方式可以用户自定义，分为CALL, SWITCH, 和GOTO三种类型。默认使用的CALL的方式，本文也应用于这种方式。有关Zend虚拟机的介绍请阅读后面相关内容。
+>从PHP5.1开始,PHP对opcode的分发方式可以用户自定义，分为CALL, SWITCH, 和GOTO三种类型。默认使用的CALL的方式，本文也应用于这种方式。有关Zend虚拟机的介绍请阅读后面相关内容。
 
 ##Debug法：
 
