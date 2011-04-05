@@ -1,7 +1,7 @@
 # 第二节 源码结构、阅读代码方法
 
 ## PHP源码目录结构
-  俗话讲：大巧不工。PHP的源码在结构上非常清晰甚至简单。下面先简单介绍一下PHP源码的目录结构。
+  俗话讲：重剑无锋，大巧不工。PHP的源码在结构上非常清晰甚至简单。下面先简单介绍一下PHP源码的目录结构。
 
 * **根目录:/** 这个目录包含的东西比较多, 主要包含一些说明文件以及设计方案. 其实项目中的这些README文件是非常值得阅读的例如:
 	- /README.PHP4-TO-PHP5-THIN-CHANGES 这个文件就详细列举了PHP4和PHP5的一些差异.
@@ -15,8 +15,10 @@
 * **pear**  “PHP 扩展与应用仓库”, 包含PEAR的核心文件.
 * **sapi**  包含了各种服务器抽象层的代码，例如apache的mod_php,cgi, fastcgi以及fpm等等接口.
 * **TSRM**  PHP的线程安全是构建在TSRM库之上的, PHP实现中常见的\*G宏通常是对TSRM的封装, TSRM(Thread Safe Resource Manager)线程安全资源管理器.
-* **tests**  PHP的测试比较有意思,它使用PHP来测试PHP, 测试php脚本在/run-tests.php, 这个脚本读取tests目录中phpt文件.
+* **tests**  PHP的测试脚本集合，包含PHP各项功能的测试文件
+* **win32**  这个目录主要包括Windows平台相关的一些实现, 比如sokcet的实现在Windows下和\*Nix平台就不太一样, 同时也包括了Windows下编译PHP相关的脚本。 
 
+PHP的测试比较有意思,它使用PHP来测试PHP, 测试php脚本在/run-tests.php, 这个脚本读取tests目录中phpt文件.
 读者可以打开这些看看, php定义了一套简单的规则来测试, 例如一下的这个测试脚本/tests/basic/001.phpt:
 
 	[php]
@@ -32,7 +34,6 @@
 system(), exec()等函数, 这样可以使用主测试进程服务调度被测脚本和检测测试结果, 通过这些外部调用执行测试.
 php测试使用了[proc_open()函数](http://www.php.net/manual/en/function.proc-open.php), 这样就可以保证测试脚本和被测试脚本之间能隔离开.
 
-* **win32**  这个目录主要包括Windows平台相关的一些实现, 比如sokcet的实现在Windows下和\*Nix平台就不太一样, 同时也包括了Windows下编译PHP相关的脚本。 
 
 ## PHP源码阅读方法
 ### 使用VIM + Ctags查看源码
@@ -42,7 +43,7 @@ php测试使用了[proc_open()函数](http://www.php.net/manual/en/function.proc
 
 在Linux下编写过代码的读者应该或多或少都试过[ctags](http://ctags.sourceforge.net/)吧.
 ctags支持非常多的语言,可以将源代码中的各种符号,比如:函数、宏类等信息抽取出来做上标记。保存到一个文件中.
-它保存的文件格式其实也挺简单, 比如符合[UNIX的哲学](http://zh.wikipedia.org/zh/Unix%E5%93%B2%E5%AD%A6),
+它保存的文件格式其实也挺简单, 比较符合[UNIX的哲学（小即是美）](http://zh.wikipedia.org/zh/Unix%E5%93%B2%E5%AD%A6),
 使用起来也很简单：
 
     [bash]
@@ -51,12 +52,14 @@ ctags支持非常多的语言,可以将源代码中的各种符号,比如:函数
     $ ctags -R
 
 	#小技巧：在当前目录生成的tags文件中使用的是相对路径，
-	#若改用 ctags -R /full-path-to-php-src/ ，可以生成包含完整路径的ctags，就可以随意放到任意文件夹中了。 
+	#若改用 ctags -R /server/ ，可以生成包含完整路径的ctags，就可以随意放到任意文件夹中了。 
 
     #在~/.vimrc中添加:
     set tags+=/server/php-src/tags
+    #或者在vim中运行命令:
+    :set tags+=/server/php-src/tags
 
-上面代码会在/sever/php-src目录下生成一个名为tags的文件, 这个文件的[格式很简单](http://ctags.sourceforge.net/FORMAT):
+上面代码会在/sever/php-src目录下生成一个名为tags的文件, 这个文件的[格式如下](http://ctags.sourceforge.net/FORMAT):
 
 	{tagname}<Tab>{tagfile}<Tab>{tagaddress}
 
@@ -75,7 +78,7 @@ VIM可以读取tags文件,当我们在符号上**CTRL+]**时VIM将尝试从tags�
 
 
 ### 使用IDE查看代码
-如果不习惯使用VIM来看代码,那在可以使用一些功能较丰富IDE，比如Windows下可以使用Visual Studio 2010. 或者使用跨平台的[Netbeans](http://www.netbeans.org/),
+如果不习惯使用VIM来看代码,那在可以使用一些功能较丰富IDE，比如Windows下可以使用Visual Studio 2010 Express . 或者使用跨平台的[Netbeans](http://www.netbeans.org/),
 或者[Eclipse](http://www.eclipse.org/)来看代码,这些工具都相对较**重量级**一些,不过这些工具不管是调试还是查看代码都相对较方便,
 
 在Eclipse及Netbeans下查看符号定义的方式通常是将鼠标移到符号上,同时按住**CTRL**,然后单击,将会跳转到符号定义的位置.
