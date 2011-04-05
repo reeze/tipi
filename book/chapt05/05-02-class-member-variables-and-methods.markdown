@@ -130,7 +130,7 @@
 
 ## 成员方法
 成员方法从本质上来讲也是一种函数，所以其存储结构也和常规函数一样，存储在zend_function结构体中。
-对于一个类的多个成员方法，它是以HashTable的数据结构存储了多个zend_function结构体。
+对于一个类的多个成员方法，它是以HashTalbe的数据结构存储了多个zend_function结构体。
 和前面的成员方法一样，在类声明时也通过调用zend_initialize_class_data方法，初始化了整个HashTable.
 在类中我们定义一个成员方法，一般如下：
 
