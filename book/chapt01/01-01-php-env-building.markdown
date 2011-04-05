@@ -41,21 +41,21 @@
 	[bash]
 	./configure --help # 查看可用参数
 
-为了尽快得到可以测试的环境,我们就不加其他参数了.直接执行./configure就可以了. 以后如果需要其他功能可以重新编译.
+为了尽快得到可以测试的环境,我们仅编译一个最精简的php.通过执行./configure --disable-all来进行配置. 以后如果需要其他功能可以重新编译.
 如果configure命令出现错误,可能是缺少PHP所依赖的库,各个系统的环境可能不一样. 出现错误可根据出错信息上网搜索. 直到完成configure.
 configure完成后我们就可以开始编译了. 
 
 	[bash]
+    ./configure --disable-all
 	make
 
 在*nix下编译过程序的读者应该都熟悉经典的configure make, make install吧. 执行make之后是否需要make install就取决于你了. 如果install的话
 最好在configure的时候是用prefix参数指定安装目录, 不建议安装到系统目录, 避免和系统原有的PHP版本冲突.
 
-在make 完以后，~/php-src目录里就已经有了php的可以执行文件. 执行一下命令：
+在make 完以后，在sapi/cli目录里就已经有了php的可以执行文件. 执行一下命令：
 
 	[bash]
-	cd ~/php-src
-	./sapi/cli/php -v
+	./sapi/cli/php -n -v
 
 如果看到输出php版本信息则说明编译成功. 如果是make install的话则执行 $prefix/bin/php 这个路径的php, 当然如果是安装在系统目录或者你的prefix
 目录在$PATH环境变量里的话,直接执行php就行了.
