@@ -15,6 +15,7 @@
 	* [第三节 脚本的执行][script-execution]
 		+ [词法分析和语法分析][lex-and-yacc]
 		+ [opcode][opcode]
+		+ [从opcode到函数实现][opcode-handler]
 	* [第四节 小结][02-summary]
 
 - [第三章 变量及数据类型][variables]
@@ -108,6 +109,7 @@
 [script-execution]: 	?p=chapt02/02-03-00-how-php-script-get-executed
 [lex-and-yacc]: 		?p=chapt02/02-03-01-lex-and-yacc
 [opcode]: 				?p=chapt02/02-03-02-opcode
+[opcode-handler]: 		?p=chapt02/02-03-03-from-opcode-to-handler
 [02-summary]: 			?p=chapt02/02-04-summary
 
 [variables]:            ?p=chapt03/03-00-variable-and-data-types
