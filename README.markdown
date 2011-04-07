@@ -18,7 +18,8 @@ TIPI项目是一个自发项目,	项目主要关注PHP的内部实现, 以及PHP
 /web/images/book目录，因为windows并不能是识别软链接，所以会有问题，要解决这个问题有三个方法：
 
 * 把/book/images目录拷贝到/web/images目录下并重命名为book目录，这样可能比较麻烦，如果我们以后更新了内容，你重新下载会比较麻烦。
-* 另一个方法是使用Web服务器的别名方法，这样你需要修改服务器的配置，具体方法请搜索apache alias
+* 另一个方法是使用Web服务器的别名方法，这样你需要修改服务器的配置，加入Alias配置：
+    Alias /images/book TIPI的绝对路径\book\images
 * 第三个方法就是我们推荐的换系统了。这只是建议，我们更喜欢*nix环境。
 
 ## 3. 反馈
@@ -30,6 +31,6 @@ TIPI项目是一个自发项目,	项目主要关注PHP的内部实现, 以及PHP
 * reeze <http://reeze.cn>  			reeze.xia<at>gmail.com
 * er    <http://www.zhangabc.com>   er<at>zhangabc.com
 * phppan <http://www.phppan.com/>   phppan.p<at>gmail.com
-
+* HonestQiao <http://www.wapm.cn/>  honestqiao<at>gmail.com
 
 [project-url]: http://www.php-internal.com/
