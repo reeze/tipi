@@ -50,7 +50,7 @@
     * [第四节 类的继承, 多态及抽象类][class-inherit-abstract]
     * [第五节 魔术方法,延迟绑定及静态成员][class-magic-methods-latebinding](er)
     * [第六节 PHP保留类及特殊类:self,static, parent](class-reserved-and-special-classes)(reeze)
-    * 第七节 对象的创建(pan)
+    * [第七节 对象][class-object](pan)
     * 第八节 命名空间
     * 第九节 小结
 
@@ -144,4 +144,5 @@
 [class-inherit-abstract]: ?p=chapt05/05-04-class-inherit-abstract
 [class-magic-methods-latebinding]: ?p=chapt05/05-04-class-magic-methods-latebinding
 [class-reserved-and-special-classes]: ?=class-reserved-and-special-classes
+[class-object]: ?p=chapt05/05-07-class-object
 [none]:		?
