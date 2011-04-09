@@ -178,7 +178,7 @@ PHP是一种弱类型的语言，这就意味着在声明或使用变量的时�
 
     [c]
     typedef struct _zend_object_value {
-        zend_object_handle handle;  //  unsigned int类型，是
+        zend_object_handle handle;  //  unsigned int类型，EG(objects_store).object_buckets的索引
         zend_object_handlers *handlers;
     } zend_object_value;
 
