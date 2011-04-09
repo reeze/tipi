@@ -142,7 +142,7 @@
 [class-member-variables-and-methods]: ?p=chapt05/05-02-class-member-variables-and-methods
 [class-visibility]:         ?p=chapt05/05-03-class-visibility
 [class-inherit-abstract]: ?p=chapt05/05-04-class-inherit-abstract
-[class-magic-methods-latebinding]: ?p=chapt05/05-04-class-magic-methods-latebinding
+[class-magic-methods-latebinding]: ?p=chapt05/05-05-class-magic-methods-latebinding
 [class-reserved-and-special-classes]: ?=class-reserved-and-special-classes
 [class-object]: ?p=chapt05/05-07-class-object
 [none]:		?
