@@ -1,6 +1,7 @@
 # 第五节 魔术方法,延迟绑定及静态成员
 ##魔术方法
-魔术方法存储于**_zend_class_entry**结构体中，与普通方法一样，它们本身使用HashTable来存储，所以它们与普通方法在底层的存储是完全相同的。导致它们成为了”魔术方法“的原因则主要是由于”存在便执行，不存在则跳过“的”魔术调用“，总而言之，魔术方法与普通方法有以下不同：   
+魔术方法存储于**_zend_class_entry**结构体中，与普通方法一样，它们本身使用HashTable来存储，所以它们与普通方法在底层的存储是完全相同的。
+导致它们成为了”魔术方法“的原因则主要是由于”存在便执行，不存在则跳过“的”魔术调用“，总而言之，魔术方法与普通方法有以下不同：   
 
 *    在**_zend_class_entry**结构体中的存储位置不同;
 *    由ZendVM自动分情境进行调用;
@@ -32,11 +33,14 @@
 	    union _zend_function *unserialize_func;
 		...
 	}
-这段代码明确的在对象内部定义了不同的指针来保存各种魔术变量。关于Zend VM对魔术方法的调用机制，由于每种方法的调用情境不同，笔者在这里也分开进行分析。
+这段代码明确的在对象内部定义了不同的指针来保存各种魔术变量。
+关于Zend VM对魔术方法的调用机制，由于每种方法的调用情境不同，笔者在这里也分开进行分析。
 
 
 ###__construct###
-__construct是构造方法，在对象创建时被调用，与其它很多语言（如JAVA）不同的是，在PHP中，构造方法并没有使用”与类定义同名“的约定方式，而是单独用魔术方法来实现。**__construct**方法的调用入口是new关键字对应的ZEND_NEW_SPEC_HANDLER函数。
+__construct构造方法，在对象创建时被自动调用。
+与其它很多语言（如JAVA）不同的是，在PHP中，构造方法并没有使用”与类定义同名“的约定方式，而是单独用魔术方法来实现。
+**__construct**方法的调用入口是new关键字对应的ZEND_NEW_SPEC_HANDLER函数。
 Zend VM在初始化对象的时候，使用了new关键字，对其OPCODE进行分析后，使用GDB可以得到下面的堆栈信息：
 
 	[c]
@@ -87,26 +91,66 @@ Zend VM在初始化对象的时候，使用了new关键字，对其OPCODE进行�
 ###__destruct###
 **__destruct**是析构方法，运行于对象被显示销毁或者脚本关闭时,一般被用于释放占用的资源。
 **__destruct**的调用涉及到垃圾回收机制，在第七章中会有更详尽的介绍。
-本文笔者只针对**__destruct**调用机制进行分析,其调用的顺序如下：
+本文笔者只针对**__destruct**调用机制进行分析,其调用堆栈信息如下：
 
 	[bash]
-	#0  zend_call_function (fci=0x7fff5fbff050, fci_cache=0x7fff5fbff0a0) at /Volumes/DEV/C/php-5.3.4/Zend/zend_execute_API.c:767
-	#1  0x0000000100406bb2 in zend_call_method (object_pp=0x7fff5fbff1b8, obj_ce=0x100a22258, fn_proxy=0x7fff5fbff1c8, function_name=0x10052a80c "__destruct", function_name_len=10, retval_ptr_ptr=0x0, param_count=0, arg1=0x0, arg2=0x0) at /Volumes/DEV/C/php-5.3.4/Zend/zend_interfaces.c:97
-	#2  0x0000000100413a21 in zend_objects_destroy_object (object=0x100a1fea0, handle=1) at /Volumes/DEV/C/php-5.3.4/Zend/zend_objects.c:112
-	#3  0x0000000100419167 in zend_objects_store_del_ref_by_handle_ex (handle=1, handlers=0x1007d1ac0) at /Volumes/DEV/C/php-5.3.4/Zend/zend_objects_API.c:206
-	#4  0x0000000100418fa8 in zend_objects_store_del_ref (zobject=0x100a1e0c8) at /Volumes/DEV/C/php-5.3.4/Zend/zend_objects_API.c:172
-	#5  0x00000001003e6475 in _zval_dtor_func (zvalue=0x100a1e0c8, __zend_filename=0x10052ba18 "/Volumes/DEV/C/php-5.3.4/Zend/zend_execute_API.c", __zend_lineno=443) at /Volumes/DEV/C/php-5.3.4/Zend/zend_variables.c:52
-	#6  0x00000001003d4e19 in _zval_dtor (zvalue=0x100a1e0c8, __zend_filename=0x10052ba18 "/Volumes/DEV/C/php-5.3.4/Zend/zend_execute_API.c", __zend_lineno=443) at zend_variables.h:35
-	#7  0x00000001003d51bf in _zval_ptr_dtor (zval_ptr=0x100a20060, __zend_filename=0x10052c1c8 "/Volumes/DEV/C/php-5.3.4/Zend/zend_variables.c", __zend_lineno=189) at /Volumes/DEV/C/php-5.3.4/Zend/zend_execute_API.c:443
-	#8  0x00000001003e6932 in _zval_ptr_dtor_wrapper (zval_ptr=0x100a20060) at /Volumes/DEV/C/php-5.3.4/Zend/zend_variables.c:189
-	#9  0x00000001003fa791 in zend_hash_apply_deleter (ht=0x10082d9c8, p=0x100a20048) at /Volumes/DEV/C/php-5.3.4/Zend/zend_hash.c:614
-	#10 0x00000001003fade6 in zend_hash_reverse_apply (ht=0x10082d9c8, apply_func=0x1003d472f <zval_call_destructor>) at /Volumes/DEV/C/php-5.3.4/Zend/zend_hash.c:763
-	#11 0x00000001003d47e9 in shutdown_destructors () at /Volumes/DEV/C/php-5.3.4/Zend/zend_execute_API.c:226
-	#12 0x00000001003e8438 in zend_call_destructors () at /Volumes/DEV/C/php-5.3.4/Zend/zend.c:874
-	#13 0x0000000100366c44 in php_request_shutdown (dummy=0x0) at /Volumes/DEV/C/php-5.3.4/main/main.c:1587
-	#14 0x00000001004d554f in main (argc=2, argv=0x7fff5fbffa30) at /Volumes/DEV/C/php-5.3.4/sapi/cli/php_cli.c:1374
+	//省略部分内存地址信息后的堆栈：
+	#0  zend_call_function () at /..//php-5.3.4/Zend/zend_execute_API.c:767
+	#1  zend_call_method () at /..//php-5.3.4/Zend/zend_interfaces.c:97
+	#2  zend_objects_destroy_object () at /..//php-5.3.4/Zend/zend_objects.c:112
+	#3  zend_objects_store_del_ref_by_handle_ex () at /..//php-5.3.4/Zend/zend_objects_API.c:206
+	#4  zend_objects_store_del_ref () at /..//php-5.3.4/Zend/zend_objects_API.c:172
+	#5  _zval_dtor_func () at /..//php-5.3.4/Zend/zend_variables.c:52
+	#6  _zval_dtor () at zend_variables.h:35
+	#7  _zval_ptr_dtor () at /..//php-5.3.4/Zend/zend_execute_API.c:443
+	#8  _zval_ptr_dtor_wrapper () at /..//php-5.3.4/Zend/zend_variables.c:189
+	#9  zend_hash_apply_deleter () at /..//php-5.3.4/Zend/zend_hash.c:614
+	#10 zend_hash_reverse_apply () at /..//php-5.3.4/Zend/zend_hash.c:763
+	#11 shutdown_destructors () at /..//php-5.3.4/Zend/zend_execute_API.c:226
+	#12 zend_call_destructors () at /..//php-5.3.4/Zend/zend.c:874
+	#13 php_request_shutdown () at /..//php-5.3.4/main/main.c:1587
+	#14 main () at /..//php-5.3.4/sapi/cli/php_cli.c:1374
 
 **__destruct**方法存在与否是在**zend_objects_destroy_object**函数中进行判断的。
-在zend_objects_destroy_object中，与**__construct**一样，Zend VM判断zend_object->ce->destructor是否为空，如果不为空，则调用**zend_call_method**执行**__destruct**析构方法。
-进入**__destruct**的方式与**__construct**不同的是，**__destruct**的执行方式是由Zend VM直接调用**zend_call_function**来执行。
+在脚本执行结果时，ZendVM在**php_request_shutdown**阶段会将对象池中的对象一一销毁，
+这时如果某对象定义了**__destruct**魔术方法，此方法便会被执行。
+
+在**zend_objects_destroy_object**中，与**__construct**一样，
+ZendVM判断**zend_object->ce->destructor**是否为空，如果不为空，则调用**zend_call_method**执行**__destruct**析构方法。
+进入**__destruct**的方式与**__construct**不同的是，**__destruct**的执行方式是由ZendVM直接调用**zend_call_function**来执行。
+
+###__call与__callStatic###
++    **__call**：在对对象不存在的方法进行调用时自动执行;    
++    **__callStatic**：在对对象不存在的静态方法进行调用时自动执行;
+
+**__call**与**__callStatic**的调用机制几乎完全相同，关于函数的执行已经在上一章中提到，
+用户对函数的调用是由**zend_do_fcall_common_helper_SPEC()**方法进行处理的。
+
+####__call：#### 
+经过**[ZEND_DO_FCALL_BY_NAME_SPEC_HANDLER]-> [zend_do_fcall_common_helper_SPEC]-> [zend_std_call_user_call]-> [zend_call_method]->[zend_call_function]**
+调用，经过**zend_do_fcall_common_helper_SPEC**的分发，最终使用**zend_call_function**来执行**__call**。
+####__callStatic：####
+经过**[ZEND_DO_FCALL_BY_NAME_SPEC_HANDLER]-> [zend_do_fcall_common_helper_SPEC]-> [zend_std_callstatic_user_call]-> [zend_call_method]->[zend_call_function]**
+调用，经过**zend_do_fcall_common_helper_SPEC**的分发，最终使用**zend_call_function**来执行**__callStatic**。
+
+###其他魔术方法###
+PHP中还有很多种魔术方法，它们的处理方式基本于上面类似，运行时执行与否取决的判断根据，
+最终都是**_zend_class_entry**结构体中对应的指针是否为空。
+这里列出它们的底层实现函数：
+
+| 魔术方法 | 对应处理函数 |所在源文件|
+|:-----------|:------------|:--------|
+| __set       |        zend_std_call_setter() | Zend/zend_object_handlers.c|
+| __get     	|      zend_std_call_getter() |Zend/zend_object_handlers.c|
+| __isset       |        zend_std_call_issetter() |Zend/zend_object_handlers.c|
+| __unset         |          zend_std_call_unsetter() | Zend/zend_object_handlers.c|
+| __sleep       |       php_var_serialize_intern() |ext/standard/var.c|
+| __wakeup	|	php_var_unserialize()	|	ext/standard/var_unserializer.c	|
+| __toString	|	zend_std_cast_object_tostring()	|	Zend/zend_object_handlers.c|
+| __invoke|	
+| __set_state | php_var_export_ex() | ext/standard/var.c |
+| __clone |
+
+
+
 
