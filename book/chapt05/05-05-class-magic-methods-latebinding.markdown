@@ -37,7 +37,7 @@
 关于Zend VM对魔术方法的调用机制，由于每种方法的调用情境不同，笔者在这里也分开进行分析。
 
 
-###__construct###
+###__construct
 __construct构造方法，在对象创建时被自动调用。
 与其它很多语言（如JAVA）不同的是，在PHP中，构造方法并没有使用”与类定义同名“的约定方式，而是单独用魔术方法来实现。
 **__construct**方法的调用入口是new关键字对应的ZEND_NEW_SPEC_HANDLER函数。
@@ -88,7 +88,7 @@ Zend VM在初始化对象的时候，使用了new关键字，对其OPCODE进行�
 
 
 
-###__destruct###
+###__destruct
 **__destruct**是析构方法，运行于对象被显示销毁或者脚本关闭时,一般被用于释放占用的资源。
 **__destruct**的调用涉及到垃圾回收机制，在第七章中会有更详尽的介绍。
 本文笔者只针对**__destruct**调用机制进行分析,其调用堆栈信息如下：
@@ -147,9 +147,17 @@ PHP中还有很多种魔术方法，它们的处理方式基本于上面类似�
 | __sleep       |       php_var_serialize_intern() |ext/standard/var.c|
 | __wakeup	|	php_var_unserialize()	|	ext/standard/var_unserializer.c	|
 | __toString	|	zend_std_cast_object_tostring()	|	Zend/zend_object_handlers.c|
-| __invoke|	
+| __invoke|	ZEND_DO_FCALL_BY_NAME_SPEC_HANDLER() | Zend/zend_vm_execute.h |
 | __set_state | php_var_export_ex() | ext/standard/var.c |
-| __clone |
+| __clone |ZEND_CLONE_SPEC_CV_HANDLER() | Zend/zend_vm_execute.h |
+
+##延迟绑定
+在PHP手册中，对延迟绑定有以下定义。
+>**NOTE**
+>从PHP 5.3.0开始，PHP增加了一个叫做后期静态绑定的功能，用于在继承范围内引用静态调用的类。
+>该功能从语言内部角度考虑被命名为“后期静态绑定”。
+>“后期绑定”的意思是说，static::不再被解析为定义当前方法所在的类，而是在实际运行时计算的。
+>也可以称之为”静态绑定“，因为它可以用于（但不限于）静态方法的调用。
 
 
 
