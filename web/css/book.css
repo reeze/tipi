@@ -302,6 +302,7 @@
 .smartscroll #book_tools {
 	position: fixed;
 	background: url(../images/toolbar_bg.png) center bottom no-repeat;
+	z-index: 999;
 }
 
 .smartscroll #book_tools .inner {
