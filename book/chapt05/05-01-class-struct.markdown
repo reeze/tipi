@@ -1,15 +1,17 @@
 # 第一节 类的结构和实现
-
-在面向对象编程(OOP)中,我们最先接触的概念应该就是类了（不过在学习的过程中也会有人先接触对象这个概念的）. 在平常的工作中,我们经常需要写类,设计类等等.
-那么,类是什么？在PHP中,类是以哪种方式存储的？
+在面向对象编程(OOP)中,我们最先接触的概念应该就是类了. 在平常的工作中我们经常需要写和设计类.
+那么类是什么？在PHP中类是怎么存储的呢？继承,封装和多态是怎么实现的呢?
 
 ## 类的结构
-首先,我们看下类是什么. 类是用户定义的一种抽象数据类型,它是现实世界中某些具有共性事物的抽象. 有时,我们也可以理解其为对象的类别.
-类也可以看作是一种复合型的结构,其需要存储多元化的数据,如属性,方法,以及自身的一些性质等.
+首先我们看看类是什么. 类是用户定义的一种抽象数据类型,它是现实世界中某些具有共性事物的抽象.
+有时我们也可以理解其为对象的类别. 类也可以看作是一种复合型的结构,其需要存储多元化的数据,
+如属性,方法,以及自身的一些性质等.
 
-在PHP中,类的定义以class关键字开始,后面接类名,类名可以是任何非PHP保留字的名字.
-在类名后面紧跟着一对花括号,这个里面就是类的实体了,它包括类所具有的属性,这些属性是对象的状态的抽象,其表现为PHP中支持的数据类型,也可以包括对象本身,通常我们称其为成员变量.
-除了类的属性,类的实体中也包括类所具有的操作,这些操作是对象的行为的抽象,其表现为用操作名和实现该操作的方法,通常我们称其为成员方法或成员函数. 看一个PHP写的类示例的代码：
+在PHP中类的定义以class关键字开始,后面接类名,类名可以是任何非PHP保留字的名字.
+在类名后面紧跟着一对花括号,这个里面就是类的实体了,它包括类所具有的属性,这些属性是对象的状态的抽象,
+其表现为PHP中支持的数据类型,也可以包括对象本身,通常我们称其为成员变量. 除了类的属性,
+类的实体中也包括类所具有的操作,这些操作是对象的行为的抽象,其表现为用操作名和实现该操作的方法,
+通常我们称其为成员方法或成员函数. 看一个PHP写的类示例的代码：
 
     [php]
     class ParentClass {
@@ -43,74 +45,74 @@
 首先,我们看下类的存储结构. 我们在PHP的源码中很容易找到类的结构存放在zend_class_entry结构体中,这个结构体在PHP源码中出现的频率很高.
 
 	[c]
-		struct _zend_class_entry {
-			char type;     // 类型：ZEND_INTERNAL_CLASS / ZEND_USER_CLASS
-			char *name;// 类名称
-			zend_uint name_length;                  // 即sizeof(name) - 1
-			struct　_zend_class_entry *parent; // 继承的父类
-			int　refcount;  // 引用数
-			zend_bool constants_updated;
+	struct _zend_class_entry {
+		char type;     // 类型：ZEND_INTERNAL_CLASS / ZEND_USER_CLASS
+		char *name;// 类名称
+		zend_uint name_length;                  // 即sizeof(name) - 1
+		struct　_zend_class_entry *parent; // 继承的父类
+		int　refcount;  // 引用数
+		zend_bool constants_updated;
 
-			zend_uint ce_flags; // ZEND_ACC_IMPLICIT_ABSTRACT_CLASS: 类存在abstract方法
-			// ZEND_ACC_EXPLICIT_ABSTRACT_CLASS: 在类名称前加了abstract关键字
-			// ZEND_ACC_FINAL_CLASS
-			// ZEND_ACC_INTERFACE
-			HashTable function_table;      // 方法
-			HashTable default_properties;          // 默认属性
-			HashTable properties_info;     // 属性信息
-			HashTable default_static_members;// 类本身所具有的静态变量
-			HashTable *static_members; // type == ZEND_USER_CLASS时,取&default_static_members;
-			// type == ZEND_INTERAL_CLASS时,设为NULL
-			HashTable constants_table;     // 常量
-			struct _zend_function_entry *builtin_functions;// 方法定义入口
-
-
-			union _zend_function *constructor;
-			union _zend_function *destructor;
-			union _zend_function *clone;
+		zend_uint ce_flags; // ZEND_ACC_IMPLICIT_ABSTRACT_CLASS: 类存在abstract方法
+		// ZEND_ACC_EXPLICIT_ABSTRACT_CLASS: 在类名称前加了abstract关键字
+		// ZEND_ACC_FINAL_CLASS
+		// ZEND_ACC_INTERFACE
+		HashTable function_table;      // 方法
+		HashTable default_properties;          // 默认属性
+		HashTable properties_info;     // 属性信息
+		HashTable default_static_members;// 类本身所具有的静态变量
+		HashTable *static_members; // type == ZEND_USER_CLASS时,取&default_static_members;
+		// type == ZEND_INTERAL_CLASS时,设为NULL
+		HashTable constants_table;     // 常量
+		struct _zend_function_entry *builtin_functions;// 方法定义入口
 
 
-			/* 魔术方法 */
-			union _zend_function *__get;
-			union _zend_function *__set;
-			union _zend_function *__unset;
-			union _zend_function *__isset;
-			union _zend_function *__call;
-			union _zend_function *__tostring;
-			union _zend_function *serialize_func;
-			union _zend_function *unserialize_func;
-			zend_class_iterator_funcs iterator_funcs;// 迭代
-
-			/* 类句柄 */
-			zend_object_value (*create_object)(zend_class_entry *class_type TSRMLS_DC);
-			zend_object_iterator *(*get_iterator)(zend_class_entry *ce, zval *object,
-                intby_ref TSRMLS_DC);
-
-			/* 类声明的接口 */
-			int(*interface_gets_implemented)(zend_class_entry *iface,
-                    zend_class_entry *class_type TSRMLS_DC);
+		union _zend_function *constructor;
+		union _zend_function *destructor;
+		union _zend_function *clone;
 
 
-			/* 序列化回调函数指针 */
-			int(*serialize)(zval *object, unsignedchar**buffer, zend_uint *buf_len,
-                     zend_serialize_data *data TSRMLS_DC);
-			int(*unserialize)(zval **object, zend_class_entry *ce,constunsignedchar*buf,
-                    zend_uint buf_len, zend_unserialize_data *data TSRMLS_DC);
+		/* 魔术方法 */
+		union _zend_function *__get;
+		union _zend_function *__set;
+		union _zend_function *__unset;
+		union _zend_function *__isset;
+		union _zend_function *__call;
+		union _zend_function *__tostring;
+		union _zend_function *serialize_func;
+		union _zend_function *unserialize_func;
+		zend_class_iterator_funcs iterator_funcs;// 迭代
+
+		/* 类句柄 */
+		zend_object_value (*create_object)(zend_class_entry *class_type TSRMLS_DC);
+		zend_object_iterator *(*get_iterator)(zend_class_entry *ce, zval *object,
+			intby_ref TSRMLS_DC);
+
+		/* 类声明的接口 */
+		int(*interface_gets_implemented)(zend_class_entry *iface,
+				zend_class_entry *class_type TSRMLS_DC);
 
 
-			zend_class_entry **interfaces;	//	类实现的接口
-			zend_uint num_interfaces;	//	类实现的接口数
+		/* 序列化回调函数指针 */
+		int(*serialize)(zval *object, unsignedchar**buffer, zend_uint *buf_len,
+				 zend_serialize_data *data TSRMLS_DC);
+		int(*unserialize)(zval **object, zend_class_entry *ce,constunsignedchar*buf,
+				zend_uint buf_len, zend_unserialize_data *data TSRMLS_DC);
 
 
-			char *filename;	//	类的存放文件地址 绝对地址
-			zend_uint line_start;	//	类定义的开始行
-			zend_uint line_end;	//	类定义的结束行
-			char *doc_comment;
-			zend_uint doc_comment_len;
+		zend_class_entry **interfaces;	//	类实现的接口
+		zend_uint num_interfaces;	//	类实现的接口数
 
 
-			struct _zend_module_entry *module; // 类所在的模块入口：EG(current_module)
-		};
+		char *filename;	//	类的存放文件地址 绝对地址
+		zend_uint line_start;	//	类定义的开始行
+		zend_uint line_end;	//	类定义的结束行
+		char *doc_comment;
+		zend_uint doc_comment_len;
+
+
+		struct _zend_module_entry *module; // 类所在的模块入口：EG(current_module)
+	};
 
 取上面这个结构的部分字段,我们分析文章最开始的那段PHP代码在内核中的表现.
 如表5.1所示：
@@ -217,7 +219,6 @@ function_name=iMethod  |  type=2  |  fn_flags=258</li>
 
 对于父类和接口,都是以 **struct　_zend_class_entry**　存在.
 常规的成员方法以HashTable的方式存放在函数结构体中,而魔术方法则单独存在.
-
 
 ## 类的实现
 类的定义是以class关键字开始,在Zend/zend_language_scanner.l文件中,找到class对应的token为T_CLASS.
