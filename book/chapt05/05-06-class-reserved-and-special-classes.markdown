@@ -1,16 +1,17 @@
 # 第六节 PHP保留类及特殊类
 在面向对象语言中，都会内置一些实现语言基本功能类，比如JavaScript中的Array，Number等类，
-在PHP中也有很多这种类，比如Directory，stdClass，Exception等类，同时一些标准扩展比如PDO等扩展中也会定义一些类，
-PHP是不允许对类重复定义的，所以在编写代码时需要注意一下命名冲突的问题，
+PHP中也有很多这种类，比如Directory，stdClass，Exception等类，同时一些标准扩展比如PDO等扩展中也会定义一些类，
+PHP中类是不允许重复定义的，所以在编写代码时不允许定义已经存在的类.
 
-PHP中有一些特殊的类：self，static和parent，相信读者对这self和parent都比较熟悉了，
-static这个关键字非常多义:
+同时PHP中有一些特殊的类：self，static和parent，相信读者对这self和parent都比较熟悉了，而static特殊类是PHP5.3才引入的.
 
-* 在函数体内的static关键字通常用于定义静态局部变量。
-* 用于修饰成员函数和成员变量时又表示成员的静态属性。
+PHP中的static关键字非常多义:
+
+* 在函数体内的修饰变量的static关键字用于定义静态局部变量。
+* 用于修饰类成员函数和成员变量时用于声明静态成员。
 * (PHP5.3)在作用域解析符(::)前又表示静态延迟绑定的特殊类。
 
-不过这个关键字修饰的意义都是"静态"的，在[php手册中](http://cn.php.net/manual/en/language.oop5.paamayim-nekudotayim.php)提到self，
+这个关键字修饰的意义都表示"静态"，在[php手册中](http://cn.php.net/manual/en/language.oop5.paamayim-nekudotayim.php)提到self，
 parent和static这几个关键字，但实际上除了static是关键字以外，其他两个均不是关键字，
 在手册的[关键字列表](http://cn.php.net/manual/en/reserved.keywords.php)中也没有这两个关键字，
 要验证这一点很简单:
@@ -38,7 +39,7 @@ parent和static这几个关键字，但实际上除了static是关键字以外�
 
 ## self, parent, static类
 前面已经说过self的特殊性。self是一个特殊类，它指向当前类，但只有在类定义内部才有效，
-但也并不是一定指向类本身这个特殊类，比如前面的代码，如果放在类方法体内运行，echo self; 
+但也并不一定指向类本身这个特殊类，比如前面的代码，如果放在类方法体内运行，echo self; 
 还是会输出常量self的值，而不是当前类，它不止要求在类的定义内部，还要求在类的上下文环境，
 比如 new self()的时候，这时self就指向当前类，或者self::$static_varible，
 self::CONSTANT类似的作用域解析符号(::)，这时的self才会作为指向本身的类而存在。
@@ -193,6 +194,9 @@ self::CONSTANT类似的作用域解析符号(::)，这时的self才会作为指�
 		}
 	}
 
-// TODO
+	B::funcA();
 
+代码B::funcA()执行的时候, 实际执行的是B的父类A中定义的funcA函数, A::funcA()执行时当前的类(scope)指向的是类A,
+而这个方法是从B类开始调用的, called_scope指向的是类B, static特殊类指向的正是called_scope, 也就是当前类(触发方法调用的类),
+这也是延迟绑定的原理.
 
