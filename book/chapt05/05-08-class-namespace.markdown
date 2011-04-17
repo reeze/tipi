@@ -44,12 +44,64 @@ PHP从5.3.0版本开始支持命名空间特性。看一个定义和使用命名
 命名空间内的函数如何调用？
 
 ## 命名空间的定义
+命名空间在PHP中的实现方案比较简单，不管是函数，类或者常量，
+在声明的过程中都将命名空间与定义的函数名以\合并起来，作为函数名或类名存储在其对应的容器中。
+如上面示例中的Exception类，最后存储的类名是tipi\Exception.
+对于整个PHP实现的架构来说，这种实现方案的代价和对整个代码结构的调整都是最小的。
 
-除了开始的declare语句外，命名空间的括号外（或）不得有任何PHP代码。
+下面我们以Exception类为例说明整个命名空间的实现。
+命名空间实现的关键字是namespace, 从此关键字开始我们可以找到在编译时处理此关键字的函数为 **zend_do_begin_namespace**.
+在此函数中，关键是在对CG(current_namespace)的赋值操作，这个值在后面类声明或函数等声明时都会有用到。
+
+在前面我们讲过，类声明的实现在编译时会调用Zend/zend_complie.c文件中的zend_do_begin_class_declaration函数，
+在此函数中对于命名空间的处理代码如下：
+
+    [c]
+    if (CG(current_namespace)) {
+		/* Prefix class name with name of current namespace */
+		znode tmp;
+
+		tmp.u.constant = *CG(current_namespace);
+		zval_copy_ctor(&tmp.u.constant);
+		zend_do_build_namespace_name(&tmp, &tmp, class_name TSRMLS_CC);
+		class_name = &tmp;
+		efree(lcname);
+		lcname = zend_str_tolower_dup(Z_STRVAL(class_name->u.constant), Z_STRLEN(class_name->u.constant));
+	}
+
+这段代码的作用是如果当前存在命名空间，则给类名加上命名空间的前缀，
+如前面提到示例中的tipi\Exception类，添加tipi\的操作就是在这里执行的。
+在zend_do_build_namespace_name函数中最终会调用zend_do_build_full_name函数实现类名的合并。
+在函数和常量的声明中存在同样的名称合并操作。这也是命名空间仅对类、常量和函数有效的原因。
 
 ## 使用命名空间
+以函数调用为例，当需要调用函数时，会调用zend_do_begin_function_call函数。
+在此函数中，当使用到命名空间时会检查函数名，其调用的函数为zend_resolve_non_class_name。
+在zend_resolve_non_class_name函数中会根据类型作出判断并返回相关结果：
+
+1. 完全限定名称的函数：
+  程序首先会做此判断，其判断的依据是第一个字符是否为"\",这种情况下，在解析时会直接返回。
+  如类似于\strlen这样以\开头的全局调用或类似于前面定义的\tipi\Exception调用。
+1. 所有的非限定名称和限定名称（非完全限定名称）：根据当前的导入规则
+  程序判断是否为别名，并从编译期间存储别名的HashTable中取出对应的命名空间名称，将其与现有的函数名合并。
+  关于别名的存储及生成在后面的内容中会说明，
+1. 在命名空间内部：
+  所有的没有根据导入规则转换的限定名称均会在其前面加上当前的命名空间名称。最后判断是否在当前命名空间，
+最终程序都会返回一个合并了命名空间的函数名。
 
 ### 别名/导入
+允许通过别名引用或导入外部的完全限定名称，是命名空间的一个重要特征。
+这有点类似于在类 unix 文件系统中可以创建对其它的文件或目录的符号连接。
+PHP 命名空间支持 有两种使用别名或导入方式：为类名称使用别名，或为命名空间名称使用别名。
 
-### 名称解析规则实现
+>**NOTE**
+>PHP不支持导入函数或常量
+
+在PHP中，别名是通过操作符 use 来实现的.从而我们可以从源码中找到编译时调用的函数是zend_do_use。
+别名在编译为中间代码过程中存放在CG(current_import)中，这是一个HashTable.
+zend_do_use整个函数的实现基本上是一个查找，判断是否错误，最后写入到HashTable的过程。
+其中针对命名空间和类名都有导入的处理过程，而对于常量和函数来说却没有，
+这就是PHP不支持导入函数或常量的根本原因所在。
+
+
 
