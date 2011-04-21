@@ -75,6 +75,8 @@ $(function() {
 	/* Make the book toolbar more smart */
 	(function() {
 		var toolbar = $("#book_tools");
+		if(toolbar.length == 0) return;
+
 		var tb_width = toolbar.width();
 		var tb_height = toolbar.height();
 		var tb_top = toolbar.position().top;

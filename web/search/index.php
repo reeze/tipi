@@ -10,7 +10,7 @@ try
 	$view->render(array(
 		'current_page' => 'search',
 		'title' => '搜索',
-		'query' => $_GET['query'],
+		'query' => isset($_GET['query']) ? $_GET['query'] : '',
 	));
 }
 catch(PageNotFoundException $e)
