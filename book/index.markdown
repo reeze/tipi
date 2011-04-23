@@ -51,7 +51,7 @@
     * [第五节 魔术方法,延迟绑定及静态成员][class-magic-methods-latebinding](er)
     * [第六节 PHP保留类及特殊类:self,static, parent][class-reserved-and-special-classes]
     * [第七节 对象][class-object]
-    * [第八节 命名空间][class-namespace](pan)
+    * [第八节 命名空间][class-namespace]
     * [第九节 小结][05-summary]
 
 - 第六章 内存管理

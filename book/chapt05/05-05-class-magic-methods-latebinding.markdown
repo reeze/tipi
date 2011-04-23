@@ -91,7 +91,7 @@ Zend VM在初始化对象的时候，使用了new关键字，对其OPCODE进行�
 >**NOTE**
 > Z_OBJ_P(zval); Z_OBJ_P宏将一个zval类型变量构造为zend_object类型。
 
-在判断了**__construct魔术变量存在之后，ZEND_NEW_SPEC_HANDLER中对当前EX(called_scope)进行了重新赋值，使ZEND_VM_NEXT_OPCODE();将opline指针指向__construct方法的op_array，开始执行__construct魔术方法
+在判断了**__construct**魔术变量存在之后，ZEND_NEW_SPEC_HANDLER中对当前EX(called_scope)进行了重新赋值，使ZEND_VM_NEXT_OPCODE();将opline指针指向__construct方法的op_array，开始执行__construct魔术方法
 
 		[c]
         EX(object) = object_zval;
@@ -147,7 +147,7 @@ ZendVM判断**zend_object->ce->destructor**是否为空，如果不为空，则�
 调用，经过**zend_do_fcall_common_helper_SPEC**的分发，最终使用**zend_call_function**来执行**__callStatic**。
 
 ###其他魔术方法###
-PHP中还有很多种魔术方法，它们的处理方式基本于上面类似，运行时执行与否取决的判断根据，
+PHP中还有很多种魔术方法，它们的处理方式基本与上面类似，运行时执行与否取决的判断根据，
 最终都是**_zend_class_entry**结构体中对应的指针是否为空。
 这里列出它们的底层实现函数：
 

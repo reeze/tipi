@@ -11,7 +11,7 @@ PHP中的static关键字非常多义:
 * 用于修饰类成员函数和成员变量时用于声明静态成员。
 * (PHP5.3)在作用域解析符(::)前又表示静态延迟绑定的特殊类。
 
-这个关键字修饰的意义都表示"静态"，在[php手册中](http://cn.php.net/manual/en/language.oop5.paamayim-nekudotayim.php)提到self，
+这个关键字修饰的意义都表示"静态"，在[PHP手册中](http://cn.php.net/manual/en/language.oop5.paamayim-nekudotayim.php)提到self，
 parent和static这几个关键字，但实际上除了static是关键字以外，其他两个均不是关键字，
 在手册的[关键字列表](http://cn.php.net/manual/en/reserved.keywords.php)中也没有这两个关键字，
 要验证这一点很简单:

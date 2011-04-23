@@ -217,7 +217,8 @@ function_name=iMethod  |  type=2  |  fn_flags=258</li>
     #define ZEND_INTERNAL_CLASS         1
     #define ZEND_USER_CLASS             2
 
-对于父类和接口,都是以 **struct　_zend_class_entry**　存在.
+对于父类和接口,都是以 **struct　_zend_class_entry**　存在.这表示接口也是以类的形式存储，
+其实现是一样的，只是在继承等操作时有单独的处理。
 常规的成员方法以HashTable的方式存放在函数结构体中,而魔术方法则单独存在.
 
 ## 类的实现
@@ -249,7 +250,7 @@ function_name=iMethod  |  type=2  |  fn_flags=258</li>
 
 
 上面的class_entry_type语法说明在语法分析阶段将类分为三种类型：常规类(T_CLASS),抽象类(T_ABSTRACT T_CLASS)和final类(T_FINAL T_CLASS ).
-这是以在类名前加不同的关键字来. 他们分别对应的类型在内核中的体现为:
+很明显它们的实现方式是在类名前加不同的关键字. 他们分别对应的类型在内核中的体现为:
 
 * 常规类(T_CLASS) 对应的type=0
 * 抽象类(T_ABSTRACT T_CLASS) 对应type=ZEND_ACC_EXPLICIT_ABSTRACT_CLASS
@@ -258,9 +259,9 @@ function_name=iMethod  |  type=2  |  fn_flags=258</li>
 除了上面的三种类型外,类还包含有另两种类型
 
 * 另一种抽象类,它对应的type=ZEND_ACC_IMPLICIT_ABSTRACT_CLASS.
-它在语法分析时并没有分析出来,因为这种类是由于其拥有抽象方法所产生的.
-在PHP源码中,这个类别是在函数注册时判断是抽象方法或继承类时判断是抽象方法时设置的.
-* 接口,其type=ZEND_ACC_INTERFACE.这个在接口关键字解析时设置,见interface_entry:对应的语法说明.
+它在语法分析时并没有分析出来,因为这种类是由于其拥有抽象方法所产生的,即在类名前没有abstract关键字.
+在PHP源码中,这个类别是在函数注册时判断成员函数是抽象方法或继承类中的成员方法是抽象方法时设置的.
+* 接口,其type=ZEND_ACC_INTERFACE.接口类型的区分是在interface关键字解析时设置,见interface_entry:对应的语法说明.
 
 这五种类型在Zend/zend_complie.h文件中定义如下：
 
@@ -306,7 +307,7 @@ zend_do_end_class_declaration函数用来处理接口和类的中间代码
 
 根据生成的中间代码，我们在Zend/zend_vm_execute.h文件中找到其对应的执行函数 **ZEND_DECLARE_CLASS_SPEC_HANDLER**。
 这个函数通过调用 **do_bind_class** 函数将此类加入到 EG(class_table) 。
-在添加到列表的同时，也判断该类是否存在，如果存在，则添加失败，报我们之前出现过类重复声明错误，只是这个判断在编译期是不会生效的。
+在添加到列表的同时，也判断该类是否存在，如果存在，则添加失败，报我们之前提到的类重复声明错误，只是这个判断在编译开启时是不会生效的。
 
 类的结构是以 **struct _zend_class_entry** 结构体为核心，类的实现是以class为中心作词法分析、语法分析等，
 在这些过程中识别出类的类别，类的类名等，并将识别出来的结果存放到类的结构中。
