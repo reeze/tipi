@@ -5,18 +5,18 @@
 ## 继承
 
 继承是一种关联类的层次模型，它可以建立类之间的关系，并实现代码重用，方便系统扩展。
-继承提供了一种明确表述共性的方法。继承是一个新类从现有的类中派生的过程。
+继承提供了一种明确表述共性的方法，是一个新类从现有的类中派生的过程。
 继承产生的新类继承了原始类的特性，新类称为原始类的派生类（或子类），
 而原始类称为新类的基类（或父类）。派生类可以从基类那里继承方法和变量，
 并且新类可以重载或增加新的方法，使之满足自己的定制化的需要。
 
-在PHP的语法中，类定义的时候可以使用extends关键字来实现继承，一个类只能继承一个父类。
+PHP中使用extends关键字来进行类的继承，一个类只能继承一个父类。
 被继承的成员方法和成员变量可以使用同名的方法或变量重写，如果需要访问父类的成员方法或变量可以
-使用parent关键字。
+使用特殊类parent来进行。
 
-PHP内核将类的继承操作实现放在了"编译阶段"，因此，当我们使用VLD生成中间代码时会发现没有看到
-关于继承的相关信息。通过对extends关键字的词法分析和语法分析，在Zend/zend_complie.c文件中
-找到继承实现的编译函数zend_do_inheritance().其调用顺序如下:    
+PHP内核将类的继承实现放在了"编译阶段"，因此使用VLD生成中间代码时会发现并没有关于继承的相关信息。
+通过对extends关键字的词法分析和语法分析，在Zend/zend_complie.c文件中
+找到继承实现的编译函数zend_do_inheritance().其调用顺序如下: 
 [zend_do_early_binding] --> [do_bind_inherited_class()] --> [zend_do_inheritance()]
 
     [c]
@@ -172,14 +172,12 @@ instanceof_function函数的代码如下：
 
 第四步，如果不是指定类的实例，程序会调用zend_verify_arg_error报错，此函数最终会调用zend_error函数显示错误。
 
-
 ### 接口的实现
 前面的PHP示例中有用到接口，而且在多态中，接口是一个不得不提的概念。接口是一些方法特征的集合，
 是一种逻辑上的抽象，它没有方法的实现，因此这些方法可以在不同的地方被实现，可以有相同的名字而具有完全不同的行为。
 
-而PHP内核对类和接口一视同仁，它们的内部结构一样。
-这点在前面的类型提示实现中也有看到，不管是接口还是类，调用instanceof_function函数时传入的参数
-和计算过程中使用的变量都是zend_class_entry类型。
+而PHP内核对类和接口一视同仁，它们的内部结构一样。这点在前面的类型提示实现中也有看到，不管是接口还是类，
+调用instanceof_function函数时传入的参数和计算过程中使用的变量都是zend_class_entry类型。
 
 [<< 第一节 类的结构和实现 >>][class-struct]中已经对于类的类型做了说明，在语法解析时，
 PHP内核已经设置了其type=ZEND_ACC_INTERFACE,
@@ -201,11 +199,10 @@ PHP内核已经设置了其type=ZEND_ACC_INTERFACE,
 二者在类的结构中存储在不同的字段，类的继承由于是一对一的关系，则每个类都有一个parent字段。
 而接口实现是一个一对多的关系，每个类都会有一个二维指针存放接口的列表，还有一个存储接口数的字段num_interfaces.
 
-接口也可以和类一样实现继承，并且只能是一个接口继承另一个接口。一个类可以实现多个接口，多个接口间以逗号隔开。
-接口实现调用的是zend_do_implement_interface函数，
+接口也可以和类一样实现继承，并且只能是一个接口继承另一个接口。一个类可以实现多个接口，
+接口在编译时调用zend_do_implement_interface函数，
 zend_do_implement_interface函数会合并接口中的常量列表和方法列表操作，这就是接口中不能有变量却可以有常量的实现原因。
 在接口继承的过程中有对当前类的接口中是否存在同样接口的判断操作，如果已经存在了同样的接口，则此接口继承将不会执行。
-
 
 ## 抽象类
 
@@ -214,13 +211,13 @@ zend_do_implement_interface函数会合并接口中的常量列表和方法列�
 出发点，理想情况下，所有的类都需要从抽象类继承而来。而具体类则不同，具体类可以实例化。
 由于抽象类不可以实例化，因此所有抽象类应该都是作为继承的父类的。
 
-在PHP中，抽象类的标志是abstract关键字。当一个类声明为abstract时，表示这是一个抽象类，
-或者没有声明为abstract,但是在类中存在抽象方法。对于这两种情况，PHP内核作了区分，
-其区分的字段是ce_flags,二者对应的值为ZEND_ACC_EXPLICIT_ABSTRACT_CLASS和ZEND_ACC_IMPLICIT_ABSTRACT_CLASS，
+在PHP中，抽象类是被abstract关键字修饰的类，或者类没有被声明为abstract，但是在类中存在抽象成员的类。
+对于这两种情况，PHP内核作了区分，类的结构体zend_class_entry.ce_flags中保存了这些信息，
+二者对应的值为ZEND_ACC_EXPLICIT_ABSTRACT_CLASS和ZEND_ACC_IMPLICIT_ABSTRACT_CLASS，
 这两个值在前面的第一节已经做了介绍。
 
 标记类为抽象类或标记成员方法为抽象方法的确认阶段是语法解析阶段。标记为抽象类与标记为接口等的过程一样。
-而通过标记成员方法为抽象方法来确认一个类为抽象类则是在声明函数时实现的。从第四章中我们知道编译时声明函数是使用的
+而通过标记成员方法为抽象方法来确认一个类为抽象类则是在声明函数时实现的。从第四章中我们知道编译时声明函数会调用
 zend_do_begin_function_declaration函数。在此函数中有如下代码：
 
     [c]
@@ -231,8 +228,35 @@ zend_do_begin_function_declaration函数。在此函数中有如下代码：
 
 若函数为抽象函数，则设置类的ce_flags为ZEND_ACC_IMPLICIT_ABSTRACT_CLASS，从而将这个类设置为抽象类。
 
-不管是类的继承，还是多态，又或者接口，抽象类，这些特性都是围绕类的结构实现的。如果要真正理解这些特性，
-需要更多的关注类的结构，基础往往很重要，而在程序员，数据结构就是程序的基础。
+
+抽象类，接口，普通类都是保存在zend_class_entry结构体中，他们只通过一个标志字段来区分，
+抽象类和接口还有一个共性：无法实例化。那我们看看Zend在那里限制的。要实例化一个对象我们只能使用new关键字来进行。
+下面是执行new是进行的操作:
+	
+	[c]
+	static int ZEND_FASTCALL  ZEND_NEW_SPEC_HANDLER(ZEND_OPCODE_HANDLER_ARGS)
+	{
+		zend_op *opline = EX(opline);
+		zval *object_zval;
+		zend_function *constructor;
+
+		if (EX_T(opline->op1.u.var).class_entry->ce_flags & (ZEND_ACC_INTERFACE|ZEND_ACC_IMPLICIT_ABSTRACT_CLASS|ZEND_ACC_EXPLICIT_ABSTRACT_CLASS)) {
+			char *class_type;
+
+			if (EX_T(opline->op1.u.var).class_entry->ce_flags & ZEND_ACC_INTERFACE) {
+				class_type = "interface";
+			} else {
+				class_type = "abstract class";
+			}
+			zend_error_noreturn(E_ERROR, "Cannot instantiate %s %s", class_type,  EX_T(opline->op1.u.var).class_entry->name);
+		}
+		// ...
+	}
+
+代码很好理解，进行了简单的判断，如果为抽象类、隐式抽象类或者接口都无法进行实例化操作。
+
+类的继承、多态、封装，以及访问控制，接口，抽象类等都是基于类的结构实现的，因为这几个类型只有个别的特性的差异，其他基本一致。
+如果要真正理解这些特性，需要更多的关注类的结构，基础往往很重要，而在程序员，数据结构就是程序的基础。
 
 [type-hint-imp]: 		?p=chapt03/03-05-impl-of-type-hint
 [class-struct]:         ?p=chapt05/05-01-class-struct

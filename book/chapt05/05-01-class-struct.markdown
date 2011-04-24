@@ -1,5 +1,5 @@
 # 第一节 类的结构和实现
-在面向对象编程(OOP)中,我们最先接触的概念应该就是类了. 在平常的工作中我们经常需要写和设计类.
+在面向对象编程(OOP)中,我们最先接触的概念应该就是类了. 在平常的工作中我们经常需要实现和设计类.
 那么类是什么？在PHP中类是怎么存储的呢？继承,封装和多态是怎么实现的呢?
 
 ## 类的结构
@@ -7,11 +7,11 @@
 有时我们也可以理解其为对象的类别. 类也可以看作是一种复合型的结构,其需要存储多元化的数据,
 如属性,方法,以及自身的一些性质等.
 
-在PHP中类的定义以class关键字开始,后面接类名,类名可以是任何非PHP保留字的名字.
-在类名后面紧跟着一对花括号,这个里面就是类的实体了,它包括类所具有的属性,这些属性是对象的状态的抽象,
+类的定义以class关键字开始,后面接类名,类名可以是任何非PHP保留字的名字.
+在类名后面紧跟着一对花括号,里面是类的实体, 包括类所具有的属性,这些属性是对象的状态的抽象,
 其表现为PHP中支持的数据类型,也可以包括对象本身,通常我们称其为成员变量. 除了类的属性,
 类的实体中也包括类所具有的操作,这些操作是对象的行为的抽象,其表现为用操作名和实现该操作的方法,
-通常我们称其为成员方法或成员函数. 看一个PHP写的类示例的代码：
+通常我们称其为成员方法或成员函数. 看类示例的代码：
 
     [php]
     class ParentClass {
@@ -21,7 +21,7 @@
             public function iMethod();
     }
 
-    final class Tipi extends ParentClass implements Ifce{
+    final class Tipi extends ParentClass implements Ifce {
             public static $sa = 'aaa';
             const CA = 'bbb';
 
@@ -40,9 +40,9 @@
 
 这里定义了一个父类ParentClass,一个接口Ifce,一个子类Tipi. 子类继承父类ParentClass,
 实现接口Ifce,并且有一个静态变量$sa,一个类常量 CA,一个公用方法,一个私有方法和一个公用静态方法.
-这些也许已经比较熟悉了,那么这些结构在Zend引擎内部是如何实现的？类的这些方法、成员变量是如何存储的？这些访问控制,静态成员是如何标记的？
+这些结构在Zend引擎内部是如何实现的？类的方法、成员变量是如何存储的？访问控制,静态成员是如何标记的？
 
-首先,我们看下类的存储结构. 我们在PHP的源码中很容易找到类的结构存放在zend_class_entry结构体中,这个结构体在PHP源码中出现的频率很高.
+首先,我们看看类的内部存储结构:
 
 	[c]
 	struct _zend_class_entry {
@@ -211,7 +211,7 @@ function_name=iMethod  |  type=2  |  fn_flags=258</li>
   </tr>
 </table>
 
-类的结构中,type有两种类型,数字标记为1和2.在代码中体现为：
+类的结构中,type有两种类型,数字标记为1和2. 分别为一下宏的定义, 也就是说用户定义的类和模块或者内置的类也是保存在这个结构里的:
 
     [c]
     #define ZEND_INTERNAL_CLASS         1
@@ -234,8 +234,7 @@ function_name=iMethod  |  type=2  |  fn_flags=258</li>
                     class_statement_list
                 '}' { zend_do_end_class_declaration(&$1, &$2 TSRMLS_CC); }
         |	interface_entry T_STRING
-                { zend_do_begin_class_declaration(&$1, &$2, NULL TSRMLS_CC); }
-                interface_extends_list
+                { zend_do_begin_class_declaration(&$1, &$2, NULL TSRMLS_CC); } interface_extends_list
                 '{'
                     class_statement_list
                 '}' { zend_do_end_class_declaration(&$1, &$2 TSRMLS_CC); }
