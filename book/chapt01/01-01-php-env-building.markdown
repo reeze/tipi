@@ -1,6 +1,6 @@
 # 第一节 环境搭建
 
-在开始学习PHP实现之前， 我们首先需要一个实验和学习的环境. 下面介绍一下怎样在\*nix环境下准备和搭建PHP环境。
+在开始学习PHP实现之前， 我们需要一个实验和学习的环境. 下面介绍一下怎样在\*nix环境下准备和搭建PHP环境。
 
 >**NOTE**
 >(\*nix指的是类Unix环境，比如各种Linux发行版，FreeBSD， OpenSolaris， Mac OS X等操作系统)
@@ -24,13 +24,13 @@
 
 >**NOTE**
 >在笔者编写这些内容的时候PHP版本控制是还基于SVN的，上面提到的git镜像地址目前已经没有同步更新了，
->由于在把svn同步到git是对系统造成性能影响明显，加上社区还没有就到底是否迁移到git达成一致，所以也就停止更新了。
+>由于把svn同步到git会对系统性能造成明显影响，加上社区还没有就到底是否迁移到git达成一致，所以也就停止了更新。
 >目前很多开源软件都开始转向了分布式版本控制系统([DVCS](http://en.wikipedia.org/wiki/Distributed_revision_control))，
 >例如Python语言在转向DVCS时对目前的分布式版本控制系统做了一个[详细的对比](http://www.python.org/dev/peps/pep-0374/)，
 >如果以前没有接触过，笔者强烈建议试试这些版本控制软件。
 
 ## 2.准备编译环境
-在\*nix环境下，需要安装编译构建环境。如果你是用的是Ubuntu或者是用apt做为包管理的系统，可以通过如下命令快速安装：
+在\*nix环境下，需要安装编译构建环境。如果你用的是Ubuntu或者是用apt做为包管理的系统，可以通过如下命令快速安装：
 
 	[bash]
 	sudo apt-get install build-essential
@@ -39,7 +39,7 @@
 也可以登陆苹果开发者网站<http://developer.apple.com/>下载。
 
 ## 3. 编译
-下一步可以开始编译了，本文只简单介绍基本的编译过程，不包含apache的PHP支持以及mysql等模块的编译。
+下一步可以开始编译了，本文只简单介绍基本的编译过程，不包含Apache的PHP支持以及Mysql等模块的编译。
 相关资料请自行查阅相关文档。
 如果你是从svn/git签出的代码则需要执行代码根目录的buildconf脚本以生成所需要的构建脚本。
 
@@ -52,7 +52,7 @@
 	[bash]
 	./configure --help # 查看可用参数
 
-为了尽快得到可以测试的环境，我们仅编译一个最精简的php。通过执行。/configure --disable-all来进行配置。
+为了尽快得到可以测试的环境，我们仅编译一个最精简的PHP。通过执行 ./configure --disable-all来进行配置。
 以后如果需要其他功能可以重新编译。如果configure命令出现错误，可能是缺少PHP所依赖的库，各个系统的环境可能不一样。
 出现错误可根据出错信息上网搜索。 直到完成configure。configure完成后我们就可以开始编译了。 
 
@@ -67,7 +67,8 @@
 	[bash]
 	./sapi/cli/php -n -v
 
-如果看到输出php版本信息则说明编译成功。如果是make install的话则执行$prefix/bin/php这个路径的php。
+命令中的-n参数表示不使用php.ini文件，-v参数表示输出版本号，如果命令执行完后看到输出php版本信息则说明编译成功。
+如果是make install的话则执行$prefix/bin/php这个路径的php。
 当然如果是安装在系统目录或者你的prefix目录在$PATH环境变量里的话，直接执行php就行了。
 
 >**NOTE**
