@@ -99,4 +99,14 @@ SAPI.c和SAPI.h文件所包含的一些函数就是模板方法模式中的抽�
 比如在PHP扩展开发中，每个扩展都需要定义一个zend_module_entry结构体。
 这个结构体的作用与sapi_module_struct结构体类似，都是一个类似模板方法模式的应用。
 在PHP的生命周期中如果需要调用某个扩展，其调用的方法都是zend_module_entry结构体中指定的方法，
-关于扩展相关的内容我们将在后面的章节中详细说明。
+如在上一小节中提到的在执行各个扩展的请求初始化时，都是统一调用request_startup_func方法，
+而在每个扩展的定义时，都通过宏PHP_RINIT指定request_startup_func对应的函数。
+以VLD扩展为例：其请求初始化为PHP_RINIT(vld),与之对应在扩展中需要有这个函数的实现：
+
+    [c]
+    PHP_RINIT_FUNCTION(vld) {
+    }
+
+所以， 我们在写扩展时也需要实现扩展的这些接口，同样，当实现各服务器接口时也需要实现其对应的SAPI。
+
+
