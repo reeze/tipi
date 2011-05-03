@@ -144,16 +144,18 @@ class TipiMarkdownExt extends MarkdownExtra_Parser
 		$title			=& $matches[7];
 
 		// TIPI replacement
+		// Add image desc
 		$url = $this->__tipi_web_image_repalce($url);
 
 		$alt_text = $this->encodeAttribute($alt_text);
 		$url = $this->encodeAttribute($url);
-		$result = "<img src=\"$url\" alt=\"$alt_text\"";
+		$result = "<div class='book-img'><img src=\"$url\" alt=\"$alt_text\"";
 		if (isset($title)) {
 			$title = $this->encodeAttribute($title);
 			$result .=  " title=\"$title\""; # $title already quoted
 		}
 		$result .= $this->empty_element_suffix;
+		$result .= "<div class='book-img-desc'>$alt_text</div></div>";
 
 		return $this->hashPart($result);
 	}
