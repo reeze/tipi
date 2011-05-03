@@ -15,7 +15,7 @@ class TIPI
 
 	public function haveNewVersion()
 	{
-		self::getRequestParam('v') != self::getVersion();	
+		return self::getRequestParam('v') != self::getVersion();	
 	}
 
 	// Simple Wrapper
