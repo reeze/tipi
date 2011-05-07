@@ -2,18 +2,21 @@
 
 ## FastCGI简介
 
-### 什么是CGI
-CGI全称是“通用网关接口”(Common Gateway Interface)，
-它可以让一个客户端，从网页浏览器向执行在Web服务器上的程序，请求数据。
+[CGI](http://zh.wikipedia.org/wiki/CGI)全称是“通用网关接口”(Common Gateway Interface)，
+它可以让一个客户端，从网页浏览器向执行在Web服务器上的程序请求数据。
 CGI描述了客户端和这个程序之间传输数据的一种标准。
 CGI的一个目的是要独立于任何语言的，所以CGI可以用任何一种语言编写，只要这种语言具有标准输入、输出和环境变量。如php,perl,tcl等
 
-### 　什么是FastCGI
-FastCGI像是一个常驻(long-live)型的CGI，它可以一直执行着，只要激活后，不会每次都要花费时间去fork一次(这是CGI最为人诟病的fork-and-execute 模式)。它还支持分布式的运算, 即 FastCGI 程序可以在网站服务器以外的主机上执行并且接受来自其它网站服务器来的请求。
+[FastCGI](http://baike.baidu.com/view/641394.htm)像是一个常驻(long-live)型的CGI，
+它可以一直执行着，只要激活后，不会每次都要花费时间去fork一次(这是CGI最为人诟病的fork-and-execute 模式)。
+它还支持分布式的运算, 即 FastCGI 程序可以在网站服务器以外的主机上执行并且接受来自其它网站服务器来的请求。
 
-FastCGI是语言无关的、可伸缩架构的CGI开放扩展，其主要行为是将CGI解释器进程保持在内存中并因此获得较高的性能。众所周知，CGI解释器的反复加载是CGI性能低下的主要原因，如果CGI解释器保持在内存中并接受FastCGI进程管理器调度，则可以提供良好的性能、伸缩性、Fail- Over特性等等。
+FastCGI是语言无关的、可伸缩架构的CGI开放扩展，其主要行为是将CGI解释器进程保持在内存中并因此获得较高的性能。
+众所周知，CGI解释器的反复加载是CGI性能低下的主要原因，如果CGI解释器保持在内存中并接受FastCGI进程管理器调度，
+则可以提供良好的性能、伸缩性、Fail- Over特性等等。
 
-### FastCGI的工作原理
+一般情况下，FastCGI的整个工作流程是这样的。
+
    1. Web Server启动时载入FastCGI进程管理器（IIS ISAPI或Apache Module)
    1. FastCGI进程管理器自身初始化，启动多个CGI解释器进程(可见多个php-cgi)并等待来自Web Server的连接。
    1. 当客户端请求到达Web Server时，FastCGI进程管理器选择并连接到一个CGI解释器。Web server将CGI环境变量和标准输入发送到FastCGI子进程php-cgi。
