@@ -37,14 +37,16 @@ php测试使用了[proc_open()函数](http://www.php.net/manual/en/function.proc
 
 ## PHP源码阅读方法
 ### 使用VIM + Ctags查看源码
-通常在Linux或其他\*Nix环境我们都使用[VIM](http://www.vim.org/)作为代码编辑工具, 在纯命令终端下，它几乎是无可替代的, 它具有非常强大的扩展机制,基本是无所不能了.
+通常在Linux或其他\*Nix环境我们都使用[VIM](http://www.vim.org/)作为代码编辑工具, 在纯命令终端下，它几乎是无可替代的。
+它具有非常强大的扩展机制,在文字编辑方面基本上无所不能。
 不过Emacs用户请不要激动, 笔者还没有真正使用Emacs, 虽然我知道它甚至可以[煮咖啡](http://people.ku.edu/~syliu/shredderyin/emacs_power.html),
 还是等笔者有时间了或许会试试煮杯咖啡边喝边写.
 
-在Linux下编写过代码的读者应该或多或少都试过[ctags](http://ctags.sourceforge.net/)吧.
-ctags支持非常多的语言,可以将源代码中的各种符号,比如:函数、宏类等信息抽取出来做上标记。保存到一个文件中.
-它保存的文件格式其实也挺简单, 比较符合[UNIX的哲学（小即是美）](http://zh.wikipedia.org/zh/Unix%E5%93%B2%E5%AD%A6),
-使用起来也很简单：
+推荐在Linux下编写代码的读者或多或少的试一试[ctags](http://ctags.sourceforge.net/)。
+ctags支持非常多的语言,可以将源代码中的各种符号（如:函数、宏类等信息）抽取出来做上标记并保存到一个文件中，
+供其他文本编辑工具（VIM,EMACS等）进行检索。
+它保存的文件格式符合[UNIX的哲学（小即是美）](http://zh.wikipedia.org/zh/Unix%E5%93%B2%E5%AD%A6),
+使用也比较简洁：
 
     [bash]
     #在PHP源码目录(假定为/server/php-src)执行:
@@ -64,13 +66,14 @@ ctags支持非常多的语言,可以将源代码中的各种符号,比如:函数
 	{tagname}<Tab>{tagfile}<Tab>{tagaddress}
 
 	EG  Zend/zend_globals_macros.h  /^# define EG(/;"   d
-它的每行是上面的这样一个格式, 第一个就是符号名, 例如上例的EG宏, 这个符号的文件位置以及这个符号所在的位置.
-VIM可以读取tags文件,当我们在符号上**CTRL+]**时VIM将尝试从tags文件中寻找这个符号,如果找到了则根据该符号所在的文件已经该符号的位置打开该文件,
-并将光标定位到符号定义所在的位置. 这样我们就能快速的寻找到符号的定义了.
+它的每行是上面的这样一个格式，第一列是符号名（如上例的EG宏） ， 第二列是该符号的文件位置以及这个符号所在的位置。
+VIM可以读取tags文件,当我们在符号上（可以是变量名之类）使用**CTRL+]**时VIM将尝试从tags文件中检索这个符号。
+如果找到则根据该符号所在的文件已经该符号的位置打开该文件，
+并将光标定位到符号定义所在的位置。 这样我们就能快速的寻找到符号的定义。
 
-使用 **Ctrl+]** 就可以自动跳转至定义，**Ctrl+t** 可以返回上一次查看位置。这样就可以快速的在代码之间游动了.
+使用 **Ctrl+]** 就可以自动跳转至定义，**Ctrl+t** 可以返回上一次查看位置。这样就可以快速的在代码之间“游动”了.
 
-这种浏览方式用习惯了还是很方便的. 不过如果你不习惯使用VIM这类编辑器,可以看看下面介绍的[IDE](http://zh.wikipedia.org/wiki/%E9%9B%86%E6%88%90%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83).
+习惯这种浏览代码的方式之后，大家会感觉很方便的。不过若你不习惯使用VIM这类编辑器,也可以看看下面介绍的[IDE](http://zh.wikipedia.org/wiki/%E9%9B%86%E6%88%90%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83).
 
 >**NOTE**
 >如果你使用的Mac OS X, 运行ctags程序可能会出错, 因为Mac OS X自带的ctags程序有些[问题](http://adamyoung.net/Exuberant-Ctags-OS-X),
@@ -78,12 +81,13 @@ VIM可以读取tags文件,当我们在符号上**CTRL+]**时VIM将尝试从tags�
 
 
 ### 使用IDE查看代码
-如果不习惯使用VIM来看代码,那在可以使用一些功能较丰富IDE，比如Windows下可以使用Visual Studio 2010 Express . 或者使用跨平台的[Netbeans](http://www.netbeans.org/),
-或者[Eclipse](http://www.eclipse.org/)来看代码,这些工具都相对较**重量级**一些,不过这些工具不管是调试还是查看代码都相对较方便,
+如果不习惯使用VIM来看代码,也可以使用一些功能较丰富的IDE，比如Windows下可以使用Visual Studio 2010 Express 。
+或者使用跨平台的[Netbeans](http://www.netbeans.org/)、[Eclipse](http://www.eclipse.org/)来查看代码,
+当然，这些工具都相对较**重量级**一些，不过这些工具不管是调试还是查看代码都相对较方便，
 
-在Eclipse及Netbeans下查看符号定义的方式通常是将鼠标移到符号上,同时按住**CTRL**,然后单击,将会跳转到符号定义的位置.
+在Eclipse及Netbeans下查看符号定义的方式通常是将鼠标移到符号上，同时按住**CTRL**，然后单击，将会跳转到符号定义的位置.
 
-而如果使用VS的话, 在win32目录下已经存在了可以直接打开的工程文件，如果由于版本原因无法打开，可以在此源码目录上新建一个基于现有文件的Win32 Console Application工程。
+而如果使用VS的话， 在win32目录下已经存在了可以直接打开的工程文件，如果由于版本原因无法打开，可以在此源码目录上新建一个基于现有文件的Win32 Console Application工程。
 **常用快捷键**：
 
     [c]
@@ -98,6 +102,6 @@ VIM可以读取tags文件,当我们在符号上**CTRL+]**时VIM将尝试从tags�
     CTRL + -向后定位
     CTRL + SHIFT + -向前定位
 
-对于一些搜索类的操作，可以考虑使用editplus或其它文本编辑工具进行，这样的搜索速度相对来说会快一些。 
-如果使用editplus进行搜索，一般是选择 【搜索】 中的 【在文件中查找...】
+对于一些搜索类型的操作，可以考虑使用Editplus或其它文本编辑工具进行，这样的搜索速度相对来说会快一些。 
+如果使用Editplus进行搜索，一般是选择 【搜索】 中的 【在文件中查找...】
 
