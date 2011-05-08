@@ -24,8 +24,43 @@ FastCGI是语言无关的、可伸缩架构的CGI开放扩展，其主要行为�
 
 ## PHP中的CGI实现
 
-PHP的cgi实现本质是是以socket编程实现一个tcp或udp协议的服务器，当启动时，创建tcp/udp协议的服务器的socket监听，并接收相关请求进行处理。这只是请求的处理，在此基础上添加模块初始化，sapi初始化，模块关闭，sapi关闭等就构成了整个cgi的生命周期。
-程序是从cgi_main.c文件的main函数开始，而在main函数中调用了定义在fastcgi.c文件中的初始化，监听等函数。我们从main函数开始，看看PHP对于fastcgi的实现。
+PHP的CGI实现本质是是以socket编程实现一个TCP或UDP协议的服务器，当启动时，创建TCP/UDP协议的服务器的socket监听，
+并接收相关请求进行处理。这只是请求的处理，在此基础上添加模块初始化，sapi初始化，模块关闭，sapi关闭等就构成了整个CGI的生命周期。
+
+以TCP为例，在TCP的服务端，一般会执行这样几个操作步骤：
+
+ 1. 调用socket函数创建一个TCP用的流式套接字；
+ 1. 调用bind函数将服务器的本地地址与前面创建的套接字绑定；
+ 1. 调用listen函数将新创建的套接字作为监听，等待客户端发起的连接，当客户端有多个连接连接到这个套接字时，可能需要排队处理；
+ 1. 服务器进程调用accept函数进入阻塞状态，直到有客户进程调用connect函数而建立起一个连接；
+ 1. 当与客户端创建连接后，服务器调用read_stream函数读取客户的请求；
+ 1. 处理完数据后，服务器调用write函数向客户端发送应答。
+
+TCP上客户-服务器事务的时序如图2.6所示：
+
+![图2.6 单进程SAPI生命周期](../images/chapt02/02-02-03-tcp.jpg)
+
+PHP的CGI实现从cgi_main.c文件的main函数开始，在main函数中调用了定义在fastcgi.c文件中的初始化，监听等函数。
+对比TCP的流程，我们查看PHP对TCP协议的实现，虽然PHP本身也实现了这些流程，但是在main函数中一些过程被封装成一个函数实现。
+对应TCP的操作流程，PHP首先会执行创建socket,绑定套接字，创建监听：
+
+    [c]
+    if (bindpath) {
+        fcgi_fd = fcgi_listen(bindpath, 128);   //  实现socket监听，调用fcgi_init初始化
+        ...
+    }
+
+在fastcgi.c文件中，fcgi_listen函数主要用于创建、绑定socket并开始监听，它走完了前面所列TCP流程的前三个阶段，
+
+    [c]
+        if ((listen_socket = socket(sa.sa.sa_family, SOCK_STREAM, 0)) < 0 ||
+            ...
+            bind(listen_socket, (struct sockaddr *) &sa, sock_len) < 0 ||
+            listen(listen_socket, backlog) < 0) {
+            ...
+        }
+
+我们从main函数开始，看看PHP对于fastcgi的实现。
 
 这里将整个流程分为初始化操作，请求处理，关闭操作三个部分。
 我们就整个流程进行简单的说明，并在其中穿插介绍一些用到的重要函数。
@@ -60,15 +95,6 @@ PHP的cgi实现本质是是以socket编程实现一个tcp或udp协议的服务�
 		fcgi_init_request(&request, fcgi_fd);   //  request内存分配，初始化变量
     }
 
-fcgi_listen函数主要用于创建、绑定socket并开始监听
-
-    [c]
-        if ((listen_socket = socket(sa.sa.sa_family, SOCK_STREAM, 0)) < 0 ||
-            ...
-            bind(listen_socket, (struct sockaddr *) &sa, sock_len) < 0 ||
-            listen(listen_socket, backlog) < 0) {
-            ...
-        }
 
 ### 请求处理操作流程
  过程说明见代码注释
