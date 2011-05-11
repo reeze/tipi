@@ -60,6 +60,7 @@ PHP的CGI实现从cgi_main.c文件的main函数开始，在main函数中调用�
             ...
         }
 
+当服务端初始化完成后，进程调用accept函数进入阻塞状态，在main函数中我们看到如下代码：
 
     [c]
     	while (parent) {
@@ -89,7 +90,9 @@ PHP的CGI实现从cgi_main.c文件的main函数开始，在main函数中调用�
                         ...
                 }
 
-在fcgi_accept_request函数中，处理连接请求，忽略受限制客户的请求，调用fcgi_read_request函数（定义在fastcgi.c文件），分析请求的信息，将相关的变量写到对应的变量中。
+如上的代码是一个生成子进程，并等待用户请求。在fcgi_accept_request函数中，程序会调用accept函数阻塞新创建的进程。
+当用户的请求到达时，fcgi_accept_request函数会判断是否处理用户的请求，其中会过滤某些连接请求，忽略受限制客户的请求，
+如果程序受理用户的请求，它将分析请求的信息，将相关的变量写到对应的变量中。
 其中在读取请求内容时调用了safe_read方法。如下所示：
 **[main() -> fcgi_accept_request() -> fcgi_read_request() -> safe_read()]**
 
@@ -105,65 +108,107 @@ PHP的CGI实现从cgi_main.c文件的main函数开始，在main函数中调用�
 
     }
 
-在请求初始化完成，读取请求完毕后，就该处理请求的PHP文件了。假设此次请求为PHP_MODE_STANDARD则会调用php_execute_script执行PHP文件。
+如上对应服务器端读取用户的请求数据。
+
+在请求初始化完成，读取请求完毕后，就该处理请求的PHP文件了。
+假设此次请求为PHP_MODE_STANDARD则会调用php_execute_script执行PHP文件。
 在此函数中它先初始化此文件相关的一些内容，然后再调用zend_execute_scripts函数，对PHP文件进行词法分析和语法分析，生成中间代码，
 并执行zend_execute函数，从而执行这些中间代码。关于整个脚本的执行请参见第三节 脚本的执行。
-我们从main函数开始，看看PHP对于fastcgi的实现。
 
-这里将整个流程分为初始化操作，请求处理，关闭操作三个部分。
-我们就整个流程进行简单的说明，并在其中穿插介绍一些用到的重要函数。
-
-### 初始化操作
- 过程说明见代码注释
+在处理完用户的请求后，服务器端将返回信息给客户端，此时在main函数中调用的是fcgi_finish_request(&request, 1);
+fcgi_finish_request函数定义在fastcgi.c文件中，其代码如下：
 
     [c]
-    /* {{{ main
-     */
-    int main(int argc, char *argv[])
+    int fcgi_finish_request(fcgi_request *req, int force_close)
     {
-    ...
-    sapi_startup(&cgi_sapi_module);
-        //  1512行 启动sapi,调用sapi全局构造函数，初始化sapi_globals_struct结构体
-    ... //  根据启动参数，初始化信息
+	int ret = 1;
 
-    if (cgi_sapi_module.startup(&cgi_sapi_module) == FAILURE) {
-        //  模块初始化 调用php_cgi_startup方法
-    ...
+	if (req->fd >= 0) {
+		if (!req->closed) {
+			ret = fcgi_flush(req, 1);
+			req->closed = 1;
+		}
+		fcgi_close(req, force_close, 1);
+	}
+	return ret;
     }
 
-    ...
-    if (bindpath) {
-        fcgi_fd = fcgi_listen(bindpath, 128);   //  实现socket监听，调用fcgi_init初始化
-        ...
-    }
-
-    if (fastcgi) {
-        ...
-		/* library is already initialized, now init our request */
-		fcgi_init_request(&request, fcgi_fd);   //  request内存分配，初始化变量
-    }
-
-
-### 请求处理操作流程
- 过程说明见代码注释
-
-
-
-### 关闭操作流程
- 过程说明代码注释
+如上，当socket处于打开状态，并且请求未关闭，则会将执行后的结果刷到客户端，并将请求的关闭设置为真。
+将数据刷到客户端的程序调用的是fcgi_flush函数。在此函数中，关键是在于答应头的构造和写操作。
+程序的写操作是调用的safe_write函数，而safe_write函数中对于最终的写操作针对win和linux环境做了区分，
+在Win32下，如果是TCP连接则用send函数，如果是非TCP则和非win环境一样使用write函数。如下代码：
 
     [c]
-    ...
-    php_request_shutdown((void *) 0);   //  php请求关闭函数
-    ...
-    fcgi_shutdown();    //  fcgi的关闭 销毁fcgi_mgmt_vars变量
-    php_module_shutdown(TSRMLS_C);  //  模块关闭    清空sapi,关闭zend引擎 销毁内存，清除垃圾等
-    sapi_shutdown();    //  sapi关闭  sapi全局变量关闭等
-    ...
+    #ifdef _WIN32
+	if (!req->tcp) {
+		ret = write(req->fd, ((char*)buf)+n, count-n);
+	} else {
+		ret = send(req->fd, ((char*)buf)+n, count-n, 0);
+		if (ret <= 0) {
+				errno = WSAGetLastError();
+		}
+	}
+    #else
+	ret = write(req->fd, ((char*)buf)+n, count-n);
+    #endif
 
+在发送了请求的应答后，服务器端将会执行关闭操作，仅限于CGI本身的关闭，程序执行的是fcgi_close函数。
+fcgi_close函数在前面提的fcgi_finish_request函数中，在请求应答完后执行。同样，对于win平台和非win平台有不同的处理。
+其中对于非win平台调用的是write函数。
+
+以上是一个TCP服务器端实现的简单说明。这只是我们PHP的CGI模式的基础，在这个基础上PHP增加了更多的功能。
+在前面的章节中我们提到了每个SAPI都有一个专属于它们自己的sapi_module_struct结构：cgi_sapi_module，其代码定义如下：
+
+    [c]
+    /* {{{ sapi_module_struct cgi_sapi_module
+     */
+    static sapi_module_struct cgi_sapi_module = {
+	"cgi-fcgi",						/* name */
+	"CGI/FastCGI",					/* pretty name */
+
+	php_cgi_startup,				/* startup */
+	php_module_shutdown_wrapper,	/* shutdown */
+
+	sapi_cgi_activate,				/* activate */
+	sapi_cgi_deactivate,			/* deactivate */
+
+	sapi_cgibin_ub_write,			/* unbuffered write */
+	sapi_cgibin_flush,				/* flush */
+	NULL,							/* get uid */
+	sapi_cgibin_getenv,				/* getenv */
+
+	php_error,						/* error handler */
+
+	NULL,							/* header handler */
+	sapi_cgi_send_headers,			/* send headers handler */
+	NULL,							/* send header handler */
+
+	sapi_cgi_read_post,				/* read POST data */
+	sapi_cgi_read_cookies,			/* read Cookies */
+
+	sapi_cgi_register_variables,	/* register server variables */
+	sapi_cgi_log_message,			/* Log message */
+	NULL,							/* Get request time */
+	NULL,							/* Child terminate */
+
+	STANDARD_SAPI_MODULE_PROPERTIES
+    };
+    /* }}} */
+
+
+同样，以读取cookie为例，当我们在CGI环境下，在PHP中调用读取Cookie时，
+最终获取的数据的位置是在激活SAPI时。它所调用的方法是read_cookies。
+
+    [c]
+    SG(request_info).cookie_data = sapi_module.read_cookies(TSRMLS_C);
+	
+对于每一个服务器在加载时，我们都指定了sapi_module，在第一小节的Apache模块方式中，
+sapi_module是apache2_sapi_module，其对应read_cookies方法的是php_apache_sapi_read_cookies函数，
+而在我们这里，读取cookie的函数是sapi_cgi_read_cookies。
+再次说明定义SAPI结构的理由：统一接口，面向接口的编程，具有更好的扩展性和适应性。
 
 ## 参考资料
-以下为本篇文章对于一些定义引用的参考资料：  
-http://www.fastcgi.com/drupal/node/2  
-http://baike.baidu.com/view/641394.htm  
+  
+* http://www.fastcgi.com/drupal/node/2  
+* http://baike.baidu.com/view/641394.htm  
 
