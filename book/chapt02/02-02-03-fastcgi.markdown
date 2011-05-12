@@ -38,7 +38,7 @@ PHP的CGI实现本质是是以socket编程实现一个TCP或UDP协议的服务�
 
 TCP上客户-服务器事务的时序如图2.6所示：
 
-![图2.6 单进程SAPI生命周期](../images/chapt02/02-02-03-tcp.jpg)
+![图2.6 TCP上客户-服务器事务的时序](../images/chapt02/02-02-03-tcp.jpg)
 
 PHP的CGI实现从cgi_main.c文件的main函数开始，在main函数中调用了定义在fastcgi.c文件中的初始化，监听等函数。
 对比TCP的流程，我们查看PHP对TCP协议的实现，虽然PHP本身也实现了这些流程，但是在main函数中一些过程被封装成一个函数实现。
