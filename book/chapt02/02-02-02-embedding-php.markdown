@@ -65,7 +65,8 @@
     [c]
     #include <sapi/embed/php_embed.h>
 
-在sapi目录下的embed目录是PHP对于嵌入式的抽象层所在。在这里有我们所要用到的函数或宏定义。如示例中所使用的php_embed_init，php_embed_shutdown等函数。
+在sapi目录下的embed目录是PHP对于嵌入式的抽象层所在。在这里有我们所要用到的函数或宏定义。
+如示例中所使用的php_embed_init，php_embed_shutdown等函数。
 
 第2到4行：
 
@@ -155,25 +156,46 @@ main函数：
 这个函数是主函数，执行初始化操作，根据输入的参数执行PHP的include语句，最后执行关闭操作，返回。
 其中php_embed_shutdown函数定义在sapi/embed/php_embed.c文件中。它完成了PHP对于嵌入式的关闭操作支持。包括请求关闭操作，模块关闭操作等。
 
-### 其它宏
+以上是使用PHP的嵌入式方式开发的一个简单的PHP代码运行器，它的这些调用的方式都基于PHP本身的一些实现，而针对嵌入式的SAPI定义是非常简单的，
+没有Apache和CGI模式的复杂，或者说是相当简陋，这也是由其所在环境决定。在嵌入式的环境下，很多的网络协议所需要的方法都不再需要。如下所示，
+为嵌入式的模块定义。
 
     [c]
-    #define PHP_EMBED_START_BLOCK(x,y) { \
-        php_embed_init(x, y); \
-        zend_first_try {
+    sapi_module_struct php_embed_module = {
+        "embed",                       /* name */
+        "PHP Embedded Library",        /* pretty name */
 
-    #endif
+        php_embed_startup,              /* startup */
+        php_module_shutdown_wrapper,   /* shutdown */
 
-    #define PHP_EMBED_END_BLOCK() \
-      } zend_catch { \
-        /* int exit_status = EG(exit_status); */ \
-      } zend_end_try(); \
-      php_embed_shutdown(TSRMLS_C); \
-    }
+        NULL,                          /* activate */
+        php_embed_deactivate,           /* deactivate */
 
-如上两个宏可能会用到你的嵌入式PHP中，从代码中可以看出，它包含了在示例代码中的php_embed_init，zend_first_try，zend_end_try，php_embed_shutdown等
-嵌入式PHP中常用的方法。
-大量的使用宏也算是PHP源码的一大特色吧，
+        php_embed_ub_write,             /* unbuffered write */
+        php_embed_flush,                /* flush */
+        NULL,                          /* get uid */
+        NULL,                          /* getenv */
+
+        php_error,                     /* error handler */
+
+        NULL,                          /* header handler */
+        NULL,                          /* send headers handler */
+        php_embed_send_header,          /* send header handler */
+
+        NULL,                          /* read POST data */
+        php_embed_read_cookies,         /* read Cookies */
+
+        php_embed_register_variables,   /* register server variables */
+        php_embed_log_message,          /* Log message */
+        NULL,							/* Get request time */
+        NULL,							/* Child terminate */
+
+        STANDARD_SAPI_MODULE_PROPERTIES
+    };
+    /* }}} */
+
+在这个定义中我们看到了若干的NULl定义，在前面一小节中说到SAPI时，我们是以cookie的读取为例，
+在这里也有读取cookie的实现——php_embed_read_cookies函数，但是这个函数的实现返回是NULL。
 
 
 ## 参与资料
