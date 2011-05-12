@@ -15,7 +15,7 @@
 	* [第三节 脚本的执行][script-execution]
 		+ [词法分析和语法分析][lex-and-yacc]
 		+ [opcode][opcode]
-		+ [从opcode到函数实现][opcode-handler]
+		+ [附：找到Opcode具体实现][opcode-handler]
 	* [第四节 小结][02-summary]
 
 - [第三章 变量及数据类型][variables]
