@@ -44,7 +44,10 @@ PHP是一种弱类型的语言，这就意味着在声明或使用变量的时�
 >**NOTE**
 > 在PHP5.3之后，由于引入了垃圾收集机制，引用计数和是否为引用的属性名为refcount__gc和is_ref__gc。在此之前为refcount和is__ref。
 
-在变量的初始化过程中，ZE会将变量的类型（type）值根据其变量类型置为：IS_NULL, IS_BOOL, IS_LONG, IS_DOUBLE, IS_STRING, IS_ARRAY, IS_OBJECT, IS_RESOURCE 之一。
+在变量的初始化过程中，ZE会将变量的类型（type）值根据其变量类型置为：
+IS_NULL, IS_BOOL, IS_LONG, IS_DOUBLE, IS_STRING, IS_ARRAY, IS_OBJECT, IS_RESOURCE 之一。
+这些类型都是Zend内核为了代码的可读性定义的宏，他们对应的数字为0到7。
+除此之外，和他们定义在一起的类型还有IS_CONSTANT和IS_CONSTANT_ARRAY。
 
 >**Question**
 >PHP的实现中，如何判断变量是属于哪种类型的呢？(下节介绍）
@@ -184,5 +187,11 @@ PHP是一种弱类型的语言，这就意味着在声明或使用变量的时�
 
 handle字段是 EG(objects_store).object_buckets的索引，用来存取对应对象的相关数据。zend_object_handlers是一个包含许多方法指针的结构体。
 关于这个结构体及对象相关的类的结构_zend_class_entry，将在第五章节作详细介绍。
+
+PHP的这种变量容器的实现方式是以一种兼容并包的形式体现，针对每种类型的变量都有其对应的标记和存储空间。
+PHP在做语法解析时就已经确定了变量的类型，每种常见的类型都有，因此在对变量进行操作时，Zend内核需要判断类型，由此会多出一些操作，
+从而在大数据量的场景下，性能等方面会有一些损耗。其实这就相当于将其它语言中需要人工区别的事情交给了PHP去做，或者说是一种延后处理的思想。
+但是考虑到PHP本身的定位及应用场景，这样的损耗也是值得的。
+
 
 
