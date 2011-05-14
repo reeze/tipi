@@ -13,8 +13,22 @@ instanceof 用来测定一个给定的对象是否来自指定的对象类。ins
 
 要达到类型提示，只要在方法的对象型参数前加一个已存在的类的名称，当使用类型提示时，你不仅可以指定对象类型，还可以指定抽象类和接口。
 
-下面我们从PHP的整个解释过程分析类型提示的源码实现过程。我们将从function开始词法分析，
-在语法分析中找到类型提示的相关代码，然后跟踪到中间代码的实现。
+一个数组的类型提示示例：
+
+    [php]
+    function array_print(Array $arr) {
+        print_r($arr);
+    }
+
+    array_print(1);
+
+以上这段代码在PHP5.1之后的版本执行，会报错如下：
+    
+    Catchable fatal error: Argument 1 passed to array_print() must be an array, integer given, called in  ...
+
+当我们把函数参数中的整形变量变为数组时，程序会正常运行，调用print_r函数输出数组。
+那么这个类型提示是如何实现的呢？不管是在类中的方法，还是我们调用的函数，都是需要使用function关键字定义。
+因此我们从function开始词法分析，在语法分析中找到类型提示的相关代码，然后跟踪到中间代码的实现，从而了解类型提示的源码实现过程。
 
 由于类型提示符是作用于类的方法或函数，则其实现一定与function相关，因此我们可以从function语句起查找类型提示的实现。
 为function在 Zend/zend_language_scanner.l文件中，我们可以找到function对应的token为 **T_FUNCTION** 。
