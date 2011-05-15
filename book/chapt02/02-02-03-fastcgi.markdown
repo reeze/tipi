@@ -5,27 +5,33 @@
 [CGI](http://zh.wikipedia.org/wiki/CGI)全称是“通用网关接口”(Common Gateway Interface)，
 它可以让一个客户端，从网页浏览器向执行在Web服务器上的程序请求数据。
 CGI描述了客户端和这个程序之间传输数据的一种标准。
-CGI的一个目的是要独立于任何语言的，所以CGI可以用任何一种语言编写，只要这种语言具有标准输入、输出和环境变量。如php,perl,tcl等
+CGI的一个目的是要独立于任何语言的，所以CGI可以用任何一种语言编写，只要这种语言具有标准输入、输出和环境变量。
+如php,perl,tcl等。
 
-[FastCGI](http://baike.baidu.com/view/641394.htm)像是一个常驻(long-live)型的CGI，
-它可以一直执行着，只要激活后，不会每次都要花费时间去fork一次(这是CGI最为人诟病的fork-and-execute 模式)。
-它还支持分布式的运算, 即 FastCGI 程序可以在网站服务器以外的主机上执行并且接受来自其它网站服务器来的请求。
+[FastCGI](http://en.wikipedia.org/wiki/FastCGI)是Web服务器和处理程序之间通信的一种[协议](http://andylin02.iteye.com/blog/648412)，
+是CGI的一种改进方案，[FastCGI](http://baike.baidu.com/view/641394.htm)像是一个常驻(long-live)型的CGI，
+它可以一直执行，在请求到达时不会花费时间去fork一个进程来处理(这是CGI最为人诟病的fork-and-execute模式)。
+正是因为他只是一个通信协议，它还支持分布式的运算, 即 FastCGI 程序可以在网站服务器以外的主机上执行并且接受来自其它网站服务器来的请求。
 
-FastCGI是语言无关的、可伸缩架构的CGI开放扩展，其主要行为是将CGI解释器进程保持在内存中并因此获得较高的性能。
-众所周知，CGI解释器的反复加载是CGI性能低下的主要原因，如果CGI解释器保持在内存中并接受FastCGI进程管理器调度，
-则可以提供良好的性能、伸缩性、Fail- Over特性等等。
+FastCGI是语言无关的、可伸缩架构的CGI开放扩展，将CGI解释器进程保持在内存中，以此获得较高的性能。
+CGI程序反复加载是CGI性能低下的主要原因，如果CGI程序保持在内存中并接受FastCGI进程管理器调度，
+则可以提供良好的性能、伸缩性、Fail-Over特性等。
 
-一般情况下，FastCGI的整个工作流程是这样的。
+一般情况下，FastCGI的整个工作流程是这样的：
 
    1. Web Server启动时载入FastCGI进程管理器（IIS ISAPI或Apache Module)
    1. FastCGI进程管理器自身初始化，启动多个CGI解释器进程(可见多个php-cgi)并等待来自Web Server的连接。
-   1. 当客户端请求到达Web Server时，FastCGI进程管理器选择并连接到一个CGI解释器。Web server将CGI环境变量和标准输入发送到FastCGI子进程php-cgi。
-   1. FastCGI子进程完成处理后将标准输出和错误信息从同一连接返回Web Server。当FastCGI子进程关闭连接时，请求便告处理完成。FastCGI子进程接着等待并处理来自FastCGI进程管理器(运行在Web Server中)的下一个连接。 在CGI模式中，php-cgi在此便退出了。
+   1. 当客户端请求到达Web Server时，FastCGI进程管理器选择并连接到一个CGI解释器。
+      Web server将CGI环境变量和标准输入发送到FastCGI子进程php-cgi。
+   1. FastCGI子进程完成处理后将标准输出和错误信息从同一连接返回Web Server。当FastCGI子进程关闭连接时，
+      请求便告处理完成。FastCGI子进程接着等待并处理来自FastCGI进程管理器(运行在Web Server中)的下一个连接。 
+	  在CGI模式中，php-cgi在此便退出了。
 
 ## PHP中的CGI实现
 
-PHP的CGI实现本质是是以socket编程实现一个TCP或UDP协议的服务器，当启动时，创建TCP/UDP协议的服务器的socket监听，
-并接收相关请求进行处理。这只是请求的处理，在此基础上添加模块初始化，sapi初始化，模块关闭，sapi关闭等就构成了整个CGI的生命周期。
+PHP的CGI实现了Fastcgi协议，是一个TCP或UDP协议的服务器接受来自Web服务器的请求，
+当启动时创建TCP/UDP协议的服务器的socket监听，并接收相关请求进行处理。随后就进入了PHP的生命周期：
+模块初始化，sapi初始化，处理PHP请求，模块关闭，sapi关闭等就构成了整个CGI的生命周期。
 
 以TCP为例，在TCP的服务端，一般会执行这样几个操作步骤：
 
@@ -198,11 +204,12 @@ fcgi_close函数在前面提的fcgi_finish_request函数中，在请求应答完
 
 同样，以读取cookie为例，当我们在CGI环境下，在PHP中调用读取Cookie时，
 最终获取的数据的位置是在激活SAPI时。它所调用的方法是read_cookies。
+由SAPI实现来实现获取cookie，这样各个不同的SAPI就能根据自己的需要来实现一些依赖环境的方法。
 
     [c]
     SG(request_info).cookie_data = sapi_module.read_cookies(TSRMLS_C);
 	
-对于每一个服务器在加载时，我们都指定了sapi_module，在第一小节的Apache模块方式中，
+所有使用PHP的场合都需要定义自己的SAPI，例如在第一小节的Apache模块方式中，
 sapi_module是apache2_sapi_module，其对应read_cookies方法的是php_apache_sapi_read_cookies函数，
 而在我们这里，读取cookie的函数是sapi_cgi_read_cookies。
 再次说明定义SAPI结构的理由：统一接口，面向接口的编程，具有更好的扩展性和适应性。
