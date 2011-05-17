@@ -6,6 +6,7 @@
 	<?php
 		echo stylesheet_include_tag(array('book.css', 'main.css'));
 	?>
+	<meta name="description" content="<?php echo SITE_DESC; ?>" />
 	<link rel="alternate" type="application/rss+xml" title="<?php echo SITE_NAME;?>" href="<?php echo url_for("/feed/"); ?>" />
 	<link rel="shortcut icon" href="<?php echo url_for("/favicon.ico"); ?>" type="image/vnd.microsoft.icon">
 </head>

@@ -11,6 +11,7 @@
 		// google search api
 		echo javascript_include_tag("http://www.google.com/jsapi?key=AIzaSyDP4wJCphYhYAWaqAecUh1hiB7zzbJMqPs");
 	?>
+	<meta name="description" content="<?php echo SITE_DESC; ?>" />
 	<link rel="alternate" type="application/rss+xml" title="<?php echo SITE_NAME;?>" href="<?php echo url_for("/feed/"); ?>" />
 	<link rel="shortcut icon" href="<?php echo url_for("/favicon.ico"); ?>" type="image/vnd.microsoft.icon">
 </head>
