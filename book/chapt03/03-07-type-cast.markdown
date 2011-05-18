@@ -21,7 +21,7 @@ PHP变量之间的数据类型转换有两种: 隐式和显式转换.
 类似的还有求和操作"+"。具体的自动类型转换方式和特定的操作有关。
 下面就以字符串连接操作为例说明隐式转换的实现:
 
-脚本执行的时候字符串的链接操作是通过Zend/zend_operators.c文件中的如下函数进行:
+脚本执行的时候字符串的连接操作是通过Zend/zend_operators.c文件中的如下函数进行:
 
 	[c]
 	ZEND_API int concat_function(zval *result, zval *op1, zval *op2 TSRMLS_DC) /* {{{ */
