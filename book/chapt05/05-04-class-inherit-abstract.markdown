@@ -56,7 +56,7 @@ PHP内核将类的继承实现放在了"编译阶段"，因此使用VLD生成中
 此函数会遍历所有的接口列表，将接口写入到类结构的interfaces字段，并增加num_interfaces的计数统计。
 在接口继承后，程序会合并类的成员变量、属性、常量、函数等，这些都是HashTable的merge操作。
 
-在继承过程中，除了常规的函数合并后，还有魔法方法的合并，其调用的函数为do_inherit_parent_constructor(ce).
+在继承过程中，除了常规的函数合并后，还有魔法方法的合并，其调用的函数为do_inherit_parent_constructor(ce)。
 此函数实现魔术方法继承，如果子类中没有相关的魔术方法，则继承父类的对应方法。如下所示的PHP代码为子类没构造函数的情况
 
     [php]
@@ -76,6 +76,38 @@ PHP内核将类的继承实现放在了"编译阶段"，因此使用VLD生成中
 
 这显然继承了父类的构造方法，如果子类有自己的构造方法，并且需要调用父类的构造方法时
 需要在子类的构造方法中调用父类的构造方法，PHP不会自动调用。
+
+当说到继承，就不得不提到访问控制。继承在不同的访问控制权限下有不同的表现。
+以成员方法为例，我们可以使用private和protected访问修饰符来控制需要继承的内容。
+
+* private 如果一个成员被指定为private，它将不能被继承。实际上在PHP中这个方法会被继承下来，只是无法访问。
+* protected 如果一个成员被指定为protected，它将在类外不可见，可以被继承。
+
+在继承中访问控制的实现是在合并函数时实现，其实现函数为do_inherit_method_check。
+在此函数中，如果子类没有父类中定义的方法，则所有的此类方法都会被继承，包括私有访问控制权限的方法。
+
+看一个PHP的示例：
+    
+    [php]
+    class Base {
+        private function privateMethod() {
+        }
+    }
+
+    class Child extends Base{
+        public function publicMethod() {
+        }
+    }
+
+    $c = new Child();
+
+    if (method_exists($c, 'privateMethod')) {
+        echo 1;
+    }else{
+        echo 0;
+    }
+
+这段代码会输出1，至此，我们可以证明：**在PHP中，对于私有方法，在继承时是可以被继承下来的**。
 
 ## 多态
 多态是继数据抽象和继承后的第三个特性。顾名思义，多态即多种形态，相同方法调用实现不同的实现方式。
