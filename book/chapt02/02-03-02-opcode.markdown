@@ -1,6 +1,6 @@
-# Opcode
+# opcode
 
-[Opcode](http://en.wikipedia.org/wiki/Opcode)是计算机指令中的一部分，用于指定要执行的操作，
+[opcode](http://en.wikipedia.org/wiki/Opcode)是计算机指令中的一部分，用于指定要执行的操作，
 指令的格式和规范由处理器的指令规范指定。 除了指令本身以外通常还有指令所需要的操作数，可能有的指令不需要显式的操作数。
 这些操作数可能是寄存器中的值，堆栈中的值，某块内存的值或者IO端口中的值等等。
 
