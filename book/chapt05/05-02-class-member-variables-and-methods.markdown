@@ -5,7 +5,8 @@
 
 类的成员变量在PHP中本质上是一个变量，只是这些变量都归属于某个类，并且给这些变量都加上访问控制。
 类的成员变量也称为成员属性，它是现实世界实体属性的抽象，是可以用来描述对象状态的数据。
-类的成员方法在PHP中本质上是一个函数，只是这个函数以类的方法存在，可能它是一个类方法也可能是一个实例方法，
+
+类的成员方法在PHP中本质上是一个函数，只是这个函数以类的方法存在，它可能是一个类方法也可能是一个实例方法，
 并且在这些方法上都加上了类的访问控制。类的成员方法是现实世界实体行为的抽象，可以用来实现类的行为。
 
 ## 成员变量
@@ -44,8 +45,24 @@
 * 不能重复声明属性
 
 这四种情况分别对应四个if语句，其中不能重复声明属性会有一个查询成员变量所在HashTable的过程。
+如果我们有刚才的PHP代码中给成员变量前面添加final关键字：
 
-在判断了这些情况后，函数会进行成员变量的初始化操作.
+    [php]
+    class Tipi {
+        public final $var;
+    }
+
+如果运行这段代码，程序马上报错：Fatal error: Cannot declare property Tipi::$var final, 
+the final modifier is allowed only for methods and classes in .. 
+这里是触发了zedn_do_declare_property函数中的如下代码：
+
+    [c]
+    if (access_type & ZEND_ACC_FINAL) {
+		zend_error(E_COMPILE_ERROR, "Cannot declare property %s::$%s final, the final modifier is allowed only for methods and classes",
+				   CG(active_class_entry)->name, var_name->u.constant.value.str.val);
+	}
+
+在这若干个判断之后，函数会进行成员变量的初始化操作。
 
     [c]
     ALLOC_ZVAL(property);   //  分配内存
@@ -60,9 +77,9 @@
 在初始化过程中，程序会先分配内存，如果这个成员变量有初始化的数据，则将数据直接赋值给该属性，否则初始化ZVAL，并将其类型设置为IS_NULL.
 在初始化过程完成后，程序通过调用 **zend_declare_property_ex** 函数将此成员变量添加到指定的类结构中。
 
-以上为成员变量的初始化和注册成员变量的过程,常规的成员变量最后都会注册到类的 **default_properties** 字段。
+以上为成员变量的初始化和注册成员变量的过程，常规的成员变量最后都会注册到类的 **default_properties** 字段。
 在我们平时的工作中，可能会用不到上面所说的这些过程，但是我们可能会使用get_class_vars()函数来查看类的成员变量。
-此函数返回由类的默认属性组成的关联数组，此数组的元素以 varname => value 的形式存在。其实现核心代码如下：
+此函数返回由类的默认属性组成的关联数组，这个数组的元素以 varname => value 的形式存在。其实现核心代码如下：
 
     [c]
 	if (zend_lookup_class(class_name, class_name_len, &pce TSRMLS_CC) == FAILURE) {
@@ -81,10 +98,10 @@
 这里针对类的静态成员变量有一个更新的过程，关于这个过程我们在下面有关于静态成员变量中做相关介绍。
 
 ## 静态成员变量
-类的静态成员变量是所有实例共用的，因此它也叫做类变量。
-在PHP的类结构中，类本身的静态变量存放在 **default_static_members** 字段中。
+类的静态成员变量是所有实例共用的，它归属于这个类，因此它也叫做类变量。
+在PHP的类结构中，类本身的静态变量存放在类结构的 **default_static_members** 字段中。
 
-与成员变量不同，类变量可以直接通过类名调用，这也体现其称作类变量的特别。一个PHP示例：
+与普通成员变量不同，类变量可以直接通过类名调用，这也体现其称作类变量的特别。一个PHP示例：
 
     [php]
     class Tipi {
@@ -93,6 +110,7 @@
 
     Tipi::$var;
 
+这是一个简单的类，它仅包括一个公有的静态变量$var。
 通过VLD扩展查看其生成的中间代码：
 
     [c]
@@ -113,13 +131,17 @@
     path #1: 0,
     Class Tipi: [no user functions]
 
-给前面的内容和VLD生成的内容，我们可以知道PHP代码：Tipi::$var;　生成的中间代码包括ZEND_FETCH_CLASS和FETCH_R。
-这是由于在编译时其调用了zend_do_fetch_static_member函数，而在此函数中又调用了zend_do_fetch_class函数，
+这段生成的中间代码仅与Tipi::$var;这段调用对应，它与前面的类定义没有多大关系。
+根据前面的内容和VLD生成的内容，我们可以知道PHP代码：Tipi::$var;　生成的中间代码包括ZEND_FETCH_CLASS和FETCH_R。
+这里只是一个静态变量的调用，但是它却生成了两个中间代码，什么原因呢？
+很直白的解释：我们要调用一个类的静态变量，当然要先找到这个类，然后再获取这个类的变量。
+从PHP源码来看，这是由于在编译时其调用了zend_do_fetch_static_member函数，
+而在此函数中又调用了zend_do_fetch_class函数，
 从而会生成ZEND_FETCH_CLASS中间代码。它所对应的执行函数为 **ZEND_FETCH_CLASS_SPEC_CONST_HANDLER**。
-此函数会调用zend_fetch_class函数（Zend/zend_execute_API.c）.
-而zend_fetch_class函数最终也会调用 **zend_lookup_class_ex** 函数查找类。这与前面的查找方式一样。
+此函数会调用zend_fetch_class函数（Zend/zend_execute_API.c）。
+而zend_fetch_class函数最终也会调用 **zend_lookup_class_ex** 函数查找类，这与前面的查找方式一样。
 
-类找到了，下面是查找类的静态成员变量，其最终调用的函数为：zend_std_get_static_property。
+找到了类，接着应该就是查找类的静态成员变量，其最终调用的函数为：zend_std_get_static_property。
 这里由于第二个参数的类型为 ZEND_FETCH_STATIC_MEMBER。这个函数最后是从 **static_members** 字段中查找对应的值返回。
 而在查找前会和前面一样，执行zend_update_class_constants函数，从而更新此类的所有静态成员变量，其程序流程如图5.1所示：
 
@@ -129,8 +151,8 @@
 ## 成员方法
 成员方法从本质上来讲也是一种函数，所以其存储结构也和常规函数一样，存储在zend_function结构体中。
 对于一个类的多个成员方法，它是以HashTable的数据结构存储了多个zend_function结构体。
-和前面的成员方法一样，在类声明时也通过调用zend_initialize_class_data方法，初始化了整个HashTable.
-在类中我们定义一个成员方法，一般如下：
+和前面的成员变量一样，在类声明时成员方法也通过调用zend_initialize_class_data方法，初始化了整个方法列表所在的HashTable。
+在类中我们如果要定义一个成员方法，格式如下：
 
     [php]
     class Tipi{
@@ -140,20 +162,76 @@
     }
 
 除去访问控制关键字，一个成员方法和常规函数是一样的，从语法解析中调用的函数一样（都是zend_do_begin_function_declaration函数），
-但是其调用的参数有一些不同，第三个参数，成员方法的赋值为1，表示它作为成员方法的属性。
-在这个函数中，它首先会将这个方法直接添加到类结构的function_talbe字段，
-然后再此成员方法有一系列的判断，其中包括对于Magic Method的特殊赋值处理等。
+但是其调用的参数有一些不同，第三个参数is_method，成员方法的赋值为1，表示它作为成员方法的属性。
+在这个函数中会有一系统的编译判断，比如在接口中不能声明私有的成员方法。
+看这样一段代码：
+    
+    [php]
+    interface Ifce {
+       private function method();
+    }
+
+如果直接运行，程序会马上报错：Fatal error: Access type for interface method Ifce::method() must be omitted in 
+这段代码对应到zend_do_begin_function_declaration函数中的代码，如下：
+
+    [c]
+    if (is_method) {
+		if (CG(active_class_entry)->ce_flags & ZEND_ACC_INTERFACE) {
+			if ((Z_LVAL(fn_flags_znode->u.constant) & ~(ZEND_ACC_STATIC|ZEND_ACC_PUBLIC))) {
+				zend_error(E_COMPILE_ERROR, "Access type for interface method %s::%s() must be omitted", CG(active_class_entry)->name, function_name->u.constant.value.str.val);
+			}
+			Z_LVAL(fn_flags_znode->u.constant) |= ZEND_ACC_ABSTRACT; /* propagates to the rest of the parser */
+		}
+		fn_flags = Z_LVAL(fn_flags_znode->u.constant); /* must be done *after* the above check */
+	} else {
+		fn_flags = 0;
+	}
+
+在此程序判断后，程序将方法直接添加到类结构的function_talbe字段，在此之后，又是若干的编译检测。
+比如接口的一些魔术方法不能被设置为非公有，不能被设置为static，如__call()、__callStatic()、__get()等。
+如果在接口中设置了静态方法，如下定义的一个接口：
+
+    [php]
+    interface ifce {
+        public static function __get();
+    }
+
+若运行这段代码，则会显示Warning：Warning: The magic method __get() must have public visibility and cannot be static in 
+
+这段编译检测在zend_do_begin_function_declaration函数中对应的源码如下：
+
+    [c]
+    if (CG(active_class_entry)->ce_flags & ZEND_ACC_INTERFACE) {
+			if ((name_len == sizeof(ZEND_CALL_FUNC_NAME)-1) && (!memcmp(lcname, ZEND_CALL_FUNC_NAME, sizeof(ZEND_CALL_FUNC_NAME)-1))) {
+				if (fn_flags & ((ZEND_ACC_PPP_MASK | ZEND_ACC_STATIC) ^ ZEND_ACC_PUBLIC)) {
+					zend_error(E_WARNING, "The magic method __call() must have public visibility and cannot be static");
+				}
+			} else if() {   //  其它魔术方法的编译检测
+            }
+    }
+
+同样，对于类中的这些魔术方法，也有同样的限制，如果在类中定义了静态的魔术方法，则显示警告。如下代码
+
+    [php]
+    class Tipi {
+        public static function __get($var) {
+
+        }
+    }
+
+运行这段代码，则会显示： Warning: The magic method __get() must have public visibility and cannot be static in
 
 与成员变量一样，成员方法也有一个返回所有成员方法的函数--get_class_methods()。
 此函数返回由指定的类中定义的方法名所组成的数组。 从 PHP 4.0.6 开始，可以指定对象本身来代替指定的类名。
-它属于PHP内建函数，其整个程序流程就是一个遍历存储了类成员方法的列表，判断是否为符合条件的方法，
+它属于PHP内建函数，整个程序流程就是一个遍历类成员方法列表，判断是否为符合条件的方法，
 如果是，则将这个方法作为一个元素添加到返回数组中。
 
 
 ## 静态成员方法
-因为类的静态成员方法通常也叫做类方法。
+类的静态成员方法通常也叫做类方法。
 与静态成员变量不同，静态成员方法与成员方法都存储在类结构的 function_table 字段。
-类的静态成员变量可以通过类名直接访问。
+
+类的静态成员方法可以通过类名直接访问。
 
     [php]
     class Tipi{
@@ -209,7 +287,7 @@ Zend引擎在调用的时候是怎么区分这两类方法的，比如我们静�
 
 可能一般人不会这么做，不过笔者有一次错误的这样调用了，而代码没有出现任何问题，在review代码的时候意外发现我像实例方法那样调用的静态方法，
 而什么问题都没有发生。在理论上这种情况是不应发生的，类似这这样的情况在PHP中是非常的多的，例如前面提到的create_function方法返回的伪匿名方法，
-后面介绍访问控制时还会介绍访问控制的一些瑕疵，PHP在是现实通常采用Quick and Dirty的方式来实现功能和解决问题，
+后面介绍访问控制时还会介绍访问控制的一些瑕疵，PHP在现实中通常采用Quick and Dirty的方式来实现功能和解决问题，
 这一点和Ruby完整的面向对象形成鲜明的对比。我们先看一个例子：
 
 	[php]
