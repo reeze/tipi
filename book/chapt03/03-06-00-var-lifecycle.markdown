@@ -1,10 +1,12 @@
 # 第六节 变量的生命周期
 
-通过前面章节的描述，我们已经知道了PHP中变量的存储方式－－所有的变量都保存在zval结构中。下面介绍一下PHP内核如何实现变量的定义方式以及作用域。
+通过前面章节的描述，我们已经知道了PHP中变量的存储方式－－所有的变量都保存在zval结构中。
+下面介绍一下PHP内核如何实现变量的定义方式以及作用域。
 
 ##变量的生命周期
 
-在ZE进行词法和语法的分析之后,生成具体的opcode,这些opcode最终被execute函数(Zend/zend_vm_execute.h:46)解释执行。在excute函数中，有以下代码：
+在ZE进行词法和语法的分析之后,生成具体的opcode,这些opcode最终被execute函数(Zend/zend_vm_execute.h:46)解释执行。
+在excute函数中，有以下代码：
 
     [c]
     while (1) { 
@@ -26,7 +28,12 @@
 		}     
 		...
 	}
-这里的EX(opline)->handler(...)将op_array中的操作顺序执行，其中变量赋值操作在ZEND_ASSIGN_SPEC_CV_CONST_HANDLER()函数中进行。ZEND_ASSIGN_SPEC_CV_CONST_HANDLER中进行一些变量类型的判断并在内存中分配一个zval,然后将变量的值存储其中。变量名和指向这个zval的指针，则会存储于符号表内。ZEND_ASSIGN_SPEC_CV_CONST_HANDLER的最后会调用ZEND_VM_NEXT_OPCODE()将op_array的指针移到下一条opline，这样就会形成循环执行的效果。
+这里的EX(opline)->handler(...)将op_array中的操作顺序执行，
+其中变量赋值操作在ZEND_ASSIGN_SPEC_CV_CONST_HANDLER()函数中进行。
+ZEND_ASSIGN_SPEC_CV_CONST_HANDLER中进行一些变量类型的判断并在内存中分配一个zval,然后将变量的值存储其中。
+变量名和指向这个zval的指针，则会存储于符号表内。
+ZEND_ASSIGN_SPEC_CV_CONST_HANDLER的最后会调用ZEND_VM_NEXT_OPCODE()将op_array的指针移到下一条opline，
+这样就会形成循环执行的效果。
 
 在ZE执行的过程中，有四个全局的变量，这些变量都是用于ZE运行时所需信息的存储：
 
