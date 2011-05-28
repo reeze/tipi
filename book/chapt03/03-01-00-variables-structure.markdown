@@ -1,24 +1,26 @@
 # 第一节 变量的结构
 
-每门计算机语言都需要一些容器来保存变量数据。在一些语言当中，变量都有特定的类型，如字符串，数组，对象等等。比如C和Pascal就属于这种。
-而PHP则没有这样的类型。在PHP中，一个变量在某一行是字符串，可能到下一行就变成了数字。
-变量可以经常在不同的类型间轻易的转化，甚至是自动的转换。
-PHP之所以成为一个简单并且强大的语言，很大一部分的原因是它拥有弱类型的变量。但是有些时候这也会带来一些问题。
-在PHP内部，所有的变量都保存在zval结构中，也就是说，zval使用同一种结构存储了包括int、array、string等不同数据类型。
-它不仅仅包含变量的值，也包含变量的类型。变量容器中包含一些Zend引擎用来区分是否引用的字段。同时它也包含这个值的引用计数。
+每门计算机语言都需要容器来保存变量所关联的数据。在一些语言当中，变量有特定的类型，如字符串、数组、对象等等。
+比如C和Pascal就属于这种强类型语言，也就是一旦某个变量被申明为某个类型的变量，则在程序运行过程中，
+它只能表示申明时的类型，而不能进行改变。而PHP则没有这样的限制，它属于弱类型语言：一个变量可以表示任意的数据类型。
+
+PHP之所以成为一个简单而强大的语言，很大一部分的原因是它拥有弱类型的变量。但是有些时候这也是一把双刃剑，
+使用不当也会带来一些问题。在PHP内部，所有的变量使用同一种数据结构(zval)保存，而这这个结构同时表示PHP中的各种数据类型。
+它不仅仅包含变量的值，也包含变量的类型。
 
 那么，zval是如何做到的呢，下面我们一起来揭开面纱。
 
 ## 一.PHP变量类型在内核中的存储结构
 PHP是一种弱类型的语言，这就意味着在声明或使用变量的时候，并不需要显式指明其数据类型。
-但是，PHP是由C来实现的，大家都知道C对变量的类型管理是非常严格的，强类型的C是这样实现弱类型的PHP变量类型的:
+但是，PHP是由C来实现的，大家都知道C是强类型的语言，那这是怎么实现的呢？
 
 ### 1.在PHP中，存在8种变量类型，可以分为三类
-* 标量类型： *boolean*   *integer*   *float(double)*   *string*
-* 复合类型： *array*   *object*
-* 特殊类型： *resource*   *NULL*
+* 标量类型： *boolean*、*integer*、*float(double)*、*string*
+* 复合类型： *array*、*object*
+* 特殊类型： *resource*、*NULL*
 
-在变量声明的开始，ZE判断用户变量的类型，并存入到以下zval结构体中。zval结构体定义在Zend/zend.h文件，其代码如下：
+在变量申明或赋值时Zend引擎能获取到数据类型。并将值存储到以下所示zval结构体中。
+zval结构体定义在Zend/zend.h文件，其结构如下：
 
 	[c]
 	typedef struct _zval_struct zval;
@@ -32,29 +34,28 @@ PHP是一种弱类型的语言，这就意味着在声明或使用变量的时�
 	};
 
 ### 2.初始化变量类型:
-在上面的结构体中有四个值，其含义为：
+上面的zval结构体中有四个字段，其含义分别为：
 
 | 属性名  |  含义 | 默认值 |
 |:------------|:------------|:----------------:|
 |refcount__gc      |	表示引用计数|1 	|
 |is_ref__gc	  | 表示是否为引用|0	|
-|value 		  |	存储着变量的值信息			||
-|type 		  |	记录变量的内部类型			||
+|value 		  |	存储变量的值			||
+|type 		  |	变量具体的类型			||
 
 >**NOTE**
-> 在PHP5.3之后，由于引入了垃圾收集机制，引用计数和是否为引用的属性名为refcount__gc和is_ref__gc。在此之前为refcount和is__ref。
+> 在PHP5.3之后，引入了新的垃圾收集机制，引用计数和引用的字段名改为refcount__gc和is_ref__gc。在此之前为refcount和is__ref。
 
-在变量的初始化过程中，ZE会将变量的类型（type）值根据其变量类型置为：
+其中type字段就是实现弱类型最关键的字段了，type的值可以为：
 IS_NULL, IS_BOOL, IS_LONG, IS_DOUBLE, IS_STRING, IS_ARRAY, IS_OBJECT, IS_RESOURCE 之一。
-这些类型都是Zend内核为了代码的可读性定义的宏，他们对应的数字为0到7。
+从字面上就很好理解，他们只是类型的唯一标示，根据类型的不同将不同的值存储到value字段。
 除此之外，和他们定义在一起的类型还有IS_CONSTANT和IS_CONSTANT_ARRAY。
 
->**Question**
->PHP的实现中，如何判断变量是属于哪种类型的呢？(下节介绍）
+这和我们设计数据库时的做法类似，为了避免重复设计类似的表，使用一个标示字段来记录不同类型的数据。
 
-## 二.变量的值在_zval_value中的存储
+## 二.变量的值存储
 
-在上面大家不难发现，所有的php变量都是存储于zval结构中，其中变量值存储在zvalue_value联合体中：
+所有的php变量都是存储于zval结构中，而变量的值则存储在zvalue_value联合体中：
 
 	[c]
 	typedef union _zvalue_value {
@@ -68,8 +69,12 @@ IS_NULL, IS_BOOL, IS_LONG, IS_DOUBLE, IS_STRING, IS_ARRAY, IS_OBJECT, IS_RESOURC
 		zend_object_value obj;
 	} zvalue_value;
 
-	
-各种类型的数据会使用不同的方法来进行变量值的存储，其对应变量的赋值方式：
+>**NOTE**
+>这里使用联合体而不是用结构体是出于空间利用率的考虑，因为一个变量同时只能属于一种类型。
+>如果使用结构体的话将会不必要的浪费空间，而PHP中的所有逻辑都围绕变量来进行的，这样的话，
+>内存浪费将是十分大的。这种做法成本小但收益非常大。
+
+各种类型的数据会使用不同的方法来进行变量值的存储，其对应赋值方式如下：
 	
 * 一般类型
 
@@ -119,8 +124,7 @@ IS_NULL, IS_BOOL, IS_LONG, IS_DOUBLE, IS_STRING, IS_ARRAY, IS_OBJECT, IS_RESOURC
 
 * 字符串Sting
 
-字符串类型的存储有别于上述一般类型，因为C中的字符串变量实际上是指向一个字符数组的头指针。所以，PHP在实现字符串变量时，
-也采用指针的方式，在_zvalue_value数据结构中，存在下面的结构体内，其中*val就存储了指向字符串的指针，而len则存储了字符的长度。
+字符串的类型标示和其他数据类型一样，不过在存储字符串时多了一个字符串长度的字段。
 
 	[c]
 	struct {
@@ -129,55 +133,26 @@ IS_NULL, IS_BOOL, IS_LONG, IS_DOUBLE, IS_STRING, IS_ARRAY, IS_OBJECT, IS_RESOURC
 	} str;
 
 >**NOTE**
-> 从这里可以看出strlen()函数是不会重新计算字符串长度的，只是返回str结构体中的len的值。
+>C中字符串是以\0结尾的字符数组，这里多存储了字符串的长度，这和我们在设计数据库时增加的冗余字段异曲同工。
+>因为要实时获取到字符串的长度的时间复杂度是O(n)，而字符串的操作在PHP中是非常频繁的，这样能避免重复计算字符串的长度，
+>这能节省大量的时间，是空间换时间的做法。
+>
+>这么看在PHP中strlen()函数可以在常数时间内获取到字符串的长度。
+>计算机语言中字符串的操作都非常之多，所以大部分高级语言中都会存储字符串的长度。
 
 * 数组Array
 
 数组是PHP中最常用，也是最强大变量类型，它可以存储其他类型的数据，而且提供各种内置操作函数。数组的存储相对于其他变量要复杂一些，
-需要使用其它两种数据结构HashTable和Bucket。
-
-	[c]
-	typedef struct _hashtable { 
-		uint nTableSize;    	// hash Bucket的大小,最小为8,以2x增长。
-		uint nTableMask;		// nTableSize-1 ， 索引取值的优化
-		uint nNumOfElements; 	// hash Bucket中当前存在的元素个数, count()函数会直接返回此值 
-		ulong nNextFreeElement;	// 标记hash Bucket当前索引数
-		Bucket *pInternalPointer;   // 当前遍历的指针（foreach比for快的原因之一）
-		Bucket *pListHead;          // 存储数组头元素指针
-		Bucket *pListTail;          // 存储数组尾元素指针
-		Bucket **arBuckets;         // 存储hash数组
-		dtor_func_t pDestructor;
-		zend_bool persistent;
-		unsigned char nApplyCount; // 标记当前hash Bucket被递归访问的次数（防止多次递归）
-		zend_bool bApplyProtection;// 标记当前hash桶允许不允许多次访问，不允许时，最多只能递归3次
-	#if ZEND_DEBUG
-		int inconsistent;
-	#endif
-	} HashTable;
-
-	....
-
-	typedef struct bucket {
-		ulong h;            //对char *key进行hash后的值,或者是用户指定的数字索引值
-		uint nKeyLength;	//hash关键字的长度,如果数组索引为数字，此值为0
-		void *pData;		//指向value，一般是用户数据的副本,如果是指针数据，则指向pDataPtr
-		void *pDataPtr;		//如果是指针数据,此值会指向真正的value,同时上面pData会指向此值
-		struct bucket *pListNext;	//整个hash表的下一元素
-		struct bucket *pListLast;
-		struct bucket *pNext;		//存放在同一个hash Bucket内的下一个元素
-		struct bucket *pLast;
-		char arKey[1]; 	
-		/*存储字符索引，此项必须放在最未尾，因为此处只字义了1个字节，存储的实际上是指向char *key的值，
-		这就意味着可以省去再赋值一次的消耗，而且，有时此值并不需要，所以同时还节省了空间。
-		*/
-	} Bucket;
-
-从代码中不难发现，数组的存储是由_zval_struct ， _zvalue_value，HashTable，Bucket 共同完成的。上面的注释中标出了结构中的主要属性的作用。
-
+数组的值存储在zvalue_value.ht字段中，它是一个HashTable类型的数据。
+PHP的数组使用哈希表来存储关联数据。哈希表是一种高效的键值对存储结构。PHP的哈希表实现中使用了两个数据结构HashTable和Bucket。
+PHP所有的工作都由哈希表实现，在下节HashTable中将进行哈希表基本概念的介绍以及PHP的哈希表实现。
 
 * 对象Object
 
-对象是一种复合型的数据，其需要存储较多元化的数据，如属性，方法，以及自身的一些性质。对象在PHP中是使用一种zend_object_value的结构体来存放。其代码如下：
+在面向对象语言中，我们能自己定义自己需要的数据类型，包括类的属性，方法等数据。而对象则是类的一个具体实现。
+对象有自身的状态和所能完成的操作。
+
+PHP的对象是一种复合型的数据，使用一种zend_object_value的结构体来存放。其定义如下：
 
     [c]
     typedef struct _zend_object_value {
@@ -185,13 +160,16 @@ IS_NULL, IS_BOOL, IS_LONG, IS_DOUBLE, IS_STRING, IS_ARRAY, IS_OBJECT, IS_RESOURC
         zend_object_handlers *handlers;
     } zend_object_value;
 
-handle字段是 EG(objects_store).object_buckets的索引，用来存取对应对象的相关数据。zend_object_handlers是一个包含许多方法指针的结构体。
-关于这个结构体及对象相关的类的结构_zend_class_entry，将在第五章节作详细介绍。
+PHP的对象只有在运行时才会被创建，前面的章节介绍了EG宏，这是一个全局结构体用于保存在运行时的数据。
+其中就包括了用来保存所有被创建的对象的对象池，EG(objects_store)，而object对象值内容的zend_object_handle域就是当前
+对象在对象池中所在的索引，handlers字段则是将对象进行操作时的处理函数保存起来。
+这个结构体及对象相关的类的结构\_zend_class_entry，将在第五章作详细介绍。
 
-PHP的这种变量容器的实现方式是以一种兼容并包的形式体现，针对每种类型的变量都有其对应的标记和存储空间。
-PHP在做语法解析时就已经确定了变量的类型，每种常见的类型都有，因此在对变量进行操作时，Zend内核需要判断类型，由此会多出一些操作，
-从而在大数据量的场景下，性能等方面会有一些损耗。其实这就相当于将其它语言中需要人工区别的事情交给了PHP去做，或者说是一种延后处理的思想。
-但是考虑到PHP本身的定位及应用场景，这样的损耗也是值得的。
+PHP的弱变量容器的实现方式是兼容并包的形式体现，针对每种类型的变量都有其对应的标记和存储空间。
+使用强类型的语言在效率上通常会比弱类型高，因为很多信息能在运行之前就能确定，这也能帮助排除程序错误。
+而这带来的问题时编写代码相对会受制约。
 
-
-
+PHP主要的用途是作为Web开发语言，在普通的Web应用中瓶颈通常在业务和数据访问这一层。不过在大型应用下语言也会是一个关键因素。
+facebook因此就使用了自己的php实现。将PHP编译为C++代码来提高性能。不过facebook的hiphop并不是完整的php实现，
+由于它是直接将php编译为C++，有一些PHP的动态特性比如eval结构就无法实现。当然非要实现也是有方法的，
+hiphop不实现应该也是做了一个权衡。

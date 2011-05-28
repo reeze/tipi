@@ -52,7 +52,7 @@
     * [第六节 PHP保留类及特殊类:self,static, parent][class-reserved-and-special-classes]
     * [第七节 对象][class-object]
     * [第八节 命名空间][class-namespace]
-    * [第九节 小结][09-summary]
+    * [第九节 小结][05-summary]
 
 - 第六章 内存管理
 	* 第一节 内存概述和结构
@@ -143,4 +143,4 @@
 [class-reserved-and-special-classes]: ?p=chapt05/05-06-class-reserved-and-special-classes
 [class-object]: ?p=chapt05/05-07-class-object
 [class-namespace]: ?p=chapt05/05-08-class-namespace
-[05-summary]:		?p=chapt05/05-summary
+[05-summary]:		?p=chapt05/05-09-summary
