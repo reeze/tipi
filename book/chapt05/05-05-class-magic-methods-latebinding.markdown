@@ -1,19 +1,19 @@
 # 第五节 魔术方法,延迟绑定及静态成员
 
-PHP中有一些特殊的函数和方法,　这些函数和方法和普通方法的特殊之处在于: 用户代码通常不会主动调用,
-而是在特定的实际会被PHP自动调用. 在PHP中通常以"\_\_"打头的方法都作为魔术方法, 所以通常不要定义以"\_\_"开头的函数或方法.
-例如:\_\_autoload()函数, 通常我们不会手动调用这个函数, 而如果在代码中访问某个未定义的方法, 
-如过已经定义了\_\_autoload()函数,此时PHP将会尝试调用\_\_autoload()函数, 例如在类的定义中如果定义了\_\_construct()方法,
-在初始化类的实例时将会调用这个方法, 同理还有\_\_destuct()方法, 详细内容请参考[PHP手册](http://php.net/manual/en/language.oop5.magic.php).
+PHP中有一些特殊的函数和方法，这些函数和方法和普通方法的特殊之处在于: 用户代码通常不会主动调用，
+而是在特定的实际会被PHP自动调用. 在PHP中通常以"\_\_"打头的方法都作为魔术方法， 所以通常不要定义以"\_\_"开头的函数或方法.
+例如:\_\_autoload()函数， 通常我们不会手动调用这个函数， 而如果在代码中访问某个未定义的方法， 
+如过已经定义了\_\_autoload()函数，此时PHP将会尝试调用\_\_autoload()函数， 例如在类的定义中如果定义了\_\_construct()方法，
+在初始化类的实例时将会调用这个方法， 同理还有\_\_destuct()方法， 详细内容请参考[PHP手册](http://php.net/manual/en/language.oop5.magic.php).
 
 ## 魔术函数和魔术方法
-前面提到魔术函数和魔术方法的特殊之处在于这些方法(在这里把函数和方法统称方法)的调用时机是在某些特定的场景才会被触发,
-这些方法可以理解为一些事件监听方法, 在事件触发时才会执行.
+前面提到魔术函数和魔术方法的特殊之处在于这些方法(在这里把函数和方法统称方法)的调用时机是在某些特定的场景才会被触发，
+这些方法可以理解为一些事件监听方法， 在事件触发时才会执行.
 
 ### 魔术方法
-根据前面的介绍, 魔术方法就是在类的某些场景下触发的一些监听方法. 这些方法需要在类定义中进行定义,
-在存储上魔术方法自然存储于类中, 而类在PHP内部是一个**_zend_class_entry**结构体，与普通方法一样，
-只不过这些类不是存储在类的函数表, 而是直接存储在类结构体中:
+根据前面的介绍， 魔术方法就是在类的某些场景下触发的一些监听方法. 这些方法需要在类定义中进行定义，
+在存储上魔术方法自然存储于类中， 而类在PHP内部是一个**_zend_class_entry**结构体，与普通方法一样，
+只不过这些类不是存储在类的函数表， 而是直接存储在类结构体中:
 
 *    在**_zend_class_entry**结构体中的存储位置不同;
 *    由ZendVM自动分情境进行调用;
@@ -64,7 +64,8 @@ Zend VM在初始化对象的时候，使用了new关键字，对其OPCODE进行�
 	#4  0x00000001004d4b5c in main (argc=2, argv=0x7fff5fbffa30) at /Volumes/DEV/C/php-5.3.4/sapi/cli/php_cli.c:1193
 
 
-上面的椎栈信息清晰显示了new关键的调用过程，可以发现new关键字对应了ZEND_NEW_SPEC_HANDLER的处理函数，在ZEND_NEW_SPEC_HANDLER中，Zend VM使用下面的代码来获取对象是否定义了**__construct**方法：
+上面的椎栈信息清晰显示了new关键的调用过程，可以发现new关键字对应了ZEND_NEW_SPEC_HANDLER的处理函数，
+在ZEND_NEW_SPEC_HANDLER中，Zend VM使用下面的代码来获取对象是否定义了**__construct**方法：
 
 	[c]
 	...
@@ -91,7 +92,8 @@ Zend VM在初始化对象的时候，使用了new关键字，对其OPCODE进行�
 >**NOTE**
 > Z_OBJ_P(zval); Z_OBJ_P宏将一个zval类型变量构造为zend_object类型。
 
-在判断了**__construct**魔术变量存在之后，ZEND_NEW_SPEC_HANDLER中对当前EX(called_scope)进行了重新赋值，使ZEND_VM_NEXT_OPCODE();将opline指针指向__construct方法的op_array，开始执行__construct魔术方法
+在判断了**__construct**魔术变量存在之后，ZEND_NEW_SPEC_HANDLER中对当前EX(called_scope)进行了重新赋值，
+使ZEND_VM_NEXT_OPCODE();将opline指针指向__construct方法的op_array，开始执行__construct魔术方法
 
 		[c]
         EX(object) = object_zval;
@@ -102,9 +104,9 @@ Zend VM在初始化对象的时候，使用了new关键字，对其OPCODE进行�
 
 
 ###__destruct
-**__destruct**是析构方法，运行于对象被显示销毁或者脚本关闭时,一般被用于释放占用的资源。
+**__destruct**是析构方法，运行于对象被显示销毁或者脚本关闭时，一般被用于释放占用的资源。
 **__destruct**的调用涉及到垃圾回收机制，在第七章中会有更详尽的介绍。
-本文笔者只针对**__destruct**调用机制进行分析,其调用堆栈信息如下：
+本文笔者只针对**__destruct**调用机制进行分析，其调用堆栈信息如下：
 
 	[bash]
 	//省略部分内存地址信息后的堆栈：
@@ -171,6 +173,29 @@ PHP中还有很多种魔术方法，它们的处理方式基本与上面类似�
 >该功能从语言内部角度考虑被命名为“后期静态绑定”。
 >“后期绑定”的意思是说，static::不再被解析为定义当前方法所在的类，而是在实际运行时计算的。
 >也可以称之为”静态绑定“，因为它可以用于（但不限于）静态方法的调用。
+
+延迟绑定的实现关键在于static关键字，如果以static调用静态方法，则在语法解析时:
+
+    function_call:
+    ...//省略若干其它情况的函数调用
+	|	class_name T_PAAMAYIM_NEKUDOTAYIM T_STRING '(' { $4.u.opline_num = zend_do_begin_class_member_function_call(&$1, &$3 TSRMLS_CC); }
+			function_call_parameter_list
+			')' { zend_do_end_function_call($4.u.opline_num?NULL:&$3, &$$, &$6, $4.u.opline_num, $4.u.opline_num TSRMLS_CC); zend_do_extended_fcall_end(TSRMLS_C);}
+    ...//省略若干其它情况的函数调用
+
+    class_name:
+		T_STATIC { $$.op_type = IS_CONST; ZVAL_STRINGL(&$$.u.constant, "static", sizeof("static")-1, 1);}
+
+如上所示，static将以第一个参数(class_name)传递给zend_do_begin_class_member_function_call函数。
+此时class_name的op_type字段为IS_CONST，但是通过zend_get_class_fetch_type获取此类的类型为ZEND_FETCH_CLASS_STATIC。
+这个类型作为操作的extended_value字段存在，此字段在后面执行获取类的中间代码ZEND_FETCH_CLASS（ZEND_FETCH_CLASS_SPEC_CONST_HANDLER）时，
+将作为第三个参数(fetch_type)传递给获取类名的最终执行函数zend_fetch_class。
+
+    EX_T(opline->result.u.var).class_entry = zend_fetch_class(Z_STRVAL_P(class_name), 
+        Z_STRLEN_P(class_name), opline->extended_value TSRMLS_CC);
+
+至于在后面如何执行，请查看下一小节：第六节 PHP保留类及特殊类
+
 
 
 
