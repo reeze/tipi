@@ -1,5 +1,6 @@
 # 第六节 PHP保留类及特殊类
-在面向对象语言中，都会内置一些实现语言基本功能类，比如JavaScript中的Array，Number等类，
+
+在面向对象语言中，都会内置一些语言内置提供的基本功能类，比如JavaScript中的Array，Number等类，
 PHP中也有很多这种类，比如Directory，stdClass，Exception等类，同时一些标准扩展比如PDO等扩展中也会定义一些类，
 PHP中类是不允许重复定义的，所以在编写代码时不允许定义已经存在的类.
 
@@ -199,4 +200,3 @@ self::CONSTANT类似的作用域解析符号(::)，这时的self才会作为指�
 代码B::funcA()执行的时候, 实际执行的是B的父类A中定义的funcA函数, A::funcA()执行时当前的类(scope)指向的是类A,
 而这个方法是从B类开始调用的, called_scope指向的是类B, static特殊类指向的正是called_scope, 也就是当前类(触发方法调用的类),
 这也是延迟绑定的原理.
-
