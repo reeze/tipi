@@ -21,6 +21,7 @@
 - [第三章 变量及数据类型][variables]
 	* [第一节 变量的内部结构][variables-structure]
 		+ [哈希表(HashTable)][variables-hashtable]
+		+ [PHP的哈希表实现][variables-hashtable-in-php]
     * [第二节 常量][const-var]
 	* [第三节 预定义变量][pre-defined-variable]
 	* [第四节 静态变量][static-var]
@@ -48,7 +49,7 @@
     * [第二节 类的成员变量及方法][class-member-variables-and-methods]
     * [第三节 访问控制的实现][class-visibility]
     * [第四节 类的继承, 多态及抽象类][class-inherit-abstract]
-    * [第五节 魔术方法,延迟绑定及静态成员][class-magic-methods-latebinding](er)
+    * [第五节 魔术方法,延迟绑定及静态成员][class-magic-methods-latebinding]
     * [第六节 PHP保留类及特殊类:self,static, parent][class-reserved-and-special-classes]
     * [第七节 对象][class-object]
     * [第八节 命名空间][class-namespace]
@@ -112,6 +113,7 @@
 [variables]:            ?p=chapt03/03-00-variable-and-data-types
 [variables-structure]: 	?p=chapt03/03-01-00-variables-structure
 [variables-hashtable]: 	?p=chapt03/03-01-01-hashtable
+[variables-hashtable-in-php]: 	?p=chapt03/03-01-02-hashtable-in-php
 [const-var]: 			?p=chapt03/03-02-const-var
 [pre-defined-variable]:	?p=chapt03/03-03-pre-defined-variable
 [static-var]:           ?p=chapt03/03-04-static-var
