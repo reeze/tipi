@@ -1,18 +1,18 @@
 /*
   +----------------------------------------------------------------------+
-  | PHP Version 5                                                        |
+ \n PHP Version 5                                                       \n
   +----------------------------------------------------------------------+
-  | Copyright (c) 1997-2008 The PHP Group                                |
+ \n Copyright (c) 1997-2008 The PHP Group                               \n
   +----------------------------------------------------------------------+
-  | This source file is subject to version 3.01 of the PHP license,      |
-  | that is bundled with this package in the file LICENSE, and is        |
-  | available through the world-wide-web at the following url:           |
-  | http://www.php.net/license/3_01.txt                                  |
-  | If you did not receive a copy of the PHP license and are unable to   |
-  | obtain it through the world-wide-web, please send a note to          |
-  | license@php.net so we can mail you a copy immediately.               |
+ \n This source file is subject to version 3.01 of the PHP license,     \n
+ \n that is bundled with this package in the file LICENSE, and is       \n
+ \n available through the world-wide-web at the following url:          \n
+ \n http://www.php.net/license/3_01.txt                                 \n
+ \n If you did not receive a copy of the PHP license and are unable to  \n
+ \n obtain it through the world-wide-web, please send a note to         \n
+ \n license@php.net so we can mail you a copy immediately.              \n
   +----------------------------------------------------------------------+
-  | Author:                                                              |
+ \n Author:                                                             \n
   +----------------------------------------------------------------------+
 */
 
@@ -177,12 +177,76 @@ PHP_FUNCTION(tipi_test)
    follow this convention for the convenience of others editing your code.
 */
 
+
+/**
+ * 从xdebug扩展中copy过来的
+ */
+zval* tipi_get_php_symbol(char* name, int name_length)
+{
+	HashTable           *st = NULL;
+	zval               **retval;
+	TSRMLS_FETCH();
+
+	st = EG(active_symbol_table);
+	if (st && st->nNumOfElements && zend_hash_find(st, name, name_length, (void **) &retval) == SUCCESS) {
+		return *retval;
+	}
+
+	st = EG(active_op_array)->static_variables;
+	if (st) {
+		if (zend_hash_find(st, name, name_length, (void **) &retval) == SUCCESS) {
+			return *retval;
+		}
+	}
+	
+	st = &EG(symbol_table);
+	if (zend_hash_find(st, name, name_length, (void **) &retval) == SUCCESS) {
+		return *retval;
+	}
+	return NULL;
+}
+
+static tipi_print_zval(zval *z)
+{
+	zend_printf(" zval refucount=%d\n", Z_REFCOUNT_P(z));
+}
+
 /**
  * 输出变量的相关属性值
  */
 PHP_FUNCTION(tipi_debug_zval_dump)
 {
-	zend_printf("debug_zavl_dump\n");
+	zval ***args;
+	int 	argc;
+	int i;
+	zval *z;
+
+	argc = ZEND_NUM_ARGS();
+
+	args = (zval ***)emalloc(argc * sizeof(zval **));
+	if (ZEND_NUM_ARGS() == 0 || zend_get_parameters_array_ex(argc, args) == FAILURE) {
+		efree(args);
+		WRONG_PARAM_COUNT;
+	}
+
+	for (i = 0; i < argc; i++) {
+		if (Z_TYPE_PP(args[i]) == IS_STRING) {
+			tipi_print_zval(tipi_get_php_symbol(Z_STRVAL_PP(args[i]), Z_STRLEN_PP(args[i]) + 1));
+		}
+	}
+
+	efree(args);
+	
+}
+
+static void tipi_dump_function_detail(zend_function *func)
+{
+	zend_printf("type=%d \n  ", func->common.type);
+	zend_printf("fn_flags=%d \n  ", func->common.fn_flags);
+	zend_printf("nums_args=%d \n  ", func->common.num_args);
+	zend_printf("required_num_args=%d \n  ", func->common.required_num_args);
+	zend_printf("pass_rest_by_reference=%d \n  ", func->common.pass_rest_by_reference);
+	zend_printf("return_reference=%d \n  ", func->common.return_reference);
 }
 
 /**
@@ -190,36 +254,45 @@ PHP_FUNCTION(tipi_debug_zval_dump)
  */
 static void tipi_dump_function(zend_function *func) 
 {
-	zend_printf("function_name=%s  |  ", func->common.function_name);
-	zend_printf("type=%d  |  ", func->common.type);
-	zend_printf("fn_flags=%d  |  ", func->common.fn_flags);
-	zend_printf("nums_args=%d  |  ", func->common.num_args);
-	zend_printf("required_num_args=%d  |  ", func->common.required_num_args);
-	zend_printf("pass_rest_by_reference=%d  |  ", func->common.pass_rest_by_reference);
-	zend_printf("return_reference=%d  |  ", func->common.return_reference);
-	zend_printf("\n");
+	zend_printf("-------------------- Function %s --------------------", func->common.function_name);
+	TIPI_LINE;
+	
+	tipi_dump_function_detail(func);
+	TIPI_LINE;
 }
 
-static void tipi_dump_class_magic_method(zend_function *method, char *method_name)
+
+/**
+ * 输出类的方法
+ */
+static void tipi_dump_method(zend_function *func, char *class_name, int key)
+{
+	zend_printf("--------------------  Function %s IN Class %s, the %d . --------------------", func->common.function_name, class_name, key);
+	TIPI_LINE;
+
+	tipi_dump_function_detail(func);
+}
+
+static void tipi_dump_class_magic_method(zend_function *method, char *method_name, char *class_name)
 {
 	if (method->common.function_name  == NULL) {
-		zend_printf("magic function %s =  null  |  ", method_name);
+		zend_printf("magic function %s =  null \n  ", method_name);
 	}else{
-		tipi_dump_function(method);
+		tipi_dump_method(&method, class_name, 0);
 	}
 }
 
 static void tipi_dump_class_magic_methods(zend_class_entry **ce)
 {
-	tipi_dump_class_magic_method(&(*ce)->constructor, "constructor");
-	tipi_dump_class_magic_method(&(*ce)->destructor, "destructor");
-	tipi_dump_class_magic_method(&(*ce)->clone, "clone");
-	tipi_dump_class_magic_method(&(*ce)->__get, "__get");
-	tipi_dump_class_magic_method(&(*ce)->__set, "__set");
-	tipi_dump_class_magic_method(&(*ce)->__unset, "__unset");
-	tipi_dump_class_magic_method(&(*ce)->__isset, "__isset");
-	tipi_dump_class_magic_method(&(*ce)->__call, "__call");
-	tipi_dump_class_magic_method(&(*ce)->__tostring, "__tostring");
+	tipi_dump_class_magic_method(&(*ce)->constructor, "constructor", (*ce)->name);
+	tipi_dump_class_magic_method(&(*ce)->destructor, "destructor", (*ce)->name);
+	tipi_dump_class_magic_method(&(*ce)->clone, "clone", (*ce)->name);
+	tipi_dump_class_magic_method(&(*ce)->__get, "__get", (*ce)->name);
+	tipi_dump_class_magic_method(&(*ce)->__set, "__set", (*ce)->name);
+	tipi_dump_class_magic_method(&(*ce)->__unset, "__unset", (*ce)->name);
+	tipi_dump_class_magic_method(&(*ce)->__isset, "__isset", (*ce)->name);
+	tipi_dump_class_magic_method(&(*ce)->__call, "__call", (*ce)->name);
+	tipi_dump_class_magic_method(&(*ce)->__tostring, "__tostring", (*ce)->name);
 }
 
 /**
@@ -288,6 +361,21 @@ static void tipi_print_function_table(HashTable *function_table) {
 
 		tipi_dump_function(func);
 	}
+	
+}
+
+static void tipi_print_methods(HashTable *function_table, char *class_name)
+{
+	HashPosition pos;
+	zend_function *func;
+	int i = 0;
+
+	for (zend_hash_internal_pointer_reset_ex(function_table, &pos);
+			zend_hash_get_current_data_ex(function_table, (void **) &func, &pos) == SUCCESS;
+			zend_hash_move_forward_ex(function_table, &pos)
+	    ) {		
+		tipi_dump_method(func, class_name, ++i);
+	}
 }
 
 /**
@@ -301,39 +389,41 @@ PHP_FUNCTION(tipi_debug_function_dump_all)
 
 static void tipi_dump_class(zend_class_entry **ce)
 {
-	zend_printf("class name=%s  |  ", (*ce)->name);
-	zend_printf("type=%d  |  \n", (*ce)->type);
+	zend_printf("****************************** Class %s ******************************", (*ce)->name);
+	TIPI_LINE;
 
-	zend_printf("parent class=  |  ");
+	zend_printf("type=%d \n", (*ce)->type);
+
+	zend_printf("parent class= \n  ");
 	if ((*ce)->parent != NULL) {
 		tipi_dump_class((zend_class_entry **)(&(*ce)->parent));
 	}
 	zend_printf("\n");
 	
-	zend_printf("refcount=%d  |  \n", (*ce)->refcount);
-	zend_printf("constants_updated=%d  |  \n", (*ce)->constants_updated);
-	zend_printf("ce_flags=%d  |  \n", (*ce)->ce_flags);
+	zend_printf("refcount=%d \n", (*ce)->refcount);
+	zend_printf("constants_updated=%d \n", (*ce)->constants_updated);
+	zend_printf("ce_flags=%d \n", (*ce)->ce_flags);
 
-	zend_printf("functions=\n  |  ");
+	zend_printf("functions=\n  ");
 	if (zend_hash_num_elements(&((*ce)->function_table)) == 0) {
 		zend_printf("no \n");
 	}else{
-		tipi_print_function_table(&((*ce)->function_table));
+		tipi_print_methods(&((*ce)->function_table), (*ce)->name);
 	}
-	zend_printf("\n\n");
+	zend_printf("\n");
 
 	tipi_dump_class_magic_methods(ce);
 
-	zend_printf("interfaces(%d)=  |  ", (*ce)->num_interfaces);
+	zend_printf("interfaces(%d)= \n  ", (*ce)->num_interfaces);
 	if ((*ce)->interfaces != NULL) {
 		tipi_dump_class((*ce)->interfaces);
 		zend_printf("\n");
 	}
 
-	zend_printf("filename=%s  |  ", (*ce)->filename);
-	zend_printf("line start=%d  |  ", (*ce)->line_start);
-	zend_printf("line end=%d  |  ", (*ce)->line_end);
-	zend_printf("comment=%s  |  ", (*ce)->doc_comment);
+	zend_printf("filename=%s \n  ", (*ce)->filename);
+	zend_printf("line start=%d \n  ", (*ce)->line_start);
+	zend_printf("line end=%d \n  ", (*ce)->line_end);
+	zend_printf("comment=%s \n  ", (*ce)->doc_comment);
 	
 }
 

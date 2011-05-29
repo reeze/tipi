@@ -36,6 +36,9 @@ extern zend_module_entry tipi_module_entry;
 #include "TSRM.h"
 #endif
 
+#define TIPI_PREFIX zend_printf("      ")
+#define TIPI_LINE zend_printf(" \n  ")
+
 PHP_MINIT_FUNCTION(tipi);
 PHP_MSHUTDOWN_FUNCTION(tipi);
 PHP_RINIT_FUNCTION(tipi);
