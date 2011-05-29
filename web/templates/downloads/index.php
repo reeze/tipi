@@ -10,8 +10,8 @@ TIPI项目，主要包括: 深入理解PHP，以及相关的项目,本站所有�
 </p>
 
 <div id="download-list">
-	目前提供PDF版本的下载<?php echo TIPI::getVersion(); ?>.pdf：
-	<div style='padding-left: 100px;'><a href="<?php echo url_for("/releases/RELEASE_2011-04-01_V0.5.2.pdf"); ?>"><img src="<?php echo url_for("/images/icon_pdf.png"); ?>" /></a></div>
+	目前提供PDF版本的下载，当前版本<span class="current-version"><?php echo TIPI::getVersion(); ?>.pdf</span>：
+	<div style='padding-left: 100px;'><a target='_blank' href="<?php echo url_for("/releases/RELEASE_2011-06-01_V0.5.9.pdf"); ?>"><img src="<?php echo url_for("/images/icon_pdf.png"); ?>" /></a></div>
 </div>
 <p>
 本站所有的内容都托管在github上,我们目前推荐从： <a href="http://github.com/reeze/tipi">http://github.com/reeze/tipi</a>下载。

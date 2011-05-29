@@ -4,6 +4,7 @@
 	</div>
 
 	<div id="get-it">
+		<span id="tipi-version"><?php echo Tipi::getVersion(); ?></span>
 		<a class='read' href='<?php echo url_for("/book/"); ?>'><span>阅读</span></a>
 		<span id="get-it-sep"></span>
 		<a class='downloads' href='<?php echo url_for("/downloads/"); ?>'><span>下载</span></a>
@@ -55,7 +56,7 @@
 					<div id="lastest-news">现已经提供PDF版本的下载, <a href="<?php echo url_for("/news/?p=2011-04-01-add-sections-typo-fix-and-improvement"); ?>">点击浏览详情</a></div>
 					-->
 					<div id="microblog" class="clearfix">
-							<a class='sina t' target='_blank' href="http://t.sina.com.cn/tipiteam"><span>新浪微博</span></a>
+							<a class='sina t' target='_blank' href="http://weibo.com/tipiteam"><span>新浪微博</span></a>
 							<a class='twitter t' target='_blank' href="http://twitter.com/teamtipi"><span>Twitter</span></a>
 							<a class='rss t' target='_blank' href="<?php echo url_for("/feed/"); ?>"><span>订阅</span></a>
 					</div>

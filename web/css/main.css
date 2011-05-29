@@ -13,6 +13,20 @@ a {
 	text-decoration: underline;
 }
 
+#tipi-version {
+	float: left;
+	margin-left: 290px;
+	margin-top: 15px;
+	color: #888;
+	font-size: 1.4em;
+}
+
+.current-version {
+	font-size: 1.2em;
+	border: 1px solid #bbb;
+	color: green;
+}
+
 #lastest-news {
 	padding: 8px;
 	border: 1px solid 
@@ -61,6 +75,7 @@ a {
 	padding: 10px;
 	padding-right: 60px;
 	text-align: right;
+	font-family: "Microsoft YaHei", Helvetica, Arial, sans-serif;
 }
 
 #get-it a {
