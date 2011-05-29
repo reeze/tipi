@@ -2,9 +2,9 @@
 
 在面向对象语言中，都会内置一些语言内置提供的基本功能类，比如JavaScript中的Array，Number等类，
 PHP中也有很多这种类，比如Directory，stdClass，Exception等类，同时一些标准扩展比如PDO等扩展中也会定义一些类，
-PHP中类是不允许重复定义的，所以在编写代码时不允许定义已经存在的类.
+PHP中类是不允许重复定义的，所以在编写代码时不允许定义已经存在的类。
 
-同时PHP中有一些特殊的类：self，static和parent，相信读者对这self和parent都比较熟悉了，而static特殊类是PHP5.3才引入的.
+同时PHP中有一些特殊的类：self，static和parent，相信读者对这self和parent都比较熟悉了，而static特殊类是PHP5.3才引入的。
 
 PHP中的static关键字非常多义:
 
