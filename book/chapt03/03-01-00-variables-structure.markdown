@@ -73,7 +73,7 @@ zval结构体中有四个字段，其含义分别为：
 ### 2.变量类型:
 
 zval结构体的type字段就是实现弱类型最关键的字段了，type的值可以为：
-IS_NULL, IS_BOOL, IS_LONG, IS_DOUBLE, IS_STRING, IS_ARRAY, IS_OBJECT, IS_RESOURCE 之一。
+IS_NULL、IS_BOOL、IS_LONG、IS_DOUBLE、IS_STRING、IS_ARRAY、IS_OBJECT和IS_RESOURCE 之一。
 从字面上就很好理解，他们只是类型的唯一标示，根据类型的不同将不同的值存储到value字段。
 除此之外，和他们定义在一起的类型还有IS_CONSTANT和IS_CONSTANT_ARRAY。
 
@@ -117,7 +117,7 @@ IS_NULL, IS_BOOL, IS_LONG, IS_DOUBLE, IS_STRING, IS_ARRAY, IS_OBJECT, IS_RESOURC
   <td align="left">boolean</td>
   <td align="left">ZVAL_BOOL</td>
   <td align="left" rowspan='3'>
-	布尔型/整型的变量值存储于(zval).value.lval中,其类型也会以相应的IS_*进行存储。
+	布尔型/整型的变量值存储于(zval).value.lval中，其类型也会以相应的IS_*进行存储。
 	<pre class="c"> Z_TYPE_P(z)=IS_BOOL/LONG;  Z_LVAL_P(z)=((b)!=0); </pre>
 </td>
 </tr>

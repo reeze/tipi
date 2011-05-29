@@ -135,13 +135,13 @@ zend_objects_new函数会初始化对象自身的相关信息，包括对象归�
 * zend_objects_store_add_ref_by_handle 通过handle查找对象，并将其引用计数加1
 * zend_objects_store_del_ref 对象的引用计数减1，传入值为对象
 * zend_objects_store_del_ref_by_handle_ex 通过handle查找对象，并将其引用计数减1，对于引用计数为1的对象有清除处理
-* zend_objects_store_clone_obj 对象克隆API, 构造一个新的bucket，并将新的对象添加到对象池
+* zend_objects_store_clone_obj 对象克隆API，构造一个新的bucket，并将新的对象添加到对象池
 * zend_object_store_get_object  获取对象池中bucket中的对象，传入值为对象
 * zend_object_store_get_object_by_handle 获取对象池中bucket中的对象，传入值为索引值
 
 ## 成员变量
 从前面的对象结构来看，对象的成员变量存储在properties参数中。并且每个对象都会有一套标准的操作函数，
-如果需要获取成员变量，对象最后调用的是read_property,其对应的标准函数为zend_std_read_property;
+如果需要获取成员变量，对象最后调用的是read_property，其对应的标准函数为zend_std_read_property;
 如果需要设置成员变量，对象最后调用的是write_property，其对应的标准函数zend_std_write_property。
 这些函数都是可以定制的，如果有不同的需求，可以通过设置对应的函数指针替换。如在dom扩展中，它的变量的获取函数和设置函数都是定制的。
 
@@ -165,7 +165,7 @@ zend_objects_new函数会初始化对象自身的相关信息，包括对象归�
 * 第一步，获取对象的属性，如果存在，转第二步；如果没有相关属性，转第三步
 * 第二步，从对象的properties查找是否存在与名称对应的属性存在，如果存在返回结果，如果不存在，转第三步
 * 第三步，如果存在__get魔术方法，则调用此方法获取变量，如果不存在，转第四步
-* 第四步，如果type=BP_VAR_IS,返回 &EG(uninitialized_zval_ptr)，否则报错
+* 第四步，如果type=BP_VAR_IS，返回 &EG(uninitialized_zval_ptr)，否则报错
 
 成员变量的设置最终调用的是zend_std_write_property函数。整个执行流程如下：
 
@@ -207,7 +207,7 @@ zend_objects_new函数会初始化对象自身的相关信息，包括对象归�
 这是一个简单的类实现，它仅有一个成员方法叫t. 创建一个此类的实例，将其赋值给变量$obj，通过这个对象变量执行其成员方法。
 使用VLD扩展查看其生成的中间代码，可以知道其过程分为初始化成员方法的调用，执行方法两个过程。
 初始化成员方法的调用对应的中间代码为ZEND_INIT_METHOD_CALL，
-从我们的调用方式（一个为CV,一个为CONST）可知其对应的执行函数为 **ZEND_INIT_METHOD_CALL_SPEC_CV_CONST_HANDLER**
+从我们的调用方式（一个为CV，一个为CONST）可知其对应的执行函数为 **ZEND_INIT_METHOD_CALL_SPEC_CV_CONST_HANDLER**
 此函数的调用流程如下：
 
 * 第一步，处理调用的方法名，获取其值，并做检验处理：如果不是字符串，则报错

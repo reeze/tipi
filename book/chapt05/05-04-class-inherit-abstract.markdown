@@ -1,4 +1,4 @@
-# 第四节 类的继承, 多态及抽象类
+# 第四节 类的继承，多态及抽象类
 
 面向对象的三大特性(封装、继承、多态)，在前一小节介绍了封装，这一小节我们将介绍继承和多态的实现。
 
@@ -112,7 +112,7 @@ PHP内核将类的继承实现放在了"编译阶段"，因此使用VLD生成中
 ## 多态
 多态是继数据抽象和继承后的第三个特性。顾名思义，多态即多种形态，相同方法调用实现不同的实现方式。
 多态关注一个接口或基类，在编程时不必担心一个对象所属于的具体类。在面向对象的原则中
-里氏代换原则（Liskov Substitution Principle, LSP）,依赖倒转原则（dependence inversion principle, DIP）等
+里氏代换原则（Liskov Substitution Principle，LSP），依赖倒转原则（dependence inversion principle，DIP）等
 都依赖于多态特性。而我们在平常工作中也会经常用到。
 
     [php]
@@ -212,7 +212,7 @@ instanceof_function函数的代码如下：
 调用instanceof_function函数时传入的参数和计算过程中使用的变量都是zend_class_entry类型。
 
 [<< 第一节 类的结构和实现 >>][class-struct]中已经对于类的类型做了说明，在语法解析时，
-PHP内核已经设置了其type=ZEND_ACC_INTERFACE,
+PHP内核已经设置了其type=ZEND_ACC_INTERFACE，
 
     [c]
     interface_entry:

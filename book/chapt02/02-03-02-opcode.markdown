@@ -110,6 +110,6 @@ PHP脚本编译为opcode保存在op_array中，其内部存储的结构如下：
 更多信息请参考Zend虚拟机相关章节的详细介绍。虚拟机相关章节的详细介绍。
 
 >**NOTE**
->PHP有三种方式来进行opcode的处理:CALL, SWITCH和GOTO，PHP默认使用CALL的方式，也就是函数调用的方式，
+>PHP有三种方式来进行opcode的处理:CALL，SWITCH和GOTO，PHP默认使用CALL的方式，也就是函数调用的方式，
 >由于opcode执行是每个PHP程序频繁需要进行的操作，可以使用SWITCH或者GOTO的方式来分发，
 >通常GOTO的效率相对会高一些，不过效率是否提高依赖于不同的CPU。

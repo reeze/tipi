@@ -6,12 +6,12 @@
 它可以让一个客户端，从网页浏览器向执行在Web服务器上的程序请求数据。
 CGI描述了客户端和这个程序之间传输数据的一种标准。
 CGI的一个目的是要独立于任何语言的，所以CGI可以用任何一种语言编写，只要这种语言具有标准输入、输出和环境变量。
-如php,perl,tcl等。
+如php，perl，tcl等。
 
 [FastCGI](http://en.wikipedia.org/wiki/FastCGI)是Web服务器和处理程序之间通信的一种[协议](http://andylin02.iteye.com/blog/648412)，
 是CGI的一种改进方案，[FastCGI](http://baike.baidu.com/view/641394.htm)像是一个常驻(long-live)型的CGI，
 它可以一直执行，在请求到达时不会花费时间去fork一个进程来处理(这是CGI最为人诟病的fork-and-execute模式)。
-正是因为他只是一个通信协议，它还支持分布式的运算, 即 FastCGI 程序可以在网站服务器以外的主机上执行并且接受来自其它网站服务器来的请求。
+正是因为他只是一个通信协议，它还支持分布式的运算，即 FastCGI 程序可以在网站服务器以外的主机上执行并且接受来自其它网站服务器来的请求。
 
 FastCGI是语言无关的、可伸缩架构的CGI开放扩展，将CGI解释器进程保持在内存中，以此获得较高的性能。
 CGI程序反复加载是CGI性能低下的主要原因，如果CGI程序保持在内存中并接受FastCGI进程管理器调度，
@@ -48,7 +48,7 @@ TCP上客户-服务器事务的时序如图2.6所示：
 
 PHP的CGI实现从cgi_main.c文件的main函数开始，在main函数中调用了定义在fastcgi.c文件中的初始化，监听等函数。
 对比TCP的流程，我们查看PHP对TCP协议的实现，虽然PHP本身也实现了这些流程，但是在main函数中一些过程被封装成一个函数实现。
-对应TCP的操作流程，PHP首先会执行创建socket,绑定套接字，创建监听：
+对应TCP的操作流程，PHP首先会执行创建socket，绑定套接字，创建监听：
 
     [c]
     if (bindpath) {

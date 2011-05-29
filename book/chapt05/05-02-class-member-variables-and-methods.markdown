@@ -312,10 +312,10 @@ Zend引擎在调用的时候是怎么区分这两类方法的，比如我们静�
 	$a = new A();
 	$a->staticFunc();  // static
 
-上面的代码静态的调用了实例方法，程序输出了instance, 实例调用静态方法也会正确输出static，这说明这两种方法本质上并没有却别。
+上面的代码静态的调用了实例方法，程序输出了instance，实例调用静态方法也会正确输出static，这说明这两种方法本质上并没有却别。
 唯一不同的是他们被调用的上下文环境，例如通过实例方法调用方法则上下文中将会有$this这个特殊变量，而在静态调用中将无法使用$this变量。
 
-不过实际上Zend引擎是考虑过这个问题的，将error_reporting的级别增加E_STRICT, 将会出出现E_STRICT错误:
+不过实际上Zend引擎是考虑过这个问题的，将error_reporting的级别增加E_STRICT，将会出出现E_STRICT错误:
 
 	Strict Standards: Non-static method A::instanceFunc() should not be called statically
 

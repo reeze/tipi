@@ -135,8 +135,8 @@ execute_php函数:
 它通过调用sprrintf函数构造一个include语句，然后再调用zend_eval_string函数执行这个include语句。
 zend_eval_string最终是调用zend_eval_stringl函数，这个函数是流程是一个编译PHP代码，
 生成zend_op_array类型数据，并执行opcode的过程。
-这段程序相当于下面的这段php程序, 这段程序可以用php命令来执行，虽然下面这段程序没有实际意义，
-而通过嵌入式PHP中，你可以在一个用C实现的系统中嵌入PHP, 然后用PHP来实现功能。
+这段程序相当于下面的这段php程序，这段程序可以用php命令来执行，虽然下面这段程序没有实际意义，
+而通过嵌入式PHP中，你可以在一个用C实现的系统中嵌入PHP，然后用PHP来实现功能。
 
 	[php]
 	<?php

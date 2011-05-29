@@ -75,7 +75,7 @@ VIM可以读取tags文件，当我们在符号上（可以是变量名之类）�
 
 使用 **Ctrl+]** 就可以自动跳转至定义，**Ctrl+t** 可以返回上一次查看位置。这样就可以快速的在代码之间“游动”了。
 
-习惯这种浏览代码的方式之后，大家会感觉很方便的。不过若你不习惯使用VIM这类编辑器,也可以看看下面介绍的[IDE](http://zh.wikipedia.org/wiki/%E9%9B%86%E6%88%90%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83)。
+习惯这种浏览代码的方式之后，大家会感觉很方便的。不过若你不习惯使用VIM这类编辑器，也可以看看下面介绍的[IDE](http://zh.wikipedia.org/wiki/%E9%9B%86%E6%88%90%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83)。
 
 >**NOTE**
 >如果你使用的Mac OS X，运行ctags程序可能会出错，因为Mac OS X自带的ctags程序有些[问题](http://adamyoung.net/Exuberant-Ctags-OS-X)，
@@ -83,7 +83,7 @@ VIM可以读取tags文件，当我们在符号上（可以是变量名之类）�
 
 
 ### 使用IDE查看代码
-如果不习惯使用VIM来看代码,也可以使用一些功能较丰富的IDE，比如Windows下可以使用Visual Studio 2010 Express 。
+如果不习惯使用VIM来看代码，也可以使用一些功能较丰富的IDE，比如Windows下可以使用Visual Studio 2010 Express 。
 或者使用跨平台的[Netbeans](http://www.netbeans.org/)、[Eclipse](http://www.eclipse.org/)来查看代码，
 当然，这些工具都相对较**重量级**一些，不过这些工具不管是调试还是查看代码都相对较方便，
 

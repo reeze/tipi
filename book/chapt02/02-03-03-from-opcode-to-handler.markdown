@@ -4,7 +4,7 @@
 为了方便读者在追踪代码的过程中找到各种opcode对应的处理函数实现，下面介绍几种方法。
 
 >**NOTE**
->从PHP5.1开始,PHP对opcode的分发方式可以用户自定义，分为CALL, SWITCH, 和GOTO三种类型。
+>从PHP5.1开始，PHP对opcode的分发方式可以用户自定义，分为CALL，SWITCH和GOTO三种类型。
 >默认使用的CALL的方式，本文也应用于这种方式。有关Zend虚拟机的介绍请阅读后面相关内容。
 
 ## Debug法
@@ -180,4 +180,4 @@ VAR TMP CV UNUSED CONST
 前面的数字是opcode的，我们可以这里查到： http://php.net/manual/en/internals2.opcodes.list.php
 后面的数字是static const opcode_handler_t labels[] 索引，里面对应了处理函数的名称，
 对应源码文件是：Zend/zend_vm_execute.h （第30077行左右）。 这是一个超大的数组，php5.3.4中有3851个元素，
-在上面的例子里，看样子我们要数到第970个了，当然，有很多种方法来避免人工去计算, 这里就不多介绍了。
+在上面的例子里，看样子我们要数到第970个了，当然，有很多种方法来避免人工去计算，这里就不多介绍了。

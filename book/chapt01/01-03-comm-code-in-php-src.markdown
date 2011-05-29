@@ -23,7 +23,7 @@
 
     PHP_FUNCTION(count);
 
-    //  预处理器处理以后, PHP_FUCNTION(count);就展开为如下代码
+    //  预处理器处理以后， PHP_FUCNTION(count);就展开为如下代码
     void zif_count(int ht, zval *return_value, zval **return_value_ptr,
             zval *this_ptr, int return_value_used TSRMLS_DC)
 
@@ -63,7 +63,7 @@ PHP源码中大量使用了宏操作，比如PHP5.3新增加的垃圾收集机�
 这段代码，在宏定义中使用了 **do{ }while(0)** 语句格式。如果我们搜索整个PHP的源码目录，会发现这样的语句还有很多。
 在其他使用C/C++编写的程序中也会有很多这种编写宏的代码，多行宏的这种格式已经是一种公认的编写方式了。
 为什么在宏定义时需要使用do-while语句呢? 我们知道do-while循环语句是先执行循环体再判断条件是否成立，
-所以说至少会执行一次。当使用do{ }while(0)时由于条件肯定为false，代码也肯定只执行一次, 
+所以说至少会执行一次。当使用do{ }while(0)时由于条件肯定为false，代码也肯定只执行一次，
 肯定只执行一次的代码为什么要放在do-while语句里呢? 这种方式适用于宏定义中存在多语句的情况。
 如下所示代码： 
 
@@ -122,12 +122,12 @@ PHP源码中大量使用了宏操作，比如PHP5.3新增加的垃圾收集机�
     #line 838 "Zend/zend_language_scanner.c"
 
 [\#line](http://www.cppreference.com/wiki/preprocessor/line)预处理用于改变当前的行号（\_\_LINE__）和文件名（\_\_FILE__）。 
-如上所示代码，将当前的行号改变为838,文件名Zend/zend_language_scanner.c 
+如上所示代码，将当前的行号改变为838，文件名Zend/zend_language_scanner.c 
 它的作用体现在编译器的编写中，我们知道编译器对C 源码编译过程中会产生一些中间文件，通过这条指令，
 可以保证文件名是固定的，不会被这些中间文件代替，有利于进行调试分析。
 
 ## 4.PHP中的全局变量宏
-在PHP代码中经常能看到一些类似PG(), EG()之类的**函数**, 他们都是PHP中定义的宏，这系列宏主要的作用是解决线程安全所写的全局变量包裹宏，
+在PHP代码中经常能看到一些类似PG()， EG()之类的**函数**，他们都是PHP中定义的宏，这系列宏主要的作用是解决线程安全所写的全局变量包裹宏，
 如$PHP_SRC/main/php_globals.h文件中就包含了很多这类的宏.例如PG这个PHP的核心全局变量的宏。
 如下所示代码为其定义。
 

@@ -101,12 +101,12 @@ ZEND_INTERNAL_FUNCTION函数是由扩展或者Zend/PHP内核提供的，用“C/
 	} zend_internal_function;
 
 最常见的操作是在模块初始化时，ZE会遍历每个载入的扩展模块，然后将模块中function_entry中指明的每一个函数(module->functions)，
-创建一个zend_internal_function结构， 并将其type设置为ZEND_INTERNAL_FUNCTION, 将这个结构填入全局的函数表(HashTable结构）;
+创建一个zend_internal_function结构， 并将其type设置为ZEND_INTERNAL_FUNCTION，将这个结构填入全局的函数表(HashTable结构）;
 函数设置及注册过程见 Zend/zend_API.c文件中的 **zend_register_functions**函数。这个函数除了处理函数，也处理类的方法，包括那些魔术方法。
 
 内部函数的结构与用户自定义的函数结构基本类似，有一些不同，
 
-* 调用方法，handler字段. 如果是ZEND_INTERNAL_FUNCTION， 那么ZE就调用zend_execute_internal,通过zend_internal_function.handler来执行这个函数。
+* 调用方法，handler字段. 如果是ZEND_INTERNAL_FUNCTION， 那么ZE就调用zend_execute_internal，通过zend_internal_function.handler来执行这个函数。
   而用户自定义的函数需要生成中间代码，然后通过中间代码映射到相对就把方法调用。
 * 内置函数在结构中多了一个module字段，表示属于哪个模块。不同的扩展其模块不同。
 * type字段，在用户自定义的函数中，type字段几科无用，而内置函数中的type字段作为几种内部函数的区分。
@@ -183,7 +183,7 @@ PHP 支持变量函数的概念。这意味着如果一个变量名后有圆括�
 最终会体现在中间代码执行过程中的 **ZEND_SEND_VAL_SPEC_CONST_HANDLER**　等函数中。
 
 ## 4.匿名函数
-匿名函数是一类不需要指定表示符, 而又可以被调用的函数或子例程, 匿名函数可以方便的作为参数传递给其他函数,
+匿名函数是一类不需要指定表示符，而又可以被调用的函数或子例程，匿名函数可以方便的作为参数传递给其他函数，
 关于匿名函数的详细信息请阅读 [<<第四节 匿名函数及闭包>>][anonymous-function]
 
 [var-scope]:            ?p=chapt03/03-06-00-scope

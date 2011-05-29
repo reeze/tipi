@@ -38,7 +38,7 @@ parent和static这几个关键字，但实际上除了static是关键字以外�
 >这些关键字有他们的特定的使用场景，而上面提到的self和parent并没有这样的限制。
 
 
-## self, parent, static类
+## self，parent，static类
 前面已经说过self的特殊性。self是一个特殊类，它指向当前类，但只有在类定义内部才有效，
 但也并不一定指向类本身这个特殊类，比如前面的代码，如果放在类方法体内运行，echo self; 
 还是会输出常量self的值，而不是当前类，它不止要求在类的定义内部，还要求在类的上下文环境，
@@ -159,8 +159,8 @@ self::CONSTANT类似的作用域解析符号(::)，这时的self才会作为指�
 	}
 
 从这个函数就能看出端倪了，当需要获取self类的时候，则将EG(scope)类返回，而EG(scope)指向的正是当前类。
-如果时parent类的话则从去EG(scope)->parent也就是当前类的父类, 而static获取的时EG(called_scope),
-分别说说EG宏的这几个字段,前面已经介绍过EG宏,它可以展开为如下这个结构体:
+如果时parent类的话则从去EG(scope)->parent也就是当前类的父类，而static获取的时EG(called_scope)，
+分别说说EG宏的这几个字段，前面已经介绍过EG宏，它可以展开为如下这个结构体:
 
 	[c]
 	struct _zend_executor_globals {
@@ -197,6 +197,6 @@ self::CONSTANT类似的作用域解析符号(::)，这时的self才会作为指�
 
 	B::funcA();
 
-代码B::funcA()执行的时候, 实际执行的是B的父类A中定义的funcA函数, A::funcA()执行时当前的类(scope)指向的是类A,
-而这个方法是从B类开始调用的, called_scope指向的是类B, static特殊类指向的正是called_scope, 也就是当前类(触发方法调用的类),
-这也是延迟绑定的原理.
+代码B::funcA()执行的时候，实际执行的是B的父类A中定义的funcA函数，A::funcA()执行时当前的类(scope)指向的是类A，
+而这个方法是从B类开始调用的，called_scope指向的是类B，static特殊类指向的正是called_scope，也就是当前类(触发方法调用的类)，
+这也是延迟绑定的原理。

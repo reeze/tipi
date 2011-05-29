@@ -138,12 +138,12 @@ php_ap2_register_hook函数的定义如下：
         ap_hook_child_init(php_apache_child_init, NULL, NULL, APR_HOOK_MIDDLE);
     }
 
-以上代码声明了pre_config,post_config,handler和child_init 4个挂钩以及对应的处理函数。
-其中pre_config,post_config,child_init是启动挂钩，它们在服务器启动时调用。
+以上代码声明了pre_config，post_config，handler和child_init 4个挂钩以及对应的处理函数。
+其中pre_config，post_config，child_init是启动挂钩，它们在服务器启动时调用。
 handler挂钩是请求挂钩，它在服务器处理请求时调用。其中在post_config挂钩中启动php。
-它通过php_apache_server_startup函数实现。php_apache_server_startup函数通过调用sapi_startup启动sapi,
-并通过调用php_apache2_startup来注册sapi module struct（此结构在本节开头中有说明）,
-最后调用php_module_startup来初始化PHP, 其中又会初始化ZEND引擎,以及填充zend_module_struct中
+它通过php_apache_server_startup函数实现。php_apache_server_startup函数通过调用sapi_startup启动sapi，
+并通过调用php_apache2_startup来注册sapi module struct（此结构在本节开头中有说明），
+最后调用php_module_startup来初始化PHP， 其中又会初始化ZEND引擎，以及填充zend_module_struct中
 的treat_data成员(通过php_startup_sapi_content_types)等。
 
 到这里，我们知道了Apache加载mod_php5模块的整个过程，可是这个过程与我们的SAPI有什么关系呢？
@@ -196,7 +196,7 @@ mod_php5也定义了属于Apache的sapi_module_struct结构:
 Apache的运行分为启动阶段和运行阶段。
 在启动阶段，Apache为了获得系统资源最大的使用权限，将以特权用户root（\*nix系统）或超级管理员Administrator(Windows系统)完成启动，
 并且整个过程处于一个单进程单线程的环境中。
-这个阶段包括配置文件解析(如http.conf文件)、模块加载(如mod_php,mod_perl)和系统资源初始化（例如日志文件、共享内存段、数据库连接等）等工作。
+这个阶段包括配置文件解析(如http.conf文件)、模块加载(如mod_php，mod_perl)和系统资源初始化（例如日志文件、共享内存段、数据库连接等）等工作。
 
 Apache的启动阶段执行了大量的初始化操作，并且将许多比较慢或者花费比较高的操作都集中在这个阶段完成，以减少了后面处理请求服务的压力。
 
@@ -208,7 +208,7 @@ MIME Type Checking，FixUp，Response，Logging，CleanUp
 
 
 ## Apache Hook机制
-Apache 的Hook机制是指：Apache 允许模块(包括内部模块和外部模块，例如mod_php5.so,mod_perl.so等)将自定义的函数注入到请求处理循环中。
+Apache 的Hook机制是指：Apache 允许模块(包括内部模块和外部模块，例如mod_php5.so，mod_perl.so等)将自定义的函数注入到请求处理循环中。
 换句话说，模块可以在Apache的任何一个处理阶段中挂接(Hook)上自己的处理函数，从而参与Apache的请求处理过程。
 mod_php5.so/ php5apache2.dll就是将所包含的自定义函数，通过Hook机制注入到Apache中，在Apache处理流程的各个阶段负责处理php请求。
 关于Hook机制在Windows系统开发也经常遇到，在Windows开发既有系统级的钩子，又有应用级的钩子。

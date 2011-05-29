@@ -44,7 +44,7 @@
     /* }}} */
 
 生成中间代码为 **ZEND_RETURN** . 第一个操作数的类型在返回值为可用的表达式时，其类型为表达式的操作类型，否则类型为 IS_CONST。这在后续计算执行中间代码函数时有用到。
-根据操作数的不同，ZEND_RETURN中间代码会执行 ZEND_RETURN_SPEC_CONST_HANDLER,ZEND_RETURN_SPEC_TMP_HANDLER或ZEND_RETURN_SPEC_TMP_HANDLER。
+根据操作数的不同，ZEND_RETURN中间代码会执行 ZEND_RETURN_SPEC_CONST_HANDLER，ZEND_RETURN_SPEC_TMP_HANDLER或ZEND_RETURN_SPEC_TMP_HANDLER。
 这三个函数的执行流程基本类似，包括对一些错误的处理。这里我们以ZEND_RETURN_SPEC_CONST_HANDLER为例说明函数返回值的执行过程：
 
     [c]

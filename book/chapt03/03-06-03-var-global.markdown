@@ -1,6 +1,6 @@
 # global语句
 
-global语句的作用是定义全局变量, 例如如果想在函数内访问全局作用域内的变量则可以通过global声明来定义。
+global语句的作用是定义全局变量，例如如果想在函数内访问全局作用域内的变量则可以通过global声明来定义。
 下面从语法解释开始分析.
 
 **1. 词法解析**
@@ -14,7 +14,7 @@ global语句的作用是定义全局变量, 例如如果想在函数内访问全
 
 **2. 语法解析**
 
-在词法解析完后，获得了token,此时通过这个token，我们去Zend/zend_language_parser.y文件中查找。找到相关代码如下：
+在词法解析完后，获得了token，此时通过这个token，我们去Zend/zend_language_parser.y文件中查找。找到相关代码如下：
 
     [c]
     |	T_GLOBAL global_var_list ';'
