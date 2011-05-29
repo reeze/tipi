@@ -145,13 +145,17 @@ zend_register_long_constant函数将常量中值的类型，值，名称及模�
         zend_register_constant(&c TSRMLS_CC);
     }
 
-zend_register_constant函数首先根据常量中的c->flags判断是否区分大小写，如果不区分，则名字统一为小写，如果包含"\\\\"，也统一成小写。否则为定义的名字
-然后将调用下面的语句将当前常量添加到EG(zend_constants)。EG(zend_constants)是一个HashTable（这在前面的章节中说明），下面的代码是将常量添加到这个HashTable中。
+zend_register_constant函数首先根据常量中的c->flags判断是否区分大小写，
+如果不区分，则名字统一为小写，如果包含"\\\\"，也统一成小写。否则为定义的名字
+然后将调用下面的语句将当前常量添加到EG(zend_constants)。
+EG(zend_constants)是一个HashTable（这在前面的章节中说明），
+下面的代码是将常量添加到这个HashTable中。
 
     [c]
     zend_hash_add(EG(zend_constants), name, c->name_len, (void *) c,
             sizeof(zend_constant), NULL)==FAILURE)
 
-在php_module_startup函数中，除了zend_startup函数中有注册标准的常量，它本身体通过宏REGISTER_MAIN_LONG_CONSTANT等注册了一些常量，如：PHP_VERSION，PHP_OS等。
+在php_module_startup函数中，除了zend_startup函数中有注册标准的常量，
+它本身体通过宏REGISTER_MAIN_LONG_CONSTANT等注册了一些常量，如：PHP_VERSION，PHP_OS等。
 
 关于接口和类中的常量我们将在后面的类所在章节中详细说明。

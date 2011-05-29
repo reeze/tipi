@@ -16,7 +16,7 @@ PHP中使用extends关键字来进行类的继承，一个类只能继承一个�
 
 PHP内核将类的继承实现放在了"编译阶段"，因此使用VLD生成中间代码时会发现并没有关于继承的相关信息。
 通过对extends关键字的词法分析和语法分析，在Zend/zend_complie.c文件中
-找到继承实现的编译函数zend_do_inheritance().其调用顺序如下: 
+找到继承实现的编译函数zend_do_inheritance()。其调用顺序如下: 
 [zend_do_early_binding] --> [do_bind_inherited_class()] --> [zend_do_inheritance()]
 
     [c]
@@ -229,7 +229,7 @@ PHP内核已经设置了其type=ZEND_ACC_INTERFACE，
 
 接口与类除了在ce_flags字段不同外，在其它一些字段的表现上也不一样，如继承时，类只能继承一个父类，却可以实现多个接口。
 二者在类的结构中存储在不同的字段，类的继承由于是一对一的关系，则每个类都有一个parent字段。
-而接口实现是一个一对多的关系，每个类都会有一个二维指针存放接口的列表，还有一个存储接口数的字段num_interfaces.
+而接口实现是一个一对多的关系，每个类都会有一个二维指针存放接口的列表，还有一个存储接口数的字段num_interfaces。
 
 接口也可以和类一样实现继承，并且只能是一个接口继承另一个接口。一个类可以实现多个接口，
 接口在编译时调用zend_do_implement_interface函数，

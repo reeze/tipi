@@ -1,7 +1,7 @@
 # global语句
 
 global语句的作用是定义全局变量，例如如果想在函数内访问全局作用域内的变量则可以通过global声明来定义。
-下面从语法解释开始分析.
+下面从语法解释开始分析。
 
 **1. 词法解析**
 
@@ -74,7 +74,8 @@ global语句的作用是定义全局变量，例如如果想在函数内访问�
             opline->op2 = *rvar;
     }
 
-从上面的zend_do_fetch_global_variable函数和zend_do_assign_ref函数的实现可以看出，使用global声明一个全局变量后，其执行了两步操作，ZEND_FETCH_W和ZEND_ASSIGN_REF。
+从上面的zend_do_fetch_global_variable函数和zend_do_assign_ref函数的实现可以看出，
+使用global声明一个全局变量后，其执行了两步操作，ZEND_FETCH_W和ZEND_ASSIGN_REF。
 
 **3. 生成并执行中间代码**
 

@@ -28,14 +28,16 @@ $\_GET，$\_POST，$\_SERVER等变量，我们并没有在程序中定义这些�
 	}
     ... //  省略
 
-上面的代码的关键点zend_hash_update函数的调用，它将变量名为GLOBALS的变量注册到EG(symbol_table)中，EG(symbol_table)是一个HashTable的结构，用来存放所有的全局变量。
+上面的代码的关键点zend_hash_update函数的调用，它将变量名为GLOBALS的变量注册到EG(symbol_table)中，
+EG(symbol_table)是一个HashTable的结构，用来存放所有的全局变量。
 这在下面将要提到的$_GET等变量初始化时也会用到。
 
 ## $_GET、$_POST等变量的初始化
 
 **$_GET、$_COOKIE、$_SERVER、$_ENV、$_FILES、$_REQUEST**这六个变量都是通过如下的调用序列进行初始化。
 **[main() -> php_request_startup() -> php_hash_environment()  ]**  
-在请求初始化时，通过调用 **php_hash_environment** 函数初始化以上的六个预定义的变量。如下所示为php_hash_environment函数的代码。在代码之后我们以$_POST为例说明整个初始化的过程。
+在请求初始化时，通过调用 **php_hash_environment** 函数初始化以上的六个预定义的变量。
+如下所示为php_hash_environment函数的代码。在代码之后我们以$_POST为例说明整个初始化的过程。
 
     [c]
     /* {{{ php_hash_environment
@@ -165,7 +167,8 @@ $\_GET，$\_POST，$\_SERVER等变量，我们并没有在程序中定义这些�
 在treat_data后，如果打开了PG(register_globals)，则会调用php_autoglobal_merge将相关变量的值写到符号表。
 
 
-以上的所有数据处理是一个赋值前的初始化行为。在此之后，通过遍历之前定义的结构体，调用zend_hash_update，将相关变量的值赋值给&EG(symbol_table)。
+以上的所有数据处理是一个赋值前的初始化行为。在此之后，通过遍历之前定义的结构体，
+调用zend_hash_update，将相关变量的值赋值给&EG(symbol_table)。
 另外对于$_REQUEST有独立的处理方法。
 
 

@@ -11,7 +11,7 @@
     $a = 10;
 
 使用VLD扩展查看其生成的中间代码为 **ASSIGN**。
-依此，我们找到其执行的函数为 **ZEND_ASSIGN_SPEC_CV_CONST_HANDLER**.
+依此，我们找到其执行的函数为 **ZEND_ASSIGN_SPEC_CV_CONST_HANDLER**。
 （找到这个函数的方法之一：$a为CV，10为CONST，操作为ASSIGN。
 其他方法可以参见[附：找到Opcode具体实现][opcode-handler]）
 CV是PHP在5.1后增加的一个在编译期的缓存。如我们在使用VLD查看上面的PHP代码生成的中间代码时会看到：
@@ -85,7 +85,7 @@ CV是PHP在5.1后增加的一个在编译期的缓存。如我们在使用VLD查
 		}
 	}
 
-PZVAL_IS_REF(variable_ptr)判断is_ref__gc字段是否为0.在左值不等于右值的情况下执行操作。
+PZVAL_IS_REF(variable_ptr)判断is_ref__gc字段是否为0。在左值不等于右值的情况下执行操作。
 所有指向这个zval容器的变量的值都变成了*value。并且引用计数的值不变。下面是这种情况的一个示例：
 
 上面的例子的输出结果：

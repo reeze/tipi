@@ -92,7 +92,8 @@ T_FUNCTION标记只是用来定位函数的声明，表示这是一个函数，�
     }
     /* }}} */
 
-生成的中间代码为 **ZEND_DECLARE_FUNCTION** ，根据这个中间代码及操作数对应的op_type。我们可以找到中间代码的执行函数为 **ZEND_DECLARE_FUNCTION_SPEC_HANDLER**。
+生成的中间代码为 **ZEND_DECLARE_FUNCTION** ，根据这个中间代码及操作数对应的op_type。
+我们可以找到中间代码的执行函数为 **ZEND_DECLARE_FUNCTION_SPEC_HANDLER**。
 
 >**NOTE**
 >在生成中间代码时，可以看到已经统一了函数名全部为小写，表示函数的名称不是区分大小写的。
@@ -113,7 +114,8 @@ T_FUNCTION标记只是用来定位函数的声明，表示这是一个函数，�
     [shell]
     Fatal error: Cannot redeclare t() (previously declared in ...)
 
-表示对于PHP来说T和t是同一个函数名。检验函数名是否重复，这个过程是在哪进行的呢？下面将要介绍的函数声明中间代码的执行过程包含了这个检查过程。
+表示对于PHP来说T和t是同一个函数名。检验函数名是否重复，这个过程是在哪进行的呢？
+下面将要介绍的函数声明中间代码的执行过程包含了这个检查过程。
 
 **执行中间代码**
 

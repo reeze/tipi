@@ -68,7 +68,9 @@ ZEND_ASSIGN_SPEC_CV_CONST_HANDLER的最后会调用ZEND_VM_NEXT_OPCODE()将op_ar
 	}
 
 在执行的过程中，active_symbol_table会根据执行的具体语句不断发生变化(详请见本节下半部分)，针对线程安全的EG宏就是用来取此变量中的值。
-ZE将op_array执行完毕以后，HashTable会被FREE_HASHTABLE()释放掉。 如果程序使用了unset语句来主动消毁变量，则会调用ZEND_UNSET_VAR_SPEC_CV_HANDLER来将变量销毁，回收内存，这部分内存可以参考《第六章 内存管理》的内容。
+ZE将op_array执行完毕以后，HashTable会被FREE_HASHTABLE()释放掉。
+ 如果程序使用了unset语句来主动消毁变量，则会调用ZEND_UNSET_VAR_SPEC_CV_HANDLER来将变量销毁，
+回收内存，这部分内存可以参考《第六章 内存管理》的内容。
 
 
 

@@ -59,7 +59,7 @@ ZEND_NEW_SPEC_HANDLER函数首先会判断对象所对应的类是否为可实�
 [object_init_ex()] --> [_object_init_ex()] --> [_object_and_properties_init()]
 
 在_object_and_properties_init函数中，程序会执行前面提到的类的类型的判断，然后更新类的静态变量等信息（在这前面的章节有说明），
-更新完成后，程序会设置zval的类型为IS_OBJECT.
+更新完成后，程序会设置zval的类型为IS_OBJECT。
     
     [c]
     Z_TYPE_P(arg) = IS_OBJECT;
@@ -178,7 +178,7 @@ zend_objects_new函数会初始化对象自身的相关信息，包括对象归�
 
 ## 成员方法
 成员方法又包括常规的成员方法和魔术方法。魔术方法在前面的第五小节已经介绍过了，这里就不再赘述。
-在对象的标准函数中并没有成员方法的调用函数，默认情况下设置为NULL.在SPL扩展中，有此函数的调用设置，如下代码：
+在对象的标准函数中并没有成员方法的调用函数，默认情况下设置为NULL。在SPL扩展中，有此函数的调用设置，如下代码：
 
     [c]
     PHP_MINIT_FUNCTION(spl_iterators)
@@ -204,7 +204,7 @@ zend_objects_new函数会初始化对象自身的相关信息，包括对象归�
     $obj = new Tipi();
     $obj->t();
 
-这是一个简单的类实现，它仅有一个成员方法叫t. 创建一个此类的实例，将其赋值给变量$obj，通过这个对象变量执行其成员方法。
+这是一个简单的类实现，它仅有一个成员方法叫t。创建一个此类的实例，将其赋值给变量$obj，通过这个对象变量执行其成员方法。
 使用VLD扩展查看其生成的中间代码，可以知道其过程分为初始化成员方法的调用，执行方法两个过程。
 初始化成员方法的调用对应的中间代码为ZEND_INIT_METHOD_CALL，
 从我们的调用方式（一个为CV，一个为CONST）可知其对应的执行函数为 **ZEND_INIT_METHOD_CALL_SPEC_CV_CONST_HANDLER**

@@ -43,9 +43,12 @@
     }
     /* }}} */
 
-生成中间代码为 **ZEND_RETURN** . 第一个操作数的类型在返回值为可用的表达式时，其类型为表达式的操作类型，否则类型为 IS_CONST。这在后续计算执行中间代码函数时有用到。
-根据操作数的不同，ZEND_RETURN中间代码会执行 ZEND_RETURN_SPEC_CONST_HANDLER，ZEND_RETURN_SPEC_TMP_HANDLER或ZEND_RETURN_SPEC_TMP_HANDLER。
-这三个函数的执行流程基本类似，包括对一些错误的处理。这里我们以ZEND_RETURN_SPEC_CONST_HANDLER为例说明函数返回值的执行过程：
+生成中间代码为 **ZEND_RETURN**。 第一个操作数的类型在返回值为可用的表达式时，
+其类型为表达式的操作类型，否则类型为 IS_CONST。这在后续计算执行中间代码函数时有用到。
+根据操作数的不同，ZEND_RETURN中间代码会执行 ZEND_RETURN_SPEC_CONST_HANDLER，
+ZEND_RETURN_SPEC_TMP_HANDLER或ZEND_RETURN_SPEC_TMP_HANDLER。
+这三个函数的执行流程基本类似，包括对一些错误的处理。
+这里我们以ZEND_RETURN_SPEC_CONST_HANDLER为例说明函数返回值的执行过程：
 
     [c]
     static int ZEND_FASTCALL  ZEND_RETURN_SPEC_CONST_HANDLER(ZEND_OPCODE_HANDLER_ARGS)
@@ -128,7 +131,8 @@
     }
 
 函数的返回值在程序执行时存储在 *EG(return_value_ptr_ptr)。ZE内核对值返回和引用返回作了区分，
-并且在此基础上对常量，临时变量和其它类型的变量在返回时进行了不同的处理。在return执行完之前，ZE内核通过调用zend_leave_helper_SPEC函数，清除函数内部使用的变量等。
+并且在此基础上对常量，临时变量和其它类型的变量在返回时进行了不同的处理。在return执行完之前，
+ZE内核通过调用zend_leave_helper_SPEC函数，清除函数内部使用的变量等。
 这也是ZE内核自动给函数加上NULL返回的原因之一。
 
 ## 没有return语句的函数
@@ -175,8 +179,11 @@
 * RETVAL_FALSE	设定返回值为布尔值假。
 * RETVAL_TRUE	设定返回值为布尔值真。
 
-如果需要返回的是像数组和对象这样的复杂类型的数据，那就需要先调用 array_init() 和 object_init()，也可以使用相应的 hash 函数直接操作 return_value。由于这些类型主要是由一些杂七杂八的东西构成，所以对它们就没有了相应的宏。
+如果需要返回的是像数组和对象这样的复杂类型的数据，那就需要先调用 array_init() 和 object_init()，
+也可以使用相应的 hash 函数直接操作 return_value。
+由于这些类型主要是由一些杂七杂八的东西构成，所以对它们就没有了相应的宏。
 
-关于内部函数的return_value值是如何赋值给*EG(return_value_ptr_ptr)，函数的调用是如何进行的，请阅读下一小节 [<<函数的调用和执行>>][function-call].
+关于内部函数的return_value值是如何赋值给*EG(return_value_ptr_ptr)，
+函数的调用是如何进行的，请阅读下一小节 [<<函数的调用和执行>>][function-call].
 
 [function-call]:   		?p=chapt04/04-03-function-call

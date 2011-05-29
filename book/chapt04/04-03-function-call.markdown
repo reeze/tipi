@@ -78,8 +78,10 @@
     zend_execute_internal = NULL;
 
 此函数确实被赋值为NULL。于是我们在if (!zend_execute_internal)判断时会成立，所以我们是执行那段很长的调用。
-那么，这段很长的调用到底是什么呢？以我们常用的 **count**函数为例。在[<<第一节 函数的内部结构>>][function-struct]中，我们知道内部函数所在的结构体中
-有一个handler指针指向此函数需要调用的内部定义的C函数。这些内部函数在模块初始化时就以扩展的函数的形式加载到EG(function_table)。其调用顺序：
+那么，这段很长的调用到底是什么呢？以我们常用的 **count**函数为例。在[<<第一节 函数的内部结构>>][function-struct]中，
+我们知道内部函数所在的结构体中
+有一个handler指针指向此函数需要调用的内部定义的C函数。
+这些内部函数在模块初始化时就以扩展的函数的形式加载到EG(function_table)。其调用顺序：
 
     [shell]
     php_module_startup --> php_register_extensions --> zend_register_internal_module
@@ -113,7 +115,8 @@
     #define ZEND_FN(name) zif_##name
     #define ZEND_FENTRY(zend_name, name, arg_info, flags)	{ #zend_name, name, arg_info, (zend_uint) (sizeof(arg_info)/sizeof(struct _zend_arg_info)-1), flags },
 
-综合上面的代码，count函数最后调用的函数名为zif_count，但是此函数对外的函数名还是为count。调用的函数名name以第二个元素存放在zend_function_entry结构体数组中。
+综合上面的代码，count函数最后调用的函数名为zif_count，但是此函数对外的函数名还是为count。
+调用的函数名name以第二个元素存放在zend_function_entry结构体数组中。
 对于zend_function_entry的结构
 
     [c]
@@ -157,7 +160,8 @@
     [c]
     zend_execute = execute;
 
-从而对于异常，程序会抛出异常；其它情况，程序会调用execute执行此函数中生成的opcodes。execute函数会遍历所传递给它的zend_op_array数组，以方式
+从而对于异常，程序会抛出异常；其它情况，程序会调用execute执行此函数中生成的opcodes。
+execute函数会遍历所传递给它的zend_op_array数组，以方式
 
     [c]
     ret = EX(opline)->handler(execute_data TSRMLS_CC)
