@@ -4,7 +4,7 @@
 	</div>
 
 	<div id="get-it">
-		<span id="tipi-version"><?php echo Tipi::getVersion(); ?></span>
+		<span id="tipi-version"><?php echo Tipi::getVersion(); ?>(儿童节版)</span>
 		<a class='read' href='<?php echo url_for("/book/"); ?>'><span>阅读</span></a>
 		<span id="get-it-sep"></span>
 		<a class='downloads' href='<?php echo url_for("/downloads/"); ?>'><span>下载</span></a>
