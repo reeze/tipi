@@ -1,5 +1,6 @@
 # 第一节 函数的内部结构
-在PHP中，函数有自己的作用域，同时在其内部可以实现各种语句的执行，最后返回最终结果值。在PHP的源码中可以发现，PHP内核将函数分为以下类型：
+在PHP中，函数有自己的作用域，同时在其内部可以实现各种语句的执行，最后返回最终结果值。
+在PHP的源码中可以发现，PHP内核将函数分为以下类型：
 
 	[c]
 	#define ZEND_INTERNAL_FUNCTION              1
@@ -8,11 +9,11 @@
 	#define ZEND_EVAL_CODE                      4
 	#define ZEND_OVERLOADED_FUNCTION_TEMPORARY  5
 
-其中的*ZEND_USER_FUNCTION*是用户函数，*ZEND_INTERNAL_FUNCTION*是内置的函数。
-(PHP内部对不同种类的函数使用了不同的结构来进行实现?)
+其中的*ZEND_USER_FUNCTION*是用户函数，*ZEND_INTERNAL_FUNCTION*是内置的函数。也就是说PHP将内置的函数和
+用户定义的函数分别保存。
 
 ## 1.用户函数(ZEND_USER_FUNCTION)
-用户自定义函数是非常常用的函数种类，如下面的代码，就定义了一个用户自定义的函数：
+用户自定义函数是非常常用的函数种类，如下面的代码，定义了一个用户自定义的函数：
 
 	[php]
 	<?php 
@@ -25,8 +26,10 @@
 
 	?>
 
-这个示例中，对自定义函数传入了一个参数，并将其与*Hi!* 一起输出并做为返回值返回。从这个例子可以看出函数的基本特点：运行时声明、可以传参数、有值返回。
-当然，有些函数只是进行一些操作，并不一定有返回值，而事实上，在PHP的实现中，即使没有返回值，PHP内核也会“帮你“加上一个NULL来做为返回值。
+这个示例中，对自定义函数传入了一个参数，并将其与*Hi!* 一起输出并做为返回值返回。
+从这个例子可以看出函数的基本特点：运行时声明、可以传参数、有值返回。
+当然，有些函数只是进行一些操作，并不一定显式的有返回值，在PHP的实现中，即使没有显式的返回，
+PHP内核也会“帮你“返回NULL。
 
 通过 [<<第六节 变量的作用域>>][var-scope] 可知，ZE在执行过程中，会将运行时信息存储于_zend_execute_data中：
 	
@@ -46,7 +49,8 @@
 		void **arguments;
 	} zend_function_state;
 
-**arguments是一个指向函数参数的指针，而函数体本身则存储于*function中， *function是一个zend_function结构体，它最终存储了用户自定义函数的一切信息，它的具体结构是这样的：
+**arguments是一个指向函数参数的指针，而函数体本身则存储于*function中， *function是一个zend_function结构体，
+它最终存储了用户自定义函数的一切信息，它的具体结构是这样的：
 
 	[c]
 	typedef union _zend_function {
@@ -69,8 +73,9 @@
 		zend_internal_function internal_function;  
 	} zend_function;
 
-*zend_function*的结构中的op_array存储了该函数中所有的操作，当函数被调用时，ZE就会将这个op_array中的opline一条条顺次执行，并将最后的返回值返回。
-从VLD扩展的显示的关于函数的信息可以看出，函数的定义和执行是分开的，一个函数可以作为一个独立的运行单元而存在。
+*zend_function*的结构中的op_array存储了该函数中所有的操作，当函数被调用时，ZE就会将这个op_array中的opline一条条顺次执行，
+并将最后的返回值返回。
+从VLD扩展中查看的关于函数的信息可以看出，函数的定义和执行是分开的，一个函数可以作为一个独立的运行单元而存在。
 
 
 ## 2.内部函数(ZEND_INTERNAL_FUNCTION)
@@ -101,7 +106,8 @@ ZEND_INTERNAL_FUNCTION函数是由扩展或者Zend/PHP内核提供的，用“C/
 
 内部函数的结构与用户自定义的函数结构基本类似，有一些不同，
 
-* 调用方法，handler字段. 如果是ZEND_INTERNAL_FUNCTION， 那么ZE就调用zend_execute_internal,通过zend_internal_function.handler来执行这个函数。而用户自定义的函数需要生成中间代码，然后通过中间代码映射到相对就把方法调用。
+* 调用方法，handler字段. 如果是ZEND_INTERNAL_FUNCTION， 那么ZE就调用zend_execute_internal,通过zend_internal_function.handler来执行这个函数。
+  而用户自定义的函数需要生成中间代码，然后通过中间代码映射到相对就把方法调用。
 * 内置函数在结构中多了一个module字段，表示属于哪个模块。不同的扩展其模块不同。
 * type字段，在用户自定义的函数中，type字段几科无用，而内置函数中的type字段作为几种内部函数的区分。
 
@@ -158,7 +164,8 @@ PHP 支持变量函数的概念。这意味着如果一个变量名后有圆括�
              5    > RETURN                                                   1
 
 
-对比发现，二者在调用的中间代码上存在一些区别。变量函数是DO_FCALL_BY_NAME，而内部函数是DO_FCALL。这在语法解析时就已经决定了，
+对比发现，二者在调用的中间代码上存在一些区别。变量函数是DO_FCALL_BY_NAME，而内部函数是DO_FCALL。
+这在语法解析时就已经决定了，
 见Zend/zend_complie.c文件的zend_do_end_function_call函数中部分代码：
 
     [c]
