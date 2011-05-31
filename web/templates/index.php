@@ -25,7 +25,7 @@
 					<div>
 					<p>
 						我们的项目托管在github上:
-						<div id="github-link"><a href="http://github.com/reeze/tipi">http://github.com/reeze/tipi</a></div>
+						<div id="github-link"><a href="http://github.com/reeze/tipi" target='_blank'>http://github.com/reeze/tipi</a></div>
 						<p>
 							欢迎fork, 如果只想下载《深入理解PHP内核》这本书，请点击页面右上部分的下载链接下载，
 							项目目前并没有完成所有的内容。
