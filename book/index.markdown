@@ -55,9 +55,9 @@
     * [第八节 命名空间][class-namespace]
     * [第九节 小结][05-summary]
 
-- 第六章 内存管理
+- [第六章 内存管理][memory-management]
 	* 第一节 内存管理概述(reeze)
-	* 第二节 PHP中的内存管理(pan)
+	* [第二节 PHP中的内存管理(pan)][php-memory-manager]
 	* 第三节 内存使用：申请和销毁(er)
 	* 第四节 垃圾回收
 		+ PHP中的垃圾回收(5.2/5.3)
@@ -139,13 +139,16 @@
 [anonymous-function]:   ?p=chapt04/04-04-anonymous-function
 [04-summary]:   		?p=chapt04/04-05-summary
 
-[class]:         ?p=chapt05/05-00-class-and-oop
+[class]:                ?p=chapt05/05-00-class-and-oop
 [class-struct]:         ?p=chapt05/05-01-class-struct
 [class-member-variables-and-methods]: ?p=chapt05/05-02-class-member-variables-and-methods
-[class-visibility]:         ?p=chapt05/05-03-class-visibility
+[class-visibility]:      ?p=chapt05/05-03-class-visibility
 [class-inherit-abstract]: ?p=chapt05/05-04-class-inherit-abstract
 [class-magic-methods-latebinding]: ?p=chapt05/05-05-class-magic-methods-latebinding
 [class-reserved-and-special-classes]: ?p=chapt05/05-06-class-reserved-and-special-classes
-[class-object]: ?p=chapt05/05-07-class-object
-[class-namespace]: ?p=chapt05/05-08-class-namespace
-[05-summary]:		?p=chapt05/05-09-summary
+[class-object]:         ?p=chapt05/05-07-class-object
+[class-namespace]:      ?p=chapt05/05-08-class-namespace
+[05-summary]:           ?p=chapt05/05-09-summary
+
+[memory-management]:       ?p=chapt06/06-00-memory-management
+[php-memory-manager]:   ?p=chapt06/06-02-php-memory-manager
