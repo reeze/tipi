@@ -56,7 +56,7 @@
     * [第九节 小结][05-summary]
 
 - [第六章 内存管理][memory-management]
-	* 第一节 内存管理概述(reeze)
+	* [第一节 内存管理概述(reeze)][memory-management-overview]
 	* [第二节 PHP中的内存管理(pan)][php-memory-manager]
 	* [第三节 内存使用：申请和销毁(er)][php-memory-request-free]
 	* 第四节 垃圾回收
@@ -151,5 +151,6 @@
 [05-summary]:           ?p=chapt05/05-09-summary
 
 [memory-management]:		?p=chapt06/06-00-memory-management
+[memory-management-overview]:	?p=chapt06/06-01-memory-management-overview
 [php-memory-manager]:		?p=chapt06/06-02-php-memory-manager
 [php-memory-request-free]:	?p=chapt06/06-03-php-memory-request-free
