@@ -1,0 +1,56 @@
+# 第三节 内存使用：申请和销毁
+## 内存的申请
+通过前面的章节我们可以知道，PHP对内存的使用，并不是有需要时向系统即时申请，
+而是ZendMM先向系统申请一大块的内存，建立一个类似于内存池的机制。
+在程序运行需要使用内存的时候，ZendMM会在内存池中分配相应的内存供使用。
+这样做的好处是避免了PHP向系统频繁的内存申请操作，如下面的代码：
+
+	[php]
+	<?php
+	$tipi = "o_o \n";
+	echo $tipe;
+	?>
+
+这是一个简单的php程序，但通过对emalloc的调用计数，发现对内存的请求有数百次之多，
+当然这非常容易解释，因为PHP脚本的执行，需要大量的环境变量以及内部变量的定义，
+这些定义本身都是需要在内存中进行存储的。
+
+>**NOTE**
+>在编写PHP的扩展时，推荐使用emalloc来代替malloc，其实也就是使用PHP的ZendMM来代替
+>手动直接调用系统级的内存管理。（除非，你自己知道自已在做什么。）
+
+那么在上面这个小程序的执行过程中，ZendMM是如何使用自身的heap层存储空间的呢？
+经过对源码的追踪我们可以找到：
+
+	[c]
+	   ZEND_ASSIGN_SPEC_CV_CONST_HANDLER (......)
+	-> ALLOC_ZVAL(......)
+	-> ZEND_FAST_ALLOC(......) 
+	-> emalloc (......)
+	-> _emalloc(......)
+	-> _zend_mm_alloc_int(.....)
+
+***void *_emalloc*** 实现了对内存的申请操作，在_emalloc的处理过程中，
+对是否使用ZendMM进行了判断，如果heap层没有使用ZendMM来管理，
+就直接使用_zend_mm_heap结构中定义的_malloc函数进行内存的分配;
+（我们通过上节可以知道，这里的_malloc可以是malloc，win32，mmap_anon，mmap_zero中的一种）;
+
+就目前所知，不使用ZendMM进行内存管理，唯一的用途是打开enable-debug开关后，
+可以更方便的追踪内存的使用情况。所以，在这里我们关注ZendMM使用_zend_mm_alloc_int函数进行内存分配:
+
+![图6.1 PHP内存管理器](../images/chapt06/06-03-php-memory-request-free.jpg)
+
+结合上图，再加上内存分配之前的验证，ZendMM对内存分配的处理主要有以下步骤：
+
+ 1. 内存检查。 对要申请的内存大小进行检查，如果太大（超出memory_limit则报 Out of Memory）;
+ 2. 如果命中缓存，使用fastcache得到内存块(详见第五节)，然后直接进行第5步;
+ 3. 在ZendMM管理的heap层存储中搜索合适大小的内存块, 在这一步骤ZendMM通过与ZEND_MM_MAX_SMALL_SIZE进行大小比较，
+把内存请求分为两种类型： large和small。small类型的的请求会先使用zend_mm_low_bit函数
+在mm_heap中的free_buckets中查找，未找到则使用与large类型相同的方式：
+使用zend_mm_search_large_block函数在“大块”内存（_zend_mm_heap->large_free_buckets）中进行查找。
+找到可以使用的block后，进行第5步;
+ 4. 如果经过第3步的查找还没有找到可以使用的资源（请求的内存过大），需要使用ZEND_MM_STORAGE_ALLOC函数向系统再申请一块内存（大小至少为ZEND_MM_SEG_SIZE），然后直接将对齐后的地址分配给本次请求。跳到第6步;
+ 5. 使用zend_mm_remove_from_free_list函数将已经使用block节点在zend_mm_free_block中移除;
+ 6. 内存分配完毕，对zend_mm_heap结构中的各种标识型变量进行维护，包括large_free_buckets， peak，size等;
+ 7. 返回分配的内存地址;
+
