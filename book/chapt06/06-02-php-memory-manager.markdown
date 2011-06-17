@@ -115,4 +115,40 @@ PHP中的内存管理主要工作就是维护三个列表：小块内存列表�
 在这里，每个bucket也对应一定大小的内存块列表，这样的列表都是双向链表的实现。如下图所示：
 
 我们可以把维护的前面两个表看作是两个HashTable，那么，每个HashTable都会有自己的hash函数。
-对于free_buckets列表，其对应的是
+对于free_buckets列表，其hash函数为：
+
+	[c]
+	#define ZEND_MM_LARGE_BUCKET_INDEX(S) zend_mm_high_bit(S)
+
+	
+	static inline unsigned int zend_mm_high_bit(size_t _size)
+	{
+	
+	..//省略若干不同环境的实现
+		unsigned int n = 0;
+		while (_size != 0) {
+			_size = _size >> 1;
+			n++;
+		}
+		return n-1;
+	}
+
+这个hash函数用来计算size的位数，返回值为size二进码中1的个数-1。
+假设此时size为512Byte，则这段内存会放在free_buckets列表，
+512的二进制码为1000000000，其中仅包含一个1，则其对应的列表index为0。
+
+对于small_free_buckets列表，其hash函数为：
+
+	[c]
+	#define ZEND_MM_BUCKET_INDEX(true_size)		((true_size>>ZEND_MM_ALIGNMENT_LOG2)-(ZEND_MM_ALIGNED_MIN_HEADER_SIZE>>ZEND_MM_ALIGNMENT_LOG2))
+
+假设我们的程序是运行在win32机器上，则ZEND_MM_ALIGNED_MIN_HEADER_SIZE=16，
+若此时true_size=256，则((256>>3)-(16>>3))= 30。
+当ZEND_MM_BUCKET_INDEX宏出现时，ZEND_MM_SMALL_SIZE宏一般也会同时出现，
+ZEND_MM_SMALL_SIZE宏的作用是判断所申请的内存大小是否为小块的内存，
+在上面的示例中，小于272Byte的内存为小块内存，则index最多只能为31，
+这样就保证了small_free_buckets不会出现数组溢出的情况。
+
+
+
+	
