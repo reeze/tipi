@@ -112,10 +112,38 @@ PHP的内存管理可以被看作是分层（hierarchical）的。
 PHP中的内存管理主要工作就是维护三个列表：小块内存列表（free_buckets）、
 大块内存列表（large_free_buckets）和剩余内存列表（rest_buckets）。
 看到bucket这个单词是不是很熟悉？在前面我们介绍HashTable时，这就是一个重要的角色，它作为HashTable中的一个单元角色。
-在这里，每个bucket也对应一定大小的内存块列表，这样的列表都是双向链表的实现。如下图所示：
+在这里，每个bucket也对应一定大小的内存块列表，这样的列表都包含双向链表的实现。
 
 我们可以把维护的前面两个表看作是两个HashTable，那么，每个HashTable都会有自己的hash函数。
-对于free_buckets列表，其hash函数为：
+首先我们来看free_buckets列表，这个列表用来存储小块的内存分配，其hash函数为：
+
+	[c]
+	#define ZEND_MM_BUCKET_INDEX(true_size)		((true_size>>ZEND_MM_ALIGNMENT_LOG2)-(ZEND_MM_ALIGNED_MIN_HEADER_SIZE>>ZEND_MM_ALIGNMENT_LOG2))
+
+假设我们的程序是运行在win32机器上，则ZEND_MM_ALIGNED_MIN_HEADER_SIZE=16，
+若此时true_size=256，则((256>>3)-(16>>3))= 30。
+当ZEND_MM_BUCKET_INDEX宏出现时，ZEND_MM_SMALL_SIZE宏一般也会同时出现，
+ZEND_MM_SMALL_SIZE宏的作用是判断所申请的内存大小是否为小块的内存，
+在上面的示例中，小于272Byte的内存为小块内存，则index最多只能为31，
+这样就保证了free_buckets不会出现数组溢出的情况。
+
+在内存管理初始化时，PHP内核对初始化free_buckets列表。
+由于free_buckets[]数组会自动分配内存，但此时并没有构成free_block的双向链表，
+于是在初始化函数zend_mm_init中执行下列代码，从而链接所有的元素，构成双向链表。
+
+	[c]
+	p = ZEND_MM_SMALL_FREE_BUCKET(heap, 0);
+	for (i = 0; i < ZEND_MM_NUM_BUCKETS; i++) {
+		p->next_free_block = p;
+		p->prev_free_block = p;
+		p = (zend_mm_free_block*)((char*)p + sizeof(zend_mm_free_block*) * 2);
+		heap->large_free_buckets[i] = NULL;
+	}
+
+
+
+
+large_free_buckets列表用来存储大块的内存分配，其hash函数为：
 
 	[c]
 	#define ZEND_MM_LARGE_BUCKET_INDEX(S) zend_mm_high_bit(S)
@@ -134,20 +162,18 @@ PHP中的内存管理主要工作就是维护三个列表：小块内存列表�
 	}
 
 这个hash函数用来计算size的位数，返回值为size二进码中1的个数-1。
-假设此时size为512Byte，则这段内存会放在free_buckets列表，
+假设此时size为512Byte，则这段内存会放在large_free_buckets列表，
 512的二进制码为1000000000，其中仅包含一个1，则其对应的列表index为0。
+关于右移操作，这里有一点说明：
 
-对于small_free_buckets列表，其hash函数为：
+>**NOTE**
+>一般来说，右移分为逻辑右移和算术右移。逻辑位移在在左端补K个0，算术右移在左端补K个最高有效位的值。
+>C语言标准没有明确定义应该使用哪种方式。对于无符号数据，右移必须是逻辑的。对于有符号的数据，则二者都可以。
+>但是，现实中都会默认为算术右移。
 
-	[c]
-	#define ZEND_MM_BUCKET_INDEX(true_size)		((true_size>>ZEND_MM_ALIGNMENT_LOG2)-(ZEND_MM_ALIGNED_MIN_HEADER_SIZE>>ZEND_MM_ALIGNMENT_LOG2))
 
-假设我们的程序是运行在win32机器上，则ZEND_MM_ALIGNED_MIN_HEADER_SIZE=16，
-若此时true_size=256，则((256>>3)-(16>>3))= 30。
-当ZEND_MM_BUCKET_INDEX宏出现时，ZEND_MM_SMALL_SIZE宏一般也会同时出现，
-ZEND_MM_SMALL_SIZE宏的作用是判断所申请的内存大小是否为小块的内存，
-在上面的示例中，小于272Byte的内存为小块内存，则index最多只能为31，
-这样就保证了small_free_buckets不会出现数组溢出的情况。
+
+
 
 
 
