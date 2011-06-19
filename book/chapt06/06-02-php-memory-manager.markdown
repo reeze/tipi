@@ -128,8 +128,9 @@ ZEND_MM_SMALL_SIZE宏的作用是判断所申请的内存大小是否为小块�
 这样就保证了free_buckets不会出现数组溢出的情况。
 
 在内存管理初始化时，PHP内核对初始化free_buckets列表。
-由于free_buckets[]数组会自动分配内存，但此时并没有构成free_block的双向链表，
-于是在初始化函数zend_mm_init中执行下列代码，从而链接所有的元素，构成双向链表。
+由于free_buckets[]数组会自动分配内存，但此时free_block的双向链表都是没有指向具体的元素的，
+于是在初始化函数zend_mm_init中执行下列代码，对于偶数位的元素（索引从0开始）将其左指针和右指针都指向自己。
+从而初始化每个双向链表的开始元素。
 
 	[c]
 	p = ZEND_MM_SMALL_FREE_BUCKET(heap, 0);
@@ -140,7 +141,14 @@ ZEND_MM_SMALL_SIZE宏的作用是判断所申请的内存大小是否为小块�
 		heap->large_free_buckets[i] = NULL;
 	}
 
+以上的这个初始化的操作结果，在使用free_bitmap标记是否该双向链表已经使用过时有用。
+整个free_buckets列表的结构如图6.2所示。
 
+![图6.2 free_buckets列表结构](../images/chapt06/06-02-02-free_buckets.jpg)
+
+
+如上为free_buckets列表的结构图，当有新的元素需要插入到列表时，需要先根据块的大小查找index，
+查找到index后，在此index对应的双向列表的头部插入新的元素。
 
 
 large_free_buckets列表用来存储大块的内存分配，其hash函数为：
