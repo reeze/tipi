@@ -120,7 +120,7 @@ PHP中的内存管理主要工作就是维护三个列表：小块内存列表�
 	[c]
 	#define ZEND_MM_BUCKET_INDEX(true_size)		((true_size>>ZEND_MM_ALIGNMENT_LOG2)-(ZEND_MM_ALIGNED_MIN_HEADER_SIZE>>ZEND_MM_ALIGNMENT_LOG2))
 
-假设我们的程序是运行在win32机器上，则ZEND_MM_ALIGNED_MIN_HEADER_SIZE=16，
+假设ZEND_MM_ALIGNMENT为8（如果没有特殊说明，本章的ZEND_MM_ALIGNMENT的值都为8），则ZEND_MM_ALIGNED_MIN_HEADER_SIZE=16，
 若此时true_size=256，则((256>>3)-(16>>3))= 30。
 当ZEND_MM_BUCKET_INDEX宏出现时，ZEND_MM_SMALL_SIZE宏一般也会同时出现，
 ZEND_MM_SMALL_SIZE宏的作用是判断所申请的内存大小是否为小块的内存，
@@ -151,7 +151,10 @@ ZEND_MM_SMALL_SIZE宏的作用是判断所申请的内存大小是否为小块�
 查找到index后，在此index对应的双向列表的头部插入新的元素。
 
 
-large_free_buckets列表用来存储大块的内存分配，其hash函数为：
+free_buckets列表是用于存放小块内存，而与之对应的large_free_buckets列表是用来存储大块的内存，
+虽然large_free_buckets列表也类似于一个hash表，但是这个与前面的free_buckets列表一些区别。
+它是一个集成了数组，树型结构和双向链表三种数据结构的混合体。
+我们先看其数组结构，数组是一个hash映射，其hash函数为：
 
 	[c]
 	#define ZEND_MM_LARGE_BUCKET_INDEX(S) zend_mm_high_bit(S)
@@ -180,6 +183,20 @@ large_free_buckets列表用来存储大块的内存分配，其hash函数为：
 >但是，现实中都会默认为算术右移。
 
 
+我们通过一次列表的元素插入操作来理解列表的结果。
+首先确定当前需要内存所在的数组元素位置，然后查找此内存大小所在的位置。
+这个查找行为是发生在树型结构中，而树型结构的位置与内存的大小有关。
+其查找过程如下：
+
+* 第一步 通过索引获取树型结构第一个结点并作为当前结点，如果第一个结点为空，则将内存放到第一个元素的结点位置，返回，否则转第二步
+* 第二步 从当前结点出发，查找下一个结点，并将其作为当前结点
+* 第三步 判断当前结点内存的大小与需要分配的内存大小是否一样
+  如果大小一样则以双向链表的结构将新的元素添加到结点元素的后面第一个元素的位置。否则转四步
+* 第四步 判断当前结点是否为空，如果为空，则占据结点位置，结束查找，否则第二步。
+
+从以上的过程我们可以画出large_free_buckets列表的结构如图6.3所示：
+
+![图6.3 large_free_buckets列表结构](../images/chapt06/06-02-03-large_free_buckets.jpg)
 
 
 
