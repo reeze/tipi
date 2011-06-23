@@ -198,8 +198,82 @@ free_buckets列表是用于存放小块内存，而与之对应的large_free_buc
 
 ![图6.3 large_free_buckets列表结构](../images/chapt06/06-02-03-large_free_buckets.jpg)
 
+从内存分配的过程中可以看出，内存块查找判断顺序是小块内存列表，接着是大块内存列表，
+最后是剩余内存列表。在heap结构中，此列表对就rest_buckets字段，这是一个只有两个元素的数组。
+而我们常用的插入和查找操作是针对第一个元素，即heap->rest_buckets[0]。
+在添加内存时，如果所需要的内存块的大小大于初始化时设置的ZEND_MM_SEG_SIZE的值（在heap结构中为block_size字段）
+与ZEND_MM_ALIGNED_SEGMENT_SIZE(等于8)和ZEND_MM_ALIGNED_HEADER_SIZE(等于8)的和的差，则会将新生成的块插入
+rest_buckts[0]所在的双向链表中，这个操作和前面的双向链表操作一样，都是在第一个元素的后面插入新的元素。
+此列表的结构和free_bucket类型，只是这个列表所在的数组没有那么多元素，也没有相应的hash函数。
+
+在heap层下面是存储层，存储层的作用是将内存分配的方式对堆层透明化。
+在PHP的源码中有注释显示相关代码为"Storage Manager"。
+存储层的主要结构代码如下：
+
+	[c]
+	/* Heaps with user defined storage */
+	typedef struct _zend_mm_storage zend_mm_storage;
+	 
+	typedef struct _zend_mm_segment {
+	    size_t    size;
+	    struct _zend_mm_segment *next_segment;
+	} zend_mm_segment;
+	 
+	typedef struct _zend_mm_mem_handlers {
+	    const char *name;
+	    zend_mm_storage* (*init)(void *params);    //    初始化函数
+	    void (*dtor)(zend_mm_storage *storage);    //    析构函数
+	    void (*compact)(zend_mm_storage *storage);
+	    zend_mm_segment* (*_alloc)(zend_mm_storage *storage, size_t size);    //    内存分配函数
+	    zend_mm_segment* (*_realloc)(zend_mm_storage *storage, zend_mm_segment *ptr, size_t size);    //    重新分配内存函数
+	    void (*_free)(zend_mm_storage *storage, zend_mm_segment *ptr);    //    释放内存函数
+	} zend_mm_mem_handlers;
+	 
+	struct _zend_mm_storage {
+	    const zend_mm_mem_handlers *handlers;    //    处理函数集
+	    void *data;
+	};
 
 
+以上代码的关键在于存储层处理函数的结构体，对于不同的内存分配方案，所不同的就是内存分配的处理函数。
+其中以name字段标识不同的分配方案。在图6.1中，我们可以看到PHP在存储层共有4种内存分配方案: 
+malloc，win32，mmap_anon，mmap_zero默认使用malloc分配内存，
+如果设置了ZEND_WIN32宏，则为windows版本，调用HeapAlloc分配内存，剩下两种内存方案为匿名内存映射，
+并且PHP的内存方案可以通过设置变量来修改。其官方说明如下：
 
+	The Zend MM can be tweaked using ZEND_MM_MEM_TYPE and ZEND_MM_SEG_SIZE environment
+	variables. Default values are “malloc” and “256K”. Dependent on target system you
+	can also use “mmap_anon”, “mmap_zero” and “win32″ storage managers.
 
+在代码中，对于这4种内存分配方案，分别对应实现了zend_mm_mem_handlers中的各个处理函数。
+配合代码的简单说明如下：
 	
+	[c]
+	* 使用mmap内存映射函数分配内存 写入时拷贝的私有映射，并且匿名映射，映射区不与任何文件关联。*/
+	# define ZEND_MM_MEM_MMAP_ANON_DSC {"mmap_anon", zend_mm_mem_dummy_init, zend_mm_mem_dummy_dtor, zend_mm_mem_dummy_compact, zend_mm_mem_mmap_anon_alloc, zend_mm_mem_mmap_realloc, zend_mm_mem_mmap_free}
+
+	/* 使用mmap内存映射函数分配内存 写入时拷贝的私有映射，并且映射到/dev/zero。*/
+	# define ZEND_MM_MEM_MMAP_ZERO_DSC {"mmap_zero", zend_mm_mem_mmap_zero_init, zend_mm_mem_mmap_zero_dtor, zend_mm_mem_dummy_compact, zend_mm_mem_mmap_zero_alloc, zend_mm_mem_mmap_realloc, zend_mm_mem_mmap_free}
+
+	/* 使用HeapAlloc分配内存 windows版本 关于这点，注释中写的是VirtualAlloc() to allocate memory，实际在程序中使用的是HeapAlloc*/
+	# define ZEND_MM_MEM_WIN32_DSC {"win32", zend_mm_mem_win32_init, zend_mm_mem_win32_dtor, zend_mm_mem_win32_compact, zend_mm_mem_win32_alloc, zend_mm_mem_win32_realloc, zend_mm_mem_win32_free}
+
+	/* 使用malloc分配内存 默认为此种分配 如果有加ZEND_WIN32宏，则使用win32的分配方案*/
+	# define ZEND_MM_MEM_MALLOC_DSC {"malloc", zend_mm_mem_dummy_init, zend_mm_mem_dummy_dtor, zend_mm_mem_dummy_compact, zend_mm_mem_malloc_alloc, zend_mm_mem_malloc_realloc, zend_mm_mem_malloc_free}
+
+	static const zend_mm_mem_handlers mem_handlers[] = {
+	#ifdef HAVE_MEM_WIN32
+	    ZEND_MM_MEM_WIN32_DSC,
+	#endif
+	#ifdef HAVE_MEM_MALLOC
+	    ZEND_MM_MEM_MALLOC_DSC,
+	#endif
+	#ifdef HAVE_MEM_MMAP_ANON
+	    ZEND_MM_MEM_MMAP_ANON_DSC,
+	#endif
+	#ifdef HAVE_MEM_MMAP_ZERO
+	    ZEND_MM_MEM_MMAP_ZERO_DSC,
+	#endif
+	    {NULL, NULL, NULL, NULL, NULL, NULL}
+	};
+
