@@ -277,3 +277,7 @@ malloc，win32，mmap_anon，mmap_zero默认使用malloc分配内存，
 	    {NULL, NULL, NULL, NULL, NULL, NULL}
 	};
 
+假设我们使用的是win32内存方案，则在PHP编译时，编译器会选择将ZEND_MM_MEM_WIN32_DSC宏所代码的所有处理函数赋值给mem_handlers。
+在之后我们调用内存分配时，将会使用此数组中对应的相关函数。当然，在指定环境变量 USE_ZEND_ALLOC 时，可用于允许在运行时选择 malloc 或 emalloc 内存分配。
+使用 malloc-type 内存分配将允许外部调试器观察内存使用情况，而 emalloc 分配将使用 Zend 内存管理器抽象，要求进行内部调试。
+
