@@ -59,7 +59,7 @@
 	* [第一节 内存管理概述(reeze)][memory-management-overview]
 	* [第二节 PHP中的内存管理][php-memory-manager]
 	* [第三节 内存使用：申请和销毁(er)][php-memory-request-free]
-	* [第四节 垃圾回收(pan)][garbage-collection]
+	* [第四节 垃圾回收机制(pan)][garbage-collection]
 		+ PHP中的垃圾回收(5.2/5.3)
 	* 第五节 性能相关：缓存、内存使用策律
 	* 第六节 写时复制机制的实现
