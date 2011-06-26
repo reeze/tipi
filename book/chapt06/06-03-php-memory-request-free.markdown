@@ -1,14 +1,18 @@
 # 第三节 内存使用：申请和销毁
 ## 内存的申请
-通过前面的章节我们可以知道，PHP对内存的使用，并不是有需要时向系统即时申请，
-而是ZendMM先向系统申请一大块的内存，建立一个类似于内存池的机制。
+通过前一小节我们可以知道，PHP底层对内存的管理，
+围绕着小块内存列表（free_buckets）、 大块内存列表（large_free_buckets）和
+剩余内存列表（rest_buckets）三个列表来分层进行的。
+ZendMM向系统进行的内存申请，并不是有需要时向系统即时申请，
+而是由ZendMM的最底层（heap层）先向系统申请一大块的内存，通过对上面三种列表的填充，
+建立一个类似于内存池的管理机制。
 在程序运行需要使用内存的时候，ZendMM会在内存池中分配相应的内存供使用。
 这样做的好处是避免了PHP向系统频繁的内存申请操作，如下面的代码：
 
 	[php]
 	<?php
-	$tipi = "o_o \n";
-	echo $tipe;
+	$tipi = "o_o\n";
+	echo $tipi;
 	?>
 
 这是一个简单的php程序，但通过对emalloc的调用计数，发现对内存的请求有数百次之多，
@@ -48,9 +52,69 @@
 把内存请求分为两种类型： large和small。small类型的的请求会先使用zend_mm_low_bit函数
 在mm_heap中的free_buckets中查找，未找到则使用与large类型相同的方式：
 使用zend_mm_search_large_block函数在“大块”内存（_zend_mm_heap->large_free_buckets）中进行查找。
+如果还没有可以满足大小需求的内存，最后在rest_buckets中进行查找。
+也就是说，内存的分配是在三种列表中小到大进行的。
 找到可以使用的block后，进行第5步;
  4. 如果经过第3步的查找还没有找到可以使用的资源（请求的内存过大），需要使用ZEND_MM_STORAGE_ALLOC函数向系统再申请一块内存（大小至少为ZEND_MM_SEG_SIZE），然后直接将对齐后的地址分配给本次请求。跳到第6步;
  5. 使用zend_mm_remove_from_free_list函数将已经使用block节点在zend_mm_free_block中移除;
  6. 内存分配完毕，对zend_mm_heap结构中的各种标识型变量进行维护，包括large_free_buckets， peak，size等;
  7. 返回分配的内存地址;
 
+从上面的分配可以看出，PHP对内存的分配，是结合PHP的用途来设计的，PHP一般用于web应用程序的数据支持，
+单个脚本的运行周期一般比较短（最多达到秒级），内存大块整块的申请，自主进行小块的分配，
+没有进行比较复杂的不相临地址的空闲内存合并，而是集中再次向系统请求。
+这样做的好处就是运行速度会更快，缺点是随着程序的运行时间的变长，
+内存的使用情况会“越来越多”（PHP5.2及更早版本）。
+所以PHP5.3之前的版本并不适合做为守护进程长期运行。
+（当然，可以有其他方法解决，而且在PHP5.3中引入了新的GC机制，详见下一小节）
+
+## 内存的销毁
+ZendMM在内存销毁的处理上采用与内存申请相同的策略，当程序unset一个变量或者是其他的释放行为时，
+ZendMM并不会直接立刻将内存交回给系统，而是只在自身维护的内存池中将其重新标识为可用，
+按照内存的大小整理到上面所说的三种列表（small,large,free）之中，以备下次内存申请时使用。
+
+>**NOTE**
+>关于变量销毁的处理，还涉及较多的其他操作，请参看[变量的创建和销毁][var-create-free]
+
+内存销毁的最终实现函数是**_efree**。在**_efree**中，内存的销毁首先要进行是否放回cache的判断。
+如果内存的大小满足ZEND_MM_SMALL_SIZE并且cache还没有超过系统设置的ZEND_MM_CACHE_SIZE，
+那么，当前内存块zend_mm_block就会被放回mm_heap->cache中。
+如果内存块没有被放回cache，则使用下面的代码进行处理：
+
+	[c]
+    zend_mm_block *mm_block; //要销毁的内存块
+    zend_mm_block *next_block;
+    ...
+    next_block = ZEND_MM_BLOCK_AT(mm_block, size);
+    if (ZEND_MM_IS_FREE_BLOCK(next_block)) {
+        zend_mm_remove_from_free_list(heap, (zend_mm_free_block *) next_block);
+        size += ZEND_MM_FREE_BLOCK_SIZE(next_block);
+    }    
+    if (ZEND_MM_PREV_BLOCK_IS_FREE(mm_block)) {
+        mm_block = ZEND_MM_PREV_BLOCK(mm_block);
+        zend_mm_remove_from_free_list(heap, (zend_mm_free_block *) mm_block);
+        size += ZEND_MM_FREE_BLOCK_SIZE(mm_block);
+    }    
+    if (ZEND_MM_IS_FIRST_BLOCK(mm_block) &&
+        ZEND_MM_IS_GUARD_BLOCK(ZEND_MM_BLOCK_AT(mm_block, size))) {
+        zend_mm_del_segment(heap, (zend_mm_segment *) ((char *)mm_block - ZEND_MM_ALIGNED_SEGMENT_SIZE));
+    } else {
+        ZEND_MM_BLOCK(mm_block, ZEND_MM_FREE_BLOCK, size);
+        zend_mm_add_to_free_list(heap, (zend_mm_free_block *) mm_block);
+    }    
+
+这段代码逻辑比较清晰，主要是根据当前要销毁的内存块**mm_block**在**zend_mm_heap**
+双向链表中所处的位置进行不同的操作。如果下一个节点还是free的内存，则将下一个节点合并;
+如果上一相邻节点内存块为free，则合并到上一个节点;
+如果只是普通节点，刚使用 **zend_mm_add_to_free_list**或者**zend_mm_del_segment**
+进行回收。
+
+就这样，ZendMM将内存块以整理收回到zend_mm_heap的方式，回收到内存池中。
+程序使用的所有内存，将在进程结束时统一交还给系统。
+
+>**NOTE**
+>在内存的销毁过程中，还涉及到引用计数和垃圾回收（GC），将在下一小节进行讨论。
+
+
+
+[var-create-free]: ?p=chapt03/03-06-01-var-define-and-init
