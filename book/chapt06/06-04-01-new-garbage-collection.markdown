@@ -52,7 +52,10 @@ ALLOC_ZVAL在分配了内存后会调用GC_ZVAL_INIT用来初始化替代了zval
 
 PHP的垃圾回收机制在PHP5.3中默认为开启，但是我们可以通过配置文件直接设置为禁用，其对应的配置字段为：zend.enable_gc。
 在php.ini文件中默认是没有这个字段的，如果我们需要禁用此功能，则在php.ini中添加zend.enable_gc=0或zend.enable_gc=off。
-与垃圾回收机制是否开启在PHP源码中一些相关的操作和字段。在zend.c文件中有如下代码：
+除了修改php.ini配置zend.enable_gc，也可以通过调用gc_enable()/gc_disable()函数来打开/关闭垃圾回收机制。
+这些函数的调用效果与修改配置项来打开或关闭垃圾回收机制的效果是一样的。
+除了这两个函数PHP提供了gc_collect_cycles()函数可以在根缓冲区还没满时强制执行周期回收。
+与垃圾回收机制是否开启在PHP源码中有一些相关的操作和字段。在zend.c文件中有如下代码：
 
     [c]
 
@@ -86,23 +89,189 @@ gc_init函数在预分配内存后调用gc_reset函数重置整个机制用到�
 
     [c]
     typedef struct _zend_gc_globals {
-	zend_bool         gc_enabled;	/* 是否开启垃圾收集机制 */
-	zend_bool         gc_active;	/* 是否正在进行 */
- 
-	gc_root_buffer   *buf;				/* 预分配的缓冲区数组，默认为10000（preallocated arrays of buffers）   */
-	gc_root_buffer    roots;			/* 列表的根结点（list of possible roots of cycles） */
-	gc_root_buffer   *unused;			/* 没有使用过的缓冲区列表(list of unused buffers)           */
-	gc_root_buffer   *first_unused;		/* 指向第一个没有使用过的缓冲区结点（pointer to first unused buffer）   */
-	gc_root_buffer   *last_unused;		/* 指向最后一个没有使用过的缓冲区结点，此处为标记结束用(pointer to last unused buffer)    */
- 
-	zval_gc_info     *zval_to_free;		/* 将要释放的zval变量的临时列表（temporaryt list of zvals to free） */
-	zval_gc_info     *free_list;		/* 临时变量，需要释放的列表开头 */
-	zval_gc_info     *next_to_free;		/* 临时变量，下一个将要释放的变量位置*/
- 
-	zend_uint gc_runs;	/* gc运行的次数统计 */
-	zend_uint collected;    /* gc中垃圾的个数 */
- 
-	// 省略...
+        zend_bool         gc_enabled;	/* 是否开启垃圾收集机制 */
+        zend_bool         gc_active;	/* 是否正在进行 */
 
+        gc_root_buffer   *buf;				/* 预分配的缓冲区数组，默认为10000（preallocated arrays of buffers）   */
+        gc_root_buffer    roots;			/* 列表的根结点（list of possible roots of cycles） */
+        gc_root_buffer   *unused;			/* 没有使用过的缓冲区列表(list of unused buffers)           */
+        gc_root_buffer   *first_unused;		/* 指向第一个没有使用过的缓冲区结点（pointer to first unused buffer）   */
+        gc_root_buffer   *last_unused;		/* 指向最后一个没有使用过的缓冲区结点，此处为标记结束用(pointer to last unused buffer)    */
 
+        zval_gc_info     *zval_to_free;		/* 将要释放的zval变量的临时列表（temporaryt list of zvals to free） */
+        zval_gc_info     *free_list;		/* 临时变量，需要释放的列表开头 */
+        zval_gc_info     *next_to_free;		/* 临时变量，下一个将要释放的变量位置*/
 
+        zend_uint gc_runs;	/* gc运行的次数统计 */
+        zend_uint collected;    /* gc中垃圾的个数 */
+
+        // 省略...
+   }
+
+当我们使用一个unset操作想清除这个变量所占的内存时（可能只是引用计数减一），会从当前符号的哈希表中删除变量名对应的项，
+在所有的操作执行完后，并对从符号表中删除的项调用一个析构函数，临时变量会调用zval_dtor，一般的变量会调用zval_ptr_dtor。
+
+>**NOTE**
+>当然我们无法在PHP的函数集中找到unset函数，因为它是一种语言结构。
+>其对应的中间代码为ZEND_UNSET，在Zend/zend_vm_execute.h文件中你可以找到与它相关的实现。
+
+zval_ptr_dtor并不是一个函数，只是一个长得有点像函数的宏。
+在Zend/zend_variables.h文件中，这个宏指向函数_zval_ptr_dtor。
+在Zend/zend_execute_API.c 424行，函数相关代码如下：
+
+    [c]
+    ZEND_API void _zval_ptr_dtor(zval **zval_ptr ZEND_FILE_LINE_DC) /* {{{ */
+    {
+    #if DEBUG_ZEND>=2
+        printf("Reducing refcount for %x (%x): %d->%d\n", *zval_ptr, zval_ptr, Z_REFCOUNT_PP(zval_ptr), Z_REFCOUNT_PP(zval_ptr) - 1);
+    #endif
+        Z_DELREF_PP(zval_ptr);
+        if (Z_REFCOUNT_PP(zval_ptr) == 0) {
+            TSRMLS_FETCH();
+
+            if (*zval_ptr != &EG(uninitialized_zval)) {
+                GC_REMOVE_ZVAL_FROM_BUFFER(*zval_ptr);
+                zval_dtor(*zval_ptr);
+                efree_rel(*zval_ptr);
+            }
+        } else {
+            TSRMLS_FETCH();
+
+            if (Z_REFCOUNT_PP(zval_ptr) == 1) {
+                Z_UNSET_ISREF_PP(zval_ptr);
+            }
+
+            GC_ZVAL_CHECK_POSSIBLE_ROOT(*zval_ptr);
+        }
+    }
+    /* }}} */
+
+从代码我们可以很清晰的看出这个zval的析构过程，关于引用计数字段做了以下两个操作：
+
+* 如果变量的引用计数为1，即减一后引用计数为0，直接清除变量。如果当前变量如果被缓存，则需要清除缓存
+* 如果变量的引用计数大于1，即减一后引用计数大于0，则将变量放入垃圾列表。如果变更存在引用，则去掉其引用。
+
+将变量放入垃圾列表的操作是GC_ZVAL_CHECK_POSSIBLE_ROOT，这也是一个宏，其对应函数gc_zval_check_possible_root，
+但是此函数仅对数组和对象执行垃圾回收操作。对于数组和对象变量，它会调用gc_zval_possible_root函数。
+
+    [c]
+    ZEND_API void gc_zval_possible_root(zval *zv TSRMLS_DC)
+    {
+        if (UNEXPECTED(GC_G(free_list) != NULL &&
+                       GC_ZVAL_ADDRESS(zv) != NULL &&
+                       GC_ZVAL_GET_COLOR(zv) == GC_BLACK) &&
+                       (GC_ZVAL_ADDRESS(zv) < GC_G(buf) ||
+                        GC_ZVAL_ADDRESS(zv) >= GC_G(last_unused))) {
+            /* The given zval is a garbage that is going to be deleted by
+             * currently running GC */
+            return;
+        }
+
+        if (zv->type == IS_OBJECT) {
+            GC_ZOBJ_CHECK_POSSIBLE_ROOT(zv);
+            return;
+        }
+
+        GC_BENCH_INC(zval_possible_root);
+
+        if (GC_ZVAL_GET_COLOR(zv) != GC_PURPLE) {
+            GC_ZVAL_SET_PURPLE(zv);
+
+            if (!GC_ZVAL_ADDRESS(zv)) {
+                gc_root_buffer *newRoot = GC_G(unused);
+
+                if (newRoot) {
+                    GC_G(unused) = newRoot->prev;
+                } else if (GC_G(first_unused) != GC_G(last_unused)) {
+                    newRoot = GC_G(first_unused);
+                    GC_G(first_unused)++;
+                } else {
+                    if (!GC_G(gc_enabled)) {
+                        GC_ZVAL_SET_BLACK(zv);
+                        return;
+                    }
+                    zv->refcount__gc++;
+                    gc_collect_cycles(TSRMLS_C);
+                    zv->refcount__gc--;
+                    newRoot = GC_G(unused);
+                    if (!newRoot) {
+                        return;
+                    }
+                    GC_ZVAL_SET_PURPLE(zv);
+                    GC_G(unused) = newRoot->prev;
+                }
+
+                newRoot->next = GC_G(roots).next;
+                newRoot->prev = &GC_G(roots);
+                GC_G(roots).next->prev = newRoot;
+                GC_G(roots).next = newRoot;
+
+                GC_ZVAL_SET_ADDRESS(zv, newRoot);
+
+                newRoot->handle = 0;
+                newRoot->u.pz = zv;
+
+                GC_BENCH_INC(zval_buffered);
+                GC_BENCH_INC(root_buf_length);
+                GC_BENCH_PEAK(root_buf_peak, root_buf_length);
+            }
+        }
+    }
+
+在前面说到gc_zval_check_possible_root函数仅对数组和对象执行垃圾回收操作，然而在gc_zval_possible_root函数中，
+针对对象类型的变量会去调用GC_ZOBJ_CHECK_POSSIBLE_ROOT宏。而对于其它的可用于垃圾回收的机制的变量类型其调用过程如下：
+
+* 检查zval结点信息是否已经放入到结点缓冲区，如果已经放入到结点缓冲区，则直接返回，这样可以优化其性能。
+然后处理对象结点，直接返回，不再执行后面的操作
+* 判断结点是否已经被标记为紫色，如果为紫色则不再添加到结点缓冲区，此处在于保证一个结点只执行一次添加到缓冲区的操作。
+* 将结点的颜色标记为紫色，表示此结点已经添加到缓冲区，下次不用再做添加
+* 找出新的结点的位置，如果缓冲区满了，则执行垃圾回收操作。
+* 将新的结点添加到缓冲区所在的双向链表。
+
+在gc_zval_possible_root函数中，当缓冲区满时，程序调用gc_collect_cycles函数，执行垃圾回收操作。
+其中最关键的几步就是：
+
+* 第628行 此处为其官方文档中算法的步骤 B ，算法使用深度优先搜索查找所有可能的根，找到后将每个变量容器中的引用计数减1，
+  为确保不会对同一个变量容器减两次“1”，用灰色标记已减过1的。
+* 第629行 这是算法的步骤 C ，算法再一次对每个根节点使用深度优先搜索，检查每个变量容器的引用计数。
+  如果引用计数是 0 ，变量容器用白色来标记。如果引用次数大于0，则恢复在这个点上使用深度优先搜索而将引用计数减1的操作（即引用计数加1），
+  然后将它们重新用黑色标记。 
+* 第630行 算法的最后一步 D ，算法遍历根缓冲区以从那里删除变量容器根(zval roots)，
+ 同时，检查是否有在上一步中被白色标记的变量容器。每个被白色标记的变量容器都被清除。
+ 在[gc_collect_cycles() -> gc_collect_roots() -> zval_collect_white() ]中我们可以看到，
+ 对于白色标记的结点会被添加到全局变量zval_to_free列表中。此列表在后面的操作中有用到。
+
+PHP的垃圾回收机制在执行过程中以四种颜色标记状态。
+
+* GC_WHITE 白色表示垃圾
+* GC_PURPLE 紫色表示已放入缓冲区
+* GC_GREY 灰色表示已经进行了一次refcount的减一操作
+* GC_BLACK 黑色是默认颜色，正常
+
+相关的标记以及操作代码如下：
+
+    [c]
+    #define GC_COLOR  0x03
+
+    #define GC_BLACK  0x00
+    #define GC_WHITE  0x01
+    #define GC_GREY   0x02
+    #define GC_PURPLE 0x03
+
+    #define GC_ADDRESS(v) \
+        ((gc_root_buffer*)(((zend_uintptr_t)(v)) & ~GC_COLOR))
+    #define GC_SET_ADDRESS(v, a) \
+        (v) = ((gc_root_buffer*)((((zend_uintptr_t)(v)) & GC_COLOR) | ((zend_uintptr_t)(a))))
+    #define GC_GET_COLOR(v) \
+        (((zend_uintptr_t)(v)) & GC_COLOR)
+    #define GC_SET_COLOR(v, c) \
+        (v) = ((gc_root_buffer*)((((zend_uintptr_t)(v)) & ~GC_COLOR) | (c)))
+    #define GC_SET_BLACK(v) \
+        (v) = ((gc_root_buffer*)(((zend_uintptr_t)(v)) & ~GC_COLOR))
+    #define GC_SET_PURPLE(v) \
+        (v) = ((gc_root_buffer*)(((zend_uintptr_t)(v)) | GC_PURPLE))
+    
+
+以上的这种以位来标记状态的方式在PHP的源码中使用频率较高，如内存管理等都有用到，
+这是一种比较高效及节省的方案。但是在我们做数据库设计时可能对于字段不能使用这种方式，
+应该是以一种更加直观，更加具有可读性的方式实现。
