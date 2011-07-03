@@ -17,4 +17,4 @@ PHP将在内存中销毁这个变量，只是这里的垃圾并不能称之为�
 新的垃圾回收机制解决了无法处理循环的引用内存泄漏问题。PHP5.3中的垃圾回收机制使用了文章[引用计数系统中的同步周期回收(Concurrent Cycle Collection in Reference Counted Systems)](http://www.research.ibm.com/people/d/dfb/papers/Bacon01Concurrent.pdf)
 中的同步算法。关于这个算法的介绍我们就不再赘述，在PHP的官方文档有图文并茂的介绍：[回收周期(Collecting Cycles)](http://docs.php.net/manual/zh/features.gc.collecting-cycles.php)。
 
-在本小节，我们从PHP的垃圾回收机制的结构出发，结合其算法介绍PHP5.2和PHP5.3垃圾回收机制的实现。
+在本小节，我们从PHP的垃圾回收机制的结构出发，结合其算法介绍PHP5.3垃圾回收机制的实现。
