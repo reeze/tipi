@@ -60,8 +60,8 @@
 	* [第二节 PHP中的内存管理][php-memory-manager]
 	* [第三节 内存使用：申请和销毁][php-memory-request-free]
 	* [第四节 垃圾回收机制][garbage-collection]
-		+ [新的垃圾回收机制(pan)][new-gc]
-	* 第五节 性能相关：缓存、内存使用策律
+		+ [新的垃圾回收机制][new-gc]
+	* [第五节 内存管理中的缓存(pan)][php-memory-cache]
 	* 第六节 写时复制机制的实现(er)
 	* 第七节 小结
 
@@ -156,3 +156,4 @@
 [php-memory-request-free]:	?p=chapt06/06-03-php-memory-request-free
 [garbage-collection]:       ?p=chapt06/06-04-00-garbage-collection
 [new-gc]:                   ?p=chapt06/06-04-01-new-garbage-collection
+[php-memory-cache]:         ?p=chapt06/06-05-php-memory-cache
