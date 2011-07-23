@@ -26,7 +26,11 @@ try
 	$params = array_merge($params, array('current_page' => 'news', 'title' => '新闻'));
 
 	$view = new SimpieView($view_path, "../templates/layout/common_page.php");
-	$view->render($params);
+	$html = $view->render($params , true);
+	if(!file_exists('index.html')){
+		file_put_contents('index.html', $html);
+	}
+	echo $html;
 }
 catch(PageNotFoundException $e)
 {
