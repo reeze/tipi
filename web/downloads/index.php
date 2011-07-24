@@ -8,15 +8,10 @@ require_once "../models/BookPage.php";
 try
 {
 	$view = new SimpieView('../templates/downloads/index.php', "../templates/layout/common_page.php");
-	$html = $view->render(array(
+	$view->render(array(
 		'current_page' => 'downloads',
 		'title' => '下载',
-	),true);
-	if(!file_exists('index.html')){
-		file_put_contents('index.html', $html);
-	}
-	echo $html;
-
+	));
 }
 catch(PageNotFoundException $e)
 {
