@@ -18,7 +18,7 @@ COW最早应用在*nix系统中对线程与内存使用的优化，后面广泛�
 		$bar = 2;
  		xdebug_debug_zval('foo');	
 	?>
-	$ php tipi.php 
+	//-----执行结果-----
 	foo: (refcount=1, is_ref=0)=1
 	foo: (refcount=2, is_ref=0)=1
 	foo: (refcount=1, is_ref=0)=1
@@ -49,7 +49,7 @@ COW最早应用在*nix系统中对线程与内存使用的优化，后面广泛�
 对变量的赋值进行了各种判断和处理。
 其中最终处理代码如下：
 
-	[php]
+	[c]
     if (PZVAL_IS_REF(value) && Z_REFCOUNT_P(value) > 0) {
         ALLOC_ZVAL(variable_ptr);
         *variable_ptr_ptr = variable_ptr;
@@ -67,7 +67,7 @@ COW最早应用在*nix系统中对线程与内存使用的优化，后面广泛�
 如果大家看过前面的章节，
 应该对变量存储的结构体zval（Zend/zend.h）还有印象：
 
-	[php]
+	[c]
 	typedef struct _zval_struct zval;
 	...
 	struct _zval_struct {
@@ -93,10 +93,12 @@ PHP对值的写时复制的操作，主要依赖于两个参数：**refcount__gc
 可是，在下面的例子中，unset并没有使内存池的内存增加：
 
 	[php]
+	<?php
 	$tipi = 10;
 	$o_o  = &$tipi;
 	unset($o_o);
 	echo $tipi;
+	?>
 
 理论上$o_o是$tipi的引用，这两者应该指向同一块内存，其中一个被标识为回收，
 另一个也应该被回收才是。但这是不可能的，因为内存本身并不知道都有哪些指针
