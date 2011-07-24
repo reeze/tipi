@@ -2,7 +2,10 @@
 error_reporting(E_ALL ^ E_NOTICE);
 date_default_timezone_set('Asia/Shanghai');
 
-define('ENABLE_PAGE_CACHE', true);
+define('IN_PROD_MODE', ($_SERVER['HTTP_HOST'] == 'www.php-internal.com' ? true : false)); 
+
+// 线上模式下开启缓存，也可以手动修改
+define('ENABLE_PAGE_CACHE', IN_PROD_MODE);
 
 define('DISQUS_SHORT_NAME', 'tipiphp');
 define('SITE_NAME', 'TIPI: 深入理解PHP内核');
