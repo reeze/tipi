@@ -63,7 +63,7 @@
 		+ [新的垃圾回收机制][new-gc]
 	* [第五节 内存管理中的缓存][php-memory-cache]
 	* [第六节 写时复制(Copy-On-Write)][copy-on-write]
-	* 第七节 小结
+	* [第七节 小结][06-summary]
 
 - 第十二章 Zend虚拟机
 	* 第一节 虚拟机概述
@@ -165,4 +165,6 @@
 [garbage-collection]:       ?p=chapt06/06-04-00-garbage-collection
 [new-gc]:                   ?p=chapt06/06-04-01-new-garbage-collection
 [php-memory-cache]:         ?p=chapt06/06-05-php-memory-cache
-[copy-on-write]:	?p=chapt06/06-06-copy-on-write
+[copy-on-write]:            ?p=chapt06/06-06-copy-on-write
+[06-summary]:               ?p=chapt06/06-07-summary
+
