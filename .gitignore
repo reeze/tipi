@@ -5,3 +5,5 @@
 *.wsn
 *.swn
 *.swm
+build/chm/*.hh*
+build/chm/files/*
