@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>TIPI: 深入理解PHP内核</title>
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+	<link href="chm.css" media="screen" rel="stylesheet" type="text/css" />
+<link href="highlight.css" media="screen" rel="stylesheet" type="text/css" />
+</head>
+<body id="portable" class="pdf">
+			<div class='page '>
+			<h3>opcode处理函数查找<a name='opcode处理函数查找'></a></h3>
+
+<p>从上一小节读者可以了解到opcode在PHP内部的实现，那怎么找到某个opcode的处理函数呢？
+为了方便读者在追踪代码的过程中找到各种opcode对应的处理函数实现，下面介绍几种方法。</p>
+
+<blockquote class='note'>
+<p>从PHP5.1开始，PHP对opcode的分发方式可以用户自定义，分为CALL，SWITCH和GOTO三种类型。
+  默认使用的CALL的方式，本文也应用于这种方式。有关Zend虚拟机的介绍请阅读后面相关内容。</p>
+</blockquote>
+
+<h4>Debug法<a name='Debug法'></a></h4>
+
+<p>在学习研究PHP内核的过程中，经常通过opcode来查看代码的执行顺序，opcode的执行由在文件Zend/zend_vm_execute.h中的execute函数执行。</p>
+
+<pre class="c">ZEND_API <span class="kw4">void</span> execute<span class="br0">&#40;</span>zend_op_array <span class="sy0">*</span>op_array TSRMLS_DC<span class="br0">&#41;</span>
+<span class="br0">&#123;</span>
+...
+<span class="me1">zend_vm_enter</span><span class="sy0">:</span>
+....
+<span class="kw1">if</span> <span class="br0">&#40;</span><span class="br0">&#40;</span>ret <span class="sy0">=</span> EX<span class="br0">&#40;</span>opline<span class="br0">&#41;</span><span class="sy0">-&gt;</span>handler<span class="br0">&#40;</span>execute_data TSRMLS_CC<span class="br0">&#41;</span><span class="br0">&#41;</span> <span class="sy0">&gt;</span> <span class="nu0">0</span><span class="br0">&#41;</span> <span class="br0">&#123;</span>
+            <span class="kw1">switch</span> <span class="br0">&#40;</span>ret<span class="br0">&#41;</span> <span class="br0">&#123;</span>
+                <span class="kw1">case</span> <span class="nu0">1</span><span class="sy0">:</span>
+                    EG<span class="br0">&#40;</span>in_execution<span class="br0">&#41;</span> <span class="sy0">=</span> original_in_execution<span class="sy0">;</span>
+                    <span class="kw1">return</span><span class="sy0">;</span>
+                <span class="kw1">case</span> <span class="nu0">2</span><span class="sy0">:</span>
+                    op_array <span class="sy0">=</span> EG<span class="br0">&#40;</span>active_op_array<span class="br0">&#41;</span><span class="sy0">;</span>
+                    <span class="kw1">goto</span> zend_vm_enter<span class="sy0">;</span>
+                <span class="kw1">case</span> <span class="nu0">3</span><span class="sy0">:</span>
+                    execute_data <span class="sy0">=</span> EG<span class="br0">&#40;</span>current_execute_data<span class="br0">&#41;</span><span class="sy0">;</span>
+                <span class="kw1">default</span><span class="sy0">:</span>
+                    <span class="kw2">break</span><span class="sy0">;</span>
+            <span class="br0">&#125;</span>
+｝
+...
+<span class="br0">&#125;</span></pre>
+
+<p>在执行的过程中，EX(opline)->handler（展开后为  *execute_data->opline->handler）存储了处理当前操作的函数指针。
+使用gdb调试，在execute函数处增加断电，使用p命令可以打印出类似这样的结果：</p>
+
+<pre class="c"><span class="br0">&#40;</span>gdb<span class="br0">&#41;</span> p <span class="sy0">*</span>execute_data<span class="sy0">-&gt;</span>opline<span class="sy0">-&gt;</span>handler
+$<span class="nu0">1</span> <span class="sy0">=</span> <span class="br0">&#123;</span><span class="kw4">int</span> <span class="br0">&#40;</span>zend_execute_data <span class="sy0">*</span><span class="br0">&#41;</span><span class="br0">&#125;</span> <span class="nu12">0x10041f394</span> <span class="sy0">&lt;</span>ZEND_NOP_SPEC_HANDLER<span class="sy0">&gt;</span></pre>
+
+<p>这样就可以方便的知道当前要执行的处理函数了，这种debug的方法。这种方法比较麻烦，需要使用gdb来调试。</p>
+
+<h4>计算法<a name='计算法'></a></h4>
+
+<p>在PHP内部有一个函数用来快速的返回特定opcode对应的opcode处理函数指针：zend_vm_get_opcode_handler()函数：</p>
+
+<pre class="c"><span class="kw4">static</span> opcode_handler_t
+zend_vm_get_opcode_handler<span class="br0">&#40;</span>zend_uchar opcode<span class="sy0">,</span> zend_op<span class="sy0">*</span> op<span class="br0">&#41;</span>
+<span class="br0">&#123;</span>
+        <span class="kw4">static</span> <span class="kw4">const</span> <span class="kw4">int</span> zend_vm_decode<span class="br0">&#91;</span><span class="br0">&#93;</span> <span class="sy0">=</span> <span class="br0">&#123;</span>
+            _UNUSED_CODE<span class="sy0">,</span> <span class="coMULTI">/* 0              */</span>
+            _CONST_CODE<span class="sy0">,</span>  <span class="coMULTI">/* 1 = IS_CONST   */</span>
+            _TMP_CODE<span class="sy0">,</span>    <span class="coMULTI">/* 2 = IS_TMP_VAR */</span>
+            _UNUSED_CODE<span class="sy0">,</span> <span class="coMULTI">/* 3              */</span>
+            _VAR_CODE<span class="sy0">,</span>    <span class="coMULTI">/* 4 = IS_VAR     */</span>
+            _UNUSED_CODE<span class="sy0">,</span> <span class="coMULTI">/* 5              */</span>
+            _UNUSED_CODE<span class="sy0">,</span> <span class="coMULTI">/* 6              */</span>
+            _UNUSED_CODE<span class="sy0">,</span> <span class="coMULTI">/* 7              */</span>
+            _UNUSED_CODE<span class="sy0">,</span> <span class="coMULTI">/* 8 = IS_UNUSED  */</span>
+            _UNUSED_CODE<span class="sy0">,</span> <span class="coMULTI">/* 9              */</span>
+            _UNUSED_CODE<span class="sy0">,</span> <span class="coMULTI">/* 10             */</span>
+            _UNUSED_CODE<span class="sy0">,</span> <span class="coMULTI">/* 11             */</span>
+            _UNUSED_CODE<span class="sy0">,</span> <span class="coMULTI">/* 12             */</span>
+            _UNUSED_CODE<span class="sy0">,</span> <span class="coMULTI">/* 13             */</span>
+            _UNUSED_CODE<span class="sy0">,</span> <span class="coMULTI">/* 14             */</span>
+            _UNUSED_CODE<span class="sy0">,</span> <span class="coMULTI">/* 15             */</span>
+            _CV_CODE      <span class="coMULTI">/* 16 = IS_CV     */</span>
+        <span class="br0">&#125;</span><span class="sy0">;</span>  
+        <span class="kw1">return</span> zend_opcode_handlers<span class="br0">&#91;</span>
+             opcode <span class="sy0">*</span> <span class="nu0">25</span> <span class="sy0">+</span> zend_vm_decode<span class="br0">&#91;</span>op<span class="sy0">-&gt;</span>op1.<span class="me1">op_type</span><span class="br0">&#93;</span> <span class="sy0">*</span> <span class="nu0">5</span>
+                     <span class="sy0">+</span> zend_vm_decode<span class="br0">&#91;</span>op<span class="sy0">-&gt;</span>op2.<span class="me1">op_type</span><span class="br0">&#93;</span><span class="br0">&#93;</span><span class="sy0">;</span>
+<span class="br0">&#125;</span></pre>
+
+<p>由上面的代码可以看到，opcode到php内部函数指针的查找是由下面的公式来进行的：</p>
+
+<pre class="c">opcode <span class="sy0">*</span> <span class="nu0">25</span> <span class="sy0">+</span> zend_vm_decode<span class="br0">&#91;</span>op<span class="sy0">-&gt;</span>op1.<span class="me1">op_type</span><span class="br0">&#93;</span> <span class="sy0">*</span> <span class="nu0">5</span>
+                <span class="sy0">+</span> zend_vm_decode<span class="br0">&#91;</span>op<span class="sy0">-&gt;</span>op2.<span class="me1">op_type</span><span class="br0">&#93;</span></pre>
+
+<p>然后将其计算的数值作为索引到zend_init_opcodes_handlers数组中进行查找。
+不过这个数组实在是太大了，有3851个元素，手动查找和计算都比较麻烦。</p>
+
+<h4>命名查找法<a name='命名查找法'></a></h4>
+
+<p>上面的两种方法其实都是比较麻烦的，在定位某一opcode的实现执行代码的过程中，
+都不得不对程序进行执行或者计算中间值。而在追踪的过程中，笔者发现处理函数名称是有一定规则的。
+这里以函数调用的opcode为例，调用某函数的opcode及其对应在php内核中实现的处理函数如下：</p>
+
+<pre class="c"><span class="co1">//函数调用：</span>
+DO_FCALL  <span class="sy0">==&gt;</span>  ZEND_DO_FCALL_SPEC_CONST_HANDLER
+&nbsp;
+<span class="co1">//变量赋值：</span>
+ASSIGN     <span class="sy0">=&gt;</span>      ZEND_ASSIGN_SPEC_VAR_CONST_HANDLER
+                   ZEND_ASSIGN_SPEC_VAR_TMP_HANDLER
+                   ZEND_ASSIGN_SPEC_VAR_VAR_HANDLER
+                   ZEND_ASSIGN_SPEC_VAR_CV_HANDLER            
+<span class="co1">//变量加法：</span>
+ASSIGN_SUB <span class="sy0">=&gt;</span>   ZEND_ASSIGN_SUB_SPEC_VAR_CONST_HANDLER<span class="sy0">,</span>
+                    ZEND_ASSIGN_SUB_SPEC_VAR_TMP_HANDLER<span class="sy0">,</span>
+                    ZEND_ASSIGN_SUB_SPEC_VAR_VAR_HANDLER<span class="sy0">,</span>
+                    ZEND_ASSIGN_SUB_SPEC_VAR_UNUSED_HANDLER<span class="sy0">,</span>
+                    ZEND_ASSIGN_SUB_SPEC_VAR_CV_HANDLER<span class="sy0">,</span>
+                    ZEND_ASSIGN_SUB_SPEC_UNUSED_CONST_HANDLER<span class="sy0">,</span>
+                    ZEND_ASSIGN_SUB_SPEC_UNUSED_TMP_HANDLER<span class="sy0">,</span>
+                    ZEND_ASSIGN_SUB_SPEC_UNUSED_VAR_HANDLER<span class="sy0">,</span>
+                    ZEND_ASSIGN_SUB_SPEC_UNUSED_UNUSED_HANDLER<span class="sy0">,</span>
+                    ZEND_ASSIGN_SUB_SPEC_UNUSED_CV_HANDLER<span class="sy0">,</span>
+                    ZEND_ASSIGN_SUB_SPEC_CV_CONST_HANDLER<span class="sy0">,</span>
+                    ZEND_ASSIGN_SUB_SPEC_CV_TMP_HANDLER<span class="sy0">,</span>
+                    ZEND_ASSIGN_SUB_SPEC_CV_VAR_HANDLER<span class="sy0">,</span>
+                    ZEND_ASSIGN_SUB_SPEC_CV_UNUSED_HANDLER<span class="sy0">,</span>
+                    ZEND_ASSIGN_SUB_SPEC_CV_CV_HANDLER<span class="sy0">,</span></pre>
+
+<p>在上面的命名就会发现，其实处理函数的命名是有以下规律的：</p>
+
+<pre class="c">ZEND_<span class="br0">&#91;</span>opcode<span class="br0">&#93;</span>_SPEC_<span class="br0">&#40;</span>变量类型<span class="nu0">1</span><span class="br0">&#41;</span>_<span class="br0">&#40;</span>变量类型<span class="nu0">2</span><span class="br0">&#41;</span>_HANDLER</pre>
+
+<p>这里的变量类型1和变量类型2是可选的，如果同时存在，那就是左值和右值，归纳有下几类：
+VAR TMP CV UNUSED CONST
+这样可以根据相关的执行场景来判定。</p>
+
+<h4>日志记录法<a name='日志记录法'></a></h4>
+
+<p>这种方法是上面<strong>计算法</strong>的升级，同时也是比较精准的方式。在<strong>zend_vm_get_opcode_handler</strong> 方法中添加以下代码：</p>
+
+<pre class="c"><span class="kw4">static</span> opcode_handler_t
+zend_vm_get_opcode_handler<span class="br0">&#40;</span>zend_uchar opcode<span class="sy0">,</span> zend_op<span class="sy0">*</span> op<span class="br0">&#41;</span>
+<span class="br0">&#123;</span>
+        <span class="kw4">static</span> <span class="kw4">const</span> <span class="kw4">int</span> zend_vm_decode<span class="br0">&#91;</span><span class="br0">&#93;</span> <span class="sy0">=</span> <span class="br0">&#123;</span>
+            _UNUSED_CODE<span class="sy0">,</span> <span class="coMULTI">/* 0              */</span>
+            _CONST_CODE<span class="sy0">,</span>  <span class="coMULTI">/* 1 = IS_CONST   */</span>
+            _TMP_CODE<span class="sy0">,</span>    <span class="coMULTI">/* 2 = IS_TMP_VAR */</span>
+            _UNUSED_CODE<span class="sy0">,</span> <span class="coMULTI">/* 3              */</span>
+            _VAR_CODE<span class="sy0">,</span>    <span class="coMULTI">/* 4 = IS_VAR     */</span>
+            _UNUSED_CODE<span class="sy0">,</span> <span class="coMULTI">/* 5              */</span>
+            _UNUSED_CODE<span class="sy0">,</span> <span class="coMULTI">/* 6              */</span>
+            _UNUSED_CODE<span class="sy0">,</span> <span class="coMULTI">/* 7              */</span>
+            _UNUSED_CODE<span class="sy0">,</span> <span class="coMULTI">/* 8 = IS_UNUSED  */</span>
+            _UNUSED_CODE<span class="sy0">,</span> <span class="coMULTI">/* 9              */</span>
+            _UNUSED_CODE<span class="sy0">,</span> <span class="coMULTI">/* 10             */</span>
+            _UNUSED_CODE<span class="sy0">,</span> <span class="coMULTI">/* 11             */</span>
+            _UNUSED_CODE<span class="sy0">,</span> <span class="coMULTI">/* 12             */</span>
+            _UNUSED_CODE<span class="sy0">,</span> <span class="coMULTI">/* 13             */</span>
+            _UNUSED_CODE<span class="sy0">,</span> <span class="coMULTI">/* 14             */</span>
+            _UNUSED_CODE<span class="sy0">,</span> <span class="coMULTI">/* 15             */</span>
+            _CV_CODE      <span class="coMULTI">/* 16 = IS_CV     */</span>
+        <span class="br0">&#125;</span><span class="sy0">;</span>  
+&nbsp;
+     <span class="co1">//很显然，我们把opcode和相对应的写到了/tmp/php.log文件中</span>
+     <span class="kw4">int</span> op_index<span class="sy0">;</span>
+     op_index <span class="sy0">=</span> opcode <span class="sy0">*</span> <span class="nu0">25</span> <span class="sy0">+</span> zend_vm_decode<span class="br0">&#91;</span>op<span class="sy0">-&gt;</span>op1.<span class="me1">op_type</span><span class="br0">&#93;</span> <span class="sy0">*</span> <span class="nu0">5</span> <span class="sy0">+</span> zend_vm_decode<span class="br0">&#91;</span>op<span class="sy0">-&gt;</span>op2.<span class="me1">op_type</span><span class="br0">&#93;</span><span class="sy0">;</span>
+&nbsp;
+     FILE <span class="sy0">*</span>stream<span class="sy0">;</span>
+     <span class="kw1">if</span><span class="br0">&#40;</span><span class="br0">&#40;</span>stream <span class="sy0">=</span> fopen<span class="br0">&#40;</span><span class="st0">&quot;/tmp/php.log&quot;</span><span class="sy0">,</span> <span class="st0">&quot;a+&quot;</span><span class="br0">&#41;</span><span class="br0">&#41;</span> <span class="sy0">!=</span> <span class="kw2">NULL</span><span class="br0">&#41;</span><span class="br0">&#123;</span>
+         fprintf<span class="br0">&#40;</span>stream<span class="sy0">,</span> <span class="st0">&quot;opcode: %d , zend_opcode_handlers_index:%d<span class="es1">\n</span>&quot;</span><span class="sy0">,</span> opcode<span class="sy0">,</span> op_index<span class="br0">&#41;</span><span class="sy0">;</span>
+     <span class="br0">&#125;</span>    
+     fclose<span class="br0">&#40;</span>stream<span class="br0">&#41;</span><span class="sy0">;</span>
+&nbsp;
+&nbsp;
+        <span class="kw1">return</span> zend_opcode_handlers<span class="br0">&#91;</span>
+             opcode <span class="sy0">*</span> <span class="nu0">25</span> <span class="sy0">+</span> zend_vm_decode<span class="br0">&#91;</span>op<span class="sy0">-&gt;</span>op1.<span class="me1">op_type</span><span class="br0">&#93;</span> <span class="sy0">*</span> <span class="nu0">5</span>
+                     <span class="sy0">+</span> zend_vm_decode<span class="br0">&#91;</span>op<span class="sy0">-&gt;</span>op2.<span class="me1">op_type</span><span class="br0">&#93;</span><span class="br0">&#93;</span><span class="sy0">;</span>
+<span class="br0">&#125;</span></pre>
+
+<p>然后，就可以在<strong>/tmp/php.log</strong>文件中生成类似如下结果:</p>
+
+<pre class="c">opcode<span class="sy0">:</span> <span class="nu0">38</span> <span class="sy0">,</span> zend_opcode_handlers_index<span class="sy0">:</span><span class="nu0">970</span></pre>
+
+<p>前面的数字是opcode的，我们可以这里查到： http://php.net/manual/en/internals2.opcodes.list.php
+后面的数字是static const opcode_handler_t labels[] 索引，里面对应了处理函数的名称，
+对应源码文件是：Zend/zend_vm_execute.h （第30077行左右）。 这是一个超大的数组，php5.3.4中有3851个元素，
+在上面的例子里，看样子我们要数到第970个了，当然，有很多种方法来避免人工去计算，这里就不多介绍了。</p>
+		</div>
+	</body>
+</html>

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>TIPI: 深入理解PHP内核</title>
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+	<link href="chm.css" media="screen" rel="stylesheet" type="text/css" />
+<link href="highlight.css" media="screen" rel="stylesheet" type="text/css" />
+</head>
+<body id="portable" class="pdf">
+			<div class='page '>
+			<h2>第七节 小结<a name='第七节 小结'></a></h2>
+
+<p>我们平常在讨论算法时会讲到空间复杂度，一般来说这里的空间复杂度是指所占内存的大小。
+这就突显了内存管理在我们编程过程中的重要性。从某种意见上来说内存也属于缓存的一种，
+它的作用就是将硬盘或其它较慢存储介质中的数据更快的提供给处理器（或处理器缓存）。</p>
+
+<p>PHP内核以接口的方式提供了内存管理，将内存管理对PHP内核的其它模块透明，从而提供更加高效的内存管理，减少内存碎片。
+在本章，我们从内存管理概述开始，介绍了内存管理的意义及必要性，然后从PHP内存管理的整体结构、内存管理宏的具体实现等方面做了详细的说明。
+并在第四小节详细介绍了PHP5.3才引入的垃圾收集机制，之后介绍了内存管理中的缓存优化，虽然PHP有实现缓存的统计功能，但是在默认情况下是关闭的，
+最后我们以写时复制这样一个特性结束了本章。</p>
+
+<p>虽然PHP内核提供了内存管理机制，但是我们也可以通过环境变量设置绕过内存管理直接使用某些系统级的内存管理函数。
+这适用于调试或一些特定的应用场景，一般情况下，我们还是使用PHP内核替我们实现的内存管理吧。</p>
+
+<p>下一章，我们将介绍PHP的虚拟机。</p>
+		</div>
+	</body>
+</html>

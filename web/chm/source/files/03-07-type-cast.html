@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>TIPI: 深入理解PHP内核</title>
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+	<link href="chm.css" media="screen" rel="stylesheet" type="text/css" />
+<link href="highlight.css" media="screen" rel="stylesheet" type="text/css" />
+</head>
+<body id="portable" class="pdf">
+			<div class='page '>
+			<h2>第七节 数据类型转换<a name='第七节 数据类型转换'></a></h2>
+
+<p>PHP是弱类型的动态语言，在前面的章节中我们已经介绍了PHP的变量都存放在一个名为ZVAL的容器中，
+ZVAL包含了变量的类型和各种类型变量的值。
+PHP中的变量不需要显式的数据类型定义，可以给变量赋值任意类型的数据，
+PHP变量之间的数据类型转换有两种: 隐式和显式转换。</p>
+
+<h3>隐式类型转换<a name='隐式类型转换'></a></h3>
+
+<p>隐式类型转换也被称为自动类型转换，是指不需要程序员书写代码，由编程语言自动完成的类型转换。
+在PHP中，我们经常遇到的隐式转换有：</p>
+
+<p>1．<strong>直接的变量赋值操作</strong></p>
+
+<p>在PHP中，直接对变量的赋值操作是隐式类型转换最简单的方式，也是我们最常见的一种方式，或许我们已经习以为常，从而没有感觉到变量的变化。
+在直接赋值的操作中，变量的数据类型由赋予的值决定，即左值的数据类型由右值的数据类型决定。
+比如，当把一个字符串类型的数据赋值给变量时，不管该变量以前是什么类型的变量，此时该变量就是一个字符串类型的变量。
+看一段代码：</p>
+
+<pre class="php"><span class="re0">$string</span> <span class="sy0">=</span> <span class="st0">&quot;To love someone sincerely means to love all the people,  to love the world and life,  too.&quot;</span>
+<span class="re0">$integer</span> <span class="sy0">=</span> <span class="nu0">10</span><span class="sy0">;</span>
+<span class="re0">$string</span> <span class="sy0">=</span> <span class="re0">$integer</span><span class="sy0">;</span></pre>
+
+<p>上面的代码，当执行完第三行代码，$string变量的类型就是一个整形了。
+通过VLD扩展可以查到第三次赋值操作的中间代码及操作数的类型，再找到赋值的最后实现为<strong>zend_assign_to_variable</strong>函数。
+这在前面的小节中已经详细介绍过了。我们这个例子是很简单的一种赋值，在源码中是直接将$string的ZVAL容器的指针指向$integer变量指向的指针，
+并将$integer的引用计数加1。这个操作在本质上改变了$string变量的内容，而原有的变量内容则被垃圾收集机制回收。关于赋值的具体细节，请返回上一节查看。</p>
+
+<p>2．<strong>运算式结果对变量的赋值操作</strong>
+我们常说的隐式类型转换是将一个表达式的结果赋值给一个变量，在运算的过程中发生了隐式的类型转换。
+这种类型转换不仅仅在PHP语言，在其它众多的语言中也有见到，这是我们常规意义上的隐式类型转换。
+这种类型转换又分为两种情况：</p>
+
+<ul>
+<li>表达式的操作数为同一数据类型 这种情况的作用以上面的直接变量的类型转换是同一种情况，只是此时右值变成了表达式的运算结果。</li>
+<li>表达式的操作数不为同的数据类型 这种情况的类型转换发生在表达式的运算符的计算过程中，在源码中也就是发生在运行符的实现过程中。</li>
+</ul>
+
+<p>看一个字符串和整数的隐式数据类型转换:</p>
+
+<pre class="php"><span class="kw2">&lt;?php</span>
+<span class="re0">$a</span> <span class="sy0">=</span> <span class="nu0">10</span><span class="sy0">;</span>
+<span class="re0">$b</span> <span class="sy0">=</span> <span class="st_h">'a string '</span><span class="sy0">;</span>
+&nbsp;
+<a href="http://www.php.net/echo"><span class="kw3">echo</span></a> <span class="re0">$a</span> <span class="sy0">.</span> <span class="re0">$b</span><span class="sy0">;</span></pre>
+
+<p>上面例子中字符串连接操作就存在自动数据类型转化，$a变量是数值类型，$b变量是字符串类型，
+这里$b变量就是隐式(自动)的转换为字符串类型了。通常自动数据类型转换发生在特定的操作上下文中，
+类似的还有求和操作"+"。具体的自动类型转换方式和特定的操作有关。
+下面就以字符串连接操作为例说明隐式转换的实现:</p>
+
+<p>脚本执行的时候字符串的连接操作是通过Zend/zend_operators.c文件中的如下函数进行:</p>
+
+<pre class="c">ZEND_API <span class="kw4">int</span> concat_function<span class="br0">&#40;</span>zval <span class="sy0">*</span>result<span class="sy0">,</span> zval <span class="sy0">*</span>op1<span class="sy0">,</span> zval <span class="sy0">*</span>op2 TSRMLS_DC<span class="br0">&#41;</span> <span class="coMULTI">/* {{{ */</span>
+<span class="br0">&#123;</span>           
+        zval op1_copy<span class="sy0">,</span> op2_copy<span class="sy0">;</span>
+        <span class="kw4">int</span> use_copy1 <span class="sy0">=</span> <span class="nu0">0</span><span class="sy0">,</span> use_copy2 <span class="sy0">=</span> <span class="nu0">0</span><span class="sy0">;</span>
+&nbsp;
+        <span class="kw1">if</span> <span class="br0">&#40;</span>Z_TYPE_P<span class="br0">&#40;</span>op1<span class="br0">&#41;</span> <span class="sy0">!=</span> IS_STRING<span class="br0">&#41;</span> <span class="br0">&#123;</span> 
+                zend_make_printable_zval<span class="br0">&#40;</span>op1<span class="sy0">,</span> <span class="sy0">&amp;</span>op1_copy<span class="sy0">,</span> <span class="sy0">&amp;</span>use_copy1<span class="br0">&#41;</span><span class="sy0">;</span>
+        <span class="br0">&#125;</span>           
+        <span class="kw1">if</span> <span class="br0">&#40;</span>Z_TYPE_P<span class="br0">&#40;</span>op2<span class="br0">&#41;</span> <span class="sy0">!=</span> IS_STRING<span class="br0">&#41;</span> <span class="br0">&#123;</span> 
+                zend_make_printable_zval<span class="br0">&#40;</span>op2<span class="sy0">,</span> <span class="sy0">&amp;</span>op2_copy<span class="sy0">,</span> <span class="sy0">&amp;</span>use_copy2<span class="br0">&#41;</span><span class="sy0">;</span>
+        <span class="br0">&#125;</span>       
+        <span class="co1">// 省略</span>
+<span class="br0">&#125;</span></pre>
+
+<p>可用看出如果字符串链接的两个操作数如果不是字符串的话，
+则调用zend_make_printable_zval函数将操作数转换为"printable_zval"也就是字符串。</p>
+
+<pre class="c">ZEND_API <span class="kw4">void</span> zend_make_printable_zval<span class="br0">&#40;</span>zval <span class="sy0">*</span>expr<span class="sy0">,</span> zval <span class="sy0">*</span>expr_copy<span class="sy0">,</span> <span class="kw4">int</span> <span class="sy0">*</span>use_copy<span class="br0">&#41;</span>
+<span class="br0">&#123;</span>
+    <span class="kw1">if</span> <span class="br0">&#40;</span>Z_TYPE_P<span class="br0">&#40;</span>expr<span class="br0">&#41;</span><span class="sy0">==</span>IS_STRING<span class="br0">&#41;</span> <span class="br0">&#123;</span>
+        <span class="sy0">*</span>use_copy <span class="sy0">=</span> <span class="nu0">0</span><span class="sy0">;</span>
+        <span class="kw1">return</span><span class="sy0">;</span>
+    <span class="br0">&#125;</span>
+    <span class="kw1">switch</span> <span class="br0">&#40;</span>Z_TYPE_P<span class="br0">&#40;</span>expr<span class="br0">&#41;</span><span class="br0">&#41;</span> <span class="br0">&#123;</span>
+        <span class="kw1">case</span> IS_NULL<span class="sy0">:</span>
+            Z_STRLEN_P<span class="br0">&#40;</span>expr_copy<span class="br0">&#41;</span> <span class="sy0">=</span> <span class="nu0">0</span><span class="sy0">;</span>
+            Z_STRVAL_P<span class="br0">&#40;</span>expr_copy<span class="br0">&#41;</span> <span class="sy0">=</span> STR_EMPTY_ALLOC<span class="br0">&#40;</span><span class="br0">&#41;</span><span class="sy0">;</span>
+            <span class="kw2">break</span><span class="sy0">;</span>
+        <span class="kw1">case</span> IS_BOOL<span class="sy0">:</span>
+            <span class="kw1">if</span> <span class="br0">&#40;</span>Z_LVAL_P<span class="br0">&#40;</span>expr<span class="br0">&#41;</span><span class="br0">&#41;</span> <span class="br0">&#123;</span>
+                Z_STRLEN_P<span class="br0">&#40;</span>expr_copy<span class="br0">&#41;</span> <span class="sy0">=</span> <span class="nu0">1</span><span class="sy0">;</span>
+                Z_STRVAL_P<span class="br0">&#40;</span>expr_copy<span class="br0">&#41;</span> <span class="sy0">=</span> estrndup<span class="br0">&#40;</span><span class="st0">&quot;1&quot;</span><span class="sy0">,</span> <span class="nu0">1</span><span class="br0">&#41;</span><span class="sy0">;</span>
+            <span class="br0">&#125;</span> <span class="kw1">else</span> <span class="br0">&#123;</span>
+                Z_STRLEN_P<span class="br0">&#40;</span>expr_copy<span class="br0">&#41;</span> <span class="sy0">=</span> <span class="nu0">0</span><span class="sy0">;</span>
+                Z_STRVAL_P<span class="br0">&#40;</span>expr_copy<span class="br0">&#41;</span> <span class="sy0">=</span> STR_EMPTY_ALLOC<span class="br0">&#40;</span><span class="br0">&#41;</span><span class="sy0">;</span>
+            <span class="br0">&#125;</span>
+            <span class="kw2">break</span><span class="sy0">;</span>
+        <span class="kw1">case</span> IS_RESOURCE<span class="sy0">:</span>
+            <span class="co1">// ...省略</span>
+        <span class="kw1">case</span> IS_ARRAY<span class="sy0">:</span>
+            Z_STRLEN_P<span class="br0">&#40;</span>expr_copy<span class="br0">&#41;</span> <span class="sy0">=</span> <span class="kw4">sizeof</span><span class="br0">&#40;</span><span class="st0">&quot;Array&quot;</span><span class="br0">&#41;</span> <span class="sy0">-</span> <span class="nu0">1</span><span class="sy0">;</span>
+            Z_STRVAL_P<span class="br0">&#40;</span>expr_copy<span class="br0">&#41;</span> <span class="sy0">=</span> estrndup<span class="br0">&#40;</span><span class="st0">&quot;Array&quot;</span><span class="sy0">,</span> Z_STRLEN_P<span class="br0">&#40;</span>expr_copy<span class="br0">&#41;</span><span class="br0">&#41;</span><span class="sy0">;</span>
+            <span class="kw2">break</span><span class="sy0">;</span>
+        <span class="kw1">case</span> IS_OBJECT<span class="sy0">:</span>
+                <span class="co1">// ... 省略</span>
+        <span class="kw1">case</span> IS_DOUBLE<span class="sy0">:</span>
+            <span class="sy0">*</span>expr_copy <span class="sy0">=</span> <span class="sy0">*</span>expr<span class="sy0">;</span>
+            zval_copy_ctor<span class="br0">&#40;</span>expr_copy<span class="br0">&#41;</span><span class="sy0">;</span>
+            zend_locale_sprintf_double<span class="br0">&#40;</span>expr_copy ZEND_FILE_LINE_CC<span class="br0">&#41;</span><span class="sy0">;</span>
+            <span class="kw2">break</span><span class="sy0">;</span>
+        <span class="kw1">default</span><span class="sy0">:</span>
+            <span class="sy0">*</span>expr_copy <span class="sy0">=</span> <span class="sy0">*</span>expr<span class="sy0">;</span>
+            zval_copy_ctor<span class="br0">&#40;</span>expr_copy<span class="br0">&#41;</span><span class="sy0">;</span>
+            convert_to_string<span class="br0">&#40;</span>expr_copy<span class="br0">&#41;</span><span class="sy0">;</span>
+            <span class="kw2">break</span><span class="sy0">;</span>
+    <span class="br0">&#125;</span>
+    Z_TYPE_P<span class="br0">&#40;</span>expr_copy<span class="br0">&#41;</span> <span class="sy0">=</span> IS_STRING<span class="sy0">;</span>
+    <span class="sy0">*</span>use_copy <span class="sy0">=</span> <span class="nu0">1</span><span class="sy0">;</span>
+<span class="br0">&#125;</span></pre>
+
+<p>这个函数根据不同的变量类型来返回不同的字符串类型，例如BOOL类型的数据返回0和1，
+数组只是简单的返回Array等等，类似其他类型的数据转换也是类型，
+都是根据操作数的不同类型的转换为相应的目标类型。在表达式计算完成后，表达式最后会有一个结果，
+这个结果的数据类型就是整个表达式的数据类型。当执行赋值操作时，如果再有数据类型的转换发生，
+则是直接变量赋值的数据类型转换了。</p>
+
+<h3>显式类型转换(强制类型转换)<a name='显式类型转换(强制类型转换)'></a></h3>
+
+<p>在前面介绍了隐式类型转换，在我们的日常编码过程也会小心的使用这种转换，
+这种不可见的操作可能与我们想象中的不一样，如整形和浮点数之间的转换。
+当我们是一定需要某个数据类型的变量时，可以使用强制的数据类型转换，这样在代码的可读性等方面都会好些。
+在PHP中的强制类型转换和C中的非常像:</p>
+
+<pre class="php"><span class="kw2">&lt;?php</span>
+<span class="re0">$double</span> <span class="sy0">=</span> <span class="nu19">20.10</span><span class="sy0">;</span>
+<a href="http://www.php.net/echo"><span class="kw3">echo</span></a> <span class="br0">&#40;</span>int<span class="br0">&#41;</span><span class="re0">$double</span><span class="sy0">;</span></pre>
+
+<p>PHP中允许的强制类型有:</p>
+
+<ul>
+<li>(int), (integer)  转换为整型</li>
+<li>(bool), (boolean) 转换为布尔类型</li>
+<li>(float), (double) 转换为浮点类型</li>
+<li>(string) 转换为字符串</li>
+<li>(array) 转换为数组</li>
+<li>(object) 转换为对象</li>
+<li>(unset) 转换为NULL</li>
+</ul>
+
+<p>在Zend/zend_operators.c中实现了转换为这些目标类型的实现函数convert_to_*系列函数，
+读者自行查看这些函数即可，这些数据类型转换类型中有一个我们比较少见的unset类型转换:</p>
+
+<pre class="c">ZEND_API <span class="kw4">void</span> convert_to_null<span class="br0">&#40;</span>zval <span class="sy0">*</span>op<span class="br0">&#41;</span> <span class="coMULTI">/* {{{ */</span>
+<span class="br0">&#123;</span>
+    <span class="kw1">if</span> <span class="br0">&#40;</span>Z_TYPE_P<span class="br0">&#40;</span>op<span class="br0">&#41;</span> <span class="sy0">==</span> IS_OBJECT<span class="br0">&#41;</span> <span class="br0">&#123;</span>
+        <span class="kw1">if</span> <span class="br0">&#40;</span>Z_OBJ_HT_P<span class="br0">&#40;</span>op<span class="br0">&#41;</span><span class="sy0">-&gt;</span>cast_object<span class="br0">&#41;</span> <span class="br0">&#123;</span>
+            zval <span class="sy0">*</span>org<span class="sy0">;</span>
+            TSRMLS_FETCH<span class="br0">&#40;</span><span class="br0">&#41;</span><span class="sy0">;</span>
+&nbsp;
+            ALLOC_ZVAL<span class="br0">&#40;</span>org<span class="br0">&#41;</span><span class="sy0">;</span>
+            <span class="sy0">*</span>org <span class="sy0">=</span> <span class="sy0">*</span>op<span class="sy0">;</span>
+            <span class="kw1">if</span> <span class="br0">&#40;</span>Z_OBJ_HT_P<span class="br0">&#40;</span>op<span class="br0">&#41;</span><span class="sy0">-&gt;</span>cast_object<span class="br0">&#40;</span>org<span class="sy0">,</span> op<span class="sy0">,</span> IS_NULL TSRMLS_CC<span class="br0">&#41;</span> <span class="sy0">==</span> SUCCESS<span class="br0">&#41;</span> <span class="br0">&#123;</span>
+                zval_dtor<span class="br0">&#40;</span>org<span class="br0">&#41;</span><span class="sy0">;</span>
+                <span class="kw1">return</span><span class="sy0">;</span>
+            <span class="br0">&#125;</span>
+            <span class="sy0">*</span>op <span class="sy0">=</span> <span class="sy0">*</span>org<span class="sy0">;</span>
+            FREE_ZVAL<span class="br0">&#40;</span>org<span class="br0">&#41;</span><span class="sy0">;</span>
+        <span class="br0">&#125;</span>
+    <span class="br0">&#125;</span>
+&nbsp;
+    zval_dtor<span class="br0">&#40;</span>op<span class="br0">&#41;</span><span class="sy0">;</span>
+    Z_TYPE_P<span class="br0">&#40;</span>op<span class="br0">&#41;</span> <span class="sy0">=</span> IS_NULL<span class="sy0">;</span>
+<span class="br0">&#125;</span></pre>
+
+<p>转换为NULL非常简单，对变量进行析构操作，然后将数据类型设为IS_NULL即可。
+可能读者会好奇(unset)$a和unset($a)这两者有没有关系，其实并没有关系，
+前者是将变量$a的类型变为NULL，这只是一个类型的变化，而后者是将这个变量释放，释放后当前作用域内该变量及不存在了。</p>
+
+<p>除了上面提到的与C语言很像，在其它语言中也经常见到的强制数据转换，PHP中有一个极具PHP特色的强制类型转换。
+PHP的标准扩展中提供了两个有用的方法settype()以及gettype()方法，前者可以动态的改变变量的数据类型，
+gettype()方法则是返回变量的数据类型。在ext/standard/type.c文件中找到settype的实现源码：</p>
+
+<pre class="c">PHP_FUNCTION<span class="br0">&#40;</span>settype<span class="br0">&#41;</span>
+<span class="br0">&#123;</span>
+    zval <span class="sy0">**</span>var<span class="sy0">;</span>
+    <span class="kw4">char</span> <span class="sy0">*</span>type<span class="sy0">;</span>
+    <span class="kw4">int</span> type_len <span class="sy0">=</span> <span class="nu0">0</span><span class="sy0">;</span>
+&nbsp;
+    <span class="kw1">if</span> <span class="br0">&#40;</span>zend_parse_parameters<span class="br0">&#40;</span>ZEND_NUM_ARGS<span class="br0">&#40;</span><span class="br0">&#41;</span> TSRMLS_CC<span class="sy0">,</span> <span class="st0">&quot;Zs&quot;</span><span class="sy0">,</span> <span class="sy0">&amp;</span>var<span class="sy0">,</span> <span class="sy0">&amp;</span>type<span class="sy0">,</span> <span class="sy0">&amp;</span>type_len<span class="br0">&#41;</span> <span class="sy0">==</span> FAILURE<span class="br0">&#41;</span> <span class="br0">&#123;</span>
+        <span class="kw1">return</span><span class="sy0">;</span>
+    <span class="br0">&#125;</span>
+&nbsp;
+    <span class="kw1">if</span> <span class="br0">&#40;</span><span class="sy0">!</span>strcasecmp<span class="br0">&#40;</span>type<span class="sy0">,</span> <span class="st0">&quot;integer&quot;</span><span class="br0">&#41;</span><span class="br0">&#41;</span> <span class="br0">&#123;</span>
+        convert_to_long<span class="br0">&#40;</span><span class="sy0">*</span>var<span class="br0">&#41;</span><span class="sy0">;</span>
+    <span class="br0">&#125;</span> <span class="kw1">else</span> <span class="kw1">if</span> <span class="br0">&#40;</span><span class="sy0">!</span>strcasecmp<span class="br0">&#40;</span>type<span class="sy0">,</span> <span class="st0">&quot;int&quot;</span><span class="br0">&#41;</span><span class="br0">&#41;</span> <span class="br0">&#123;</span>
+        convert_to_long<span class="br0">&#40;</span><span class="sy0">*</span>var<span class="br0">&#41;</span><span class="sy0">;</span>
+    <span class="br0">&#125;</span> <span class="kw1">else</span> <span class="kw1">if</span> <span class="br0">&#40;</span><span class="sy0">!</span>strcasecmp<span class="br0">&#40;</span>type<span class="sy0">,</span> <span class="st0">&quot;float&quot;</span><span class="br0">&#41;</span><span class="br0">&#41;</span> <span class="br0">&#123;</span>
+        convert_to_double<span class="br0">&#40;</span><span class="sy0">*</span>var<span class="br0">&#41;</span><span class="sy0">;</span>
+    <span class="br0">&#125;</span> <span class="kw1">else</span> <span class="kw1">if</span> <span class="br0">&#40;</span><span class="sy0">!</span>strcasecmp<span class="br0">&#40;</span>type<span class="sy0">,</span> <span class="st0">&quot;double&quot;</span><span class="br0">&#41;</span><span class="br0">&#41;</span> <span class="br0">&#123;</span> <span class="coMULTI">/* deprecated */</span>
+        convert_to_double<span class="br0">&#40;</span><span class="sy0">*</span>var<span class="br0">&#41;</span><span class="sy0">;</span>
+    <span class="br0">&#125;</span> <span class="kw1">else</span> <span class="kw1">if</span> <span class="br0">&#40;</span><span class="sy0">!</span>strcasecmp<span class="br0">&#40;</span>type<span class="sy0">,</span> <span class="st0">&quot;string&quot;</span><span class="br0">&#41;</span><span class="br0">&#41;</span> <span class="br0">&#123;</span>
+        convert_to_string<span class="br0">&#40;</span><span class="sy0">*</span>var<span class="br0">&#41;</span><span class="sy0">;</span>
+    <span class="br0">&#125;</span> <span class="kw1">else</span> <span class="kw1">if</span> <span class="br0">&#40;</span><span class="sy0">!</span>strcasecmp<span class="br0">&#40;</span>type<span class="sy0">,</span> <span class="st0">&quot;array&quot;</span><span class="br0">&#41;</span><span class="br0">&#41;</span> <span class="br0">&#123;</span>
+        convert_to_array<span class="br0">&#40;</span><span class="sy0">*</span>var<span class="br0">&#41;</span><span class="sy0">;</span>
+    <span class="br0">&#125;</span> <span class="kw1">else</span> <span class="kw1">if</span> <span class="br0">&#40;</span><span class="sy0">!</span>strcasecmp<span class="br0">&#40;</span>type<span class="sy0">,</span> <span class="st0">&quot;object&quot;</span><span class="br0">&#41;</span><span class="br0">&#41;</span> <span class="br0">&#123;</span>
+        convert_to_object<span class="br0">&#40;</span><span class="sy0">*</span>var<span class="br0">&#41;</span><span class="sy0">;</span>
+    <span class="br0">&#125;</span> <span class="kw1">else</span> <span class="kw1">if</span> <span class="br0">&#40;</span><span class="sy0">!</span>strcasecmp<span class="br0">&#40;</span>type<span class="sy0">,</span> <span class="st0">&quot;bool&quot;</span><span class="br0">&#41;</span><span class="br0">&#41;</span> <span class="br0">&#123;</span>
+        convert_to_boolean<span class="br0">&#40;</span><span class="sy0">*</span>var<span class="br0">&#41;</span><span class="sy0">;</span>
+    <span class="br0">&#125;</span> <span class="kw1">else</span> <span class="kw1">if</span> <span class="br0">&#40;</span><span class="sy0">!</span>strcasecmp<span class="br0">&#40;</span>type<span class="sy0">,</span> <span class="st0">&quot;boolean&quot;</span><span class="br0">&#41;</span><span class="br0">&#41;</span> <span class="br0">&#123;</span>
+        convert_to_boolean<span class="br0">&#40;</span><span class="sy0">*</span>var<span class="br0">&#41;</span><span class="sy0">;</span>
+    <span class="br0">&#125;</span> <span class="kw1">else</span> <span class="kw1">if</span> <span class="br0">&#40;</span><span class="sy0">!</span>strcasecmp<span class="br0">&#40;</span>type<span class="sy0">,</span> <span class="st0">&quot;null&quot;</span><span class="br0">&#41;</span><span class="br0">&#41;</span> <span class="br0">&#123;</span>
+        convert_to_null<span class="br0">&#40;</span><span class="sy0">*</span>var<span class="br0">&#41;</span><span class="sy0">;</span>
+    <span class="br0">&#125;</span> <span class="kw1">else</span> <span class="kw1">if</span> <span class="br0">&#40;</span><span class="sy0">!</span>strcasecmp<span class="br0">&#40;</span>type<span class="sy0">,</span> <span class="st0">&quot;resource&quot;</span><span class="br0">&#41;</span><span class="br0">&#41;</span> <span class="br0">&#123;</span>
+        php_error_docref<span class="br0">&#40;</span><span class="kw2">NULL</span> TSRMLS_CC<span class="sy0">,</span> E_WARNING<span class="sy0">,</span> <span class="st0">&quot;Cannot convert to resource type&quot;</span><span class="br0">&#41;</span><span class="sy0">;</span>
+        RETURN_FALSE<span class="sy0">;</span>
+    <span class="br0">&#125;</span> <span class="kw1">else</span> <span class="br0">&#123;</span>
+        php_error_docref<span class="br0">&#40;</span><span class="kw2">NULL</span> TSRMLS_CC<span class="sy0">,</span> E_WARNING<span class="sy0">,</span> <span class="st0">&quot;Invalid type&quot;</span><span class="br0">&#41;</span><span class="sy0">;</span>
+        RETURN_FALSE<span class="sy0">;</span>
+    <span class="br0">&#125;</span>
+    RETVAL_TRUE<span class="sy0">;</span>
+<span class="br0">&#125;</span></pre>
+
+<p>这个极具PHP特色的强制类型转换就是这个函数，而这个函数是作为一个代理方法存在，
+具体的转换规则由各个类型的处理函数处理，不管是自动还是强制类型转换，最终都会调用这些内部转换方法，
+这和前面的强制类型转换在本质上是一样的。</p>
+		</div>
+	</body>
+</html>

@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>TIPI: 深入理解PHP内核</title>
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+	<link href="chm.css" media="screen" rel="stylesheet" type="text/css" />
+<link href="highlight.css" media="screen" rel="stylesheet" type="text/css" />
+</head>
+<body id="portable" class="pdf">
+			<div class='page '>
+			<h2>第四节 类的继承，多态及抽象类<a name='第四节 类的继承，多态及抽象类'></a></h2>
+
+<p>面向对象的三大特性(封装、继承、多态)，在前一小节介绍了封装，这一小节我们将介绍继承和多态的实现。</p>
+
+<h3>继承<a name='继承'></a></h3>
+
+<p>继承是一种关联类的层次模型，它可以建立类之间的关系，并实现代码重用，方便系统扩展。
+继承提供了一种明确表述共性的方法，是一个新类从现有的类中派生的过程。
+继承产生的新类继承了原始类的特性，新类称为原始类的派生类（或子类），
+而原始类称为新类的基类（或父类）。派生类可以从基类那里继承方法和变量，
+并且新类可以重载或增加新的方法，使之满足自己的定制化的需要。</p>
+
+<p>PHP中使用extends关键字来进行类的继承，一个类只能继承一个父类。
+被继承的成员方法和成员变量可以使用同名的方法或变量重写，如果需要访问父类的成员方法或变量可以
+使用特殊类parent来进行。</p>
+
+<p>PHP内核将类的继承实现放在了"编译阶段"，因此使用VLD生成中间代码时会发现并没有关于继承的相关信息。
+通过对extends关键字的词法分析和语法分析，在Zend/zend_complie.c文件中
+找到继承实现的编译函数zend_do_inheritance()。其调用顺序如下: 
+[zend_do_early_binding] --> [do_bind_inherited_class()] --> [zend_do_inheritance()]</p>
+
+<pre class="c">ZEND_API <span class="kw4">void</span> zend_do_inheritance<span class="br0">&#40;</span>zend_class_entry <span class="sy0">*</span>ce<span class="sy0">,</span> zend_class_entry <span class="sy0">*</span>parent_ce TSRMLS_DC<span class="br0">&#41;</span>
+<span class="br0">&#123;</span>
+    <span class="co1">//  ...省略  报错处理 接口不能从类继承，final类不能继承</span>
+&nbsp;
+    <span class="co1">//  ...省略 序列化函数和反序列化函数 如果当前类没有，则取父类的</span>
+&nbsp;
+    <span class="coMULTI">/* Inherit interfaces */</span>
+    zend_do_inherit_interfaces<span class="br0">&#40;</span>ce<span class="sy0">,</span> parent_ce TSRMLS_CC<span class="br0">&#41;</span><span class="sy0">;</span>
+&nbsp;
+    <span class="coMULTI">/* Inherit properties */</span>
+    zend_hash_merge<span class="br0">&#40;</span><span class="sy0">&amp;</span>ce<span class="sy0">-&gt;</span>default_properties<span class="sy0">,</span> <span class="sy0">&amp;</span>parent_ce<span class="sy0">-&gt;</span>default_properties<span class="sy0">,</span> <span class="br0">&#40;</span><span class="kw4">void</span> <span class="br0">&#40;</span><span class="sy0">*</span><span class="br0">&#41;</span><span class="br0">&#40;</span><span class="kw4">void</span> <span class="sy0">*</span><span class="br0">&#41;</span><span class="br0">&#41;</span> zval_add_ref<span class="sy0">,</span> <span class="kw2">NULL</span><span class="sy0">,</span> <span class="kw4">sizeof</span><span class="br0">&#40;</span>zval <span class="sy0">*</span><span class="br0">&#41;</span><span class="sy0">,</span> <span class="nu0">0</span><span class="br0">&#41;</span><span class="sy0">;</span>
+    <span class="kw1">if</span> <span class="br0">&#40;</span>parent_ce<span class="sy0">-&gt;</span>type <span class="sy0">!=</span> ce<span class="sy0">-&gt;</span>type<span class="br0">&#41;</span> <span class="br0">&#123;</span>
+        <span class="coMULTI">/* User class extends internal class */</span>
+        zend_update_class_constants<span class="br0">&#40;</span>parent_ce  TSRMLS_CC<span class="br0">&#41;</span><span class="sy0">;</span>
+        zend_hash_apply_with_arguments<span class="br0">&#40;</span>CE_STATIC_MEMBERS<span class="br0">&#40;</span>parent_ce<span class="br0">&#41;</span> TSRMLS_CC<span class="sy0">,</span> <span class="br0">&#40;</span>apply_func_args_t<span class="br0">&#41;</span>inherit_static_prop<span class="sy0">,</span> <span class="nu0">1</span><span class="sy0">,</span> <span class="sy0">&amp;</span>ce<span class="sy0">-&gt;</span>default_static_members<span class="br0">&#41;</span><span class="sy0">;</span>
+    <span class="br0">&#125;</span> <span class="kw1">else</span> <span class="br0">&#123;</span>
+        zend_hash_apply_with_arguments<span class="br0">&#40;</span><span class="sy0">&amp;</span>parent_ce<span class="sy0">-&gt;</span>default_static_members TSRMLS_CC<span class="sy0">,</span> <span class="br0">&#40;</span>apply_func_args_t<span class="br0">&#41;</span>inherit_static_prop<span class="sy0">,</span> <span class="nu0">1</span><span class="sy0">,</span> <span class="sy0">&amp;</span>ce<span class="sy0">-&gt;</span>default_static_members<span class="br0">&#41;</span><span class="sy0">;</span>
+    <span class="br0">&#125;</span>
+    zend_hash_merge_ex<span class="br0">&#40;</span><span class="sy0">&amp;</span>ce<span class="sy0">-&gt;</span>properties_info<span class="sy0">,</span> <span class="sy0">&amp;</span>parent_ce<span class="sy0">-&gt;</span>properties_info<span class="sy0">,</span> <span class="br0">&#40;</span>copy_ctor_func_t<span class="br0">&#41;</span> <span class="br0">&#40;</span>ce<span class="sy0">-&gt;</span>type <span class="sy0">&amp;</span> ZEND_INTERNAL_CLASS <span class="sy0">?</span> zend_duplicate_property_info_internal <span class="sy0">:</span> zend_duplicate_property_info<span class="br0">&#41;</span><span class="sy0">,</span> <span class="kw4">sizeof</span><span class="br0">&#40;</span>zend_property_info<span class="br0">&#41;</span><span class="sy0">,</span> <span class="br0">&#40;</span>merge_checker_func_t<span class="br0">&#41;</span> do_inherit_property_access_check<span class="sy0">,</span> ce<span class="br0">&#41;</span><span class="sy0">;</span>
+&nbsp;
+    zend_hash_merge<span class="br0">&#40;</span><span class="sy0">&amp;</span>ce<span class="sy0">-&gt;</span>constants_table<span class="sy0">,</span> <span class="sy0">&amp;</span>parent_ce<span class="sy0">-&gt;</span>constants_table<span class="sy0">,</span> <span class="br0">&#40;</span><span class="kw4">void</span> <span class="br0">&#40;</span><span class="sy0">*</span><span class="br0">&#41;</span><span class="br0">&#40;</span><span class="kw4">void</span> <span class="sy0">*</span><span class="br0">&#41;</span><span class="br0">&#41;</span> zval_add_ref<span class="sy0">,</span> <span class="kw2">NULL</span><span class="sy0">,</span> <span class="kw4">sizeof</span><span class="br0">&#40;</span>zval <span class="sy0">*</span><span class="br0">&#41;</span><span class="sy0">,</span> <span class="nu0">0</span><span class="br0">&#41;</span><span class="sy0">;</span>
+    zend_hash_merge_ex<span class="br0">&#40;</span><span class="sy0">&amp;</span>ce<span class="sy0">-&gt;</span>function_table<span class="sy0">,</span> <span class="sy0">&amp;</span>parent_ce<span class="sy0">-&gt;</span>function_table<span class="sy0">,</span> <span class="br0">&#40;</span>copy_ctor_func_t<span class="br0">&#41;</span> do_inherit_method<span class="sy0">,</span> <span class="kw4">sizeof</span><span class="br0">&#40;</span>zend_function<span class="br0">&#41;</span><span class="sy0">,</span> <span class="br0">&#40;</span>merge_checker_func_t<span class="br0">&#41;</span> do_inherit_method_check<span class="sy0">,</span> ce<span class="br0">&#41;</span><span class="sy0">;</span>
+    do_inherit_parent_constructor<span class="br0">&#40;</span>ce<span class="br0">&#41;</span><span class="sy0">;</span>
+&nbsp;
+    <span class="kw1">if</span> <span class="br0">&#40;</span>ce<span class="sy0">-&gt;</span>ce_flags <span class="sy0">&amp;</span> ZEND_ACC_IMPLICIT_ABSTRACT_CLASS <span class="sy0">&amp;&amp;</span> ce<span class="sy0">-&gt;</span>type <span class="sy0">==</span> ZEND_INTERNAL_CLASS<span class="br0">&#41;</span> <span class="br0">&#123;</span>
+        ce<span class="sy0">-&gt;</span>ce_flags <span class="sy0">|=</span> ZEND_ACC_EXPLICIT_ABSTRACT_CLASS<span class="sy0">;</span>
+    <span class="br0">&#125;</span> <span class="kw1">else</span> <span class="kw1">if</span> <span class="br0">&#40;</span><span class="sy0">!</span><span class="br0">&#40;</span>ce<span class="sy0">-&gt;</span>ce_flags <span class="sy0">&amp;</span> ZEND_ACC_IMPLEMENT_INTERFACES<span class="br0">&#41;</span><span class="br0">&#41;</span> <span class="br0">&#123;</span>
+        <span class="coMULTI">/* The verification will be done in runtime by ZEND_VERIFY_ABSTRACT_CLASS */</span>
+        zend_verify_abstract_class<span class="br0">&#40;</span>ce TSRMLS_CC<span class="br0">&#41;</span><span class="sy0">;</span>
+    <span class="br0">&#125;</span>
+<span class="br0">&#125;</span></pre>
+
+<p>整个继承的过程是以类结构为中心，当继承发生时，程序会先处理所有的接口。接口继承调用了zend_do_inherit_interfaces函数
+此函数会遍历所有的接口列表，将接口写入到类结构的interfaces字段，并增加num_interfaces的计数统计。
+在接口继承后，程序会合并类的成员变量、属性、常量、函数等，这些都是HashTable的merge操作。</p>
+
+<p>在继承过程中，除了常规的函数合并后，还有魔法方法的合并，其调用的函数为do_inherit_parent_constructor(ce)。
+此函数实现魔术方法继承，如果子类中没有相关的魔术方法，则继承父类的对应方法。如下所示的PHP代码为子类没构造函数的情况</p>
+
+<pre class="php"><span class="kw2">class</span> Base <span class="br0">&#123;</span>
+    <span class="kw2">public</span> <span class="kw2">function</span> __construct<span class="br0">&#40;</span><span class="br0">&#41;</span> <span class="br0">&#123;</span>
+        <a href="http://www.php.net/echo"><span class="kw3">echo</span></a> <span class="st_h">'Base __construct&lt;br /&gt;'</span><span class="sy0">;</span>
+    <span class="br0">&#125;</span>
+<span class="br0">&#125;</span>
+&nbsp;
+<span class="kw2">class</span> Foo <span class="kw2">extends</span> Base <span class="br0">&#123;</span>
+&nbsp;
+<span class="br0">&#125;</span>
+&nbsp;
+<span class="re0">$foo</span> <span class="sy0">=</span> <span class="kw2">new</span> Foo<span class="br0">&#40;</span><span class="br0">&#41;</span><span class="sy0">;</span></pre>
+
+<p>在PHP函数中运行，会输出：Base __construct</p>
+
+<p>这显然继承了父类的构造方法，如果子类有自己的构造方法，并且需要调用父类的构造方法时
+需要在子类的构造方法中调用父类的构造方法，PHP不会自动调用。</p>
+
+<p>当说到继承，就不得不提到访问控制。继承在不同的访问控制权限下有不同的表现。
+以成员方法为例，我们可以使用private和protected访问修饰符来控制需要继承的内容。</p>
+
+<ul>
+<li>private 如果一个成员被指定为private，它将不能被继承。实际上在PHP中这个方法会被继承下来，只是无法访问。</li>
+<li>protected 如果一个成员被指定为protected，它将在类外不可见，可以被继承。</li>
+</ul>
+
+<p>在继承中访问控制的实现是在合并函数时实现，其实现函数为do_inherit_method_check。
+在此函数中，如果子类没有父类中定义的方法，则所有的此类方法都会被继承，包括私有访问控制权限的方法。</p>
+
+<p>看一个PHP的示例：</p>
+
+<pre class="php"><span class="kw2">class</span> Base <span class="br0">&#123;</span>
+    <span class="kw2">private</span> <span class="kw2">function</span> privateMethod<span class="br0">&#40;</span><span class="br0">&#41;</span> <span class="br0">&#123;</span>
+    <span class="br0">&#125;</span>
+<span class="br0">&#125;</span>
+&nbsp;
+<span class="kw2">class</span> Child <span class="kw2">extends</span> Base<span class="br0">&#123;</span>
+    <span class="kw2">public</span> <span class="kw2">function</span> publicMethod<span class="br0">&#40;</span><span class="br0">&#41;</span> <span class="br0">&#123;</span>
+    <span class="br0">&#125;</span>
+<span class="br0">&#125;</span>
+&nbsp;
+<span class="re0">$c</span> <span class="sy0">=</span> <span class="kw2">new</span> Child<span class="br0">&#40;</span><span class="br0">&#41;</span><span class="sy0">;</span>
+&nbsp;
+<span class="kw1">if</span> <span class="br0">&#40;</span><a href="http://www.php.net/method_exists"><span class="kw3">method_exists</span></a><span class="br0">&#40;</span><span class="re0">$c</span><span class="sy0">,</span> <span class="st_h">'privateMethod'</span><span class="br0">&#41;</span><span class="br0">&#41;</span> <span class="br0">&#123;</span>
+    <a href="http://www.php.net/echo"><span class="kw3">echo</span></a> <span class="nu0">1</span><span class="sy0">;</span>
+<span class="br0">&#125;</span><span class="kw1">else</span><span class="br0">&#123;</span>
+    <a href="http://www.php.net/echo"><span class="kw3">echo</span></a> <span class="nu0">0</span><span class="sy0">;</span>
+<span class="br0">&#125;</span></pre>
+
+<p>这段代码会输出1，至此，我们可以证明：<strong>在PHP中，对于私有方法，在继承时是可以被继承下来的</strong>。</p>
+
+<h3>多态<a name='多态'></a></h3>
+
+<p>多态是继数据抽象和继承后的第三个特性。顾名思义，多态即多种形态，相同方法调用实现不同的实现方式。
+多态关注一个接口或基类，在编程时不必担心一个对象所属于的具体类。在面向对象的原则中
+里氏代换原则（Liskov Substitution Principle，LSP），依赖倒转原则（dependence inversion principle，DIP）等
+都依赖于多态特性。而我们在平常工作中也会经常用到。</p>
+
+<pre class="php"><span class="kw2">interface</span> Animal <span class="br0">&#123;</span>
+    <span class="kw2">public</span> <span class="kw2">function</span> run<span class="br0">&#40;</span><span class="br0">&#41;</span><span class="sy0">;</span>
+<span class="br0">&#125;</span>
+&nbsp;
+<span class="kw2">class</span> Dog implements Animal <span class="br0">&#123;</span>
+    <span class="kw2">public</span> <span class="kw2">function</span> run<span class="br0">&#40;</span><span class="br0">&#41;</span> <span class="br0">&#123;</span>
+        <a href="http://www.php.net/echo"><span class="kw3">echo</span></a> <span class="st_h">'dog run'</span><span class="sy0">;</span>
+    <span class="br0">&#125;</span>
+<span class="br0">&#125;</span>
+&nbsp;
+<span class="kw2">class</span>  Cat implements Animal<span class="br0">&#123;</span>
+    <span class="kw2">public</span> <span class="kw2">function</span> run<span class="br0">&#40;</span><span class="br0">&#41;</span> <span class="br0">&#123;</span>
+        <a href="http://www.php.net/echo"><span class="kw3">echo</span></a> <span class="st_h">'cat run'</span><span class="sy0">;</span>
+    <span class="br0">&#125;</span>
+<span class="br0">&#125;</span>
+&nbsp;
+<span class="kw2">class</span> Context <span class="br0">&#123;</span>
+    <span class="kw2">private</span> <span class="re0">$_animal</span><span class="sy0">;</span>
+&nbsp;
+    <span class="kw2">public</span> <span class="kw2">function</span> __construct<span class="br0">&#40;</span>Animal <span class="re0">$animal</span><span class="br0">&#41;</span> <span class="br0">&#123;</span>
+        <span class="re0">$this</span><span class="sy0">-&gt;</span>_animal <span class="sy0">=</span> <span class="re0">$animal</span><span class="sy0">;</span>
+    <span class="br0">&#125;</span>
+&nbsp;
+    <span class="kw2">public</span> <span class="kw2">function</span> run<span class="br0">&#40;</span><span class="br0">&#41;</span> <span class="br0">&#123;</span>
+        <span class="re0">$this</span><span class="sy0">-&gt;</span>_animal<span class="sy0">-&gt;</span><span class="me1">run</span><span class="br0">&#40;</span><span class="br0">&#41;</span><span class="sy0">;</span>
+    <span class="br0">&#125;</span>
+<span class="br0">&#125;</span>
+&nbsp;
+<span class="re0">$dog</span> <span class="sy0">=</span> <span class="kw2">new</span> Dog<span class="br0">&#40;</span><span class="br0">&#41;</span><span class="sy0">;</span>
+<span class="re0">$context</span> <span class="sy0">=</span> <span class="kw2">new</span> Context<span class="br0">&#40;</span><span class="re0">$dog</span><span class="br0">&#41;</span><span class="sy0">;</span>
+<span class="re0">$context</span><span class="sy0">-&gt;</span><span class="me1">run</span><span class="br0">&#40;</span><span class="br0">&#41;</span><span class="sy0">;</span>
+&nbsp;
+<span class="re0">$cat</span> <span class="sy0">=</span> <span class="kw2">new</span> Cat<span class="br0">&#40;</span><span class="br0">&#41;</span><span class="sy0">;</span>
+<span class="re0">$context</span> <span class="sy0">=</span> <span class="kw2">new</span> Context<span class="br0">&#40;</span><span class="br0">&#41;</span><span class="sy0">;</span>
+<span class="re0">$context</span><span class="sy0">-&gt;</span><span class="me1">run</span><span class="br0">&#40;</span><span class="br0">&#41;</span><span class="sy0">;</span></pre>
+
+<p>上面是策略模式示例性的简单实现。对于不同的动物，其跑的方式不一样，
+当在环境中跑的时候，根据所传递进来的动物执行相对应的跑操作。
+多态是一种编程的思想，但对于不同的语言，其实现也不同。
+对于PHP的程序实现来说，关键点在于类型提示的实现。而类型提示是PHP5之后才有的特性。在此之前，
+PHP本身就具有多态特性。</p>
+
+<p><a href="?p=chapt03/03-05-impl-of-type-hint">&lt;&lt; 第三章 第五节 类型提示的实现 >></a>已经说明了类型提示的实现，只是对于
+对象的判断没有做深入的探讨。它已经指出对于类的类型提示实现函数为zend_verify_arg_type。
+在此函数中，关于对象的关键代码如下：</p>
+
+<pre class="c"><span class="kw1">if</span> <span class="br0">&#40;</span>Z_TYPE_P<span class="br0">&#40;</span>arg<span class="br0">&#41;</span> <span class="sy0">==</span> IS_OBJECT<span class="br0">&#41;</span> <span class="br0">&#123;</span>
+    need_msg <span class="sy0">=</span> zend_verify_arg_class_kind<span class="br0">&#40;</span>cur_arg_info<span class="sy0">,</span> fetch_type<span class="sy0">,</span> <span class="sy0">&amp;</span>class_name<span class="sy0">,</span> <span class="sy0">&amp;</span>ce TSRMLS_CC<span class="br0">&#41;</span><span class="sy0">;</span>
+    <span class="kw1">if</span> <span class="br0">&#40;</span><span class="sy0">!</span>ce <span class="sy0">||</span> <span class="sy0">!</span>instanceof_function<span class="br0">&#40;</span>Z_OBJCE_P<span class="br0">&#40;</span>arg<span class="br0">&#41;</span><span class="sy0">,</span> ce TSRMLS_CC<span class="br0">&#41;</span><span class="br0">&#41;</span> <span class="br0">&#123;</span>
+        <span class="kw1">return</span> zend_verify_arg_error<span class="br0">&#40;</span>zf<span class="sy0">,</span> arg_num<span class="sy0">,</span> cur_arg_info<span class="sy0">,</span> need_msg<span class="sy0">,</span> class_name<span class="sy0">,</span> <span class="st0">&quot;instance of &quot;</span><span class="sy0">,</span> Z_OBJCE_P<span class="br0">&#40;</span>arg<span class="br0">&#41;</span><span class="sy0">-&gt;</span>name TSRMLS_CC<span class="br0">&#41;</span><span class="sy0">;</span>
+    <span class="br0">&#125;</span>
+<span class="br0">&#125;</span></pre>
+
+<p>第一步，判断参数是否为对象，使用宏Z_TYPE_P，如果是转二步，否则跳到其它情况处理</p>
+
+<p>第二步，获取类的类型验证信息，调用了zend_verify_arg_class_kind函数，此函数位于Zend/zend_execute.c文件中，
+它会通过zend_fetch_class函数获取类信息，根据类的类型判断是否为接口，返回字符串"implement interface"或"be an instance of"</p>
+
+<p>第三步，判断是否为指定类的实例，调用的函数是instanceof_function。此函数首先会遍历实例所在类的所有接口，
+递归调用其本身，判断实例的接口是否为指定类的实例，如果是，则直接返回1，如果不是，在非仅接口的情况下，
+循环遍历所有的父类，判断父类与指定的类是否相等，如果相等返回1，当函数执行完时仍没有找到，则返回0，表示不是类的实例。
+instanceof_function函数的代码如下：</p>
+
+<pre class="c">ZEND_API zend_bool instanceof_function_ex<span class="br0">&#40;</span><span class="kw4">const</span> zend_class_entry <span class="sy0">*</span>instance_ce<span class="sy0">,</span> <span class="kw4">const</span> zend_class_entry <span class="sy0">*</span>ce<span class="sy0">,</span> zend_bool interfaces_only TSRMLS_DC<span class="br0">&#41;</span> <span class="coMULTI">/* {{{ */</span>
+<span class="br0">&#123;</span>
+    zend_uint i<span class="sy0">;</span>
+&nbsp;
+    <span class="kw1">for</span> <span class="br0">&#40;</span>i<span class="sy0">=</span><span class="nu0">0</span><span class="sy0">;</span> i<span class="sy0">&lt;</span>instance_ce<span class="sy0">-&gt;</span>num_interfaces<span class="sy0">;</span> i<span class="sy0">++</span><span class="br0">&#41;</span> <span class="br0">&#123;</span> <span class="co1">//  递归遍历所有的接口</span>
+        <span class="kw1">if</span> <span class="br0">&#40;</span>instanceof_function<span class="br0">&#40;</span>instance_ce<span class="sy0">-&gt;</span>interfaces<span class="br0">&#91;</span>i<span class="br0">&#93;</span><span class="sy0">,</span> ce TSRMLS_CC<span class="br0">&#41;</span><span class="br0">&#41;</span> <span class="br0">&#123;</span>
+            <span class="kw1">return</span> <span class="nu0">1</span><span class="sy0">;</span>
+        <span class="br0">&#125;</span>
+    <span class="br0">&#125;</span>
+    <span class="kw1">if</span> <span class="br0">&#40;</span><span class="sy0">!</span>interfaces_only<span class="br0">&#41;</span> <span class="br0">&#123;</span>
+        <span class="kw1">while</span> <span class="br0">&#40;</span>instance_ce<span class="br0">&#41;</span> <span class="br0">&#123;</span>   <span class="co1">//  遍历所有的父类</span>
+            <span class="kw1">if</span> <span class="br0">&#40;</span>instance_ce <span class="sy0">==</span> ce<span class="br0">&#41;</span> <span class="br0">&#123;</span>
+                <span class="kw1">return</span> <span class="nu0">1</span><span class="sy0">;</span>
+            <span class="br0">&#125;</span>
+            instance_ce <span class="sy0">=</span> instance_ce<span class="sy0">-&gt;</span>parent<span class="sy0">;</span>
+        <span class="br0">&#125;</span>
+    <span class="br0">&#125;</span>
+&nbsp;
+    <span class="kw1">return</span> <span class="nu0">0</span><span class="sy0">;</span>
+<span class="br0">&#125;</span></pre>
+
+<p>第四步，如果不是指定类的实例，程序会调用zend_verify_arg_error报错，此函数最终会调用zend_error函数显示错误。</p>
+
+<h4>接口的实现<a name='接口的实现'></a></h4>
+
+<p>前面的PHP示例中有用到接口，而且在多态中，接口是一个不得不提的概念。接口是一些方法特征的集合，
+是一种逻辑上的抽象，它没有方法的实现，因此这些方法可以在不同的地方被实现，可以有相同的名字而具有完全不同的行为。</p>
+
+<p>而PHP内核对类和接口一视同仁，它们的内部结构一样。这点在前面的类型提示实现中也有看到，不管是接口还是类，
+调用instanceof_function函数时传入的参数和计算过程中使用的变量都是zend_class_entry类型。</p>
+
+<p><a href="?p=chapt05/05-01-class-struct">&lt;&lt; 第一节 类的结构和实现 >></a>中已经对于类的类型做了说明，在语法解析时，
+PHP内核已经设置了其type=ZEND_ACC_INTERFACE，</p>
+
+<pre class="c">interface_entry<span class="sy0">:</span>
+    T_INTERFACE     <span class="br0">&#123;</span> $$.<span class="me1">u</span>.<span class="me1">opline_num</span> <span class="sy0">=</span> CG<span class="br0">&#40;</span>zend_lineno<span class="br0">&#41;</span><span class="sy0">;</span>
+             $$.<span class="me1">u</span>.<span class="me1">EA</span>.<span class="me1">type</span> <span class="sy0">=</span> ZEND_ACC_INTERFACE<span class="sy0">;</span> <span class="br0">&#125;</span>
+<span class="sy0">;</span></pre>
+
+<p>而在声明类的函数zend_do_begin_class_declaration中，通过下列语句，将语法解析的类的类型赋值给类的ce_flags字段。</p>
+
+<pre class="c">new_class_entry<span class="sy0">-&gt;</span>ce_flags <span class="sy0">|=</span> class_token<span class="sy0">-&gt;</span>u.<span class="me1">EA</span>.<span class="me1">type</span><span class="sy0">;</span></pre>
+
+<p>类结构的ce_flags字段的作用是标记类的类型。</p>
+
+<p>接口与类除了在ce_flags字段不同外，在其它一些字段的表现上也不一样，如继承时，类只能继承一个父类，却可以实现多个接口。
+二者在类的结构中存储在不同的字段，类的继承由于是一对一的关系，则每个类都有一个parent字段。
+而接口实现是一个一对多的关系，每个类都会有一个二维指针存放接口的列表，还有一个存储接口数的字段num_interfaces。</p>
+
+<p>接口也可以和类一样实现继承，并且只能是一个接口继承另一个接口。一个类可以实现多个接口，
+接口在编译时调用zend_do_implement_interface函数，
+zend_do_implement_interface函数会合并接口中的常量列表和方法列表操作，这就是接口中不能有变量却可以有常量的实现原因。
+在接口继承的过程中有对当前类的接口中是否存在同样接口的判断操作，如果已经存在了同样的接口，则此接口继承将不会执行。</p>
+
+<h3>抽象类<a name='抽象类'></a></h3>
+
+<p>抽象类是相对于具体类来说的，抽象类仅提供一个类的部分实现。抽象类可以有实例变量，构造方法等。
+抽象类可以同时拥有抽象方法和具体方法。一般来说，抽象类代表一个抽象的概念，它提供了一个继承的
+出发点，理想情况下，所有的类都需要从抽象类继承而来。而具体类则不同，具体类可以实例化。
+由于抽象类不可以实例化，因此所有抽象类应该都是作为继承的父类的。</p>
+
+<p>在PHP中，抽象类是被abstract关键字修饰的类，或者类没有被声明为abstract，但是在类中存在抽象成员的类。
+对于这两种情况，PHP内核作了区分，类的结构体zend_class_entry.ce_flags中保存了这些信息，
+二者对应的值为ZEND_ACC_EXPLICIT_ABSTRACT_CLASS和ZEND_ACC_IMPLICIT_ABSTRACT_CLASS，
+这两个值在前面的第一节已经做了介绍。</p>
+
+<p>标记类为抽象类或标记成员方法为抽象方法的确认阶段是语法解析阶段。标记为抽象类与标记为接口等的过程一样。
+而通过标记成员方法为抽象方法来确认一个类为抽象类则是在声明函数时实现的。从第四章中我们知道编译时声明函数会调用
+zend_do_begin_function_declaration函数。在此函数中有如下代码：</p>
+
+<pre class="c"><span class="kw1">if</span> <span class="br0">&#40;</span>fn_flags <span class="sy0">&amp;</span> ZEND_ACC_ABSTRACT<span class="br0">&#41;</span> <span class="br0">&#123;</span>
+        CG<span class="br0">&#40;</span>active_class_entry<span class="br0">&#41;</span><span class="sy0">-&gt;</span>ce_flags <span class="sy0">|=</span> ZEND_ACC_IMPLICIT_ABSTRACT_CLASS<span class="sy0">;</span>
+    <span class="br0">&#125;</span>
+<span class="br0">&#125;</span></pre>
+
+<p>若函数为抽象函数，则设置类的ce_flags为ZEND_ACC_IMPLICIT_ABSTRACT_CLASS，从而将这个类设置为抽象类。</p>
+
+<p>抽象类，接口，普通类都是保存在zend_class_entry结构体中，他们只通过一个标志字段来区分，
+抽象类和接口还有一个共性：无法实例化。那我们看看Zend在那里限制的。要实例化一个对象我们只能使用new关键字来进行。
+下面是执行new是进行的操作:</p>
+
+<pre class="c"><span class="kw4">static</span> <span class="kw4">int</span> ZEND_FASTCALL  ZEND_NEW_SPEC_HANDLER<span class="br0">&#40;</span>ZEND_OPCODE_HANDLER_ARGS<span class="br0">&#41;</span>
+<span class="br0">&#123;</span>
+    zend_op <span class="sy0">*</span>opline <span class="sy0">=</span> EX<span class="br0">&#40;</span>opline<span class="br0">&#41;</span><span class="sy0">;</span>
+    zval <span class="sy0">*</span>object_zval<span class="sy0">;</span>
+    zend_function <span class="sy0">*</span>constructor<span class="sy0">;</span>
+&nbsp;
+    <span class="kw1">if</span> <span class="br0">&#40;</span>EX_T<span class="br0">&#40;</span>opline<span class="sy0">-&gt;</span>op1.<span class="me1">u</span>.<span class="me1">var</span><span class="br0">&#41;</span>.<span class="me1">class_entry</span><span class="sy0">-&gt;</span>ce_flags <span class="sy0">&amp;</span> <span class="br0">&#40;</span>ZEND_ACC_INTERFACE<span class="sy0">|</span>ZEND_ACC_IMPLICIT_ABSTRACT_CLASS<span class="sy0">|</span>ZEND_ACC_EXPLICIT_ABSTRACT_CLASS<span class="br0">&#41;</span><span class="br0">&#41;</span> <span class="br0">&#123;</span>
+        <span class="kw4">char</span> <span class="sy0">*</span>class_type<span class="sy0">;</span>
+&nbsp;
+        <span class="kw1">if</span> <span class="br0">&#40;</span>EX_T<span class="br0">&#40;</span>opline<span class="sy0">-&gt;</span>op1.<span class="me1">u</span>.<span class="me1">var</span><span class="br0">&#41;</span>.<span class="me1">class_entry</span><span class="sy0">-&gt;</span>ce_flags <span class="sy0">&amp;</span> ZEND_ACC_INTERFACE<span class="br0">&#41;</span> <span class="br0">&#123;</span>
+            class_type <span class="sy0">=</span> <span class="st0">&quot;interface&quot;</span><span class="sy0">;</span>
+        <span class="br0">&#125;</span> <span class="kw1">else</span> <span class="br0">&#123;</span>
+            class_type <span class="sy0">=</span> <span class="st0">&quot;abstract class&quot;</span><span class="sy0">;</span>
+        <span class="br0">&#125;</span>
+        zend_error_noreturn<span class="br0">&#40;</span>E_ERROR<span class="sy0">,</span> <span class="st0">&quot;Cannot instantiate %s %s&quot;</span><span class="sy0">,</span> class_type<span class="sy0">,</span>  EX_T<span class="br0">&#40;</span>opline<span class="sy0">-&gt;</span>op1.<span class="me1">u</span>.<span class="me1">var</span><span class="br0">&#41;</span>.<span class="me1">class_entry</span><span class="sy0">-&gt;</span>name<span class="br0">&#41;</span><span class="sy0">;</span>
+    <span class="br0">&#125;</span>
+    <span class="co1">// ...</span>
+<span class="br0">&#125;</span></pre>
+
+<p>代码很好理解，进行了简单的判断，如果为抽象类、隐式抽象类或者接口都无法进行实例化操作。</p>
+
+<p>类的继承、多态、封装，以及访问控制，接口，抽象类等都是基于类的结构实现的，因为这几个类型只有个别的特性的差异，其他基本一致。
+如果要真正理解这些特性，需要更多的关注类的结构，基础往往很重要，而在程序，数据结构就是程序的基础。</p>
+		</div>
+	</body>
+</html>

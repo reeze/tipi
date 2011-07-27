@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>TIPI: 深入理解PHP内核</title>
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+	<link href="chm.css" media="screen" rel="stylesheet" type="text/css" />
+<link href="highlight.css" media="screen" rel="stylesheet" type="text/css" />
+</head>
+<body id="portable" class="pdf">
+			<div class='page '>
+			<h3>新的垃圾回收<a name='新的垃圾回收'></a></h3>
+
+<p>如前面所说，在PHP中，主要的内存管理手段是引用计数，引入垃圾收集机制的目的是为了打破引用计数中的循环引用，从而防止因为这个而产生的内存泄露。
+垃圾收集机制基于PHP的动态内存管理而存在。PHP5.3为引入垃圾收集机制，在变量存储的基本结构上有一些变动，如下所示：</p>
+
+<pre class="c"><span class="kw4">struct</span> _zval_struct <span class="br0">&#123;</span>
+    <span class="coMULTI">/* Variable information */</span>
+    zvalue_value value<span class="sy0">;</span>     <span class="coMULTI">/* value */</span>
+    zend_uint refcount__gc<span class="sy0">;</span>
+    zend_uchar type<span class="sy0">;</span>    <span class="coMULTI">/* active type */</span>
+    zend_uchar is_ref__gc<span class="sy0">;</span>
+<span class="br0">&#125;</span><span class="sy0">;</span></pre>
+
+<p>与PHP5.3之前的版本相比，引用计数字段refcount和是否引用字段is_ref都在其后面添加了__gc以用于新的的垃圾回收机制。
+在PHP的源码风格中，大量的宏是一个非常鲜明的特点。这些宏相当于一个接口层，它屏蔽了接口层以下的一些底层实现，如，
+ALLOC_ZVAL宏，这个宏在PHP5.3之前是直接调用PHP的内存管理分配函数emalloc分配内存，所分配的内存大小由变量的类型等大小决定。
+在引入垃圾回收机制后，ALLOC_ZVAL宏直接采用新的垃圾回收单元结构，所分配的大小都是一样的，全部是zval_gc_info结构体所占内存大小，
+并且在分配内存后，初始化这个结构体的垃圾回收机制。如下代码：</p>
+
+<pre class="c"><span class="coMULTI">/* The following macroses override macroses from zend_alloc.h */</span>
+<span class="co2">#undef  ALLOC_ZVAL</span>
+<span class="co2">#define ALLOC_ZVAL(z)                                   \</span>
+    <span class="kw1">do</span> <span class="br0">&#123;</span>                                                \
+        <span class="br0">&#40;</span>z<span class="br0">&#41;</span> <span class="sy0">=</span> <span class="br0">&#40;</span>zval<span class="sy0">*</span><span class="br0">&#41;</span>emalloc<span class="br0">&#40;</span><span class="kw4">sizeof</span><span class="br0">&#40;</span>zval_gc_info<span class="br0">&#41;</span><span class="br0">&#41;</span><span class="sy0">;</span>     \
+        GC_ZVAL_INIT<span class="br0">&#40;</span>z<span class="br0">&#41;</span><span class="sy0">;</span>                                \
+    <span class="br0">&#125;</span> <span class="kw1">while</span> <span class="br0">&#40;</span><span class="nu0">0</span><span class="br0">&#41;</span></pre>
+
+<p>zend_gc.h文件在zend.h的749行被引用：#include “zend_gc.h”
+从而替换覆盖了在237行引用的zend_alloc.h文件中的ALLOC_ZVAL等宏
+在新的的宏中，关键性的改变是对所分配内存大小和分配内容的改变，在以前纯粹的内存分配中添加了垃圾收集机制的内容，
+所有的内容都包括在zval_gc_info结构体中：</p>
+
+<pre class="c"><span class="kw4">typedef</span> <span class="kw4">struct</span> _zval_gc_info <span class="br0">&#123;</span>
+    zval z<span class="sy0">;</span>
+    <span class="kw4">union</span> <span class="br0">&#123;</span>
+        gc_root_buffer       <span class="sy0">*</span>buffered<span class="sy0">;</span>
+        <span class="kw4">struct</span> _zval_gc_info <span class="sy0">*</span>next<span class="sy0">;</span>
+    <span class="br0">&#125;</span> u<span class="sy0">;</span>
+<span class="br0">&#125;</span> zval_gc_info<span class="sy0">;</span></pre>
+
+<p>对于任何一个ZVAL容器存储的变量，分配了一个zval结构，这个结构确保其和以zval变量分配的内存的开始对齐，
+从而在zval_gc_info类型指针的强制转换时，其可以作为zval使用。在zval字段后面有一个联合体:u。
+u包括gc_root_buffer结构的buffered字段和zval_gc_info结构的next字段。
+这两个字段一个是表示垃圾收集机制缓存的根结点，一个是zval_gc_info列表的下一个结点，
+垃圾收集机制缓存的结点无论是作为根结点，还是列表结点，都可以在这里体现。
+ALLOC_ZVAL在分配了内存后会调用GC_ZVAL_INIT用来初始化替代了zval的zval_gc_info，
+它会把zval_gc_info中的成员u的buffered字段设置成NULL，此字段仅在将其放入垃圾回收缓冲区时才会有值，否则会一直是NULL。
+由于PHP中所有的变量都是以zval变量的形式存在，这里以zval_gc_info替换zval，从而成功实现垃圾收集机制在原有系统中的集成。</p>
+
+<p>PHP的垃圾回收机制在PHP5.3中默认为开启，但是我们可以通过配置文件直接设置为禁用，其对应的配置字段为：zend.enable_gc。
+在php.ini文件中默认是没有这个字段的，如果我们需要禁用此功能，则在php.ini中添加zend.enable_gc=0或zend.enable_gc=off。
+除了修改php.ini配置zend.enable_gc，也可以通过调用gc_enable()/gc_disable()函数来打开/关闭垃圾回收机制。
+这些函数的调用效果与修改配置项来打开或关闭垃圾回收机制的效果是一样的。
+除了这两个函数PHP提供了gc_collect_cycles()函数可以在根缓冲区还没满时强制执行周期回收。
+与垃圾回收机制是否开启在PHP源码中有一些相关的操作和字段。在zend.c文件中有如下代码：</p>
+
+<pre class="c">&nbsp;
+<span class="kw4">static</span> ZEND_INI_MH<span class="br0">&#40;</span>OnUpdateGCEnabled<span class="br0">&#41;</span> <span class="coMULTI">/* {{{ */</span>
+<span class="br0">&#123;</span>
+    OnUpdateBool<span class="br0">&#40;</span>entry<span class="sy0">,</span> new_value<span class="sy0">,</span> new_value_length<span class="sy0">,</span> mh_arg1<span class="sy0">,</span> mh_arg2<span class="sy0">,</span> mh_arg3<span class="sy0">,</span> stage TSRMLS_CC<span class="br0">&#41;</span><span class="sy0">;</span>
+&nbsp;
+    <span class="kw1">if</span> <span class="br0">&#40;</span>GC_G<span class="br0">&#40;</span>gc_enabled<span class="br0">&#41;</span><span class="br0">&#41;</span> <span class="br0">&#123;</span>
+        gc_init<span class="br0">&#40;</span>TSRMLS_C<span class="br0">&#41;</span><span class="sy0">;</span>
+    <span class="br0">&#125;</span>
+&nbsp;
+    <span class="kw1">return</span> SUCCESS<span class="sy0">;</span>
+<span class="br0">&#125;</span>
+<span class="coMULTI">/* }}} */</span>
+&nbsp;
+ZEND_INI_BEGIN<span class="br0">&#40;</span><span class="br0">&#41;</span>
+    ZEND_INI_ENTRY<span class="br0">&#40;</span><span class="st0">&quot;error_reporting&quot;</span><span class="sy0">,</span>               <span class="kw2">NULL</span><span class="sy0">,</span>       ZEND_INI_ALL<span class="sy0">,</span>       OnUpdateErrorReporting<span class="br0">&#41;</span>
+    STD_ZEND_INI_BOOLEAN<span class="br0">&#40;</span><span class="st0">&quot;zend.enable_gc&quot;</span><span class="sy0">,</span>              <span class="st0">&quot;1&quot;</span><span class="sy0">,</span>    ZEND_INI_ALL<span class="sy0">,</span>       OnUpdateGCEnabled<span class="sy0">,</span>      gc_enabled<span class="sy0">,</span>     zend_gc_globals<span class="sy0">,</span>        gc_globals<span class="br0">&#41;</span>
+<span class="co2">#ifdef ZEND_MULTIBYTE</span>
+    STD_ZEND_INI_BOOLEAN<span class="br0">&#40;</span><span class="st0">&quot;detect_unicode&quot;</span><span class="sy0">,</span> <span class="st0">&quot;1&quot;</span><span class="sy0">,</span> ZEND_INI_ALL<span class="sy0">,</span> OnUpdateBool<span class="sy0">,</span> detect_unicode<span class="sy0">,</span> zend_compiler_globals<span class="sy0">,</span> compiler_globals<span class="br0">&#41;</span>
+<span class="co2">#endif</span>
+ZEND_INI_END<span class="br0">&#40;</span><span class="br0">&#41;</span></pre>
+
+<p>zend.enable_gc对应的操作函数为ZEND_INI_MH(OnUpdateGCEnabled)，如果开启了垃圾回收机制，
+即GC_G(gc_enabled)为真，则会调用gc_init函数执行垃圾回收机制的初始化操作。
+gc_init函数在zend/zend_gc.c 121行，此函数会判断是否开启垃圾回收机制，
+如果开启，则初始化整个机制，即直接调用malloc给整个缓存列表分配10000个gc_root_buffer内存空间。
+这里的10000是硬编码在代码中的，以宏GC_ROOT_BUFFER_MAX_ENTRIES存在，如果需要修改这个值，则需要修改源码，重新编译PHP。
+gc_init函数在预分配内存后调用gc_reset函数重置整个机制用到的一些全局变量，如设置gc运行的次数统计(gc_runs)和gc中垃圾的个数(collected)为0，
+设置双向链表头结点的上一个结点和下一个结点指向自己等。除了这种提的一些用于垃圾回收机制的全局变量，还有其它一些使用较多的变量，部分说明如下：</p>
+
+<pre class="c"><span class="kw4">typedef</span> <span class="kw4">struct</span> _zend_gc_globals <span class="br0">&#123;</span>
+    zend_bool         gc_enabled<span class="sy0">;</span>   <span class="coMULTI">/* 是否开启垃圾收集机制 */</span>
+    zend_bool         gc_active<span class="sy0">;</span>    <span class="coMULTI">/* 是否正在进行 */</span>
+&nbsp;
+    gc_root_buffer   <span class="sy0">*</span>buf<span class="sy0">;</span>              <span class="coMULTI">/* 预分配的缓冲区数组，默认为10000（preallocated arrays of buffers）   */</span>
+    gc_root_buffer    roots<span class="sy0">;</span>            <span class="coMULTI">/* 列表的根结点（list of possible roots of cycles） */</span>
+    gc_root_buffer   <span class="sy0">*</span>unused<span class="sy0">;</span>           <span class="coMULTI">/* 没有使用过的缓冲区列表(list of unused buffers)           */</span>
+    gc_root_buffer   <span class="sy0">*</span>first_unused<span class="sy0">;</span>     <span class="coMULTI">/* 指向第一个没有使用过的缓冲区结点（pointer to first unused buffer）   */</span>
+    gc_root_buffer   <span class="sy0">*</span>last_unused<span class="sy0">;</span>      <span class="coMULTI">/* 指向最后一个没有使用过的缓冲区结点，此处为标记结束用(pointer to last unused buffer)    */</span>
+&nbsp;
+    zval_gc_info     <span class="sy0">*</span>zval_to_free<span class="sy0">;</span>     <span class="coMULTI">/* 将要释放的zval变量的临时列表（temporaryt list of zvals to free） */</span>
+    zval_gc_info     <span class="sy0">*</span>free_list<span class="sy0">;</span>        <span class="coMULTI">/* 临时变量，需要释放的列表开头 */</span>
+    zval_gc_info     <span class="sy0">*</span>next_to_free<span class="sy0">;</span>     <span class="coMULTI">/* 临时变量，下一个将要释放的变量位置*/</span>
+&nbsp;
+    zend_uint gc_runs<span class="sy0">;</span>  <span class="coMULTI">/* gc运行的次数统计 */</span>
+    zend_uint collected<span class="sy0">;</span>    <span class="coMULTI">/* gc中垃圾的个数 */</span>
+&nbsp;
+    <span class="co1">// 省略...</span></pre>
+
+<p>}</p>
+
+<p>当我们使用一个unset操作想清除这个变量所占的内存时（可能只是引用计数减一），会从当前符号的哈希表中删除变量名对应的项，
+在所有的操作执行完后，并对从符号表中删除的项调用一个析构函数，临时变量会调用zval_dtor，一般的变量会调用zval_ptr_dtor。</p>
+
+<blockquote class='note'>
+<p>当然我们无法在PHP的函数集中找到unset函数，因为它是一种语言结构。
+  其对应的中间代码为ZEND_UNSET，在Zend/zend_vm_execute.h文件中你可以找到与它相关的实现。</p>
+</blockquote>
+
+<p>zval_ptr_dtor并不是一个函数，只是一个长得有点像函数的宏。
+在Zend/zend_variables.h文件中，这个宏指向函数_zval_ptr_dtor。
+在Zend/zend_execute_API.c 424行，函数相关代码如下：</p>
+
+<pre class="c">ZEND_API <span class="kw4">void</span> _zval_ptr_dtor<span class="br0">&#40;</span>zval <span class="sy0">**</span>zval_ptr ZEND_FILE_LINE_DC<span class="br0">&#41;</span> <span class="coMULTI">/* {{{ */</span>
+<span class="br0">&#123;</span>
+<span class="co2">#if DEBUG_ZEND&gt;=2</span>
+    <a href="http://www.opengroup.org/onlinepubs/009695399/functions/printf.html"><span class="kw3">printf</span></a><span class="br0">&#40;</span><span class="st0">&quot;Reducing refcount for %x (%x): %d-&gt;%d<span class="es1">\n</span>&quot;</span><span class="sy0">,</span> <span class="sy0">*</span>zval_ptr<span class="sy0">,</span> zval_ptr<span class="sy0">,</span> Z_REFCOUNT_PP<span class="br0">&#40;</span>zval_ptr<span class="br0">&#41;</span><span class="sy0">,</span> Z_REFCOUNT_PP<span class="br0">&#40;</span>zval_ptr<span class="br0">&#41;</span> <span class="sy0">-</span> <span class="nu0">1</span><span class="br0">&#41;</span><span class="sy0">;</span>
+<span class="co2">#endif</span>
+    Z_DELREF_PP<span class="br0">&#40;</span>zval_ptr<span class="br0">&#41;</span><span class="sy0">;</span>
+    <span class="kw1">if</span> <span class="br0">&#40;</span>Z_REFCOUNT_PP<span class="br0">&#40;</span>zval_ptr<span class="br0">&#41;</span> <span class="sy0">==</span> <span class="nu0">0</span><span class="br0">&#41;</span> <span class="br0">&#123;</span>
+        TSRMLS_FETCH<span class="br0">&#40;</span><span class="br0">&#41;</span><span class="sy0">;</span>
+&nbsp;
+        <span class="kw1">if</span> <span class="br0">&#40;</span><span class="sy0">*</span>zval_ptr <span class="sy0">!=</span> <span class="sy0">&amp;</span>EG<span class="br0">&#40;</span>uninitialized_zval<span class="br0">&#41;</span><span class="br0">&#41;</span> <span class="br0">&#123;</span>
+            GC_REMOVE_ZVAL_FROM_BUFFER<span class="br0">&#40;</span><span class="sy0">*</span>zval_ptr<span class="br0">&#41;</span><span class="sy0">;</span>
+            zval_dtor<span class="br0">&#40;</span><span class="sy0">*</span>zval_ptr<span class="br0">&#41;</span><span class="sy0">;</span>
+            efree_rel<span class="br0">&#40;</span><span class="sy0">*</span>zval_ptr<span class="br0">&#41;</span><span class="sy0">;</span>
+        <span class="br0">&#125;</span>
+    <span class="br0">&#125;</span> <span class="kw1">else</span> <span class="br0">&#123;</span>
+        TSRMLS_FETCH<span class="br0">&#40;</span><span class="br0">&#41;</span><span class="sy0">;</span>
+&nbsp;
+        <span class="kw1">if</span> <span class="br0">&#40;</span>Z_REFCOUNT_PP<span class="br0">&#40;</span>zval_ptr<span class="br0">&#41;</span> <span class="sy0">==</span> <span class="nu0">1</span><span class="br0">&#41;</span> <span class="br0">&#123;</span>
+            Z_UNSET_ISREF_PP<span class="br0">&#40;</span>zval_ptr<span class="br0">&#41;</span><span class="sy0">;</span>
+        <span class="br0">&#125;</span>
+&nbsp;
+        GC_ZVAL_CHECK_POSSIBLE_ROOT<span class="br0">&#40;</span><span class="sy0">*</span>zval_ptr<span class="br0">&#41;</span><span class="sy0">;</span>
+    <span class="br0">&#125;</span>
+<span class="br0">&#125;</span>
+<span class="coMULTI">/* }}} */</span></pre>
+
+<p>从代码我们可以很清晰的看出这个zval的析构过程，关于引用计数字段做了以下两个操作：</p>
+
+<ul>
+<li>如果变量的引用计数为1，即减一后引用计数为0，直接清除变量。如果当前变量如果被缓存，则需要清除缓存</li>
+<li>如果变量的引用计数大于1，即减一后引用计数大于0，则将变量放入垃圾列表。如果变更存在引用，则去掉其引用。</li>
+</ul>
+
+<p>将变量放入垃圾列表的操作是GC_ZVAL_CHECK_POSSIBLE_ROOT，这也是一个宏，其对应函数gc_zval_check_possible_root，
+但是此函数仅对数组和对象执行垃圾回收操作。对于数组和对象变量，它会调用gc_zval_possible_root函数。</p>
+
+<pre class="c">ZEND_API <span class="kw4">void</span> gc_zval_possible_root<span class="br0">&#40;</span>zval <span class="sy0">*</span>zv TSRMLS_DC<span class="br0">&#41;</span>
+<span class="br0">&#123;</span>
+    <span class="kw1">if</span> <span class="br0">&#40;</span>UNEXPECTED<span class="br0">&#40;</span>GC_G<span class="br0">&#40;</span>free_list<span class="br0">&#41;</span> <span class="sy0">!=</span> <span class="kw2">NULL</span> <span class="sy0">&amp;&amp;</span>
+                   GC_ZVAL_ADDRESS<span class="br0">&#40;</span>zv<span class="br0">&#41;</span> <span class="sy0">!=</span> <span class="kw2">NULL</span> <span class="sy0">&amp;&amp;</span>
+                   GC_ZVAL_GET_COLOR<span class="br0">&#40;</span>zv<span class="br0">&#41;</span> <span class="sy0">==</span> GC_BLACK<span class="br0">&#41;</span> <span class="sy0">&amp;&amp;</span>
+                   <span class="br0">&#40;</span>GC_ZVAL_ADDRESS<span class="br0">&#40;</span>zv<span class="br0">&#41;</span> <span class="sy0">&lt;</span> GC_G<span class="br0">&#40;</span>buf<span class="br0">&#41;</span> <span class="sy0">||</span>
+                    GC_ZVAL_ADDRESS<span class="br0">&#40;</span>zv<span class="br0">&#41;</span> <span class="sy0">&gt;=</span> GC_G<span class="br0">&#40;</span>last_unused<span class="br0">&#41;</span><span class="br0">&#41;</span><span class="br0">&#41;</span> <span class="br0">&#123;</span>
+        <span class="coMULTI">/* The given zval is a garbage that is going to be deleted by
+         * currently running GC */</span>
+        <span class="kw1">return</span><span class="sy0">;</span>
+    <span class="br0">&#125;</span>
+&nbsp;
+    <span class="kw1">if</span> <span class="br0">&#40;</span>zv<span class="sy0">-&gt;</span>type <span class="sy0">==</span> IS_OBJECT<span class="br0">&#41;</span> <span class="br0">&#123;</span>
+        GC_ZOBJ_CHECK_POSSIBLE_ROOT<span class="br0">&#40;</span>zv<span class="br0">&#41;</span><span class="sy0">;</span>
+        <span class="kw1">return</span><span class="sy0">;</span>
+    <span class="br0">&#125;</span>
+&nbsp;
+    GC_BENCH_INC<span class="br0">&#40;</span>zval_possible_root<span class="br0">&#41;</span><span class="sy0">;</span>
+&nbsp;
+    <span class="kw1">if</span> <span class="br0">&#40;</span>GC_ZVAL_GET_COLOR<span class="br0">&#40;</span>zv<span class="br0">&#41;</span> <span class="sy0">!=</span> GC_PURPLE<span class="br0">&#41;</span> <span class="br0">&#123;</span>
+        GC_ZVAL_SET_PURPLE<span class="br0">&#40;</span>zv<span class="br0">&#41;</span><span class="sy0">;</span>
+&nbsp;
+        <span class="kw1">if</span> <span class="br0">&#40;</span><span class="sy0">!</span>GC_ZVAL_ADDRESS<span class="br0">&#40;</span>zv<span class="br0">&#41;</span><span class="br0">&#41;</span> <span class="br0">&#123;</span>
+            gc_root_buffer <span class="sy0">*</span>newRoot <span class="sy0">=</span> GC_G<span class="br0">&#40;</span>unused<span class="br0">&#41;</span><span class="sy0">;</span>
+&nbsp;
+            <span class="kw1">if</span> <span class="br0">&#40;</span>newRoot<span class="br0">&#41;</span> <span class="br0">&#123;</span>
+                GC_G<span class="br0">&#40;</span>unused<span class="br0">&#41;</span> <span class="sy0">=</span> newRoot<span class="sy0">-&gt;</span>prev<span class="sy0">;</span>
+            <span class="br0">&#125;</span> <span class="kw1">else</span> <span class="kw1">if</span> <span class="br0">&#40;</span>GC_G<span class="br0">&#40;</span>first_unused<span class="br0">&#41;</span> <span class="sy0">!=</span> GC_G<span class="br0">&#40;</span>last_unused<span class="br0">&#41;</span><span class="br0">&#41;</span> <span class="br0">&#123;</span>
+                newRoot <span class="sy0">=</span> GC_G<span class="br0">&#40;</span>first_unused<span class="br0">&#41;</span><span class="sy0">;</span>
+                GC_G<span class="br0">&#40;</span>first_unused<span class="br0">&#41;</span><span class="sy0">++;</span>
+            <span class="br0">&#125;</span> <span class="kw1">else</span> <span class="br0">&#123;</span>
+                <span class="kw1">if</span> <span class="br0">&#40;</span><span class="sy0">!</span>GC_G<span class="br0">&#40;</span>gc_enabled<span class="br0">&#41;</span><span class="br0">&#41;</span> <span class="br0">&#123;</span>
+                    GC_ZVAL_SET_BLACK<span class="br0">&#40;</span>zv<span class="br0">&#41;</span><span class="sy0">;</span>
+                    <span class="kw1">return</span><span class="sy0">;</span>
+                <span class="br0">&#125;</span>
+                zv<span class="sy0">-&gt;</span>refcount__gc<span class="sy0">++;</span>
+                gc_collect_cycles<span class="br0">&#40;</span>TSRMLS_C<span class="br0">&#41;</span><span class="sy0">;</span>
+                zv<span class="sy0">-&gt;</span>refcount__gc<span class="sy0">--;</span>
+                newRoot <span class="sy0">=</span> GC_G<span class="br0">&#40;</span>unused<span class="br0">&#41;</span><span class="sy0">;</span>
+                <span class="kw1">if</span> <span class="br0">&#40;</span><span class="sy0">!</span>newRoot<span class="br0">&#41;</span> <span class="br0">&#123;</span>
+                    <span class="kw1">return</span><span class="sy0">;</span>
+                <span class="br0">&#125;</span>
+                GC_ZVAL_SET_PURPLE<span class="br0">&#40;</span>zv<span class="br0">&#41;</span><span class="sy0">;</span>
+                GC_G<span class="br0">&#40;</span>unused<span class="br0">&#41;</span> <span class="sy0">=</span> newRoot<span class="sy0">-&gt;</span>prev<span class="sy0">;</span>
+            <span class="br0">&#125;</span>
+&nbsp;
+            newRoot<span class="sy0">-&gt;</span>next <span class="sy0">=</span> GC_G<span class="br0">&#40;</span>roots<span class="br0">&#41;</span>.<span class="me1">next</span><span class="sy0">;</span>
+            newRoot<span class="sy0">-&gt;</span>prev <span class="sy0">=</span> <span class="sy0">&amp;</span>GC_G<span class="br0">&#40;</span>roots<span class="br0">&#41;</span><span class="sy0">;</span>
+            GC_G<span class="br0">&#40;</span>roots<span class="br0">&#41;</span>.<span class="me1">next</span><span class="sy0">-&gt;</span>prev <span class="sy0">=</span> newRoot<span class="sy0">;</span>
+            GC_G<span class="br0">&#40;</span>roots<span class="br0">&#41;</span>.<span class="me1">next</span> <span class="sy0">=</span> newRoot<span class="sy0">;</span>
+&nbsp;
+            GC_ZVAL_SET_ADDRESS<span class="br0">&#40;</span>zv<span class="sy0">,</span> newRoot<span class="br0">&#41;</span><span class="sy0">;</span>
+&nbsp;
+            newRoot<span class="sy0">-&gt;</span>handle <span class="sy0">=</span> <span class="nu0">0</span><span class="sy0">;</span>
+            newRoot<span class="sy0">-&gt;</span>u.<span class="me1">pz</span> <span class="sy0">=</span> zv<span class="sy0">;</span>
+&nbsp;
+            GC_BENCH_INC<span class="br0">&#40;</span>zval_buffered<span class="br0">&#41;</span><span class="sy0">;</span>
+            GC_BENCH_INC<span class="br0">&#40;</span>root_buf_length<span class="br0">&#41;</span><span class="sy0">;</span>
+            GC_BENCH_PEAK<span class="br0">&#40;</span>root_buf_peak<span class="sy0">,</span> root_buf_length<span class="br0">&#41;</span><span class="sy0">;</span>
+        <span class="br0">&#125;</span>
+    <span class="br0">&#125;</span>
+<span class="br0">&#125;</span></pre>
+
+<p>在前面说到gc_zval_check_possible_root函数仅对数组和对象执行垃圾回收操作，然而在gc_zval_possible_root函数中，
+针对对象类型的变量会去调用GC_ZOBJ_CHECK_POSSIBLE_ROOT宏。而对于其它的可用于垃圾回收的机制的变量类型其调用过程如下：</p>
+
+<ul>
+<li>检查zval结点信息是否已经放入到结点缓冲区，如果已经放入到结点缓冲区，则直接返回，这样可以优化其性能。
+然后处理对象结点，直接返回，不再执行后面的操作</li>
+<li>判断结点是否已经被标记为紫色，如果为紫色则不再添加到结点缓冲区，此处在于保证一个结点只执行一次添加到缓冲区的操作。</li>
+<li>将结点的颜色标记为紫色，表示此结点已经添加到缓冲区，下次不用再做添加</li>
+<li>找出新的结点的位置，如果缓冲区满了，则执行垃圾回收操作。</li>
+<li>将新的结点添加到缓冲区所在的双向链表。</li>
+</ul>
+
+<p>在gc_zval_possible_root函数中，当缓冲区满时，程序调用gc_collect_cycles函数，执行垃圾回收操作。
+其中最关键的几步就是：</p>
+
+<ul>
+<li>第628行 此处为其官方文档中算法的步骤 B ，算法使用深度优先搜索查找所有可能的根，找到后将每个变量容器中的引用计数减1，
+为确保不会对同一个变量容器减两次“1”，用灰色标记已减过1的。</li>
+<li>第629行 这是算法的步骤 C ，算法再一次对每个根节点使用深度优先搜索，检查每个变量容器的引用计数。
+如果引用计数是 0 ，变量容器用白色来标记。如果引用次数大于0，则恢复在这个点上使用深度优先搜索而将引用计数减1的操作（即引用计数加1），
+然后将它们重新用黑色标记。 </li>
+<li>第630行 算法的最后一步 D ，算法遍历根缓冲区以从那里删除变量容器根(zval roots)，
+同时，检查是否有在上一步中被白色标记的变量容器。每个被白色标记的变量容器都被清除。
+在[gc_collect_cycles() -> gc_collect_roots() -> zval_collect_white() ]中我们可以看到，
+对于白色标记的结点会被添加到全局变量zval_to_free列表中。此列表在后面的操作中有用到。</li>
+</ul>
+
+<p>PHP的垃圾回收机制在执行过程中以四种颜色标记状态。</p>
+
+<ul>
+<li>GC_WHITE 白色表示垃圾</li>
+<li>GC_PURPLE 紫色表示已放入缓冲区</li>
+<li>GC_GREY 灰色表示已经进行了一次refcount的减一操作</li>
+<li>GC_BLACK 黑色是默认颜色，正常</li>
+</ul>
+
+<p>相关的标记以及操作代码如下：</p>
+
+<pre class="c"><span class="co2">#define GC_COLOR  0x03</span>
+&nbsp;
+<span class="co2">#define GC_BLACK  0x00</span>
+<span class="co2">#define GC_WHITE  0x01</span>
+<span class="co2">#define GC_GREY   0x02</span>
+<span class="co2">#define GC_PURPLE 0x03</span>
+&nbsp;
+<span class="co2">#define GC_ADDRESS(v) \</span>
+    <span class="br0">&#40;</span><span class="br0">&#40;</span>gc_root_buffer<span class="sy0">*</span><span class="br0">&#41;</span><span class="br0">&#40;</span><span class="br0">&#40;</span><span class="br0">&#40;</span>zend_uintptr_t<span class="br0">&#41;</span><span class="br0">&#40;</span>v<span class="br0">&#41;</span><span class="br0">&#41;</span> <span class="sy0">&amp;</span> ~GC_COLOR<span class="br0">&#41;</span><span class="br0">&#41;</span>
+<span class="co2">#define GC_SET_ADDRESS(v, a) \</span>
+    <span class="br0">&#40;</span>v<span class="br0">&#41;</span> <span class="sy0">=</span> <span class="br0">&#40;</span><span class="br0">&#40;</span>gc_root_buffer<span class="sy0">*</span><span class="br0">&#41;</span><span class="br0">&#40;</span><span class="br0">&#40;</span><span class="br0">&#40;</span><span class="br0">&#40;</span>zend_uintptr_t<span class="br0">&#41;</span><span class="br0">&#40;</span>v<span class="br0">&#41;</span><span class="br0">&#41;</span> <span class="sy0">&amp;</span> GC_COLOR<span class="br0">&#41;</span> <span class="sy0">|</span> <span class="br0">&#40;</span><span class="br0">&#40;</span>zend_uintptr_t<span class="br0">&#41;</span><span class="br0">&#40;</span>a<span class="br0">&#41;</span><span class="br0">&#41;</span><span class="br0">&#41;</span><span class="br0">&#41;</span>
+<span class="co2">#define GC_GET_COLOR(v) \</span>
+    <span class="br0">&#40;</span><span class="br0">&#40;</span><span class="br0">&#40;</span>zend_uintptr_t<span class="br0">&#41;</span><span class="br0">&#40;</span>v<span class="br0">&#41;</span><span class="br0">&#41;</span> <span class="sy0">&amp;</span> GC_COLOR<span class="br0">&#41;</span>
+<span class="co2">#define GC_SET_COLOR(v, c) \</span>
+    <span class="br0">&#40;</span>v<span class="br0">&#41;</span> <span class="sy0">=</span> <span class="br0">&#40;</span><span class="br0">&#40;</span>gc_root_buffer<span class="sy0">*</span><span class="br0">&#41;</span><span class="br0">&#40;</span><span class="br0">&#40;</span><span class="br0">&#40;</span><span class="br0">&#40;</span>zend_uintptr_t<span class="br0">&#41;</span><span class="br0">&#40;</span>v<span class="br0">&#41;</span><span class="br0">&#41;</span> <span class="sy0">&amp;</span> ~GC_COLOR<span class="br0">&#41;</span> <span class="sy0">|</span> <span class="br0">&#40;</span>c<span class="br0">&#41;</span><span class="br0">&#41;</span><span class="br0">&#41;</span>
+<span class="co2">#define GC_SET_BLACK(v) \</span>
+    <span class="br0">&#40;</span>v<span class="br0">&#41;</span> <span class="sy0">=</span> <span class="br0">&#40;</span><span class="br0">&#40;</span>gc_root_buffer<span class="sy0">*</span><span class="br0">&#41;</span><span class="br0">&#40;</span><span class="br0">&#40;</span><span class="br0">&#40;</span>zend_uintptr_t<span class="br0">&#41;</span><span class="br0">&#40;</span>v<span class="br0">&#41;</span><span class="br0">&#41;</span> <span class="sy0">&amp;</span> ~GC_COLOR<span class="br0">&#41;</span><span class="br0">&#41;</span>
+<span class="co2">#define GC_SET_PURPLE(v) \</span>
+    <span class="br0">&#40;</span>v<span class="br0">&#41;</span> <span class="sy0">=</span> <span class="br0">&#40;</span><span class="br0">&#40;</span>gc_root_buffer<span class="sy0">*</span><span class="br0">&#41;</span><span class="br0">&#40;</span><span class="br0">&#40;</span><span class="br0">&#40;</span>zend_uintptr_t<span class="br0">&#41;</span><span class="br0">&#40;</span>v<span class="br0">&#41;</span><span class="br0">&#41;</span> <span class="sy0">|</span> GC_PURPLE<span class="br0">&#41;</span><span class="br0">&#41;</span></pre>
+
+<p>以上的这种以位来标记状态的方式在PHP的源码中使用频率较高，如内存管理等都有用到，
+这是一种比较高效及节省的方案。但是在我们做数据库设计时可能对于字段不能使用这种方式，
+应该是以一种更加直观，更加具有可读性的方式实现。</p>
+		</div>
+	</body>
+</html>

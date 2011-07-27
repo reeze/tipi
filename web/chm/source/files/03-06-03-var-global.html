@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>TIPI: 深入理解PHP内核</title>
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+	<link href="chm.css" media="screen" rel="stylesheet" type="text/css" />
+<link href="highlight.css" media="screen" rel="stylesheet" type="text/css" />
+</head>
+<body id="portable" class="pdf">
+			<div class='page '>
+			<h3>global语句<a name='global语句'></a></h3>
+
+<p>global语句的作用是定义全局变量，例如如果想在函数内访问全局作用域内的变量则可以通过global声明来定义。
+下面从语法解释开始分析。</p>
+
+<p><strong>1. 词法解析</strong></p>
+
+<p>查看 Zend/zend_language_scanner.l文件，搜索 global关键字。我们可以找到如下代码：</p>
+
+<pre class="c"><span class="sy0">&lt;</span>ST_IN_SCRIPTING<span class="sy0">&gt;</span><span class="st0">&quot;global&quot;</span> <span class="br0">&#123;</span>
+<span class="kw1">return</span> T_GLOBAL<span class="sy0">;</span>
+<span class="br0">&#125;</span></pre>
+
+<p><strong>2. 语法解析</strong></p>
+
+<p>在词法解析完后，获得了token，此时通过这个token，我们去Zend/zend_language_parser.y文件中查找。找到相关代码如下：</p>
+
+<pre class="c"><span class="sy0">|</span>   T_GLOBAL global_var_list <span class="st0">';'</span>
+&nbsp;
+global_var_list<span class="sy0">:</span>
+    global_var_list <span class="st0">','</span> global_var  <span class="br0">&#123;</span> zend_do_fetch_global_variable<span class="br0">&#40;</span><span class="sy0">&amp;</span>$<span class="nu0">3</span><span class="sy0">,</span> <span class="kw2">NULL</span><span class="sy0">,</span> ZEND_FETCH_GLOBAL_LOCK TSRMLS_CC<span class="br0">&#41;</span><span class="sy0">;</span> <span class="br0">&#125;</span>
+<span class="sy0">|</span>   global_var                      <span class="br0">&#123;</span> zend_do_fetch_global_variable<span class="br0">&#40;</span><span class="sy0">&amp;</span>$<span class="nu0">1</span><span class="sy0">,</span> <span class="kw2">NULL</span><span class="sy0">,</span> ZEND_FETCH_GLOBAL_LOCK TSRMLS_CC<span class="br0">&#41;</span><span class="sy0">;</span> <span class="br0">&#125;</span>
+<span class="sy0">;</span></pre>
+
+<p>上面代码中的<strong>$3</strong>是指global_var（如果不清楚yacc的语法，可以查阅yacc入门类的文章。）</p>
+
+<p>从上面的代码可以知道，对于全局变量的声明调用的是zend_do_fetch_global_variable函数，查找此函数的实现在Zend/zend_compile.c文件。</p>
+
+<pre class="c"><span class="kw4">void</span> zend_do_fetch_global_variable<span class="br0">&#40;</span>znode <span class="sy0">*</span>varname<span class="sy0">,</span> <span class="kw4">const</span> znode <span class="sy0">*</span>static_assignment<span class="sy0">,</span> <span class="kw4">int</span> fetch_type TSRMLS_DC<span class="br0">&#41;</span> 
+<span class="br0">&#123;</span>
+        ...<span class="co1">//省略</span>
+        opline<span class="sy0">-&gt;</span>opcode <span class="sy0">=</span> ZEND_FETCH_W<span class="sy0">;</span>      <span class="coMULTI">/* the default mode must be Write, since fetch_simple_variable() is used to define function arguments */</span>
+        opline<span class="sy0">-&gt;</span>result.<span class="me1">op_type</span> <span class="sy0">=</span> IS_VAR<span class="sy0">;</span>
+        opline<span class="sy0">-&gt;</span>result.<span class="me1">u</span>.<span class="me1">EA</span>.<span class="me1">type</span> <span class="sy0">=</span> <span class="nu0">0</span><span class="sy0">;</span>
+        opline<span class="sy0">-&gt;</span>result.<span class="me1">u</span>.<span class="me1">var</span> <span class="sy0">=</span> get_temporary_variable<span class="br0">&#40;</span>CG<span class="br0">&#40;</span>active_op_array<span class="br0">&#41;</span><span class="br0">&#41;</span><span class="sy0">;</span>
+        opline<span class="sy0">-&gt;</span>op1 <span class="sy0">=</span> <span class="sy0">*</span>varname<span class="sy0">;</span>
+        SET_UNUSED<span class="br0">&#40;</span>opline<span class="sy0">-&gt;</span>op2<span class="br0">&#41;</span><span class="sy0">;</span>
+        opline<span class="sy0">-&gt;</span>op2.<span class="me1">u</span>.<span class="me1">EA</span>.<span class="me1">type</span> <span class="sy0">=</span> fetch_type<span class="sy0">;</span>
+        result <span class="sy0">=</span> opline<span class="sy0">-&gt;</span>result<span class="sy0">;</span>
+&nbsp;
+        ... <span class="co1">// 省略</span>
+        fetch_simple_variable<span class="br0">&#40;</span><span class="sy0">&amp;</span>lval<span class="sy0">,</span> varname<span class="sy0">,</span> <span class="nu0">0</span> TSRMLS_CC<span class="br0">&#41;</span><span class="sy0">;</span> <span class="coMULTI">/* Relies on the fact that the default fetch is BP_VAR_W */</span>
+&nbsp;
+        zend_do_assign_ref<span class="br0">&#40;</span><span class="kw2">NULL</span><span class="sy0">,</span> <span class="sy0">&amp;</span>lval<span class="sy0">,</span> <span class="sy0">&amp;</span>result TSRMLS_CC<span class="br0">&#41;</span><span class="sy0">;</span>
+        CG<span class="br0">&#40;</span>active_op_array<span class="br0">&#41;</span><span class="sy0">-&gt;</span>opcodes<span class="br0">&#91;</span>CG<span class="br0">&#40;</span>active_op_array<span class="br0">&#41;</span><span class="sy0">-&gt;</span>last<span class="sy0">-</span><span class="nu0">1</span><span class="br0">&#93;</span>.<span class="me1">result</span>.<span class="me1">u</span>.<span class="me1">EA</span>.<span class="me1">type</span> <span class="sy0">|=</span> EXT_TYPE_UNUSED<span class="sy0">;</span>
+<span class="br0">&#125;</span>
+<span class="coMULTI">/* }}} */</span></pre>
+
+<p>上面的代码确认了opcode为ZEND_FETCH_W外，还执行了zend_do_assign_ref函数。zend_do_assign_ref函数的实现如下：</p>
+
+<pre class="c"><span class="kw4">void</span> zend_do_assign_ref<span class="br0">&#40;</span>znode <span class="sy0">*</span>result<span class="sy0">,</span> <span class="kw4">const</span> znode <span class="sy0">*</span>lvar<span class="sy0">,</span> <span class="kw4">const</span> znode <span class="sy0">*</span>rvar TSRMLS_DC<span class="br0">&#41;</span> <span class="coMULTI">/* {{{ */</span>
+<span class="br0">&#123;</span>
+        zend_op <span class="sy0">*</span>opline<span class="sy0">;</span>
+&nbsp;
+       ... <span class="co1">//省略</span>
+&nbsp;
+        opline <span class="sy0">=</span> get_next_op<span class="br0">&#40;</span>CG<span class="br0">&#40;</span>active_op_array<span class="br0">&#41;</span> TSRMLS_CC<span class="br0">&#41;</span><span class="sy0">;</span>
+        opline<span class="sy0">-&gt;</span>opcode <span class="sy0">=</span> ZEND_ASSIGN_REF<span class="sy0">;</span>
+       ...<span class="co1">//省略</span>
+        <span class="kw1">if</span> <span class="br0">&#40;</span>result<span class="br0">&#41;</span> <span class="br0">&#123;</span>
+                opline<span class="sy0">-&gt;</span>result.<span class="me1">op_type</span> <span class="sy0">=</span> IS_VAR<span class="sy0">;</span>
+                opline<span class="sy0">-&gt;</span>result.<span class="me1">u</span>.<span class="me1">EA</span>.<span class="me1">type</span> <span class="sy0">=</span> <span class="nu0">0</span><span class="sy0">;</span>
+                opline<span class="sy0">-&gt;</span>result.<span class="me1">u</span>.<span class="me1">var</span> <span class="sy0">=</span> get_temporary_variable<span class="br0">&#40;</span>CG<span class="br0">&#40;</span>active_op_array<span class="br0">&#41;</span><span class="br0">&#41;</span><span class="sy0">;</span>
+                <span class="sy0">*</span>result <span class="sy0">=</span> opline<span class="sy0">-&gt;</span>result<span class="sy0">;</span>
+        <span class="br0">&#125;</span> <span class="kw1">else</span> <span class="br0">&#123;</span>
+                <span class="coMULTI">/* SET_UNUSED(opline-&gt;result); */</span>
+                opline<span class="sy0">-&gt;</span>result.<span class="me1">u</span>.<span class="me1">EA</span>.<span class="me1">type</span> <span class="sy0">|=</span> EXT_TYPE_UNUSED<span class="sy0">;</span>
+        <span class="br0">&#125;</span>
+        opline<span class="sy0">-&gt;</span>op1 <span class="sy0">=</span> <span class="sy0">*</span>lvar<span class="sy0">;</span>
+        opline<span class="sy0">-&gt;</span>op2 <span class="sy0">=</span> <span class="sy0">*</span>rvar<span class="sy0">;</span>
+<span class="br0">&#125;</span></pre>
+
+<p>从上面的zend_do_fetch_global_variable函数和zend_do_assign_ref函数的实现可以看出，
+使用global声明一个全局变量后，其执行了两步操作，ZEND_FETCH_W和ZEND_ASSIGN_REF。</p>
+
+<p><strong>3. 生成并执行中间代码</strong></p>
+
+<p>我们看下ZEND_FETCH_W的最后执行。从代码中我们可以知道：</p>
+
+<ul>
+<li>ZEND_FETCH_W = 83</li>
+<li>op->op1.op_type = 4</li>
+<li>op->op2.op_type = 0</li>
+</ul>
+
+<p>而计算最后调用的方法在代码中的体现为：</p>
+
+<pre class="c">zend_opcode_handlers<span class="br0">&#91;</span>opcode <span class="sy0">*</span> <span class="nu0">25</span> <span class="sy0">+</span> zend_vm_decode<span class="br0">&#91;</span>op<span class="sy0">-&gt;</span>op1.<span class="me1">op_type</span><span class="br0">&#93;</span> <span class="sy0">*</span> <span class="nu0">5</span> <span class="sy0">+</span> zend_vm_decode<span class="br0">&#91;</span>op<span class="sy0">-&gt;</span>op2.<span class="me1">op_type</span><span class="br0">&#93;</span><span class="br0">&#93;</span><span class="sy0">;</span></pre>
+
+<p>计算，最后调用ZEND_FETCH_W_SPEC_CV_HANDLER函数。即</p>
+
+<pre class="c"><span class="kw4">static</span> <span class="kw4">int</span> ZEND_FASTCALL  ZEND_FETCH_W_SPEC_CV_HANDLER<span class="br0">&#40;</span>ZEND_OPCODE_HANDLER_ARGS<span class="br0">&#41;</span>
+<span class="br0">&#123;</span>
+        <span class="kw1">return</span> zend_fetch_var_address_helper_SPEC_CV<span class="br0">&#40;</span>BP_VAR_W<span class="sy0">,</span> ZEND_OPCODE_HANDLER_ARGS_PASSTHRU<span class="br0">&#41;</span><span class="sy0">;</span>
+<span class="br0">&#125;</span></pre>
+
+<p>在zend_fetch_var_address_helper_SPEC_CV中调用如下代码获取符号表</p>
+
+<pre class="c">target_symbol_table <span class="sy0">=</span> zend_get_target_symbol_table<span class="br0">&#40;</span>opline<span class="sy0">,</span> EX<span class="br0">&#40;</span>Ts<span class="br0">&#41;</span><span class="sy0">,</span> type<span class="sy0">,</span> varname TSRMLS_CC<span class="br0">&#41;</span><span class="sy0">;</span></pre>
+
+<p>在zend_get_target_symbol_table函数的实现如下：</p>
+
+<pre class="c"><span class="kw4">static</span> <span class="kw2">inline</span> HashTable <span class="sy0">*</span>zend_get_target_symbol_table<span class="br0">&#40;</span><span class="kw4">const</span> zend_op <span class="sy0">*</span>opline<span class="sy0">,</span> <span class="kw4">const</span> temp_variable <span class="sy0">*</span>Ts<span class="sy0">,</span> <span class="kw4">int</span> type<span class="sy0">,</span> <span class="kw4">const</span> zval <span class="sy0">*</span>variable TSRMLS_DC<span class="br0">&#41;</span>
+<span class="br0">&#123;</span>
+        <span class="kw1">switch</span> <span class="br0">&#40;</span>opline<span class="sy0">-&gt;</span>op2.<span class="me1">u</span>.<span class="me1">EA</span>.<span class="me1">type</span><span class="br0">&#41;</span> <span class="br0">&#123;</span>
+                ... <span class="co1">//  省略</span>
+                <span class="kw1">case</span> ZEND_FETCH_GLOBAL<span class="sy0">:</span>
+                <span class="kw1">case</span> ZEND_FETCH_GLOBAL_LOCK<span class="sy0">:</span>
+                        <span class="kw1">return</span> <span class="sy0">&amp;</span>EG<span class="br0">&#40;</span>symbol_table<span class="br0">&#41;</span><span class="sy0">;</span>
+                        <span class="kw2">break</span><span class="sy0">;</span>
+               ...  <span class="co1">//  省略</span>
+        <span class="br0">&#125;</span>
+        <span class="kw1">return</span> <span class="kw2">NULL</span><span class="sy0">;</span>
+<span class="br0">&#125;</span></pre>
+
+<p>在前面语法分析过程中，程序传递的参数是 ZEND_FETCH_GLOBAL_LOCK，于是如上所示。我们取&amp;EG(symbol_table);的值。这也是全局变量的存放位置。</p>
+
+<p>如上就是整个global的解析过程。</p>
+		</div>
+	</body>
+</html>

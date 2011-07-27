@@ -1,0 +1,378 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<meta name="GENERATOR" content="TIPI">
+<!-- Sitemap 1.0 -->
+</HEAD>
+<BODY>
+<OBJECT type="text/site properties">
+    <param name="ImageType" value="Folder">
+    <param name="Window Styles" value="0x800227">
+</OBJECT>
+	<ul>
+		<li> <object type="text/sitemap">
+		<param name="Name" value="TIPI">
+		<param name="Local" value="files/index.html">
+		</object>
+		<ul>
+			<li> <object type="text/sitemap">
+			<param name="Name" value="第一章 准备工作和背景知识">
+			<param name="Local" value="files/01-00-prepare-and-background.html">
+			</object>
+			<ul>
+				<li> <object type="text/sitemap">
+				<param name="Name" value="第一节 环境搭建">
+				<param name="Local" value="files/01-01-php-env-building.html">
+				</object>
+			</ul>
+			<ul>
+				<li> <object type="text/sitemap">
+				<param name="Name" value="第二节 源码结构、阅读代码方法">
+				<param name="Local" value="files/01-02-code-structure.html">
+				</object>
+			</ul>
+			<ul>
+				<li> <object type="text/sitemap">
+				<param name="Name" value="第三节 常用代码">
+				<param name="Local" value="files/01-03-comm-code-in-php-src.html">
+				</object>
+			</ul>
+			<ul>
+				<li> <object type="text/sitemap">
+				<param name="Name" value="第四节 小结">
+				<param name="Local" value="files/01-04-summary.html">
+				</object>
+			</ul>
+		</ul>
+		<ul>
+			<li> <object type="text/sitemap">
+			<param name="Name" value="第二章 概览">
+			<param name="Local" value="files/02-00-overview.html">
+			</object>
+			<ul>
+				<li> <object type="text/sitemap">
+				<param name="Name" value="第一节 生命周期和Zend引擎">
+				<param name="Local" value="files/02-01-php-life-cycle-and-zend-engine.html">
+				</object>
+			</ul>
+			<ul>
+				<li> <object type="text/sitemap">
+				<param name="Name" value="第二节 SAPI概述">
+				<param name="Local" value="files/02-02-00-overview.html">
+				</object>
+				<ul>
+					<li> <object type="text/sitemap">
+					<param name="Name" value="Apache模块">
+					<param name="Local" value="files/02-02-01-apache-php-module.html">
+					</object>
+				</ul>
+				<ul>
+					<li> <object type="text/sitemap">
+					<param name="Name" value="嵌入式">
+					<param name="Local" value="files/02-02-02-embedding-php.html">
+					</object>
+				</ul>
+				<ul>
+					<li> <object type="text/sitemap">
+					<param name="Name" value="FastCGI">
+					<param name="Local" value="files/02-02-03-fastcgi.html">
+					</object>
+				</ul>
+			</ul>
+			<ul>
+				<li> <object type="text/sitemap">
+				<param name="Name" value="第三节 PHP脚本的执行">
+				<param name="Local" value="files/02-03-00-how-php-script-get-executed.html">
+				</object>
+				<ul>
+					<li> <object type="text/sitemap">
+					<param name="Name" value="词法分析和语法分析">
+					<param name="Local" value="files/02-03-01-lex-and-yacc.html">
+					</object>
+				</ul>
+				<ul>
+					<li> <object type="text/sitemap">
+					<param name="Name" value="opcode">
+					<param name="Local" value="files/02-03-02-opcode.html">
+					</object>
+				</ul>
+				<ul>
+					<li> <object type="text/sitemap">
+					<param name="Name" value="opcode处理函数查找">
+					<param name="Local" value="files/02-03-03-from-opcode-to-handler.html">
+					</object>
+				</ul>
+			</ul>
+			<ul>
+				<li> <object type="text/sitemap">
+				<param name="Name" value="第四节 小结">
+				<param name="Local" value="files/02-04-summary.html">
+				</object>
+			</ul>
+		</ul>
+		<ul>
+			<li> <object type="text/sitemap">
+			<param name="Name" value="第三章 变量及数据类型">
+			<param name="Local" value="files/03-00-variable-and-data-types.html">
+			</object>
+			<ul>
+				<li> <object type="text/sitemap">
+				<param name="Name" value="第一节 变量的结构和类型">
+				<param name="Local" value="files/03-01-00-variables-structure.html">
+				</object>
+				<ul>
+					<li> <object type="text/sitemap">
+					<param name="Name" value="哈希表(HashTable)">
+					<param name="Local" value="files/03-01-01-hashtable.html">
+					</object>
+				</ul>
+				<ul>
+					<li> <object type="text/sitemap">
+					<param name="Name" value="PHP的哈希表实现">
+					<param name="Local" value="files/03-01-02-hashtable-in-php.html">
+					</object>
+				</ul>
+			</ul>
+			<ul>
+				<li> <object type="text/sitemap">
+				<param name="Name" value="第二节 常量">
+				<param name="Local" value="files/03-02-const-var.html">
+				</object>
+			</ul>
+			<ul>
+				<li> <object type="text/sitemap">
+				<param name="Name" value="第三节 预定义变量">
+				<param name="Local" value="files/03-03-pre-defined-variable.html">
+				</object>
+			</ul>
+			<ul>
+				<li> <object type="text/sitemap">
+				<param name="Name" value="第四节 静态变量">
+				<param name="Local" value="files/03-04-static-var.html">
+				</object>
+			</ul>
+			<ul>
+				<li> <object type="text/sitemap">
+				<param name="Name" value="第五节 类型提示的实现">
+				<param name="Local" value="files/03-05-impl-of-type-hint.html">
+				</object>
+			</ul>
+			<ul>
+				<li> <object type="text/sitemap">
+				<param name="Name" value="第六节 变量的生命周期">
+				<param name="Local" value="files/03-06-00-var-lifecycle.html">
+				</object>
+				<ul>
+					<li> <object type="text/sitemap">
+					<param name="Name" value="变量的赋值和销毁">
+					<param name="Local" value="files/03-06-01-var-define-and-init.html">
+					</object>
+				</ul>
+				<ul>
+					<li> <object type="text/sitemap">
+					<param name="Name" value="变量的作用域">
+					<param name="Local" value="files/03-06-02-var-scope.html">
+					</object>
+				</ul>
+				<ul>
+					<li> <object type="text/sitemap">
+					<param name="Name" value="global语句">
+					<param name="Local" value="files/03-06-03-var-global.html">
+					</object>
+				</ul>
+			</ul>
+			<ul>
+				<li> <object type="text/sitemap">
+				<param name="Name" value="第七节 数据类型转换">
+				<param name="Local" value="files/03-07-type-cast.html">
+				</object>
+			</ul>
+			<ul>
+				<li> <object type="text/sitemap">
+				<param name="Name" value="第八节 小结">
+				<param name="Local" value="files/03-08-summary.html">
+				</object>
+			</ul>
+		</ul>
+		<ul>
+			<li> <object type="text/sitemap">
+			<param name="Name" value="第四章 函数的实现">
+			<param name="Local" value="files/04-00-php-function.html">
+			</object>
+			<ul>
+				<li> <object type="text/sitemap">
+				<param name="Name" value="第一节 函数的内部结构">
+				<param name="Local" value="files/04-01-function-struct.html">
+				</object>
+			</ul>
+			<ul>
+				<li> <object type="text/sitemap">
+				<param name="Name" value="第二节 函数的定义，传参及返回值">
+				<param name="Local" value="files/04-02-00-function-define-param-return.html">
+				</object>
+				<ul>
+					<li> <object type="text/sitemap">
+					<param name="Name" value="函数的定义">
+					<param name="Local" value="files/04-02-01-function-define.html">
+					</object>
+				</ul>
+				<ul>
+					<li> <object type="text/sitemap">
+					<param name="Name" value="函数的参数">
+					<param name="Local" value="files/04-02-02-function-param.html">
+					</object>
+				</ul>
+				<ul>
+					<li> <object type="text/sitemap">
+					<param name="Name" value="函数的返回值">
+					<param name="Local" value="files/04-02-03-function-return.html">
+					</object>
+				</ul>
+			</ul>
+			<ul>
+				<li> <object type="text/sitemap">
+				<param name="Name" value="第三节 函数的调用和执行">
+				<param name="Local" value="files/04-03-function-call.html">
+				</object>
+			</ul>
+			<ul>
+				<li> <object type="text/sitemap">
+				<param name="Name" value="第四节 匿名函数及闭包">
+				<param name="Local" value="files/04-04-anonymous-function.html">
+				</object>
+			</ul>
+			<ul>
+				<li> <object type="text/sitemap">
+				<param name="Name" value="第五节 小结">
+				<param name="Local" value="files/04-05-summary.html">
+				</object>
+			</ul>
+		</ul>
+		<ul>
+			<li> <object type="text/sitemap">
+			<param name="Name" value="第五章 类和面向对象">
+			<param name="Local" value="files/05-00-class-and-oop.html">
+			</object>
+			<ul>
+				<li> <object type="text/sitemap">
+				<param name="Name" value="第一节 类的结构和实现">
+				<param name="Local" value="files/05-01-class-struct.html">
+				</object>
+			</ul>
+			<ul>
+				<li> <object type="text/sitemap">
+				<param name="Name" value="第二节 类的成员变量及方法">
+				<param name="Local" value="files/05-02-class-member-variables-and-methods.html">
+				</object>
+			</ul>
+			<ul>
+				<li> <object type="text/sitemap">
+				<param name="Name" value="第三节 访问控制的实现">
+				<param name="Local" value="files/05-03-class-visibility.html">
+				</object>
+			</ul>
+			<ul>
+				<li> <object type="text/sitemap">
+				<param name="Name" value="第四节 类的继承，多态及抽象类">
+				<param name="Local" value="files/05-04-class-inherit-abstract.html">
+				</object>
+			</ul>
+			<ul>
+				<li> <object type="text/sitemap">
+				<param name="Name" value="第五节 魔术方法，延迟绑定及静态成员">
+				<param name="Local" value="files/05-05-class-magic-methods-latebinding.html">
+				</object>
+			</ul>
+			<ul>
+				<li> <object type="text/sitemap">
+				<param name="Name" value="第六节 PHP保留类及特殊类">
+				<param name="Local" value="files/05-06-class-reserved-and-special-classes.html">
+				</object>
+			</ul>
+			<ul>
+				<li> <object type="text/sitemap">
+				<param name="Name" value="第七节 对象">
+				<param name="Local" value="files/05-07-class-object.html">
+				</object>
+			</ul>
+			<ul>
+				<li> <object type="text/sitemap">
+				<param name="Name" value="第八节 命名空间">
+				<param name="Local" value="files/05-08-class-namespace.html">
+				</object>
+			</ul>
+			<ul>
+				<li> <object type="text/sitemap">
+				<param name="Name" value="第九节 小结">
+				<param name="Local" value="files/05-09-summary.html">
+				</object>
+			</ul>
+		</ul>
+		<ul>
+			<li> <object type="text/sitemap">
+			<param name="Name" value="第六章 内存管理">
+			<param name="Local" value="files/06-00-memory-management.html">
+			</object>
+			<ul>
+				<li> <object type="text/sitemap">
+				<param name="Name" value="第一节 内存管理概述">
+				<param name="Local" value="files/06-01-memory-management-overview.html">
+				</object>
+			</ul>
+			<ul>
+				<li> <object type="text/sitemap">
+				<param name="Name" value="第二节 PHP中的内存管理">
+				<param name="Local" value="files/06-02-php-memory-manager.html">
+				</object>
+			</ul>
+			<ul>
+				<li> <object type="text/sitemap">
+				<param name="Name" value="第三节 内存使用：申请和销毁">
+				<param name="Local" value="files/06-03-php-memory-request-free.html">
+				</object>
+			</ul>
+			<ul>
+				<li> <object type="text/sitemap">
+				<param name="Name" value="第四节 垃圾回收">
+				<param name="Local" value="files/06-04-00-garbage-collection.html">
+				</object>
+				<ul>
+					<li> <object type="text/sitemap">
+					<param name="Name" value="新的垃圾回收">
+					<param name="Local" value="files/06-04-01-new-garbage-collection.html">
+					</object>
+				</ul>
+			</ul>
+			<ul>
+				<li> <object type="text/sitemap">
+				<param name="Name" value="第五节 内存管理中的缓存">
+				<param name="Local" value="files/06-05-php-memory-cache.html">
+				</object>
+			</ul>
+			<ul>
+				<li> <object type="text/sitemap">
+				<param name="Name" value="第六节 写时复制（Copy-On-Write）">
+				<param name="Local" value="files/06-06-copy-on-write.html">
+				</object>
+			</ul>
+			<ul>
+				<li> <object type="text/sitemap">
+				<param name="Name" value="第七节 小结">
+				<param name="Local" value="files/06-07-summary.html">
+				</object>
+			</ul>
+		</ul>
+		<ul>
+			<li> <object type="text/sitemap">
+			<param name="Name" value="附录A: PHP及Zend API">
+			<param name="Local" value="files/-PHP-Zend-API.html">
+			</object>
+		</ul>
+		<ul>
+			<li> <object type="text/sitemap">
+			<param name="Name" value="附录C VLD扩展使用指南">
+			<param name="Local" value="files/-php-vld.html">
+			</object>
+		</ul>
+	</ul>
+</BODY></HTML>

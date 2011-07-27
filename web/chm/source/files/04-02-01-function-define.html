@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>TIPI: 深入理解PHP内核</title>
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+	<link href="chm.css" media="screen" rel="stylesheet" type="text/css" />
+<link href="highlight.css" media="screen" rel="stylesheet" type="text/css" />
+</head>
+<body id="portable" class="pdf">
+			<div class='page '>
+			<h3>函数的定义<a name='函数的定义'></a></h3>
+
+<p>在PHP中，用户函数的定义从function关键字开始。如下所示简单示例：</p>
+
+<pre class="php"><span class="kw2">function</span> foo<span class="br0">&#40;</span><span class="re0">$var</span><span class="br0">&#41;</span> <span class="br0">&#123;</span>
+    <a href="http://www.php.net/echo"><span class="kw3">echo</span></a> <span class="re0">$var</span><span class="sy0">;</span>
+<span class="br0">&#125;</span></pre>
+
+<p>这是一个非常简单的函数，它所实现的功能是定义一个函数，函数有一个参数，函数的内容是在标准输出端输出传递给它的参数变量的值。</p>
+
+<p>函数的一切从function开始。我们从function开始函数定义的探索之旅。</p>
+
+<p><strong>词法分析</strong></p>
+
+<p>在 Zend/zend_language_scanner.l中我们找到如下所示的代码：</p>
+
+<pre class="c"><span class="sy0">&lt;</span>ST_IN_SCRIPTING<span class="sy0">&gt;</span><span class="st0">&quot;function&quot;</span> <span class="br0">&#123;</span>
+    <span class="kw1">return</span> T_FUNCTION<span class="sy0">;</span>
+<span class="br0">&#125;</span></pre>
+
+<p>它所表示的含义是function将会生成T_FUNCTION标记。在获取这个标记后，我们开始语法分析。</p>
+
+<p><strong>语法分析</strong></p>
+
+<p>在 Zend/zend_language_parser.y文件中找到函数的声明过程标记如下：</p>
+
+<pre class="c"><span class="kw2">function</span><span class="sy0">:</span>
+    T_FUNCTION <span class="br0">&#123;</span> $$.<span class="me1">u</span>.<span class="me1">opline_num</span> <span class="sy0">=</span> CG<span class="br0">&#40;</span>zend_lineno<span class="br0">&#41;</span><span class="sy0">;</span> <span class="br0">&#125;</span>
+<span class="sy0">;</span>
+&nbsp;
+is_reference<span class="sy0">:</span>
+        <span class="coMULTI">/* empty */</span> <span class="br0">&#123;</span> $$.<span class="me1">op_type</span> <span class="sy0">=</span> ZEND_RETURN_VAL<span class="sy0">;</span> <span class="br0">&#125;</span>
+    <span class="sy0">|</span>   <span class="st0">'&amp;'</span>         <span class="br0">&#123;</span> $$.<span class="me1">op_type</span> <span class="sy0">=</span> ZEND_RETURN_REF<span class="sy0">;</span> <span class="br0">&#125;</span>
+<span class="sy0">;</span>
+&nbsp;
+unticked_function_declaration_statement<span class="sy0">:</span>
+        <span class="kw2">function</span> is_reference T_STRING <span class="br0">&#123;</span>
+zend_do_begin_function_declaration<span class="br0">&#40;</span><span class="sy0">&amp;</span>$<span class="nu0">1</span><span class="sy0">,</span> <span class="sy0">&amp;</span>$<span class="nu0">3</span><span class="sy0">,</span> <span class="nu0">0</span><span class="sy0">,</span> $2.<span class="me1">op_type</span><span class="sy0">,</span> <span class="kw2">NULL</span> TSRMLS_CC<span class="br0">&#41;</span><span class="sy0">;</span> <span class="br0">&#125;</span>
+            <span class="st0">'('</span> parameter_list <span class="st0">')'</span> <span class="st0">'{'</span> inner_statement_list <span class="st0">'}'</span> <span class="br0">&#123;</span>
+                zend_do_end_function_declaration<span class="br0">&#40;</span><span class="sy0">&amp;</span>$<span class="nu0">1</span> TSRMLS_CC<span class="br0">&#41;</span><span class="sy0">;</span> <span class="br0">&#125;</span>
+<span class="sy0">;</span></pre>
+
+<blockquote class='note'>
+<p>关注点在 function is_reference T_STRING，表示function关键字，是否引用，函数名。</p>
+</blockquote>
+
+<p>T_FUNCTION标记只是用来定位函数的声明，表示这是一个函数，而更多的工作是与这个函数相关的东西，包括参数，返回值等。</p>
+
+<p><strong>生成中间代码</strong></p>
+
+<p>语法解析后，我们看到所执行编译函数为zend_do_begin_function_declaration。在 Zend/zend_complie.c文件中找到其实现如下：</p>
+
+<pre class="c"><span class="kw4">void</span> zend_do_begin_function_declaration<span class="br0">&#40;</span>znode <span class="sy0">*</span>function_token<span class="sy0">,</span> znode <span class="sy0">*</span>function_name<span class="sy0">,</span>
+ <span class="kw4">int</span> is_method<span class="sy0">,</span> <span class="kw4">int</span> return_reference<span class="sy0">,</span> znode <span class="sy0">*</span>fn_flags_znode TSRMLS_DC<span class="br0">&#41;</span> <span class="coMULTI">/* {{{ */</span>
+<span class="br0">&#123;</span>
+    ...<span class="co1">//省略</span>
+    function_token<span class="sy0">-&gt;</span>u.<span class="me1">op_array</span> <span class="sy0">=</span> CG<span class="br0">&#40;</span>active_op_array<span class="br0">&#41;</span><span class="sy0">;</span>
+    lcname <span class="sy0">=</span> zend_str_tolower_dup<span class="br0">&#40;</span>name<span class="sy0">,</span> name_len<span class="br0">&#41;</span><span class="sy0">;</span>
+&nbsp;
+    orig_interactive <span class="sy0">=</span> CG<span class="br0">&#40;</span>interactive<span class="br0">&#41;</span><span class="sy0">;</span>
+    CG<span class="br0">&#40;</span>interactive<span class="br0">&#41;</span> <span class="sy0">=</span> <span class="nu0">0</span><span class="sy0">;</span>
+    init_op_array<span class="br0">&#40;</span><span class="sy0">&amp;</span>op_array<span class="sy0">,</span> ZEND_USER_FUNCTION<span class="sy0">,</span> INITIAL_OP_ARRAY_SIZE TSRMLS_CC<span class="br0">&#41;</span><span class="sy0">;</span>
+    CG<span class="br0">&#40;</span>interactive<span class="br0">&#41;</span> <span class="sy0">=</span> orig_interactive<span class="sy0">;</span>
+&nbsp;
+     ...<span class="co1">//省略</span>
+&nbsp;
+    <span class="kw1">if</span> <span class="br0">&#40;</span>is_method<span class="br0">&#41;</span> <span class="br0">&#123;</span>
+        ...<span class="co1">//省略 类方法 在后面的类章节介绍</span>
+    <span class="br0">&#125;</span> <span class="kw1">else</span> <span class="br0">&#123;</span>
+        zend_op <span class="sy0">*</span>opline <span class="sy0">=</span> get_next_op<span class="br0">&#40;</span>CG<span class="br0">&#40;</span>active_op_array<span class="br0">&#41;</span> TSRMLS_CC<span class="br0">&#41;</span><span class="sy0">;</span>
+&nbsp;
+&nbsp;
+        opline<span class="sy0">-&gt;</span>opcode <span class="sy0">=</span> ZEND_DECLARE_FUNCTION<span class="sy0">;</span>
+        opline<span class="sy0">-&gt;</span>op1.<span class="me1">op_type</span> <span class="sy0">=</span> IS_CONST<span class="sy0">;</span>
+        build_runtime_defined_function_key<span class="br0">&#40;</span><span class="sy0">&amp;</span>opline<span class="sy0">-&gt;</span>op1.<span class="me1">u</span>.<span class="me1">constant</span><span class="sy0">,</span> lcname<span class="sy0">,</span>
+            name_len TSRMLS_CC<span class="br0">&#41;</span><span class="sy0">;</span>
+        opline<span class="sy0">-&gt;</span>op2.<span class="me1">op_type</span> <span class="sy0">=</span> IS_CONST<span class="sy0">;</span>
+        opline<span class="sy0">-&gt;</span>op2.<span class="me1">u</span>.<span class="me1">constant</span>.<span class="me1">type</span> <span class="sy0">=</span> IS_STRING<span class="sy0">;</span>
+        opline<span class="sy0">-&gt;</span>op2.<span class="me1">u</span>.<span class="me1">constant</span>.<span class="me1">value</span>.<span class="me1">str</span>.<span class="me1">val</span> <span class="sy0">=</span> lcname<span class="sy0">;</span>
+        opline<span class="sy0">-&gt;</span>op2.<span class="me1">u</span>.<span class="me1">constant</span>.<span class="me1">value</span>.<span class="me1">str</span>.<span class="me1">len</span> <span class="sy0">=</span> name_len<span class="sy0">;</span>
+        Z_SET_REFCOUNT<span class="br0">&#40;</span>opline<span class="sy0">-&gt;</span>op2.<span class="me1">u</span>.<span class="me1">constant</span><span class="sy0">,</span> <span class="nu0">1</span><span class="br0">&#41;</span><span class="sy0">;</span>
+        opline<span class="sy0">-&gt;</span>extended_value <span class="sy0">=</span> ZEND_DECLARE_FUNCTION<span class="sy0">;</span>
+        zend_hash_update<span class="br0">&#40;</span>CG<span class="br0">&#40;</span>function_table<span class="br0">&#41;</span><span class="sy0">,</span> opline<span class="sy0">-&gt;</span>op1.<span class="me1">u</span>.<span class="me1">constant</span>.<span class="me1">value</span>.<span class="me1">str</span>.<span class="me1">val</span><span class="sy0">,</span>
+            opline<span class="sy0">-&gt;</span>op1.<span class="me1">u</span>.<span class="me1">constant</span>.<span class="me1">value</span>.<span class="me1">str</span>.<span class="me1">len</span><span class="sy0">,</span> <span class="sy0">&amp;</span>op_array<span class="sy0">,</span> <span class="kw4">sizeof</span><span class="br0">&#40;</span>zend_op_array<span class="br0">&#41;</span><span class="sy0">,</span>
+             <span class="br0">&#40;</span><span class="kw4">void</span> <span class="sy0">**</span><span class="br0">&#41;</span> <span class="sy0">&amp;</span>CG<span class="br0">&#40;</span>active_op_array<span class="br0">&#41;</span><span class="br0">&#41;</span><span class="sy0">;</span>
+    <span class="br0">&#125;</span>
+&nbsp;
+<span class="br0">&#125;</span>
+<span class="coMULTI">/* }}} */</span></pre>
+
+<p>生成的中间代码为 <strong>ZEND_DECLARE_FUNCTION</strong> ，根据这个中间代码及操作数对应的op_type。
+我们可以找到中间代码的执行函数为 <strong>ZEND_DECLARE_FUNCTION_SPEC_HANDLER</strong>。</p>
+
+<blockquote class='note'>
+<p>在生成中间代码时，可以看到已经统一了函数名全部为小写，表示函数的名称不是区分大小写的。</p>
+</blockquote>
+
+<p>为验证这个实现，我们看一段代码：</p>
+
+<pre class="php"><span class="kw2">function</span> T<span class="br0">&#40;</span><span class="br0">&#41;</span> <span class="br0">&#123;</span>
+    <a href="http://www.php.net/echo"><span class="kw3">echo</span></a> <span class="nu0">1</span><span class="sy0">;</span>
+<span class="br0">&#125;</span>
+&nbsp;
+<span class="kw2">function</span> t<span class="br0">&#40;</span><span class="br0">&#41;</span> <span class="br0">&#123;</span>
+    <a href="http://www.php.net/echo"><span class="kw3">echo</span></a> <span class="nu0">2</span><span class="sy0">;</span>
+<span class="br0">&#125;</span></pre>
+
+<p>执行代码，可以看到屏幕上输出如下报错信息：</p>
+
+<pre class="shell">Fatal error: Cannot redeclare t() (previously declared in ...)</pre>
+
+<p>表示对于PHP来说T和t是同一个函数名。检验函数名是否重复，这个过程是在哪进行的呢？
+下面将要介绍的函数声明中间代码的执行过程包含了这个检查过程。</p>
+
+<p><strong>执行中间代码</strong></p>
+
+<p>在 Zend/zend_vm_execute.h 文件中找到 ZEND_DECLARE_FUNCTION中间代码对应的执行函数：ZEND_DECLARE_FUNCTION_SPEC_HANDLER。
+此函数只调用了函数do_bind_function。其调用代码为：</p>
+
+<pre class="c">do_bind_function<span class="br0">&#40;</span>EX<span class="br0">&#40;</span>opline<span class="br0">&#41;</span><span class="sy0">,</span> EG<span class="br0">&#40;</span>function_table<span class="br0">&#41;</span><span class="sy0">,</span> <span class="nu0">0</span><span class="br0">&#41;</span><span class="sy0">;</span></pre>
+
+<p>在这个函数中将EX(opline)所指向的函数添加到EG(function_table)中，并判断是否已经存在相同名字的函数，如果存在则报错。
+EG(function_table)用来存放执行过程中全部的函数信息，相当于函数的注册表。
+它的结构是一个HashTable，所以在do_bind_function函数中添加新的函数使用的是HashTable的操作函数<strong>zend_hash_add</strong></p>
+		</div>
+	</body>
+</html>

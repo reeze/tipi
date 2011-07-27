@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>TIPI: 深入理解PHP内核</title>
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+	<link href="chm.css" media="screen" rel="stylesheet" type="text/css" />
+<link href="highlight.css" media="screen" rel="stylesheet" type="text/css" />
+</head>
+<body id="portable" class="pdf">
+			<div class='page '>
+			<h2>第四节 静态变量<a name='第四节 静态变量'></a></h2>
+
+<p>通常意义上静态变量是静态分配的，他们的生命周期和程序的生命周期一样，
+只有在程序退出时才结束期生命周期，这和局部变量相反，有的语言中全局变量也是静态分配的。
+例如PHP和Javascript中的全局变量。</p>
+
+<p>静态变量可以分为：</p>
+
+<ul>
+<li>静态全局变量，PHP中的全局变量也可以理解为静态全局变量，因为除非明确unset释放，在程序运行过程中始终存在。</li>
+<li>静态局部变量，也就是在函数内定义的静态变量，函数在执行时对变量的操作会保持到下一次函数被调用。</li>
+<li>静态成员变量，这是在类中定义的静态变量，和实例变量相对应，静态成员变量可以在所有实例中共享。</li>
+</ul>
+
+<p>最常见的是静态局部变量及静态成员变量。局部变量只有在函数执行时才会存在。
+通常，当一个函数执行完毕，它的局部变量的值就已经不存在，而且变量所占据的内存也被释放。
+当下一次执行该过程时，它的所有局部变量将重新初始化。如果某个局部变量定义为静态的，
+则它的值不会在函数调用结束后释放，而是继续保留变量的值。</p>
+
+<p>在本小节将介绍静态局部变量，有关静态成员变量的内容将在类与对象章节进行介绍。</p>
+
+<p>先看看如下局部变量的使用：</p>
+
+<pre class="php"><span class="kw2">function</span> t<span class="br0">&#40;</span><span class="br0">&#41;</span> <span class="br0">&#123;</span>
+    <a href="http://www.php.net/static"><span class="kw3">static</span></a> <span class="re0">$i</span> <span class="sy0">=</span> <span class="nu0">0</span><span class="sy0">;</span>
+    <span class="re0">$i</span><span class="sy0">++;</span>
+    <a href="http://www.php.net/echo"><span class="kw3">echo</span></a> <span class="re0">$i</span><span class="sy0">,</span> <span class="st_h">' '</span><span class="sy0">;</span>
+<span class="br0">&#125;</span>
+&nbsp;
+t<span class="br0">&#40;</span><span class="br0">&#41;</span><span class="sy0">;</span>
+t<span class="br0">&#40;</span><span class="br0">&#41;</span><span class="sy0">;</span>
+t<span class="br0">&#40;</span><span class="br0">&#41;</span><span class="sy0">;</span></pre>
+
+<p>上面的程序会输出1 2 3。从这个示例可以看出，$i变量的值在改变后函数继续执行还能访问到，
+$i变量就像是只有函数t()才能访问到的一个全局变量。
+那PHP是怎么实现的呢？</p>
+
+<p>static是PHP的关键字，我们需要从词法分析，语法分析，中间代码生成到执行中间代码这几个部分探讨整个实现过程。</p>
+
+<h3>1. 词法分析<a name='1. 词法分析'></a></h3>
+
+<p>首先查看 Zend/zend_language_scanner.l文件，搜索 static关键字。我们可以找到如下代码：</p>
+
+<pre class="c"><span class="sy0">&lt;</span>ST_IN_SCRIPTING<span class="sy0">&gt;</span><span class="st0">&quot;static&quot;</span> <span class="br0">&#123;</span>
+    <span class="kw1">return</span> T_STATIC<span class="sy0">;</span>
+<span class="br0">&#125;</span></pre>
+
+<h3>2. 语法分析<a name='2. 语法分析'></a></h3>
+
+<p>在词法分析找到token后，通过这个token，在Zend/zend_language_parser.y文件中查找。找到相关代码如下：</p>
+
+<pre class="c"><span class="sy0">|</span>   T_STATIC static_var_list <span class="st0">';'</span>
+&nbsp;
+static_var_list<span class="sy0">:</span>
+        static_var_list <span class="st0">','</span> T_VARIABLE <span class="br0">&#123;</span> zend_do_fetch_static_variable<span class="br0">&#40;</span><span class="sy0">&amp;</span>$<span class="nu0">3</span><span class="sy0">,</span> <span class="kw2">NULL</span><span class="sy0">,</span> ZEND_FETCH_STATIC TSRMLS_CC<span class="br0">&#41;</span><span class="sy0">;</span> <span class="br0">&#125;</span>
+    <span class="sy0">|</span>   static_var_list <span class="st0">','</span> T_VARIABLE <span class="st0">'='</span> static_scalar <span class="br0">&#123;</span> zend_do_fetch_static_variable<span class="br0">&#40;</span><span class="sy0">&amp;</span>$<span class="nu0">3</span><span class="sy0">,</span> <span class="sy0">&amp;</span>$<span class="nu0">5</span><span class="sy0">,</span> ZEND_FETCH_STATIC TSRMLS_CC<span class="br0">&#41;</span><span class="sy0">;</span> <span class="br0">&#125;</span>
+    <span class="sy0">|</span>   T_VARIABLE  <span class="br0">&#123;</span> zend_do_fetch_static_variable<span class="br0">&#40;</span><span class="sy0">&amp;</span>$<span class="nu0">1</span><span class="sy0">,</span> <span class="kw2">NULL</span><span class="sy0">,</span> ZEND_FETCH_STATIC TSRMLS_CC<span class="br0">&#41;</span><span class="sy0">;</span> <span class="br0">&#125;</span>
+    <span class="sy0">|</span>   T_VARIABLE <span class="st0">'='</span> static_scalar <span class="br0">&#123;</span> zend_do_fetch_static_variable<span class="br0">&#40;</span><span class="sy0">&amp;</span>$<span class="nu0">1</span><span class="sy0">,</span> <span class="sy0">&amp;</span>$<span class="nu0">3</span><span class="sy0">,</span> ZEND_FETCH_STATIC TSRMLS_CC<span class="br0">&#41;</span><span class="sy0">;</span> <span class="br0">&#125;</span>
+&nbsp;
+<span class="sy0">;</span></pre>
+
+<p>语法分析的过程中如果匹配到相应的模式则会进行相应的处理动作，通常是进行opcode的编译。
+在本例中的static关键字匹配中，是由函数zend_do_fetch_static_variable处理的。</p>
+
+<h3>3. 生成opcode中间代码<a name='3. 生成opcode中间代码'></a></h3>
+
+<p>zend_do_fetch_static_variable函数的作用就是生成opcode，定义如下：</p>
+
+<pre class="c"><span class="kw4">void</span> zend_do_fetch_static_variable<span class="br0">&#40;</span>znode <span class="sy0">*</span>varname<span class="sy0">,</span> <span class="kw4">const</span> znode
+        <span class="sy0">*</span>static_assignment<span class="sy0">,</span> <span class="kw4">int</span> fetch_type TSRMLS_DC<span class="br0">&#41;</span>
+<span class="br0">&#123;</span>
+    zval <span class="sy0">*</span>tmp<span class="sy0">;</span>
+    zend_op <span class="sy0">*</span>opline<span class="sy0">;</span>
+    znode lval<span class="sy0">;</span>
+    znode result<span class="sy0">;</span>
+&nbsp;
+    ALLOC_ZVAL<span class="br0">&#40;</span>tmp<span class="br0">&#41;</span><span class="sy0">;</span>
+&nbsp;
+    <span class="kw1">if</span> <span class="br0">&#40;</span>static_assignment<span class="br0">&#41;</span> <span class="br0">&#123;</span>
+        <span class="sy0">*</span>tmp <span class="sy0">=</span> static_assignment<span class="sy0">-&gt;</span>u.<span class="me1">constant</span><span class="sy0">;</span>
+    <span class="br0">&#125;</span> <span class="kw1">else</span> <span class="br0">&#123;</span>
+        INIT_ZVAL<span class="br0">&#40;</span><span class="sy0">*</span>tmp<span class="br0">&#41;</span><span class="sy0">;</span>
+    <span class="br0">&#125;</span>
+    <span class="kw1">if</span> <span class="br0">&#40;</span><span class="sy0">!</span>CG<span class="br0">&#40;</span>active_op_array<span class="br0">&#41;</span><span class="sy0">-&gt;</span>static_variables<span class="br0">&#41;</span> <span class="br0">&#123;</span>   <span class="coMULTI">/* 初始化此时的静态变量存放位置 */</span>
+        ALLOC_HASHTABLE<span class="br0">&#40;</span>CG<span class="br0">&#40;</span>active_op_array<span class="br0">&#41;</span><span class="sy0">-&gt;</span>static_variables<span class="br0">&#41;</span><span class="sy0">;</span>
+        zend_hash_init<span class="br0">&#40;</span>CG<span class="br0">&#40;</span>active_op_array<span class="br0">&#41;</span><span class="sy0">-&gt;</span>static_variables<span class="sy0">,</span> <span class="nu0">2</span><span class="sy0">,</span> <span class="kw2">NULL</span><span class="sy0">,</span> ZVAL_PTR_DTOR<span class="sy0">,</span> <span class="nu0">0</span><span class="br0">&#41;</span><span class="sy0">;</span>
+    <span class="br0">&#125;</span>
+    <span class="co1">//  将新的静态变量放进来</span>
+    zend_hash_update<span class="br0">&#40;</span>CG<span class="br0">&#40;</span>active_op_array<span class="br0">&#41;</span><span class="sy0">-&gt;</span>static_variables<span class="sy0">,</span> varname<span class="sy0">-&gt;</span>u.<span class="me1">constant</span>.<span class="me1">value</span>.<span class="me1">str</span>.<span class="me1">val</span><span class="sy0">,</span>
+        varname<span class="sy0">-&gt;</span>u.<span class="me1">constant</span>.<span class="me1">value</span>.<span class="me1">str</span>.<span class="me1">len</span><span class="sy0">+</span><span class="nu0">1</span><span class="sy0">,</span> <span class="sy0">&amp;</span>tmp<span class="sy0">,</span> <span class="kw4">sizeof</span><span class="br0">&#40;</span>zval <span class="sy0">*</span><span class="br0">&#41;</span><span class="sy0">,</span> <span class="kw2">NULL</span><span class="br0">&#41;</span><span class="sy0">;</span>
+&nbsp;
+    ...<span class="co1">//省略</span>
+    opline <span class="sy0">=</span> get_next_op<span class="br0">&#40;</span>CG<span class="br0">&#40;</span>active_op_array<span class="br0">&#41;</span> TSRMLS_CC<span class="br0">&#41;</span><span class="sy0">;</span>
+    opline<span class="sy0">-&gt;</span>opcode <span class="sy0">=</span> <span class="br0">&#40;</span>fetch_type <span class="sy0">==</span> ZEND_FETCH_LEXICAL<span class="br0">&#41;</span> <span class="sy0">?</span> ZEND_FETCH_R <span class="sy0">:</span> ZEND_FETCH_W<span class="sy0">;</span>      <span class="coMULTI">/* 由于fetch_type=ZEND_FETCH_STATIC，程序会选择ZEND_FETCH_W*/</span>
+    opline<span class="sy0">-&gt;</span>result.<span class="me1">op_type</span> <span class="sy0">=</span> IS_VAR<span class="sy0">;</span>
+    opline<span class="sy0">-&gt;</span>result.<span class="me1">u</span>.<span class="me1">EA</span>.<span class="me1">type</span> <span class="sy0">=</span> <span class="nu0">0</span><span class="sy0">;</span>
+    opline<span class="sy0">-&gt;</span>result.<span class="me1">u</span>.<span class="me1">var</span> <span class="sy0">=</span> get_temporary_variable<span class="br0">&#40;</span>CG<span class="br0">&#40;</span>active_op_array<span class="br0">&#41;</span><span class="br0">&#41;</span><span class="sy0">;</span>
+    opline<span class="sy0">-&gt;</span>op1 <span class="sy0">=</span> <span class="sy0">*</span>varname<span class="sy0">;</span>
+    SET_UNUSED<span class="br0">&#40;</span>opline<span class="sy0">-&gt;</span>op2<span class="br0">&#41;</span><span class="sy0">;</span>
+    opline<span class="sy0">-&gt;</span>op2.<span class="me1">u</span>.<span class="me1">EA</span>.<span class="me1">type</span> <span class="sy0">=</span> ZEND_FETCH_STATIC<span class="sy0">;</span>  <span class="coMULTI">/* 这在中间代码执行时会有大用 */</span>
+    result <span class="sy0">=</span> opline<span class="sy0">-&gt;</span>result<span class="sy0">;</span>
+&nbsp;
+    <span class="kw1">if</span> <span class="br0">&#40;</span>varname<span class="sy0">-&gt;</span>op_type <span class="sy0">==</span> IS_CONST<span class="br0">&#41;</span> <span class="br0">&#123;</span>
+        zval_copy_ctor<span class="br0">&#40;</span><span class="sy0">&amp;</span>varname<span class="sy0">-&gt;</span>u.<span class="me1">constant</span><span class="br0">&#41;</span><span class="sy0">;</span>
+    <span class="br0">&#125;</span>
+    fetch_simple_variable<span class="br0">&#40;</span><span class="sy0">&amp;</span>lval<span class="sy0">,</span> varname<span class="sy0">,</span> <span class="nu0">0</span> TSRMLS_CC<span class="br0">&#41;</span><span class="sy0">;</span> <span class="coMULTI">/* Relies on the fact that the default fetch is BP_VAR_W */</span>
+&nbsp;
+    <span class="kw1">if</span> <span class="br0">&#40;</span>fetch_type <span class="sy0">==</span> ZEND_FETCH_LEXICAL<span class="br0">&#41;</span> <span class="br0">&#123;</span>
+        ...<span class="co1">//省略</span>
+    <span class="br0">&#125;</span> <span class="kw1">else</span> <span class="br0">&#123;</span>
+        zend_do_assign_ref<span class="br0">&#40;</span><span class="kw2">NULL</span><span class="sy0">,</span> <span class="sy0">&amp;</span>lval<span class="sy0">,</span> <span class="sy0">&amp;</span>result TSRMLS_CC<span class="br0">&#41;</span><span class="sy0">;</span> <span class="co1">//  赋值操作中间代码生成</span>
+    <span class="br0">&#125;</span>
+    CG<span class="br0">&#40;</span>active_op_array<span class="br0">&#41;</span><span class="sy0">-&gt;</span>opcodes<span class="br0">&#91;</span>CG<span class="br0">&#40;</span>active_op_array<span class="br0">&#41;</span><span class="sy0">-&gt;</span>last<span class="sy0">-</span><span class="nu0">1</span><span class="br0">&#93;</span>.<span class="me1">result</span>.<span class="me1">u</span>.<span class="me1">EA</span>.<span class="me1">type</span> <span class="sy0">|=</span> EXT_TYPE_UNUSED<span class="sy0">;</span>
+&nbsp;
+<span class="br0">&#125;</span></pre>
+
+<p>从上面的代码我们可知，在解释成中间代码时，静态变量是存放在CG(active_op_array)->static_variables中的。
+并且生成的中间代码为：<strong>ZEND_FETCH_W</strong> 和 <strong>ZEND_ASSIGN_REF</strong> 。
+其中ZEND_FETCH_W中间代码是在zend_do_fetch_static_variable中直接赋值，而ZEND_ASSIGN_REF中间代码是在zend_do_fetch_static_variable中调用zend_do_assign_ref生成的。</p>
+
+<h3>4. 执行中间代码<a name='4. 执行中间代码'></a></h3>
+
+<p>opcode的编译阶段完成后就开始opcode的执行了。
+在Zend/zend_vm_opcodes.h文件中包含所有opcode的宏定义，这些宏丙没有特殊含义，只是作为opcode的唯一标示，
+包含本例中相关的如下两个宏的定义：</p>
+
+<pre class="c"><span class="co2">#define ZEND_FETCH_W                          83</span>
+<span class="co2">#define ZEND_ASSIGN_REF                       39</span></pre>
+
+<p>前面第二章 [脚本的执行一节][from-op-code-to-handler]介绍了根据opcode查找到相应处理函数的方法。
+通过中间代码调用映射方法计算得此时ZEND_FETCH_W 对应的操作为ZEND_FETCH_W_SPEC_CV_HANDLER。其代码如下：</p>
+
+<pre class="c"><span class="kw4">static</span> <span class="kw4">int</span> ZEND_FASTCALL  ZEND_FETCH_W_SPEC_CV_HANDLER<span class="br0">&#40;</span>ZEND_OPCODE_HANDLER_ARGS<span class="br0">&#41;</span>
+<span class="br0">&#123;</span>
+    <span class="kw1">return</span> zend_fetch_var_address_helper_SPEC_CV<span class="br0">&#40;</span>BP_VAR_W<span class="sy0">,</span> ZEND_OPCODE_HANDLER_ARGS_PASSTHRU<span class="br0">&#41;</span><span class="sy0">;</span>
+<span class="br0">&#125;</span>
+&nbsp;
+<span class="kw4">static</span> <span class="kw4">int</span> ZEND_FASTCALL zend_fetch_var_address_helper_SPEC_CV<span class="br0">&#40;</span><span class="kw4">int</span> type<span class="sy0">,</span> ZEND_OPCODE_HANDLER_ARGS<span class="br0">&#41;</span>
+<span class="br0">&#123;</span>
+    ...<span class="co1">//省略</span>
+&nbsp;
+    <span class="kw1">if</span> <span class="br0">&#40;</span>opline<span class="sy0">-&gt;</span>op2.<span class="me1">u</span>.<span class="me1">EA</span>.<span class="me1">type</span> <span class="sy0">==</span> ZEND_FETCH_STATIC_MEMBER<span class="br0">&#41;</span> <span class="br0">&#123;</span>
+        retval <span class="sy0">=</span> zend_std_get_static_property<span class="br0">&#40;</span>EX_T<span class="br0">&#40;</span>opline<span class="sy0">-&gt;</span>op2.<span class="me1">u</span>.<span class="me1">var</span><span class="br0">&#41;</span>.<span class="me1">class_entry</span><span class="sy0">,</span> Z_STRVAL_P<span class="br0">&#40;</span>varname<span class="br0">&#41;</span><span class="sy0">,</span> Z_STRLEN_P<span class="br0">&#40;</span>varname<span class="br0">&#41;</span><span class="sy0">,</span> <span class="nu0">0</span> TSRMLS_CC<span class="br0">&#41;</span><span class="sy0">;</span>
+    <span class="br0">&#125;</span> <span class="kw1">else</span> <span class="br0">&#123;</span>
+        <span class="co1">// 取符号表，这里我们取的是EG(active_op_array)-&gt;static_variables</span>
+        target_symbol_table <span class="sy0">=</span> zend_get_target_symbol_table<span class="br0">&#40;</span>opline<span class="sy0">,</span> EX<span class="br0">&#40;</span>Ts<span class="br0">&#41;</span><span class="sy0">,</span> type<span class="sy0">,</span> varname TSRMLS_CC<span class="br0">&#41;</span><span class="sy0">;</span>    
+        ...<span class="co1">//   省略</span>
+        <span class="kw1">if</span> <span class="br0">&#40;</span>zend_hash_find<span class="br0">&#40;</span>target_symbol_table<span class="sy0">,</span> varname<span class="sy0">-&gt;</span>value.<span class="me1">str</span>.<span class="me1">val</span><span class="sy0">,</span> varname<span class="sy0">-&gt;</span>value.<span class="me1">str</span>.<span class="me1">len</span><span class="sy0">+</span><span class="nu0">1</span><span class="sy0">,</span> <span class="br0">&#40;</span><span class="kw4">void</span> <span class="sy0">**</span><span class="br0">&#41;</span> <span class="sy0">&amp;</span>retval<span class="br0">&#41;</span> <span class="sy0">==</span> FAILURE<span class="br0">&#41;</span> <span class="br0">&#123;</span>
+            <span class="kw1">switch</span> <span class="br0">&#40;</span>type<span class="br0">&#41;</span> <span class="br0">&#123;</span>
+                ...<span class="co1">//省略</span>
+                <span class="co1">//  在前面的调用中我们知道type = case BP_VAR_W，于是程序会走按case BP_VAR_W的流程走。</span>
+                <span class="kw1">case</span> BP_VAR_W<span class="sy0">:</span> <span class="br0">&#123;</span>
+                        zval <span class="sy0">*</span>new_zval <span class="sy0">=</span> <span class="sy0">&amp;</span>EG<span class="br0">&#40;</span>uninitialized_zval<span class="br0">&#41;</span><span class="sy0">;</span>
+&nbsp;
+                        Z_ADDREF_P<span class="br0">&#40;</span>new_zval<span class="br0">&#41;</span><span class="sy0">;</span>
+                        zend_hash_update<span class="br0">&#40;</span>target_symbol_table<span class="sy0">,</span> varname<span class="sy0">-&gt;</span>value.<span class="me1">str</span>.<span class="me1">val</span><span class="sy0">,</span> varname<span class="sy0">-&gt;</span>value.<span class="me1">str</span>.<span class="me1">len</span><span class="sy0">+</span><span class="nu0">1</span><span class="sy0">,</span> <span class="sy0">&amp;</span>new_zval<span class="sy0">,</span> <span class="kw4">sizeof</span><span class="br0">&#40;</span>zval <span class="sy0">*</span><span class="br0">&#41;</span><span class="sy0">,</span> <span class="br0">&#40;</span><span class="kw4">void</span> <span class="sy0">**</span><span class="br0">&#41;</span> <span class="sy0">&amp;</span>retval<span class="br0">&#41;</span><span class="sy0">;</span>
+                        <span class="co1">// 更新符号表，执行赋值操作</span>
+                    <span class="br0">&#125;</span>
+                    <span class="kw2">break</span><span class="sy0">;</span>
+                EMPTY_SWITCH_DEFAULT_CASE<span class="br0">&#40;</span><span class="br0">&#41;</span>
+            <span class="br0">&#125;</span>
+        <span class="br0">&#125;</span>
+        <span class="kw1">switch</span> <span class="br0">&#40;</span>opline<span class="sy0">-&gt;</span>op2.<span class="me1">u</span>.<span class="me1">EA</span>.<span class="me1">type</span><span class="br0">&#41;</span> <span class="br0">&#123;</span>
+            ...<span class="co1">//省略</span>
+            <span class="kw1">case</span> ZEND_FETCH_STATIC<span class="sy0">:</span>
+                zval_update_constant<span class="br0">&#40;</span>retval<span class="sy0">,</span> <span class="br0">&#40;</span><span class="kw4">void</span><span class="sy0">*</span><span class="br0">&#41;</span> <span class="nu0">1</span> TSRMLS_CC<span class="br0">&#41;</span><span class="sy0">;</span>
+                <span class="kw2">break</span><span class="sy0">;</span>
+            <span class="kw1">case</span> ZEND_FETCH_GLOBAL_LOCK<span class="sy0">:</span>
+                <span class="kw1">if</span> <span class="br0">&#40;</span>IS_CV <span class="sy0">==</span> IS_VAR <span class="sy0">&amp;&amp;</span> <span class="sy0">!</span>free_op1.<span class="me1">var</span><span class="br0">&#41;</span> <span class="br0">&#123;</span>
+                    PZVAL_LOCK<span class="br0">&#40;</span><span class="sy0">*</span>EX_T<span class="br0">&#40;</span>opline<span class="sy0">-&gt;</span>op1.<span class="me1">u</span>.<span class="me1">var</span><span class="br0">&#41;</span>.<span class="me1">var</span>.<span class="me1">ptr_ptr</span><span class="br0">&#41;</span><span class="sy0">;</span>
+                <span class="br0">&#125;</span>
+                <span class="kw2">break</span><span class="sy0">;</span>
+        <span class="br0">&#125;</span>
+    <span class="br0">&#125;</span>
+&nbsp;
+    ...<span class="co1">//省略</span>
+<span class="br0">&#125;</span></pre>
+
+<p>在上面的代码中有一个关键的函数zend_get_target_symbol_table。它的作用是获取当前正在执行的目标符号表，
+而在函数执行时当前的op_array则是函数体本身，先看看zend_op_array的结构。</p>
+
+<pre class="c"><span class="kw4">struct</span> _zend_op_array <span class="br0">&#123;</span>
+    <span class="coMULTI">/* Common elements */</span>
+    zend_uchar type<span class="sy0">;</span>
+    <span class="kw4">char</span> <span class="sy0">*</span>function_name<span class="sy0">;</span>
+    zend_uint num_args<span class="sy0">;</span>
+    zend_uint required_num_args<span class="sy0">;</span>
+    zend_arg_info <span class="sy0">*</span>arg_info<span class="sy0">;</span>
+    zend_bool pass_rest_by_reference<span class="sy0">;</span>
+    <span class="kw4">unsigned</span> <span class="kw4">char</span> return_reference<span class="sy0">;</span>
+    <span class="coMULTI">/* END of common elements */</span>
+&nbsp;
+    zend_bool done_pass_two<span class="sy0">;</span>
+&nbsp;
+    zend_uint <span class="sy0">*</span>refcount<span class="sy0">;</span>
+&nbsp;
+    zend_op <span class="sy0">*</span>opcodes<span class="sy0">;</span>
+    zend_uint last<span class="sy0">,</span> size<span class="sy0">;</span>
+&nbsp;
+    <span class="coMULTI">/* static variables support */</span>
+    HashTable <span class="sy0">*</span>static_variables<span class="sy0">;</span>
+&nbsp;
+    zend_op <span class="sy0">*</span>start_op<span class="sy0">;</span>
+    <span class="kw4">int</span> backpatch_count<span class="sy0">;</span>
+&nbsp;
+    zend_uint this_var<span class="sy0">;</span>
+    <span class="co1">// ...</span>
+<span class="br0">&#125;</span></pre>
+
+<p>由上可以看到zend_op_array中包含function_name字段，也就是当前函数的名称。
+再看看获取当前符号标的函数：</p>
+
+<pre class="c"><span class="kw4">static</span> <span class="kw2">inline</span> HashTable <span class="sy0">*</span>zend_get_target_symbol_table<span class="br0">&#40;</span><span class="kw4">const</span> zend_op <span class="sy0">*</span>opline<span class="sy0">,</span> <span class="kw4">const</span> temp_variable <span class="sy0">*</span>Ts<span class="sy0">,</span> <span class="kw4">int</span> type<span class="sy0">,</span> <span class="kw4">const</span> zval <span class="sy0">*</span>variable TSRMLS_DC<span class="br0">&#41;</span>
+<span class="br0">&#123;</span>
+    <span class="kw1">switch</span> <span class="br0">&#40;</span>opline<span class="sy0">-&gt;</span>op2.<span class="me1">u</span>.<span class="me1">EA</span>.<span class="me1">type</span><span class="br0">&#41;</span> <span class="br0">&#123;</span>
+        ...<span class="co1">//   省略</span>
+        <span class="kw1">case</span> ZEND_FETCH_STATIC<span class="sy0">:</span>
+            <span class="kw1">if</span> <span class="br0">&#40;</span><span class="sy0">!</span>EG<span class="br0">&#40;</span>active_op_array<span class="br0">&#41;</span><span class="sy0">-&gt;</span>static_variables<span class="br0">&#41;</span> <span class="br0">&#123;</span>
+                ALLOC_HASHTABLE<span class="br0">&#40;</span>EG<span class="br0">&#40;</span>active_op_array<span class="br0">&#41;</span><span class="sy0">-&gt;</span>static_variables<span class="br0">&#41;</span><span class="sy0">;</span>
+                zend_hash_init<span class="br0">&#40;</span>EG<span class="br0">&#40;</span>active_op_array<span class="br0">&#41;</span><span class="sy0">-&gt;</span>static_variables<span class="sy0">,</span> <span class="nu0">2</span><span class="sy0">,</span> <span class="kw2">NULL</span><span class="sy0">,</span> ZVAL_PTR_DTOR<span class="sy0">,</span> <span class="nu0">0</span><span class="br0">&#41;</span><span class="sy0">;</span>
+            <span class="br0">&#125;</span>
+            <span class="kw1">return</span> EG<span class="br0">&#40;</span>active_op_array<span class="br0">&#41;</span><span class="sy0">-&gt;</span>static_variables<span class="sy0">;</span>
+            <span class="kw2">break</span><span class="sy0">;</span>
+        EMPTY_SWITCH_DEFAULT_CASE<span class="br0">&#40;</span><span class="br0">&#41;</span>
+    <span class="br0">&#125;</span>
+    <span class="kw1">return</span> <span class="kw2">NULL</span><span class="sy0">;</span>
+<span class="br0">&#125;</span></pre>
+
+<p>在前面的zend_do_fetch_static_variable执行时，op2.u.EA.type的值为ZEND_FETCH_STATIC，
+从而这zend_get_target_symbol_table函数中我们返回的是EG(active_op_array)->static_variables。
+也就是当前函数的的静态变量哈希表。每次执行时都会从该符号表中查找相应的值，由于op_array在程序执行时始终存在。
+所有对静态符号表中数值的修改会继续保留，下次函数执行时继续从该符号表获取信息。
+也就是说Zend为每个函数(准确的说是zend_op_array)分配了一个私有的符号表来保存该函数的静态变量。</p>
+		</div>
+	</body>
+</html>

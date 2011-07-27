@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>TIPI: 深入理解PHP内核</title>
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+	<link href="chm.css" media="screen" rel="stylesheet" type="text/css" />
+<link href="highlight.css" media="screen" rel="stylesheet" type="text/css" />
+</head>
+<body id="portable" class="pdf">
+			<div class='page '>
+			<h2>第六节 PHP保留类及特殊类<a name='第六节 PHP保留类及特殊类'></a></h2>
+
+<p>在面向对象语言中，都会内置一些语言内置提供的基本功能类，比如JavaScript中的Array，Number等类，
+PHP中也有很多这种类，比如Directory，stdClass，Exception等类，同时一些标准扩展比如PDO等扩展中也会定义一些类，
+PHP中类是不允许重复定义的，所以在编写代码时不允许定义已经存在的类。</p>
+
+<p>同时PHP中有一些特殊的类：self，static和parent，相信读者对这self和parent都比较熟悉了，而static特殊类是PHP5.3才引入的。</p>
+
+<p>PHP中的static关键字非常多义:</p>
+
+<ul>
+<li>在函数体内的修饰变量的static关键字用于定义静态局部变量。</li>
+<li>用于修饰类成员函数和成员变量时用于声明静态成员。</li>
+<li>(PHP5.3)在作用域解析符(::)前又表示静态延迟绑定的特殊类。</li>
+</ul>
+
+<p>这个关键字修饰的意义都表示"静态"，在<a href="http://cn.php.net/manual/en/language.oop5.paamayim-nekudotayim.php">PHP手册中</a>提到self，
+parent和static这几个关键字，但实际上除了static是关键字以外，其他两个均不是关键字，
+在手册的<a href="http://cn.php.net/manual/en/reserved.keywords.php">关键字列表</a>中也没有这两个关键字，
+要验证这一点很简单:</p>
+
+<pre class="php"><span class="kw2">&lt;?php</span>
+<a href="http://www.php.net/var_dump"><span class="kw3">var_dump</span></a><span class="br0">&#40;</span><span class="kw2">self</span><span class="br0">&#41;</span><span class="sy0">;</span> <span class="co1">// -&gt;  string(4) &quot;self&quot;</span></pre>
+
+<p>上面的代码并没有报错，如果你把error_reporting(E_ALL)打开，就能看到实际是什么情况了:
+运行这段代码会出现“ Notice: Use of undefined constant self - assumed 'self'“，
+也就是说PHP把self当成一个普通常量了，尝试未定义的常量会把产量本身当成一个字符串，
+例如上例的”self"，不过同时会出一个NOTICE，这就是说self这个标示符并没有什么特殊的。</p>
+
+<pre class="php"><span class="kw2">&lt;?php</span>
+<a href="http://www.php.net/define"><span class="kw3">define</span></a><span class="br0">&#40;</span><span class="st_h">'self'</span>，<span class="st0">&quot;stdClass&quot;</span><span class="br0">&#41;</span><span class="sy0">;</span>
+<a href="http://www.php.net/echo"><span class="kw3">echo</span></a> <span class="kw2">self</span><span class="sy0">;</span> <span class="co1">// stdClass</span></pre>
+
+<blockquote class='note'>
+<p>不同语言中的关键字的意义会有些区别，Wikipedia上的<a href="http://en.wikipedia.org/wiki/Keyword_(computer_programming)">解释</a>是：
+  具有特殊含义的标示符或者单词，从这个意义上说$this也算是一个关键字，但在PHP的关键字列表中并没有。
+  PHP的关键字和C/C++一样属于保留字(关键字)，关键字用于表示特定的语法形式，例如函数定义，流程控制等结构。
+  这些关键字有他们的特定的使用场景，而上面提到的self和parent并没有这样的限制。</p>
+</blockquote>
+
+<h3>self，parent，static类<a name='self，parent，static类'></a></h3>
+
+<p>前面已经说过self的特殊性。self是一个特殊类，它指向当前类，但只有在类定义内部才有效，
+但也并不一定指向类本身这个特殊类，比如前面的代码，如果放在类方法体内运行，echo self; 
+还是会输出常量self的值，而不是当前类，它不止要求在类的定义内部，还要求在类的上下文环境，
+比如 new self()的时候，这时self就指向当前类，或者self::$static_varible，
+self::CONSTANT类似的作用域解析符号(::)，这时的self才会作为指向本身的类而存在。</p>
+
+<p>同理parent也和self类似。下面先看看在在类的环境下的编译吧$PHP_SRC/Zend/zend_language_parser.y:</p>
+
+<pre class="txt">class_name_reference:
+        class_name                      { zend_do_fetch_class(&amp;$$, &amp;$1 TSRMLS_CC); }
+    |   dynamic_class_name_reference    { zend_do_end_variable_parse(&amp;$1, BP_VAR_R, 0 TSRMLS_CC); zend_do_fetch_class(&amp;$$, &amp;$1 TSRMLS_CC); }
+;</pre>
+
+<p>在需要获取类名时会执行zend_do_fetch_class()函数：</p>
+
+<pre class="c"><span class="kw4">void</span> zend_do_fetch_class<span class="br0">&#40;</span>znode <span class="sy0">*</span>result<span class="sy0">,</span> znode <span class="sy0">*</span>class_name TSRMLS_DC<span class="br0">&#41;</span> <span class="coMULTI">/* {{{ */</span>
+<span class="br0">&#123;</span>
+    <span class="co1">// ...</span>
+    opline<span class="sy0">-&gt;</span>opcode <span class="sy0">=</span> ZEND_FETCH_CLASS<span class="sy0">;</span>
+    <span class="kw1">if</span> <span class="br0">&#40;</span>class_name<span class="sy0">-&gt;</span>op_type <span class="sy0">==</span> IS_CONST<span class="br0">&#41;</span> <span class="br0">&#123;</span>
+        <span class="kw4">int</span> fetch_type<span class="sy0">;</span>
+&nbsp;
+        fetch_type <span class="sy0">=</span> zend_get_class_fetch_type<span class="br0">&#40;</span>class_name<span class="sy0">-&gt;</span>u.<span class="me1">constant</span>.<span class="me1">value</span>.<span class="me1">str</span>.<span class="me1">val</span><span class="sy0">,</span> class_name<span class="sy0">-&gt;</span>u.<span class="me1">constant</span>.<span class="me1">value</span>.<span class="me1">str</span>.<span class="me1">len</span><span class="br0">&#41;</span><span class="sy0">;</span>
+        <span class="kw1">switch</span> <span class="br0">&#40;</span>fetch_type<span class="br0">&#41;</span> <span class="br0">&#123;</span>
+            <span class="kw1">case</span> ZEND_FETCH_CLASS_SELF<span class="sy0">:</span>
+            <span class="kw1">case</span> ZEND_FETCH_CLASS_PARENT<span class="sy0">:</span>
+            <span class="kw1">case</span> ZEND_FETCH_CLASS_STATIC<span class="sy0">:</span>
+                SET_UNUSED<span class="br0">&#40;</span>opline<span class="sy0">-&gt;</span>op2<span class="br0">&#41;</span><span class="sy0">;</span>
+                opline<span class="sy0">-&gt;</span>extended_value <span class="sy0">=</span> fetch_type<span class="sy0">;</span>
+                zval_dtor<span class="br0">&#40;</span><span class="sy0">&amp;</span>class_name<span class="sy0">-&gt;</span>u.<span class="me1">constant</span><span class="br0">&#41;</span><span class="sy0">;</span>
+                <span class="kw2">break</span><span class="sy0">;</span>
+            <span class="kw1">default</span><span class="sy0">:</span>
+                zend_resolve_class_name<span class="br0">&#40;</span>class_name<span class="sy0">,</span> <span class="sy0">&amp;</span>opline<span class="sy0">-&gt;</span>extended_value<span class="sy0">,</span> <span class="nu0">0</span> TSRMLS_CC<span class="br0">&#41;</span><span class="sy0">;</span>
+                opline<span class="sy0">-&gt;</span>op2 <span class="sy0">=</span> <span class="sy0">*</span>class_name<span class="sy0">;</span>
+                <span class="kw2">break</span><span class="sy0">;</span>
+        <span class="br0">&#125;</span>
+    <span class="br0">&#125;</span> <span class="kw1">else</span> <span class="br0">&#123;</span>
+        opline<span class="sy0">-&gt;</span>op2 <span class="sy0">=</span> <span class="sy0">*</span>class_name<span class="sy0">;</span>
+    <span class="br0">&#125;</span>
+    <span class="co1">// ...</span>
+<span class="br0">&#125;</span></pre>
+
+<p>上面省略了一些无关的代码，重点关注fetch_type变量。这是通过zend_get_class_fetch_type()函数获取到的。</p>
+
+<pre class="c"><span class="kw4">int</span> zend_get_class_fetch_type<span class="br0">&#40;</span><span class="kw4">const</span> <span class="kw4">char</span> <span class="sy0">*</span>class_name<span class="sy0">,</span> uint class_name_len<span class="br0">&#41;</span> <span class="coMULTI">/* {{{ */</span>
+<span class="br0">&#123;</span>
+    <span class="kw1">if</span> <span class="br0">&#40;</span><span class="br0">&#40;</span>class_name_len <span class="sy0">==</span> <span class="kw4">sizeof</span><span class="br0">&#40;</span><span class="st0">&quot;self&quot;</span><span class="br0">&#41;</span><span class="sy0">-</span><span class="nu0">1</span><span class="br0">&#41;</span> <span class="sy0">&amp;&amp;</span>
+        <span class="sy0">!</span>memcmp<span class="br0">&#40;</span>class_name<span class="sy0">,</span> <span class="st0">&quot;self&quot;</span><span class="sy0">,</span> <span class="kw4">sizeof</span><span class="br0">&#40;</span><span class="st0">&quot;self&quot;</span><span class="br0">&#41;</span><span class="sy0">-</span><span class="nu0">1</span><span class="br0">&#41;</span><span class="br0">&#41;</span> <span class="br0">&#123;</span>
+        <span class="kw1">return</span> ZEND_FETCH_CLASS_SELF<span class="sy0">;</span>
+    <span class="br0">&#125;</span> <span class="kw1">else</span> <span class="kw1">if</span> <span class="br0">&#40;</span><span class="br0">&#40;</span>class_name_len <span class="sy0">==</span> <span class="kw4">sizeof</span><span class="br0">&#40;</span><span class="st0">&quot;parent&quot;</span><span class="br0">&#41;</span><span class="sy0">-</span><span class="nu0">1</span><span class="br0">&#41;</span> <span class="sy0">&amp;&amp;</span>
+        <span class="sy0">!</span>memcmp<span class="br0">&#40;</span>class_name<span class="sy0">,</span> <span class="st0">&quot;parent&quot;</span><span class="sy0">,</span> <span class="kw4">sizeof</span><span class="br0">&#40;</span><span class="st0">&quot;parent&quot;</span><span class="br0">&#41;</span><span class="sy0">-</span><span class="nu0">1</span><span class="br0">&#41;</span><span class="br0">&#41;</span> <span class="br0">&#123;</span>
+        <span class="kw1">return</span> ZEND_FETCH_CLASS_PARENT<span class="sy0">;</span>
+    <span class="br0">&#125;</span> <span class="kw1">else</span> <span class="kw1">if</span> <span class="br0">&#40;</span><span class="br0">&#40;</span>class_name_len <span class="sy0">==</span> <span class="kw4">sizeof</span><span class="br0">&#40;</span><span class="st0">&quot;static&quot;</span><span class="br0">&#41;</span><span class="sy0">-</span><span class="nu0">1</span><span class="br0">&#41;</span> <span class="sy0">&amp;&amp;</span>
+        <span class="sy0">!</span>memcmp<span class="br0">&#40;</span>class_name<span class="sy0">,</span> <span class="st0">&quot;static&quot;</span><span class="sy0">,</span> <span class="kw4">sizeof</span><span class="br0">&#40;</span><span class="st0">&quot;static&quot;</span><span class="br0">&#41;</span><span class="sy0">-</span><span class="nu0">1</span><span class="br0">&#41;</span><span class="br0">&#41;</span> <span class="br0">&#123;</span>
+        <span class="kw1">return</span> ZEND_FETCH_CLASS_STATIC<span class="sy0">;</span>
+    <span class="br0">&#125;</span> <span class="kw1">else</span> <span class="br0">&#123;</span>
+        <span class="kw1">return</span> ZEND_FETCH_CLASS_DEFAULT<span class="sy0">;</span>
+    <span class="br0">&#125;</span>
+<span class="br0">&#125;</span></pre>
+
+<p>前面的代码是Zend引擎编译类相关操作的代码，下面就到执行阶段了，self，parent等类的指向会在执行时进行获取，
+找到执行opcode为ZEND_FETCH_CLASS的执行函数:</p>
+
+<pre class="c">zend_class_entry <span class="sy0">*</span>zend_fetch_class<span class="br0">&#40;</span><span class="kw4">const</span> <span class="kw4">char</span> <span class="sy0">*</span>class_name<span class="sy0">,</span> uint class_name_len<span class="sy0">,</span> <span class="kw4">int</span> fetch_type TSRMLS_DC<span class="br0">&#41;</span> <span class="coMULTI">/* {{{ */</span>
+<span class="br0">&#123;</span>
+    zend_class_entry <span class="sy0">**</span>pce<span class="sy0">;</span>
+    <span class="kw4">int</span> use_autoload <span class="sy0">=</span> <span class="br0">&#40;</span>fetch_type <span class="sy0">&amp;</span> ZEND_FETCH_CLASS_NO_AUTOLOAD<span class="br0">&#41;</span> <span class="sy0">==</span> <span class="nu0">0</span><span class="sy0">;</span>
+    <span class="kw4">int</span> silent       <span class="sy0">=</span> <span class="br0">&#40;</span>fetch_type <span class="sy0">&amp;</span> ZEND_FETCH_CLASS_SILENT<span class="br0">&#41;</span> <span class="sy0">!=</span> <span class="nu0">0</span><span class="sy0">;</span>
+&nbsp;
+    fetch_type <span class="sy0">&amp;=</span> ZEND_FETCH_CLASS_MASK<span class="sy0">;</span>
+&nbsp;
+check_fetch_type<span class="sy0">:</span>
+    <span class="kw1">switch</span> <span class="br0">&#40;</span>fetch_type<span class="br0">&#41;</span> <span class="br0">&#123;</span>
+        <span class="kw1">case</span> ZEND_FETCH_CLASS_SELF<span class="sy0">:</span>
+            <span class="kw1">if</span> <span class="br0">&#40;</span><span class="sy0">!</span>EG<span class="br0">&#40;</span>scope<span class="br0">&#41;</span><span class="br0">&#41;</span> <span class="br0">&#123;</span>
+                zend_error<span class="br0">&#40;</span>E_ERROR<span class="sy0">,</span> <span class="st0">&quot;Cannot access self:: when no class scope is active&quot;</span><span class="br0">&#41;</span><span class="sy0">;</span>
+            <span class="br0">&#125;</span>
+            <span class="kw1">return</span> EG<span class="br0">&#40;</span>scope<span class="br0">&#41;</span><span class="sy0">;</span>
+        <span class="kw1">case</span> ZEND_FETCH_CLASS_PARENT<span class="sy0">:</span>
+            <span class="kw1">if</span> <span class="br0">&#40;</span><span class="sy0">!</span>EG<span class="br0">&#40;</span>scope<span class="br0">&#41;</span><span class="br0">&#41;</span> <span class="br0">&#123;</span>
+                zend_error<span class="br0">&#40;</span>E_ERROR<span class="sy0">,</span> <span class="st0">&quot;Cannot access parent:: when no class scope is active&quot;</span><span class="br0">&#41;</span><span class="sy0">;</span>
+            <span class="br0">&#125;</span>
+            <span class="kw1">if</span> <span class="br0">&#40;</span><span class="sy0">!</span>EG<span class="br0">&#40;</span>scope<span class="br0">&#41;</span><span class="sy0">-&gt;</span>parent<span class="br0">&#41;</span> <span class="br0">&#123;</span>
+                zend_error<span class="br0">&#40;</span>E_ERROR<span class="sy0">,</span> <span class="st0">&quot;Cannot access parent:: when current class scope has no parent&quot;</span><span class="br0">&#41;</span><span class="sy0">;</span>
+            <span class="br0">&#125;</span>
+            <span class="kw1">return</span> EG<span class="br0">&#40;</span>scope<span class="br0">&#41;</span><span class="sy0">-&gt;</span>parent<span class="sy0">;</span>
+        <span class="kw1">case</span> ZEND_FETCH_CLASS_STATIC<span class="sy0">:</span>
+            <span class="kw1">if</span> <span class="br0">&#40;</span><span class="sy0">!</span>EG<span class="br0">&#40;</span>called_scope<span class="br0">&#41;</span><span class="br0">&#41;</span> <span class="br0">&#123;</span>
+                zend_error<span class="br0">&#40;</span>E_ERROR<span class="sy0">,</span> <span class="st0">&quot;Cannot access static:: when no class scope is active&quot;</span><span class="br0">&#41;</span><span class="sy0">;</span>
+            <span class="br0">&#125;</span>
+            <span class="kw1">return</span> EG<span class="br0">&#40;</span>called_scope<span class="br0">&#41;</span><span class="sy0">;</span>
+        <span class="kw1">case</span> ZEND_FETCH_CLASS_AUTO<span class="sy0">:</span> <span class="br0">&#123;</span>
+                fetch_type <span class="sy0">=</span> zend_get_class_fetch_type<span class="br0">&#40;</span>class_name<span class="sy0">,</span> class_name_len<span class="br0">&#41;</span><span class="sy0">;</span>
+                <span class="kw1">if</span> <span class="br0">&#40;</span>fetch_type<span class="sy0">!=</span>ZEND_FETCH_CLASS_DEFAULT<span class="br0">&#41;</span> <span class="br0">&#123;</span>
+                    <span class="kw1">goto</span> check_fetch_type<span class="sy0">;</span>
+                <span class="br0">&#125;</span>
+            <span class="br0">&#125;</span>
+            <span class="kw2">break</span><span class="sy0">;</span>
+    <span class="br0">&#125;</span>
+&nbsp;
+    <span class="kw1">if</span> <span class="br0">&#40;</span>zend_lookup_class_ex<span class="br0">&#40;</span>class_name<span class="sy0">,</span> class_name_len<span class="sy0">,</span> use_autoload<span class="sy0">,</span> <span class="sy0">&amp;</span>pce TSRMLS_CC<span class="br0">&#41;</span> <span class="sy0">==</span> FAILURE<span class="br0">&#41;</span> <span class="br0">&#123;</span>
+        <span class="kw1">if</span> <span class="br0">&#40;</span>use_autoload<span class="br0">&#41;</span> <span class="br0">&#123;</span>
+            <span class="kw1">if</span> <span class="br0">&#40;</span><span class="sy0">!</span>silent <span class="sy0">&amp;&amp;</span> <span class="sy0">!</span>EG<span class="br0">&#40;</span>exception<span class="br0">&#41;</span><span class="br0">&#41;</span> <span class="br0">&#123;</span>
+                <span class="kw1">if</span> <span class="br0">&#40;</span>fetch_type <span class="sy0">==</span> ZEND_FETCH_CLASS_INTERFACE<span class="br0">&#41;</span> <span class="br0">&#123;</span>
+                    zend_error<span class="br0">&#40;</span>E_ERROR<span class="sy0">,</span> <span class="st0">&quot;Interface '%s' not found&quot;</span><span class="sy0">,</span> class_name<span class="br0">&#41;</span><span class="sy0">;</span>
+                <span class="br0">&#125;</span> <span class="kw1">else</span> <span class="br0">&#123;</span>
+                    zend_error<span class="br0">&#40;</span>E_ERROR<span class="sy0">,</span> <span class="st0">&quot;Class '%s' not found&quot;</span><span class="sy0">,</span> class_name<span class="br0">&#41;</span><span class="sy0">;</span>
+                <span class="br0">&#125;</span>
+                <span class="br0">&#125;</span>
+            <span class="br0">&#125;</span>
+        <span class="br0">&#125;</span>
+        <span class="kw1">return</span> <span class="kw2">NULL</span><span class="sy0">;</span>
+    <span class="br0">&#125;</span>
+    <span class="kw1">return</span> <span class="sy0">*</span>pce<span class="sy0">;</span>
+<span class="br0">&#125;</span></pre>
+
+<p>从这个函数就能看出端倪了，当需要获取self类的时候，则将EG(scope)类返回，而EG(scope)指向的正是当前类。
+如果时parent类的话则从去EG(scope)->parent也就是当前类的父类，而static获取的时EG(called_scope)，
+分别说说EG宏的这几个字段，前面已经介绍过EG宏，它可以展开为如下这个结构体:</p>
+
+<pre class="c"><span class="kw4">struct</span> _zend_executor_globals <span class="br0">&#123;</span>
+    <span class="co1">// ...</span>
+    zend_class_entry <span class="sy0">*</span>scope<span class="sy0">;</span>
+    zend_class_entry <span class="sy0">*</span>called_scope<span class="sy0">;</span> <span class="coMULTI">/* Scope of the calling class */</span>
+    <span class="co1">// ...</span>
+<span class="br0">&#125;</span>
+&nbsp;
+<span class="kw4">struct</span> _zend_class_entry <span class="br0">&#123;</span>
+    <span class="kw4">char</span> type<span class="sy0">;</span>
+    <span class="kw4">char</span> <span class="sy0">*</span>name<span class="sy0">;</span>
+    zend_uint name_length<span class="sy0">;</span>
+    <span class="kw4">struct</span> _zend_class_entry <span class="sy0">*</span>parent<span class="sy0">;</span>
+<span class="br0">&#125;</span>
+<span class="co2">#define struct _zend_class_entry zend_class_entry</span></pre>
+
+<p>其中的zend_class_entry就是PHP中类的内部结构表示，zend_class_entry有一个parent字段，也就是该类的父类。
+在EG结构体中的中called_scope会在执行过程中将当前执行的类赋值给called_scope，例如如下代码:</p>
+
+<pre class="php"><span class="kw2">&lt;?php</span>
+<span class="kw2">class</span> A <span class="br0">&#123;</span>
+    <span class="kw2">public</span> <a href="http://www.php.net/static"><span class="kw3">static</span></a> funcA<span class="br0">&#40;</span><span class="br0">&#41;</span> <span class="br0">&#123;</span>
+        <a href="http://www.php.net/static"><span class="kw3">static</span></a><span class="sy0">::</span><span class="me2">funcB</span><span class="br0">&#40;</span><span class="br0">&#41;</span><span class="sy0">;</span>
+    <span class="br0">&#125;</span>
+<span class="br0">&#125;</span>
+&nbsp;
+<span class="kw2">class</span> B <span class="br0">&#123;</span>
+    <span class="kw2">public</span> <a href="http://www.php.net/static"><span class="kw3">static</span></a> funcB<span class="br0">&#40;</span><span class="br0">&#41;</span> <span class="br0">&#123;</span>
+        <a href="http://www.php.net/echo"><span class="kw3">echo</span></a>  <span class="st0">&quot;B::funcB()&quot;</span><span class="sy0">;</span>
+    <span class="br0">&#125;</span>
+<span class="br0">&#125;</span>
+&nbsp;
+B<span class="sy0">::</span><span class="me2">funcA</span><span class="br0">&#40;</span><span class="br0">&#41;</span><span class="sy0">;</span></pre>
+
+<p>代码B::funcA()执行的时候，实际执行的是B的父类A中定义的funcA函数，A::funcA()执行时当前的类(scope)指向的是类A，
+而这个方法是从B类开始调用的，called_scope指向的是类B，static特殊类指向的正是called_scope，也就是当前类(触发方法调用的类)，
+这也是延迟绑定的原理。</p>
+		</div>
+	</body>
+</html>

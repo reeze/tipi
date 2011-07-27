@@ -1,0 +1,75 @@
+[OPTIONS]
+Auto Index=Yes
+Compatibility=1.1 or later
+Compiled file=tipi.chm
+Contents file=tipi.hhc
+Default topic=tipi
+Display compile progress=No
+Index file=tipi.hhk
+Title=tipi
+[FILES]
+files/index.html
+files/01-00-prepare-and-background.html
+files/01-01-php-env-building.html
+files/01-02-code-structure.html
+files/01-03-comm-code-in-php-src.html
+files/01-04-summary.html
+files/02-00-overview.html
+files/02-01-php-life-cycle-and-zend-engine.html
+files/02-02-00-overview.html
+files/02-02-01-apache-php-module.html
+files/02-02-02-embedding-php.html
+files/02-02-03-fastcgi.html
+files/02-03-00-how-php-script-get-executed.html
+files/02-03-01-lex-and-yacc.html
+files/02-03-02-opcode.html
+files/02-03-03-from-opcode-to-handler.html
+files/02-04-summary.html
+files/03-00-variable-and-data-types.html
+files/03-01-00-variables-structure.html
+files/03-01-01-hashtable.html
+files/03-01-02-hashtable-in-php.html
+files/03-02-const-var.html
+files/03-03-pre-defined-variable.html
+files/03-04-static-var.html
+files/03-05-impl-of-type-hint.html
+files/03-06-00-var-lifecycle.html
+files/03-06-01-var-define-and-init.html
+files/03-06-02-var-scope.html
+files/03-06-03-var-global.html
+files/03-07-type-cast.html
+files/03-08-summary.html
+files/04-00-php-function.html
+files/04-01-function-struct.html
+files/04-02-00-function-define-param-return.html
+files/04-02-01-function-define.html
+files/04-02-02-function-param.html
+files/04-02-03-function-return.html
+files/04-03-function-call.html
+files/04-04-anonymous-function.html
+files/04-05-summary.html
+files/05-00-class-and-oop.html
+files/05-01-class-struct.html
+files/05-02-class-member-variables-and-methods.html
+files/05-03-class-visibility.html
+files/05-04-class-inherit-abstract.html
+files/05-05-class-magic-methods-latebinding.html
+files/05-06-class-reserved-and-special-classes.html
+files/05-07-class-object.html
+files/05-08-class-namespace.html
+files/05-09-summary.html
+files/06-00-memory-management.html
+files/06-01-memory-management-overview.html
+files/06-02-php-memory-manager.html
+files/06-03-php-memory-request-free.html
+files/06-04-00-garbage-collection.html
+files/06-04-01-new-garbage-collection.html
+files/06-05-php-memory-cache.html
+files/06-06-copy-on-write.html
+files/06-07-summary.html
+files/-PHP-Zend-API.html
+files/-php-vld.html
+
+[INFOTYPES]
+
+

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>TIPI: 深入理解PHP内核</title>
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+	<link href="chm.css" media="screen" rel="stylesheet" type="text/css" />
+<link href="highlight.css" media="screen" rel="stylesheet" type="text/css" />
+</head>
+<body id="portable" class="pdf">
+			<div class='page '>
+			<h2>第二节 SAPI概述<a name='第二节 SAPI概述'></a></h2>
+
+<p>前一小节介绍了PHP的生命周期，在其生命周期的各个阶段，一些与服务相关的操作都是通过SAPI接口实现。
+这些内置实现的物理位置在PHP源码的SAPI目录。这个目录存放了PHP对各个服务器抽象层的代码，
+例如命令行程序的实现，Apache的mod_php模块实现以及fastcgi的实现等等。</p>
+
+<p>在各个服务器抽象层之间遵守着相同的约定，这里我们称之为SAPI接口。
+每个SAPI实现都是一个_sapi_module_struct结构体变量。（SAPI接口）。
+在PHP的源码中，当需要调用服务器相关信息时，全部通过SAPI接口中对应方法调用实现，
+而这对应的方法在各个服务器抽象层实现时都会有各自的实现。</p>
+
+<blockquote class='note'>
+<p>由于很多操作的通用性，有很大一部分的接口方法使用的是默认方法。</p>
+</blockquote>
+
+<p>如图2.4所示，为SAPI的简单示意图。</p>
+
+<p><div class='book-img'><img src="02-02-01-sapi.png" alt="图2.4 SAPI的简单示意图" /><div class='book-img-desc'>图2.4 SAPI的简单示意图</div></div></p>
+
+<p>以cgi模式和apache2服务器为例，它们的启动方法如下：</p>
+
+<pre class="c">cgi_sapi_module.<span class="me1">startup</span><span class="br0">&#40;</span><span class="sy0">&amp;</span>cgi_sapi_module<span class="br0">&#41;</span>   <span class="co1">//  cgi模式 cgi/cgi_main.c文件</span>
+&nbsp;
+apache2_sapi_module.<span class="me1">startup</span><span class="br0">&#40;</span><span class="sy0">&amp;</span>apache2_sapi_module<span class="br0">&#41;</span><span class="sy0">;</span>
+ <span class="co1">//  apache2服务器  apache2handler/sapi_apache2.c文件</span></pre>
+
+<p>这里的cgi_sapi_module是sapi_module_struct结构体的静态变量。
+它的startup方法指向php_cgi_startup函数指针。在这个结构体中除了startup函数指针，还有许多其它方法或字段。
+其部分定义如下：</p>
+
+<pre class="c"><span class="kw4">struct</span> _sapi_module_struct <span class="br0">&#123;</span>
+    <span class="kw4">char</span> <span class="sy0">*</span>name<span class="sy0">;</span>         <span class="co1">//  名字（标识用）</span>
+    <span class="kw4">char</span> <span class="sy0">*</span>pretty_name<span class="sy0">;</span>  <span class="co1">//  更好理解的名字（自己翻译的）</span>
+&nbsp;
+    <span class="kw4">int</span> <span class="br0">&#40;</span><span class="sy0">*</span>startup<span class="br0">&#41;</span><span class="br0">&#40;</span><span class="kw4">struct</span> _sapi_module_struct <span class="sy0">*</span>sapi_module<span class="br0">&#41;</span><span class="sy0">;</span>    <span class="co1">//  启动函数</span>
+    <span class="kw4">int</span> <span class="br0">&#40;</span><span class="sy0">*</span>shutdown<span class="br0">&#41;</span><span class="br0">&#40;</span><span class="kw4">struct</span> _sapi_module_struct <span class="sy0">*</span>sapi_module<span class="br0">&#41;</span><span class="sy0">;</span>   <span class="co1">//  关闭方法</span>
+&nbsp;
+    <span class="kw4">int</span> <span class="br0">&#40;</span><span class="sy0">*</span>activate<span class="br0">&#41;</span><span class="br0">&#40;</span>TSRMLS_D<span class="br0">&#41;</span><span class="sy0">;</span>  <span class="co1">// 激活</span>
+    <span class="kw4">int</span> <span class="br0">&#40;</span><span class="sy0">*</span>deactivate<span class="br0">&#41;</span><span class="br0">&#40;</span>TSRMLS_D<span class="br0">&#41;</span><span class="sy0">;</span>    <span class="co1">//  停用</span>
+&nbsp;
+    <span class="kw4">int</span> <span class="br0">&#40;</span><span class="sy0">*</span>ub_write<span class="br0">&#41;</span><span class="br0">&#40;</span><span class="kw4">const</span> <span class="kw4">char</span> <span class="sy0">*</span>str<span class="sy0">,</span> <span class="kw4">unsigned</span> <span class="kw4">int</span> str_length TSRMLS_DC<span class="br0">&#41;</span><span class="sy0">;</span>
+     <span class="co1">//  不缓存的写操作(unbuffered write)</span>
+    <span class="kw4">void</span> <span class="br0">&#40;</span><span class="sy0">*</span>flush<span class="br0">&#41;</span><span class="br0">&#40;</span><span class="kw4">void</span> <span class="sy0">*</span>server_context<span class="br0">&#41;</span><span class="sy0">;</span>    <span class="co1">//  flush</span>
+    <span class="kw4">struct</span> stat <span class="sy0">*</span><span class="br0">&#40;</span><span class="sy0">*</span>get_stat<span class="br0">&#41;</span><span class="br0">&#40;</span>TSRMLS_D<span class="br0">&#41;</span><span class="sy0">;</span>     <span class="co1">//  get uid</span>
+    <span class="kw4">char</span> <span class="sy0">*</span><span class="br0">&#40;</span><span class="sy0">*</span>getenv<span class="br0">&#41;</span><span class="br0">&#40;</span><span class="kw4">char</span> <span class="sy0">*</span>name<span class="sy0">,</span> size_t name_len TSRMLS_DC<span class="br0">&#41;</span><span class="sy0">;</span> <span class="co1">//  getenv</span>
+&nbsp;
+    <span class="kw4">void</span> <span class="br0">&#40;</span><span class="sy0">*</span>sapi_error<span class="br0">&#41;</span><span class="br0">&#40;</span><span class="kw4">int</span> type<span class="sy0">,</span> <span class="kw4">const</span> <span class="kw4">char</span> <span class="sy0">*</span>error_msg<span class="sy0">,</span> ...<span class="br0">&#41;</span><span class="sy0">;</span>   <span class="coMULTI">/* error handler */</span>
+&nbsp;
+    <span class="kw4">int</span> <span class="br0">&#40;</span><span class="sy0">*</span>header_handler<span class="br0">&#41;</span><span class="br0">&#40;</span>sapi_header_struct <span class="sy0">*</span>sapi_header<span class="sy0">,</span> sapi_header_op_enum op<span class="sy0">,</span>
+        sapi_headers_struct <span class="sy0">*</span>sapi_headers TSRMLS_DC<span class="br0">&#41;</span><span class="sy0">;</span>   <span class="coMULTI">/* header handler */</span>
+&nbsp;
+     <span class="coMULTI">/* send headers handler */</span>
+    <span class="kw4">int</span> <span class="br0">&#40;</span><span class="sy0">*</span>send_headers<span class="br0">&#41;</span><span class="br0">&#40;</span>sapi_headers_struct <span class="sy0">*</span>sapi_headers TSRMLS_DC<span class="br0">&#41;</span><span class="sy0">;</span>
+&nbsp;
+    <span class="kw4">void</span> <span class="br0">&#40;</span><span class="sy0">*</span>send_header<span class="br0">&#41;</span><span class="br0">&#40;</span>sapi_header_struct <span class="sy0">*</span>sapi_header<span class="sy0">,</span>
+            <span class="kw4">void</span> <span class="sy0">*</span>server_context TSRMLS_DC<span class="br0">&#41;</span><span class="sy0">;</span>   <span class="coMULTI">/* send header handler */</span>
+&nbsp;
+    <span class="kw4">int</span> <span class="br0">&#40;</span><span class="sy0">*</span>read_post<span class="br0">&#41;</span><span class="br0">&#40;</span><span class="kw4">char</span> <span class="sy0">*</span>buffer<span class="sy0">,</span> uint count_bytes TSRMLS_DC<span class="br0">&#41;</span><span class="sy0">;</span> <span class="coMULTI">/* read POST data */</span>
+    <span class="kw4">char</span> <span class="sy0">*</span><span class="br0">&#40;</span><span class="sy0">*</span>read_cookies<span class="br0">&#41;</span><span class="br0">&#40;</span>TSRMLS_D<span class="br0">&#41;</span><span class="sy0">;</span>    <span class="coMULTI">/* read Cookies */</span>
+&nbsp;
+    <span class="coMULTI">/* register server variables */</span>
+    <span class="kw4">void</span> <span class="br0">&#40;</span><span class="sy0">*</span>register_server_variables<span class="br0">&#41;</span><span class="br0">&#40;</span>zval <span class="sy0">*</span>track_vars_array TSRMLS_DC<span class="br0">&#41;</span><span class="sy0">;</span>
+&nbsp;
+    <span class="kw4">void</span> <span class="br0">&#40;</span><span class="sy0">*</span>log_message<span class="br0">&#41;</span><span class="br0">&#40;</span><span class="kw4">char</span> <span class="sy0">*</span>message<span class="br0">&#41;</span><span class="sy0">;</span>     <span class="coMULTI">/* Log message */</span>
+    time_t <span class="br0">&#40;</span><span class="sy0">*</span>get_request_time<span class="br0">&#41;</span><span class="br0">&#40;</span>TSRMLS_D<span class="br0">&#41;</span><span class="sy0">;</span>   <span class="coMULTI">/* Request Time */</span>
+    <span class="kw4">void</span> <span class="br0">&#40;</span><span class="sy0">*</span>terminate_process<span class="br0">&#41;</span><span class="br0">&#40;</span>TSRMLS_D<span class="br0">&#41;</span><span class="sy0">;</span>    <span class="coMULTI">/* Child Terminate */</span>
+&nbsp;
+    <span class="kw4">char</span> <span class="sy0">*</span>php_ini_path_override<span class="sy0">;</span>    <span class="co1">//  覆盖的ini路径</span>
+&nbsp;
+    ...
+    ...
+<span class="br0">&#125;</span><span class="sy0">;</span></pre>
+
+<p>以上的这些结构在各服务器的接口实现中都有定义。如Apache2的定义：</p>
+
+<pre class="c"><span class="kw4">static</span> sapi_module_struct apache2_sapi_module <span class="sy0">=</span> <span class="br0">&#123;</span>
+    <span class="st0">&quot;apache2handler&quot;</span><span class="sy0">,</span>
+    <span class="st0">&quot;Apache 2.0 Handler&quot;</span><span class="sy0">,</span>
+&nbsp;
+    php_apache2_startup<span class="sy0">,</span>                <span class="coMULTI">/* startup */</span>
+    php_module_shutdown_wrapper<span class="sy0">,</span>            <span class="coMULTI">/* shutdown */</span>
+&nbsp;
+    ...
+<span class="br0">&#125;</span></pre>
+
+<p>在PHP的源码中实现了很多的实现，比如IIS的实现以及一些非主流的Web服务器实现，其文件结构如图2.5所示：</p>
+
+<p><div class='book-img'><img src="02-02-02-file-structure.png" alt="图2.5 SAPI文件结构图" /><div class='book-img-desc'>图2.5 SAPI文件结构图</div></div></p>
+
+<blockquote class='note'>
+<p>目前PHP内置的很多SAPI实现都已不再维护或者变的有些非主流了，PHP社区目前正在考虑将一些SAPI移出代码库。
+  社区对很多功能的考虑是除非真的非常必要，或者某些功能已近非常通用了，否则就在PECL库中，
+  例如非常流行的APC缓存扩展将进入核心代码库中。</p>
+</blockquote>
+
+<p>整个SAPI类似于一个面向对象中的模板方法模式的应用。
+SAPI.c和SAPI.h文件所包含的一些函数就是模板方法模式中的抽象模板，
+各个服务器对于sapi_module的定义及相关实现则是一个个具体的模板。</p>
+
+<p>这样的结构在PHP的源码中有多处使用，
+比如在PHP扩展开发中，每个扩展都需要定义一个zend_module_entry结构体。
+这个结构体的作用与sapi_module_struct结构体类似，都是一个类似模板方法模式的应用。
+在PHP的生命周期中如果需要调用某个扩展，其调用的方法都是zend_module_entry结构体中指定的方法，
+如在上一小节中提到的在执行各个扩展的请求初始化时，都是统一调用request_startup_func方法，
+而在每个扩展的定义时，都通过宏PHP_RINIT指定request_startup_func对应的函数。
+以VLD扩展为例：其请求初始化为PHP_RINIT(vld),与之对应在扩展中需要有这个函数的实现：</p>
+
+<pre class="c">PHP_RINIT_FUNCTION<span class="br0">&#40;</span>vld<span class="br0">&#41;</span> <span class="br0">&#123;</span>
+<span class="br0">&#125;</span></pre>
+
+<p>所以， 我们在写扩展时也需要实现扩展的这些接口，同样，当实现各服务器接口时也需要实现其对应的SAPI。</p>
+		</div>
+	</body>
+</html>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>TIPI: 深入理解PHP内核</title>
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+	<link href="chm.css" media="screen" rel="stylesheet" type="text/css" />
+<link href="highlight.css" media="screen" rel="stylesheet" type="text/css" />
+</head>
+<body id="portable" class="pdf">
+			<div class='page '>
+			<h2>第六节 写时复制（Copy-On-Write）<a name='第六节 写时复制（Copy-On-Write）'></a></h2>
+
+<p>写时复制（<a href="http://en.wikipedia.org/wiki/Copy-on-write">Copy-on-Write</a>，也缩写为COW），顾名思义，就是在写入时才真正复制一份内存进行修改。
+COW最早应用在*nix系统中对线程与内存使用的优化，后面广泛的被使用在各种编程语言中，如C++的STL等。
+在PHP内核中，COW也是主要的内存优化手段。
+在前面关于变量和内存的讨论中，引用计数对变量的销毁与回收中起着至关重要的标识作用。
+引用计数存在的意义，就是为了使得COW可以正常运作，从而实现对内存的优化使用。</p>
+
+<h3>写时复制的作用<a name='写时复制的作用'></a></h3>
+
+<p>这里有一个非常典型的例子：</p>
+
+<pre class="php"><span class="kw2">&lt;?php</span>
+    <span class="re0">$foo</span> <span class="sy0">=</span> <span class="nu0">1</span><span class="sy0">;</span>
+    xdebug_debug_zval<span class="br0">&#40;</span><span class="st_h">'foo'</span><span class="br0">&#41;</span><span class="sy0">;</span>
+    <span class="re0">$bar</span> <span class="sy0">=</span> <span class="re0">$foo</span><span class="sy0">;</span>
+    xdebug_debug_zval<span class="br0">&#40;</span><span class="st_h">'foo'</span><span class="br0">&#41;</span><span class="sy0">;</span>
+    <span class="re0">$bar</span> <span class="sy0">=</span> <span class="nu0">2</span><span class="sy0">;</span>
+    xdebug_debug_zval<span class="br0">&#40;</span><span class="st_h">'foo'</span><span class="br0">&#41;</span><span class="sy0">;</span>   
+<span class="sy1">?&gt;</span>
+//-----执行结果-----
+foo: (refcount=1, is_ref=0)=1
+foo: (refcount=2, is_ref=0)=1
+foo: (refcount=1, is_ref=0)=1</pre>
+
+<p>经过前文对变量的章节，我们可以理解当$foo被赋值时，$foo变量的引用计数为1。
+当$foo的值被赋给$bar时，PHP并没有将内存直接复制一份交给$bar，
+而是直接把$foo和$bar指向同一个地址。</p>
+
+<p>由于内存块没有办法标识自己被几个指针同时使用，
+就需要一个变量来标识这块内存是“被两个变量名指针同时指向的”，
+结果引用计数就派上了用场，我们可以看到refcount=2;
+最后，我们更改了$bar的值，这时如果两个变量再指向同一个内存地址的话，
+其值就会同时改变，于是，PHP内核这时将内存复制出来一份，并将其值写为2
+，（这个操作也会称为分离操作），
+同时维护原$foo变量的引用计数：refcount=1。</p>
+
+<p>从这个小例子可以看出，COW的作用是非常明显的，如果一个变量被赋值后，
+根本没有进行修改，使用COW后就可以节省这部分内存。
+即使变量的值立刻被改变，新值的内存分配也会洽如其分。</p>
+
+<blockquote class='note'>
+<p>上面小例子中的xdebug_debug_zval()是xdebug扩展中的一个函数，用于输出变量在zend内部的引用信息。
+  如果你没有安装xdebug扩展，也可以使用debug_zval_dump()来代替。
+  参考：http://www.php.net/manual/zh/function.debug-zval-dump.php</p>
+</blockquote>
+
+<h3>写时复制的实现<a name='写时复制的实现'></a></h3>
+
+<p>写时复制应用的场景很多，最常见是赋值和函数传参。
+在上面的例子中，就使用了zend_assign_to_variable()函数（<strong>Zend/zend_execute.c</strong>）
+对变量的赋值进行了各种判断和处理。
+其中最终处理代码如下：</p>
+
+<pre class="c"><span class="kw1">if</span> <span class="br0">&#40;</span>PZVAL_IS_REF<span class="br0">&#40;</span>value<span class="br0">&#41;</span> <span class="sy0">&amp;&amp;</span> Z_REFCOUNT_P<span class="br0">&#40;</span>value<span class="br0">&#41;</span> <span class="sy0">&gt;</span> <span class="nu0">0</span><span class="br0">&#41;</span> <span class="br0">&#123;</span>
+    ALLOC_ZVAL<span class="br0">&#40;</span>variable_ptr<span class="br0">&#41;</span><span class="sy0">;</span>
+    <span class="sy0">*</span>variable_ptr_ptr <span class="sy0">=</span> variable_ptr<span class="sy0">;</span>
+    <span class="sy0">*</span>variable_ptr <span class="sy0">=</span> <span class="sy0">*</span>value<span class="sy0">;</span>
+    Z_SET_REFCOUNT_P<span class="br0">&#40;</span>variable_ptr<span class="sy0">,</span> <span class="nu0">1</span><span class="br0">&#41;</span><span class="sy0">;</span>
+    zval_copy_ctor<span class="br0">&#40;</span>variable_ptr<span class="br0">&#41;</span><span class="sy0">;</span>
+<span class="br0">&#125;</span> <span class="kw1">else</span> <span class="br0">&#123;</span>
+    <span class="sy0">*</span>variable_ptr_ptr <span class="sy0">=</span> value<span class="sy0">;</span>
+    Z_ADDREF_P<span class="br0">&#40;</span>value<span class="br0">&#41;</span><span class="sy0">;</span>
+<span class="br0">&#125;</span></pre>
+
+<p>从这段代码可以看出，如果要进行操作的值已经是引用类型（如已经被<strong>&amp;</strong>操作符操作过）,
+则直接重新分配内存，否则只是将value的地址赋与变量，同时将值的zval_value.refcount进行加1操作。</p>
+
+<p>如果大家看过前面的章节，
+应该对变量存储的结构体zval（Zend/zend.h）还有印象：</p>
+
+<pre class="c"><span class="kw4">typedef</span> <span class="kw4">struct</span> _zval_struct zval<span class="sy0">;</span>
+...
+<span class="kw4">struct</span> _zval_struct <span class="br0">&#123;</span>
+    <span class="coMULTI">/* Variable information */</span>
+    zvalue_value value<span class="sy0">;</span>     <span class="coMULTI">/* value */</span>
+    zend_uint refcount__gc<span class="sy0">;</span>
+    zend_uchar type<span class="sy0">;</span>    <span class="coMULTI">/* active type */</span>
+    zend_uchar is_ref__gc<span class="sy0">;</span>
+<span class="br0">&#125;</span><span class="sy0">;</span></pre>
+
+<p>PHP对值的写时复制的操作，主要依赖于两个参数：<strong>refcount__gc</strong>与<strong>is_ref__gc</strong>。
+如果是引用类型，则直接进行“分离”操作，即时分配内存，
+否则会写时复制，也就是在修改其值的时候才进行内存的重新分配。</p>
+
+<blockquote class='note'>
+<p>写时复制的规则比较繁琐，什么情况会导致写时复制及分离，是有非常多种情况的。
+  在这里只是举一个简单的例子帮助大家理解，后续会在附录中列举PHP中所有写时复制的相关规则。</p>
+</blockquote>
+
+<h3>写时复制的矛盾，PHP中不推荐使用<strong>&amp;</strong>操作符的部分解释<a name='写时复制的矛盾，PHP中不推荐使用**&**操作符的部分解释'></a></h3>
+
+<p>上面是一个比较典型的例子，但现实中的PHP实现经过各种权衡，
+甚至有时对一个特性的支持与否，是互相矛盾且难以取舍的。
+比如，unset()看上去是用来把变量释放，然后把内存标记于空闲的。
+可是，在下面的例子中，unset并没有使内存池的内存增加：</p>
+
+<pre class="php"><span class="kw2">&lt;?php</span>
+<span class="re0">$tipi</span> <span class="sy0">=</span> <span class="nu0">10</span><span class="sy0">;</span>
+<span class="re0">$o_o</span>  <span class="sy0">=</span> <span class="sy0">&amp;</span><span class="re0">$tipi</span><span class="sy0">;</span>
+<a href="http://www.php.net/unset"><span class="kw3">unset</span></a><span class="br0">&#40;</span><span class="re0">$o_o</span><span class="br0">&#41;</span><span class="sy0">;</span>
+<a href="http://www.php.net/echo"><span class="kw3">echo</span></a> <span class="re0">$tipi</span><span class="sy0">;</span>
+<span class="sy1">?&gt;</span></pre>
+
+<p>理论上$o_o是$tipi的引用，这两者应该指向同一块内存，其中一个被标识为回收，
+另一个也应该被回收才是。但这是不可能的，因为内存本身并不知道都有哪些指针
+指向了自已。在C中，o_o这时的值应该是无法预料的，
+但PHP不想把这种维护变量引用的工作交给用户，于是，
+使用了折中的方法，unset()此时只会把tipi变量名从hashtable中去掉，
+而内存值的引用计数减1。实际的内存使用完全没有变化。</p>
+
+<p>试想，如果$tipi是一个非常大的数组，或者是一个资源型的变量。
+这种情形绝对是我们不想看到的。</p>
+
+<p>上面这个例子我们还可以理解，如果每个这种类似操作都要用户来关心。
+那PHP就是变换了语法的C了。而下面的这个例子，与其说是语言特性，
+倒不如说是更像BUG多一些。（事实上对此在PHP官方的邮件组里有也争论）</p>
+
+<pre class="php"><span class="kw2">&lt;?php</span>
+<span class="re0">$foo</span> <span class="br0">&#91;</span><span class="st_h">'love'</span><span class="br0">&#93;</span> <span class="sy0">=</span> <span class="nu0">1</span><span class="sy0">;</span>
+<span class="re0">$bar</span>  <span class="sy0">=</span> <span class="sy0">&amp;</span><span class="re0">$foo</span><span class="br0">&#91;</span><span class="st_h">'love'</span><span class="br0">&#93;</span><span class="sy0">;</span>
+<span class="re0">$tipi</span> <span class="sy0">=</span> <span class="re0">$foo</span><span class="sy0">;</span>
+<span class="re0">$tipi</span><span class="br0">&#91;</span><span class="st_h">'love'</span><span class="br0">&#93;</span> <span class="sy0">=</span> <span class="st_h">'2'</span><span class="sy0">;</span>
+<a href="http://www.php.net/echo"><span class="kw3">echo</span></a> <span class="re0">$foo</span><span class="br0">&#91;</span><span class="st_h">'love'</span><span class="br0">&#93;</span><span class="sy0">;</span>
+<span class="sy1">?&gt;</span></pre>
+
+<p>这个例子最后会输出 2 ， 大家会非常惊讶于$tipi怎么会影响到$foo, 
+这完全是两个不同的变量么！至少我们希望是这样。</p>
+
+<blockquote class='note'>
+<p>关于这个例子的原理，相信大家仔细推敲一下，不难找到答案。
+  我们也欢迎大家在下方留言，或者进行讨论。</p>
+</blockquote>
+
+<p>最后，不推荐大家使用 <strong>&amp;</strong> ，让PHP自己决定什么时候该使用引用好了，
+除非你知道自己在做什么。</p>
+		</div>
+	</body>
+</html>
