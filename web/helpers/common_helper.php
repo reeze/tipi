@@ -36,7 +36,9 @@ function url_for($url, $absolute=false)
 	}
 
 	$protocal = (isset($_SERVER['HTTP_PORT']) && $_SERVER['HTTP_PORT'] == '443') ? 'https' : 'http';
-	$host     = $_SERVER['HTTP_HOST'];
+
+	// !isset的情况下就是在命令行模式下的，这时使用默认的线上host信息
+	$host     = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : ONLINE_HOSTNAME;
 
 	return ($absolute ? "{$protocal}://{$host}" : "" ) . $base_url . $url;
 }

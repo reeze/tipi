@@ -1,6 +1,6 @@
 <?php
 
-require_once '../lib/MarkdownPage.php';
+require_once dirname(__FILE__) . '/../lib/MarkdownPage.php';
 
 /**
  * 图书页逻辑

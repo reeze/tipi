@@ -2,7 +2,10 @@
 error_reporting(E_ALL ^ E_NOTICE);
 date_default_timezone_set('Asia/Shanghai');
 
-define('IN_PROD_MODE', ($_SERVER['HTTP_HOST'] == 'www.php-internal.com' ? true : false)); 
+// 应用上线的地址
+define('ONLINE_HOSTNAME', 'www.php-internal.com');
+
+define('IN_PROD_MODE', ($_SERVER['HTTP_HOST'] == ONLINE_HOSTNAME ? true : false)); 
 
 // 线上模式下开启缓存，也可以手动修改
 define('ENABLE_PAGE_CACHE', IN_PROD_MODE);

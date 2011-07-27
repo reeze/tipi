@@ -11,12 +11,47 @@ a {
 }
 
 .page {
-	width: 100%;
+	padding: 30px;
+	text-align: left;
 }
 
-.pdf {
-	padding: 60px;
-	margin-top: 5em;
+.page h1, .page h2, .page h3, .page h4 {
+	margin: 0;
+}
+
+.leave-comment {
+	border-bottom: 1px solid #ccc;
+	margin-bottom: 10px;
+}
+.leave-comment a {
+	font-weight: bold;
+	sbackground-color: #fff173;
+}
+
+.chm{
+}
+
+.chm .top {
+	background-color: #333;
+}
+#book_page_navor {
+	padding: 0 10px;
+}
+
+.chm .top a {
+	color: #fff;
+	display: block;
+	text-decoration:none;
+	padding: 6px;
+}
+
+.chm .top a:hover {
+	background-color: #444;
+	text-decoration: underline;
+}
+
+.chm #book_page_navor {
+	border: 0;
 }
 
 #portable-cover {
@@ -26,20 +61,20 @@ a {
 h1 {
 	font-size: 1.6em;
 	color: #006ea3;
-	margin-top: 5em;
+}
+
+h2 {
+	color: #006ea3;
 }
 
 h1, h2, h3, h4, h5, h6 {
 	border-bottom: 1px solid #ccc;
 	padding: 5px 0;
-	padding-top: 20px;
 }
 
 h1 {
-	margin-top: 15em;
 	color: #006ea3;
 	border-bottom:  1px solid #999;
-	padding-top: 25px;
 }
 
 pre {
