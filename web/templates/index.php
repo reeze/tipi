@@ -4,7 +4,7 @@
 	</div>
 
 	<div id="get-it">
-		<span id="tipi-version"><?php echo Tipi::getVersion(); ?>(儿童节版)</span>
+		<span id="tipi-version"><?php echo Tipi::getVersion(); ?> [<em>PDF</em>, <em>CHM</em>]</span>
 		<a class='read' href='<?php echo url_for("/book/"); ?>'><span>阅读</span></a>
 		<span id="get-it-sep"></span>
 		<a class='downloads' href='<?php echo url_for("/downloads/"); ?>'><span>下载</span></a>
@@ -39,8 +39,8 @@
 			<div class="inner">
 				<h2>使用<span>Enjoy It</span></h2>
 				<p>
-					我们提供《深入理解PHP内核》的在线阅读及PDF版的下载，后续也会提供epub，chm等格式的离线下载，这是在我们的计划当中的。
-					如果你网络环境不好，想离线浏览，您可以下载我们的整个项目。请参考<a href="<?php echo url_for("/about/"); ?>">关于页面</a>，这里有本地使用的一些说明。
+					我们提供《深入理解PHP内核》的在线阅读及PDF、CHM版的下载，后续也会提供epub格式的离线下载，这是在我们的计划当中的。
+					如果你网络环境不好，想离线浏览，您也可以下载我们的整个项目。请参考<a href="<?php echo url_for("/about/"); ?>">关于页面</a>，这里有本地使用的一些说明。
 				</p>
 				<p>
 					虽然TIPI项目主要关注PHP内部实现和相关技术的研究，作为互联网爱好者，无论是互联网产品还是电子书籍，

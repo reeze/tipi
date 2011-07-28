@@ -9,9 +9,10 @@ TIPI项目，主要包括: 深入理解PHP，以及相关的项目,本站所有�
 书的内容还没有完成写完，这也是一个长久的过程。不过我们每次更新：比如写完一章都会发布新的版本，同时提供各种格式的下载。
 </p>
 
-<div id="download-list">
-	目前提供PDF版本的下载，当前版本<span class="current-version"><?php echo TIPI::getVersion(); ?>.pdf</span>：
-	<div style='padding-left: 100px;'><a target='_blank' href="<?php echo url_for("/releases/RELEASE_2011-06-01_V0.5.9.pdf"); ?>"><img src="<?php echo url_for("/images/icon_pdf.png"); ?>" /></a></div>
+<p>目前提供PDF以及CHM格式版本的下载，当前版本为：<span class="current-version"><?php echo TIPI::getVersion(); ?></span>：</p>
+<div id="download-list" class="clearfix">
+	<div style='padding-left: 100px;' class="fl"><a target='_blank' href="<?php echo url_for("/releases/" . TIPI::getVersion() . ".pdf"); ?>"><img src="<?php echo url_for("/images/icon_pdf.png"); ?>" /></a></div>
+	<div style='padding-left: 100px;' class="fl"><a target='_blank' href="<?php echo url_for("/releases/" . TIPI::getVersion() . ".chm"); ?>"><img src="<?php echo url_for("/images/icon_chm.png"); ?>" /></a></div>
 </div>
 <p>
 本站所有的内容都托管在github上,我们目前推荐从： <a href="http://github.com/reeze/tipi">http://github.com/reeze/tipi</a>下载。

@@ -21,6 +21,11 @@ a {
 	font-size: 1.4em;
 }
 
+#tipi-version em {
+	font-style: normal;
+	color: #1299DA;
+}
+
 .current-version {
 	font-size: 1.2em;
 	border: 1px solid #bbb;
@@ -110,6 +115,12 @@ a {
 
 #download-list a {
 	display: block;
+	text-align: center;
+	padding: 30px;
+}
+
+#download-list a:hover {
+	background-color: #dfdfdf;
 }
 
 #get-started {
