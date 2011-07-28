@@ -23,23 +23,23 @@ if (class_exists('TipiCHM') === FALSE) {
         public function copyCSS($filename) {
             copy($filename, $this->_filepath . $this->_subPath . "/" . basename($filename));
         }
-        
-        public  function copyImagesOfDiretory() {
+
+        public function copyImagesOfDiretory() {
             $list = glob(TIPI_ROOT_PATH . "/book/images/chapt*/*.*");
             foreach ($list as $filename) {
                 $this->copyImages($filename);
             }
         }
-        
+
         public function copyCHM() {
             $filename = $this->_filename . ".chm";
             copy($this->_filepath . $filename, ROOT_PATH . "/releases/" . basename($filename));
         }
-        
-         public function copyImages($filename) {
+
+        public function copyImages($filename) {
             copy($filename, $this->_filepath . $this->_subPath . "/" . basename($filename));
         }
-        
+
         private function _createFilename($page_name) {
             return $this->_subPath . "/" . substr($page_name, strrpos($page_name, '/') + 1) . '.html';
         }
@@ -74,7 +74,7 @@ if (class_exists('TipiCHM') === FALSE) {
         }
 
         private function _encodeAndwrite($fp, $content) {
-            fwrite($fp, iconv('UTF-8', 'GBK', $content));
+            fwrite($fp, iconv('UTF-8', 'GBK//IGNORE', $content));
         }
 
         function createHHC() {
@@ -144,7 +144,7 @@ EOF;
             fclose($fp);
         }
 
-        public function createHHP() { 
+        public function createHHP() {
             $name = $this->_filename;
             $filename = $this->_filepath . $this->_filename . ".hhp";
             $fp = fopen($filename, "w");
@@ -155,7 +155,7 @@ Auto Index=Yes
 Compatibility=1.1 or later
 Compiled file=$name.chm
 Contents file=$name.hhc
-Default topic=$name
+Default topic=$this->_subPath/home.html
 Display compile progress=No
 Index file=$name.hhk
 Title=$name
@@ -180,24 +180,36 @@ EOF;
                             'pages' => array($row)
                                 ), TRUE);
 
-				// 只替换站内链接，而不替换绝对地址
+                /* 替换图片地址  只替换站内链接，而不替换绝对地址 */
                 $content = preg_replace("%(^http:)(.*?)src=\"[^\"]+chapt[^/]+/%i", 'src="', $content);
 
-				// 输出内容也重新编码为GBK编码
-				$content = iconv("UTF-8", "GBK//IGNORE", $content);
+                /*  替换图片站内页面导航地址  */
+                $content = preg_replace("%<a href=\"[^\"]+chapt[^/]+/([^\"]+)\">%i", '<a href="\\1.html">', $content);
+                /* 替换评论地址*/
+                $content = preg_replace("%<a href=\"[^\?\"]+([^\"]+#comment)\"%i", '<a href="http://www.php-internal.com/book/\\1"', $content);
                 
                 $fp = fopen($filename, "w");
                 flock($fp, LOCK_EX);
-                fwrite($fp, $content);
+                $this->_encodeAndwrite($fp, $content); // 输出内容也重新编码为GBK编码
                 flock($fp, LOCK_UN);
                 fclose($fp);
             }
         }
 
+        public function createHome() {
+            $filename = $this->_filepath . $this->_createFilename('ch/home');
+
+            $view = new SimpieView('../../web/templates/chm/home.php');
+            $content = $view->render(array(), TRUE);
+
+            $fp = fopen($filename, "w");
+            flock($fp, LOCK_EX);
+            $this->_encodeAndwrite($fp, $content); // 输出内容也重新编码为GBK编码
+            flock($fp, LOCK_UN);
+            fclose($fp);
+        }
+
     }
 
 }
-
-
-
 ?>
