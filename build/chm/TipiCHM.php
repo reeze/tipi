@@ -181,7 +181,7 @@ EOF;
                                 ), TRUE);
 
                 /* 替换图片地址  只替换站内链接，而不替换绝对地址 */
-                $content = preg_replace("%(^http:)(.*?)src=\"[^\"]+chapt[^/]+/%i", 'src="', $content);
+                $content = preg_replace("%src=\"\.\.\/images\/book(.*?)chapt(.*?)[^/]+/%i", 'src="', $content);
 
                 /*  替换图片站内页面导航地址  */
                 $content = preg_replace("%<a href=\"[^\"]+chapt[^/]+/([^\"]+)\">%i", '<a href="\\1.html">', $content);
