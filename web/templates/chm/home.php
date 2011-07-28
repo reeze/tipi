@@ -19,7 +19,7 @@
 	<div id="cover-authors">
 		<ul>
 			<li>reeze <?php echo link_to("http://reeze.cn", "http://reeze.cn"); ?></li>
-			<li>er <?php echo link_to("http://www.zhanger.com", "http://www.zhanger.com"); ?></li>
+			<li>er <?php echo link_to("http://www.zhangabc.com", "http://www.zhangabc.com"); ?></li>
 			<li>phppan <?php echo link_to("http://www.phppan.com", "http://www.phppan.com"); ?></li>
 		</ul>
 	</div>
