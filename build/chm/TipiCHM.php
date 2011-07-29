@@ -186,7 +186,7 @@ EOF;
                 /*  替换图片站内页面导航地址  */
                 $content = preg_replace("%<a href=\"[^\"]+chapt[^/]+/([^\"]+)\">%i", '<a href="\\1.html">', $content);
                 /* 替换评论地址*/
-                $content = preg_replace("%<a href=\"[^\?\"]+([^\"]+#comment)\"%i", '<a href="http://www.php-internal.com/book/\\1"', $content);
+                $content = preg_replace("%<a href=\"[^\?\"]+([^\"]+#comment)\"%i", '<a href="http://www.php-internal.com/book/\\1" target="_blank"', $content);
                 
                 $fp = fopen($filename, "w");
                 flock($fp, LOCK_EX);
