@@ -10,11 +10,11 @@
 
 1. 新增加第六章内存管理
 1. 增加CHM格式的支持
-1. 部分文字调整
+1. 部分内容调整
 
 
 TIPI团队
 
-这次发布时我们提供了CHM版本的[下载](http://www.php-internal.com/releases/RELEASE_2011-07-28_V0.6.7.chm)，
+这次发布时我们提供了CHM版本的[下载](http://www.php-internal.com/downloads/)，
 
 [TIPI入口>>>](http://www.php-internal.com/book/)
