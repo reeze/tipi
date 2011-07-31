@@ -1,4 +1,4 @@
-# 第一节 函数的内部结构
+# 函数的内部结构
 在PHP中，函数有自己的作用域，同时在其内部可以实现各种语句的执行，最后返回最终结果值。
 在PHP的源码中可以发现，PHP内核将函数分为以下类型：
 
@@ -54,13 +54,14 @@ PHP内核也会“帮你“返回NULL。
 
 	[c]
 	typedef union _zend_function {
-		zend_uchar type;    /* MUST be the first element of this struct! */
+		zend_uchar type;    /* 如用户自定义则为 #define ZEND_USER_FUNCTION 2
+                                MUST be the first element of this struct! */
 
 		struct {
 			zend_uchar type;  /* never used */
 			char *function_name; 	//函数名称
 			zend_class_entry *scope; //函数所在的类作用域
-			zend_uint fn_flags;		//函数类型，如用户自定义则为 #define ZEND_USER_FUNCTION 2  
+			zend_uint fn_flags;		// 作为方法时的访问类型等，如ZEND_ACC_STATIC等  
 			union _zend_function *prototype; //函数原型
 			zend_uint num_args;		//参数数目
 			zend_uint required_num_args; //需要的参数数目

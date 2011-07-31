@@ -35,7 +35,9 @@
 
 
 - [第四章 函数的实现][function]
-    * [第一节 函数的内部结构][function-struct]
+    * [第一节 函数的内部结构][function-struct-overview]
+        + [函数的内部结构][function-struct]
+		+ [函数间的转换][function-union]
     * [第二节 函数的定义,参数及返回值][function-define-pr]
         + [函数的定义][function-define]
 		+ [函数的参数][function-param]
@@ -138,7 +140,9 @@
 
 
 [function]:            	?p=chapt04/04-00-php-function
-[function-struct]:   	?p=chapt04/04-01-function-struct
+[function-struct-overview]:   	?p=chapt04/04-01-00-function-struct-overview
+[function-struct]:   	?p=chapt04/04-01-01-function-struct
+[function-union]:   	?p=chapt04/04-01-02-function-union
 [function-define-pr]:  	?p=chapt04/04-02-00-function-define-param-return
 [function-define]:  	?p=chapt04/04-02-01-function-define
 [function-param]:       ?p=chapt04/04-02-02-function-param
