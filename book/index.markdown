@@ -67,7 +67,7 @@
 	* [第六节 写时复制(Copy-On-Write)(er)][copy-on-write]
 	* [第七节 小结][06-summary]
 
-- [第七章 Zend虚拟机(pan)][zend-vm]
+- [第七章 Zend虚拟机][zend-vm]
 	* [第一节 虚拟机概述(pan)][zend-vm-overview]
 	* 第二节 语法的实现
 		+ 词法分析
