@@ -78,12 +78,58 @@ ZEND_VM_SET_OPCODE_HANDLER是zend_vm_set_opcode_handler函数的接口宏，zend
     }
 
 在前面章节[<< 第二章第三小节 -- opcode处理函数查找 >>][opcode-handler]中介绍了四种查找opcode处理函数的方法，而根据其本质实现查找也在其中，
-只是这种方法对于计算机来说比较容易识别，而对于自然人来说却比较不友好。
+只是这种方法对于计算机来说比较容易识别，而对于自然人来说却不太友好。
 
 handler所指向的方法基本都存在于Zend/zend_vm_execute.h文件文件。
 知道了handler的由来，我们就知道每个opcode调用handler指针函数时最终调用的位置。
 
-以上只是方法的调用，但是对于调用来说最关键的却是参数、临时变量和数据。
+在opcode的处理函数执行完它的本职工作后，常规的opcode都会在函数的最后面添加一句：ZEND_VM_NEXT_OPCODE();。
+这是一个宏，它的作用是将当前的opcode指针指向下一条opcode，并且返回0。如下代码：
+
+    [c]
+    #define ZEND_VM_NEXT_OPCODE() \
+	CHECK_SYMBOL_TABLES() \
+	EX(opline)++; \
+	ZEND_VM_CONTINUE()
+
+    #define ZEND_VM_CONTINUE()   return 0
+
+在execute函数中，处理函数的执行是在一个while(1)循环作用范围中。如下：
+
+    [c]
+    
+	while (1) {
+            int ret;
+    #ifdef ZEND_WIN32
+            if (EG(timed_out)) {
+                zend_timeout(0);
+            }
+    #endif
+
+            if ((ret = EX(opline)->handler(execute_data TSRMLS_CC)) > 0) {
+                switch (ret) {
+                    case 1:
+                        EG(in_execution) = original_in_execution;
+                        return;
+                    case 2:
+                        op_array = EG(active_op_array);
+                        goto zend_vm_enter;
+                    case 3:
+                        execute_data = EG(current_execute_data);
+                    default:
+                        break;
+                }
+            }
+
+        }
+
+前面说到每个中间代码在执行完后都会将中间代码的指针指向下一条指令，并且返回0。
+当返回0时，while 循环中的if语句都不满足条件，从而使得中间代码可以继续执行下去。
+正是这个while(1)的循环使得PHP内核中的opcode可以从第一条执行到最后一条，当然这中间也有一些函数的跳转或类方法的执行等。
+
+以上是opcode对应的处理函数调用，但是对于调用来说最关键的却是数据。
+
+
 
 
 
