@@ -74,7 +74,7 @@
 		+ 语法分析
 		+ 实现自己的语法(er)
 	* [第三节 中间码的执行(pan)][opcode-exec]
-	* 第四节 源码的加密解密实现
+	* [第四节 源码的加密解密实现][source-code-encrypt]
 	* 第五节 小结
 
 - 第八章 线程安全
@@ -175,3 +175,4 @@
 [zend-vm]:                  ?p=chapt07/07-00-zend-vm
 [zend-vm-overview]:         ?p=chapt07/07-01-zend-vm-overview
 [opcode-exec]:              ?p=chapt07/07-03-opcode-exec
+[source-code-encrypt]:              ?p=chapt07/07-04-source-code-encrypt
