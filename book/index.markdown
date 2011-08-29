@@ -64,7 +64,7 @@
 	* [第四节 垃圾回收机制][garbage-collection]
 		+ [新的垃圾回收机制][new-gc]
 	* [第五节 内存管理中的缓存][php-memory-cache]
-	* [第六节 写时复制(Copy-On-Write)(er)][copy-on-write]
+	* [第六节 写时复制(Copy-On-Write)][copy-on-write]
 	* [第七节 小结][06-summary]
 
 - [第七章 Zend虚拟机][zend-vm]
@@ -72,7 +72,7 @@
 	* 第二节 语法的实现
 		+ 词法分析
 		+ 语法分析
-		+ 实现自己的语法(er)
+		+ [实现自己的语法][zend-hack-php-syntax]
 	* 第三节 中间码的执行
 	* 第四节 源码的加密解密实现
 	* 第五节 小结
@@ -146,7 +146,7 @@
 [function-define-pr]:  	?p=chapt04/04-02-00-function-define-param-return
 [function-define]:  	?p=chapt04/04-02-01-function-define
 [function-param]:       ?p=chapt04/04-02-02-function-param
-[function-return]:       ?p=chapt04/04-02-03-function-return
+[function-return]:      ?p=chapt04/04-02-03-function-return
 [function-call]:   		?p=chapt04/04-03-function-call
 [anonymous-function]:   ?p=chapt04/04-04-anonymous-function
 [04-summary]:   		?p=chapt04/04-05-summary
@@ -154,10 +154,10 @@
 [class]:                ?p=chapt05/05-00-class-and-oop
 [class-struct]:         ?p=chapt05/05-01-class-struct
 [class-member-variables-and-methods]: ?p=chapt05/05-02-class-member-variables-and-methods
-[class-visibility]:      ?p=chapt05/05-03-class-visibility
-[class-inherit-abstract]: ?p=chapt05/05-04-class-inherit-abstract
-[class-magic-methods-latebinding]: ?p=chapt05/05-05-class-magic-methods-latebinding
-[class-reserved-and-special-classes]: ?p=chapt05/05-06-class-reserved-and-special-classes
+[class-visibility]:         ?p=chapt05/05-03-class-visibility
+[class-inherit-abstract]:   ?p=chapt05/05-04-class-inherit-abstract
+[class-magic-methods-latebinding]:      ?p=chapt05/05-05-class-magic-methods-latebinding
+[class-reserved-and-special-classes]:   ?p=chapt05/05-06-class-reserved-and-special-classes
 [class-object]:         ?p=chapt05/05-07-class-object
 [class-namespace]:      ?p=chapt05/05-08-class-namespace
 [05-summary]:           ?p=chapt05/05-09-summary
@@ -174,4 +174,5 @@
 
 [zend-vm]:                  ?p=chapt07/07-00-zend-vm
 [zend-vm-overview]:         ?p=chapt07/07-01-zend-vm-overview
+[zend-hack-php-syntax]:     ?p=chapt07/07-02-03-hack-php-syntax
 
