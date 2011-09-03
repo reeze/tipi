@@ -88,7 +88,7 @@
 	EG(current_execute_data) = execute_data;
 所以，变量的作用域是使用不同的符号表来实现的，于是顶层的全局变量在函数内部使用时，
 需要先使用global语句来将变量“挪”到函数独立的*active_symbol_table中，
-即变量的跨域操作。（关于gloal的详细解释，见下一小节）
+即变量的跨域操作。（关于global的详细解释，见下一小节）
 
 >**NOTE**
 >在PHP的源码中，EX宏经常出现，它的作用是获取结构体zend_execute_data的字段值，它的实现是：        

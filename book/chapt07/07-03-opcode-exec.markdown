@@ -127,7 +127,69 @@ handler所指向的方法基本都存在于Zend/zend_vm_execute.h文件文件。
 当返回0时，while 循环中的if语句都不满足条件，从而使得中间代码可以继续执行下去。
 正是这个while(1)的循环使得PHP内核中的opcode可以从第一条执行到最后一条，当然这中间也有一些函数的跳转或类方法的执行等。
 
-以上是opcode对应的处理函数调用，但是对于调用来说最关键的却是数据。
+以上是一条中间代码的执行，那么对于函数的递归调用，PHP内核是如何处理的呢？
+看如下一段PHP代码：
+
+    [php]
+    function t($c) {
+        echo $c, "\n";
+        if ($c > 2) {
+                return ;
+        }
+        t($c + 1);
+    }
+    t(1);
+
+这是一个简单的递归调用函数实现，它递归调用了两次，这个递归调用是如何进行的呢？
+我们知道函数的调用所在的中间代码最终是调用zend_do_fcall_common_helper_SPEC(Zend/zend_vm_execute.h)。
+在此函数中有如下一段：
+
+	[c]
+	if (zend_execute == execute && !EG(exception)) {
+        EX(call_opline) = opline;
+        ZEND_VM_ENTER();
+    } else {
+        zend_execute(EG(active_op_array) TSRMLS_CC);
+    }
+
+这里有一些奇怪，明明zend_execute等于execute，这在前面的内容中已经说明过了，岂不是程序永远会执行第一个判断条件后的内容？
+在我们这个版本中，程序的执行是这样的，笔者认为这是代码作者对向后兼容的一种妥协。
+ZEND_VM_ENTER()定义在Zend/zend_vm_execute.h的开头，如下：
+
+	[c]
+	#define ZEND_VM_CONTINUE()   return 0 
+	#define ZEND_VM_RETURN()     return 1 
+	#define ZEND_VM_ENTER()      return 2 
+	#define ZEND_VM_LEAVE()      return 3 
+
+这些在中间代码的执行函数中都有用到，这里的ZEND_VM_ENTER()表示return 2。
+在前面的内容中我们有说到在调用了EX(opline)->handler(execute_data TSRMLS_CC))后会将返回值赋值给ret。
+然后根据ret判断下一步操作，这里的递归函数是返回２，于是下一步操作是：
+	
+	[c]
+    op_array = EG(active_op_array);
+    goto zend_vm_enter;
+
+这里将EG(active_op_array)的值赋给op_array后，直接跳转到execute函数的定义的zend_vm_enter标签，
+此时的EG(active_op_array)的值已经在zend_do_fcall_common_helper_SPEC中被换成了当前函数的中间代码集合，其实现代码为：
+
+	[c]
+	if (EX(function_state).function->type == ZEND_USER_FUNCTION) {	//	用户自定义的函数
+                EX(original_return_value) = EG(return_value_ptr_ptr);
+                EG(active_symbol_table) = NULL;
+                EG(active_op_array) = &EX(function_state).function->op_array;	//	将当前活动的中间代码指针指向用户自定义函数的中间代码数组
+                EG(return_value_ptr_ptr) = NULL;
+
+当内核执行完用户自定义的函数后，怎么返回之前的中间代码代码主干路径呢？
+这是由于在execute函数中初始化数据时已经将当前的路径记录在EX(op_array)中了（EX(op_array)　= op_array;）
+当用户函数返回时程序会将之前保存的路径重新恢复到EG(active_op_array)中（EG(active_op_array) = EX(op_array);）。
+可能此时你会问如果函数没有返回呢？这种情况在用户自定义的函数中不会发生的，就算是你没有写return语句，PHP内核也会自动给加上一个return语句，
+这在第四章　[<< 第四章 函数的实现 »	 第二节 函数的定义，传参及返回值 »	 函数的返回值 >>][function-return]已经有说明过。
+
+整个调用路径如下图所示：
+
+![图7.2 Zend中间代码调用路径图](../images/chapt07/07-03-01-zend-opcodes.png)
+
 
 
 
@@ -135,3 +197,4 @@ handler所指向的方法基本都存在于Zend/zend_vm_execute.h文件文件。
 
 [opcode]: 				?p=chapt02/02-03-02-opcode
 [opcode-handler]: 		?p=chapt02/02-03-03-from-opcode-to-handler
+[function-return]:       ?p=chapt04/04-02-03-function-return
