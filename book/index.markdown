@@ -69,11 +69,11 @@
 
 - [第七章 Zend虚拟机][zend-vm]
 	* [第一节 虚拟机概述][zend-vm-overview]
-	* 第二节 语法的实现
-		+ 词法分析
+	* [第二节 语法的实现(pan)][php-syntax]
+		+ [词法分析(pan)][zend-re2c-scanner]
 		+ 语法分析
 		+ [实现自己的语法][zend-hack-php-syntax]
-	* [第三节 中间码的执行(pan)][opcode-exec]
+	* [第三节 中间码的执行][opcode-exec]
 	* [第四节 源码的加密解密实现][source-code-encrypt]
 	* 第五节 小结
 
@@ -174,6 +174,8 @@
 
 [zend-vm]:                  ?p=chapt07/07-00-zend-vm
 [zend-vm-overview]:         ?p=chapt07/07-01-zend-vm-overview
+[php-syntax]:               ?p=chapt07/07-02-00-php-syntax
+[zend-re2c-scanner]:        ?p=chapt07/07-02-01-zend-re2c-scanner
 [zend-hack-php-syntax]:     ?p=chapt07/07-02-03-hack-php-syntax
 [opcode-exec]:              ?p=chapt07/07-03-opcode-exec
 [source-code-encrypt]:      ?p=chapt07/07-04-source-code-encrypt
