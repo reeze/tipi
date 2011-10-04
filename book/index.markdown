@@ -70,7 +70,7 @@
 - [第七章 Zend虚拟机][zend-vm]
 	* [第一节 虚拟机概述][zend-vm-overview]
 	* [第二节 语法的实现(pan)][php-syntax]
-		+ [词法分析(pan)][zend-re2c-scanner]
+		+ [词法分析][zend-re2c-scanner]
 		+ 语法分析
 		+ [实现自己的语法][zend-hack-php-syntax]
 	* [第三节 中间码的执行][opcode-exec]
