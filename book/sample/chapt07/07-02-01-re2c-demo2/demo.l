@@ -26,7 +26,9 @@ int scan(){
 	  <ST_IN_SCRIPTING>"exit" { return T_EXIT; }
 	  <ST_IN_SCRIPTING>[a-z]+ {return T_LOWER_CHAR;}
 	  <ST_IN_SCRIPTING>[A-Z]+ {return T_UPPER_CHAR;}
-	  <ST_IN_SCRIPTING>"?>" {return T_END;}
+	  <ST_IN_SCRIPTING>"?>" {BEGIN(INITIAL); return T_END;}
+          <ST_IN_SCRIPTING>[\000] {BEGIN(INITIAL); return T_END;}
+
 
 	  <ST_IN_SCRIPTING>[^] {return T_UNKWON;}
 	  <*>[^] {return T_INPUT_ERROR;}
