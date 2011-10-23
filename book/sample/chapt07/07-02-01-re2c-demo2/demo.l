@@ -30,7 +30,7 @@ int scan(){
           <ST_IN_SCRIPTING>[\000] {BEGIN(INITIAL); return T_END;}
 
 
-	  <ST_IN_SCRIPTING>[^] {return T_UNKWON;}
+	  <ST_IN_SCRIPTING>[^] {return T_UNKNOWN;}
 	  <*>[^] {return T_INPUT_ERROR;}
 	 */
 }
@@ -42,7 +42,7 @@ void print_token(int token) {
 		case T_LOWER_CHAR: printf("%s\n", "lower char");break;
 		case T_UPPER_CHAR: printf("%s\n", "upper char");break;
 		case T_EXIT: printf("%s\n", "exit");break;
-		case T_UNKWON: printf("%s\n", "unkown");break;
+		case T_UNKNOWN: printf("%s\n", "unknown");break;
 		case T_INPUT_ERROR: printf("%s\n", "input error");break;
 		case T_END: printf("%s\n", "end");break;
 	}

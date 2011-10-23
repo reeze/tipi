@@ -122,7 +122,7 @@ re2c中条件表达式相关的宏为YYSETCONDITION和YYGETCONDITION，分别表
           <ST_IN_SCRIPTING>[A-Z]+ {return T_UPPER_CHAR;}
           <ST_IN_SCRIPTING>"?>" {return T_END;}
 
-          <ST_IN_SCRIPTING>[^] {return T_UNKWON;}
+          <ST_IN_SCRIPTING>[^] {return T_UNKNOWN;}
           <*>[^] {return T_INPUT_ERROR;}
          */
     }
@@ -134,7 +134,7 @@ re2c中条件表达式相关的宏为YYSETCONDITION和YYGETCONDITION，分别表
             case T_LOWER_CHAR: printf("%s\n", "lower char");break;
             case T_UPPER_CHAR: printf("%s\n", "upper char");break;
             case T_EXIT: printf("%s\n", "exit");break;
-            case T_UNKWON: printf("%s\n", "unkown");break;
+            case T_UNKNOWN: printf("%s\n", "unknown");break;
             case T_INPUT_ERROR: printf("%s\n", "input error");break;
             case T_END: printf("%s\n", "end");break;
         }
