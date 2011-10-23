@@ -1,0 +1,80 @@
+Nonterminals useless in grammar
+
+   number
+
+
+Terminals unused in grammar
+
+   T_NUMBER
+   T_LOWER_CHAR
+   T_UPPER_CHAR
+   T_EXIT
+   T_UNKWON
+   T_INPUT_ERROR
+   T_END
+   T_WHITESPACE
+
+
+Rules useless in grammar
+
+    2 number: T_NUMBER
+
+
+语法
+
+    0 $accept: start $end
+
+    1 start: T_BEGIN
+
+
+Terminals, with rules where they appear
+
+$end (0) 0
+error (256)
+T_BEGIN (258) 1
+T_NUMBER (259)
+T_LOWER_CHAR (260)
+T_UPPER_CHAR (261)
+T_EXIT (262)
+T_UNKWON (263)
+T_INPUT_ERROR (264)
+T_END (265)
+T_WHITESPACE (266)
+
+
+Nonterminals, with rules where they appear
+
+$accept (12)
+    左： 0
+start (13)
+    左： 1, 右： 0
+
+
+状态 0
+
+    0 $accept: . start $end
+
+    T_BEGIN  shift, and go to state 1
+
+    start  转到状态2
+
+
+状态 1
+
+    1 start: T_BEGIN .
+
+    $default  reduce using rule 1 (start)
+
+
+状态 2
+
+    0 $accept: start . $end
+
+    $end  shift, and go to state 3
+
+
+状态 3
+
+    0 $accept: start $end .
+
+    $default  接受
