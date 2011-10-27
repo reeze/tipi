@@ -51,7 +51,7 @@ PHP提供了public、protected及private三个层次访问控制。这和其他�
     method_modifiers:
             /* empty */
             { Z_LVAL($$.u.constant) = ZEND_ACC_PUBLIC; }
-        |	non_empty_member_modifiers			{ $$ = $1;  
+        |	non_empty_member_modifiers			{ $$ = $1;
             if (!(Z_LVAL($$.u.constant) & ZEND_ACC_PPP_MASK))
             { Z_LVAL($$.u.constant) |= ZEND_ACC_PUBLIC; } }
     ;
@@ -69,7 +69,7 @@ PHP提供了public、protected及private三个层次访问控制。这和其他�
     op_array.fn_flags |= fn_flags;
     //  ...省略
 
-如此，就将访问控制的相关参数传递给了将要执行的中间代码。 
+如此，就将访问控制的相关参数传递给了将要执行的中间代码。
 假如我们先现在有下面一段代码：
 
     [php]
@@ -117,7 +117,7 @@ PHP提供了public、protected及private三个层次访问控制。这和其他�
 		}
 
 		public function getMoney() {
-			return $this->money;	
+			return $this->money;
 		}
 	}
 

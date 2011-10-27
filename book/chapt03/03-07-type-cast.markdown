@@ -52,16 +52,16 @@ PHP变量之间的数据类型转换有两种: 隐式和显式转换。
 
 	[c]
 	ZEND_API int concat_function(zval *result, zval *op1, zval *op2 TSRMLS_DC) /* {{{ */
-	{           
+	{
 			zval op1_copy, op2_copy;
 			int use_copy1 = 0, use_copy2 = 0;
 
-			if (Z_TYPE_P(op1) != IS_STRING) { 
+			if (Z_TYPE_P(op1) != IS_STRING) {
 					zend_make_printable_zval(op1, &op1_copy, &use_copy1);
-			}           
-			if (Z_TYPE_P(op2) != IS_STRING) { 
+			}
+			if (Z_TYPE_P(op2) != IS_STRING) {
 					zend_make_printable_zval(op2, &op2_copy, &use_copy2);
-			}       
+			}
 			// 省略
 	}
 

@@ -51,7 +51,7 @@ re2c调用方式：
 
 我们解释一下我们用到的几个re2c约定的宏。
 
-* YYCTYPE  用于保存输入符号的类型，通常为char型和unsigned char型 
+* YYCTYPE  用于保存输入符号的类型，通常为char型和unsigned char型
 * YYCURSOR 指向当前输入标记， -当开始时，它指向当前标记的第一个字符，当结束时，它指向下一个标记的第一个字符
 * YYFILL(n) 当生成的代码需要重新加载缓存的标记时，则会调用YYFILL(n)。
 * YYLIMIT 缓存的最后一个字符，生成的代码会反复比较YYCURSOR和YYLIMIT，以确定是否需要重新填充缓冲区。
@@ -99,7 +99,7 @@ re2c中条件表达式相关的宏为YYSETCONDITION和YYGETCONDITION，分别表
     Scanner scanner_globals;
 
     #define YYCTYPE char
-    #define YYFILL(n) 
+    #define YYFILL(n)
     #define STATE(name)  yyc##name
     #define BEGIN(state) YYSETCONDITION(STATE(state))
     #define LANG_SCNG(v) (scanner_globals.v)

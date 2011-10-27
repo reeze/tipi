@@ -49,12 +49,12 @@ INSTALL_DATA = $(INSTALL) -m 644
 DEFS = -DPHP_ATOM_INC -I$(top_builddir)/include -I$(top_builddir)/main -I$(top_srcdir)
 COMMON_FLAGS = $(DEFS) $(INCLUDES) $(EXTRA_INCLUDES) $(CPPFLAGS) $(PHP_FRAMEWORKPATH)
 
-all: $(all_targets) 
+all: $(all_targets)
 	@echo
 	@echo "Build complete."
 	@echo "Don't forget to run 'make test'."
 	@echo
-	
+
 build-modules: $(PHP_MODULES) $(PHP_ZEND_EX)
 
 libphp$(PHP_MAJOR_VERSION).la: $(PHP_GLOBAL_OBJS) $(PHP_SAPI_OBJS)
@@ -149,7 +149,7 @@ test: all
 clean:
 	find . -name \*.gcno -o -name \*.gcda | xargs rm -f
 	find . -name \*.lo -o -name \*.o | xargs rm -f
-	find . -name \*.la -o -name \*.a | xargs rm -f 
+	find . -name \*.la -o -name \*.a | xargs rm -f
 	find . -name \*.so | xargs rm -f
 	find . -name .libs -a -type d|xargs rm -rf
 	rm -f libphp$(PHP_MAJOR_VERSION).la $(SAPI_CLI_PATH) $(OVERALL_TARGET) modules/* libs/*
@@ -161,7 +161,7 @@ distclean: clean
 .PHONY: all clean install distclean test
 .NOEXPORT:
 tipi.lo: /home/martin/project/c/phpsrc/ext/tipi/tipi.c
-	$(LIBTOOL) --mode=compile $(CC)  -I. -I/home/martin/project/c/phpsrc/ext/tipi $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /home/martin/project/c/phpsrc/ext/tipi/tipi.c -o tipi.lo 
+	$(LIBTOOL) --mode=compile $(CC)  -I. -I/home/martin/project/c/phpsrc/ext/tipi $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /home/martin/project/c/phpsrc/ext/tipi/tipi.c -o tipi.lo
 $(phplibdir)/tipi.la: ./tipi.la
 	$(LIBTOOL) --mode=install cp ./tipi.la $(phplibdir)
 

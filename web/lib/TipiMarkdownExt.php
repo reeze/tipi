@@ -17,7 +17,7 @@ include(dirname(__FILE__) . '/geshi/geshi.php');
 // Load umodified Michel Fortin's PHP Markdown Extra: http://michelf.com/projects/php-markdown/
 include(dirname(__FILE__) . '/markdown_extra/markdown.php');
 
-class TipiMarkdownExt extends MarkdownExtra_Parser 
+class TipiMarkdownExt extends MarkdownExtra_Parser
 {
 	/**
 	 * Store the headers from the markdown
@@ -27,7 +27,7 @@ class TipiMarkdownExt extends MarkdownExtra_Parser
 	private $_callbacks = array();
 
 	public function __construct($callbacks=array()) {
-		parent::__construct();	
+		parent::__construct();
 
 		$this->_callbacks = $callbacks;
 	}
@@ -40,20 +40,20 @@ class TipiMarkdownExt extends MarkdownExtra_Parser
 	function _doCodeBlocks_callback($matches)
 	{
 		$codeblock = $matches[1];
-		
+
 		$codeblock = $this->outdent($codeblock);
 		// trim leading newlines and trailing whitespace
 		$codeblock = preg_replace(array('/\A\n+/', '/\s+\z/'), '', $codeblock);
-		
+
 		$codeblock = preg_replace_callback(
 			'/^(\[([\w]+)\]\n|)(.*?)$/s', // {{lang:...}}greedy_code
 			array($this, 'syntaxHighlight'),
 			$codeblock
 		);
-		
+
 		return "\n\n".$this->hashBlock($codeblock)."\n\n";
 	}
-	
+
 	function syntaxHighlight($matches)
 	{
 		$geshi = new GeSHi($matches[3], empty($matches[2]) ? "txt" : $matches[2]);
@@ -85,10 +85,10 @@ class TipiMarkdownExt extends MarkdownExtra_Parser
 
 		$bq = $this->runBlockGamut($bq);		# recurse
 
-		# These leading spaces cause problem with <pre> content, 
+		# These leading spaces cause problem with <pre> content,
 		# so we need to fix that:
 
-		$bq = preg_replace_callback('{(\s*<pre>.+?</pre>)}sx', 
+		$bq = preg_replace_callback('{(\s*<pre>.+?</pre>)}sx',
 			array(&$this, '_DoBlockQuotes_callback2'), $bq);
 
 		$bq = "\n". $this->hashBlock("<blockquote{$quote_class}>\n$bq\n</blockquote>")."\n\n";
@@ -101,7 +101,7 @@ class TipiMarkdownExt extends MarkdownExtra_Parser
 	function blockQuote($matches)
 	{
 		self::$quote_class = empty($matches[2]) ? '' : $matches[2];
-		return $matches[3];	
+		return $matches[3];
 	}
 
 	function _doImages_reference_callback($matches) {
@@ -169,12 +169,12 @@ class TipiMarkdownExt extends MarkdownExtra_Parser
 		return $url;
 	}
 
-	// Header 
+	// Header
 	function _doHeaders_callback_setext($matches) {
 		# Terrible hack to check we haven't found an empty list item.
 		if ($matches[2] == '-' && preg_match('{^-(?: |$)}', $matches[1]))
 			return $matches[0];
-		
+
 		$level = $matches[2]{0} == '=' ? 1 : 2;
 
 		$level = isset($this->_callbacks['header']) ? call_user_func($this->_callbacks['header'], $level) : $level;

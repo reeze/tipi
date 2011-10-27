@@ -2,9 +2,9 @@
 
 PHP中有一些特殊的函数和方法，这些函数和方法相比普通方法的特殊之处在于: 用户代码通常不会主动调用，
 而是在特定的时机会被PHP自动调用。在PHP中通常以"\_\_"打头的方法都作为魔术方法， 所以通常不要定义以"\_\_"开头的函数或方法。
-例如:\_\_autoload()函数， 通常我们不会手动调用这个函数， 而如果在代码中访问某个未定义的方法， 
+例如:\_\_autoload()函数， 通常我们不会手动调用这个函数， 而如果在代码中访问某个未定义的方法，
 如过已经定义了\_\_autoload()函数，此时PHP将会尝试调用\_\_autoload()函数， 例如在类的定义中如果定义了\_\_construct()方法，
-在初始化类的实例时将会调用这个方法， 同理还有\_\_destuct()方法， 
+在初始化类的实例时将会调用这个方法， 同理还有\_\_destuct()方法，
 详细内容请参考[PHP手册](http://php.net/manual/en/language.oop5.magic.php)。
 
 ## 魔术函数和魔术方法
@@ -20,9 +20,9 @@ PHP中有一些特殊的函数和方法，这些函数和方法相比普通方�
 *    由ZendVM自动分情境进行调用;
 *    不是必须的，按需定义，自动调用
 
-从以上三个方面可以发现，关于魔术变量的关键理解，主要集中在两个方面：**一，定义在哪里; 二，如何判断其存在并进行调用。**  
+从以上三个方面可以发现，关于魔术变量的关键理解，主要集中在两个方面：**一，定义在哪里; 二，如何判断其存在并进行调用。**
 
-首先，魔术变量的存储在**_zend_class_entry**中的代码如下：（完整的**_zend_class_entry**代码见本章第一节）    
+首先，魔术变量的存储在**_zend_class_entry**中的代码如下：（完整的**_zend_class_entry**代码见本章第一节）
 
 	[c]
 	struct _zend_class_entry {
@@ -78,11 +78,11 @@ Zend VM在初始化对象的时候，使用了new关键字，对其OPCODE进行�
 	}
 
 	//get_constructor的实现
-	ZEND_API union _zend_function *zend_std_get_constructor(zval *object TSRMLS_DC) 
+	ZEND_API union _zend_function *zend_std_get_constructor(zval *object TSRMLS_DC)
 	{
 	    zend_object *zobj = Z_OBJ_P(object);
 	    zend_function *constructor = zobj->ce->constructor;
-		
+
 		if(constructor){ ... } else { ...}
 		...
 	}
@@ -136,13 +136,13 @@ ZendVM判断**zend_object->ce->destructor**是否为空，如果不为空，则�
 进入**__destruct**的方式与**__construct**不同的是，**__destruct**的执行方式是由ZendVM直接调用**zend_call_function**来执行。
 
 ###__call与__callStatic###
-+    **__call**：在对对象不存在的方法进行调用时自动执行;    
++    **__call**：在对对象不存在的方法进行调用时自动执行;
 +    **__callStatic**：在对对象不存在的静态方法进行调用时自动执行;
 
 **__call**与**__callStatic**的调用机制几乎完全相同，关于函数的执行已经在上一章中提到，
 用户对函数的调用是由**zend_do_fcall_common_helper_SPEC()**方法进行处理的。
 
-####__call：#### 
+####__call：####
 经过**[ZEND_DO_FCALL_BY_NAME_SPEC_HANDLER]-> [zend_do_fcall_common_helper_SPEC]-> [zend_std_call_user_call]-> [zend_call_method]->[zend_call_function]**
 调用，经过**zend_do_fcall_common_helper_SPEC**的分发，最终使用**zend_call_function**来执行**__call**。
 ####__callStatic：####
@@ -192,7 +192,7 @@ PHP中还有很多种魔术方法，它们的处理方式基本与上面类似�
 这个类型作为操作的extended_value字段存在，此字段在后面执行获取类的中间代码ZEND_FETCH_CLASS（ZEND_FETCH_CLASS_SPEC_CONST_HANDLER）时，
 将作为第三个参数(fetch_type)传递给获取类名的最终执行函数zend_fetch_class。
 
-    EX_T(opline->result.u.var).class_entry = zend_fetch_class(Z_STRVAL_P(class_name), 
+    EX_T(opline->result.u.var).class_entry = zend_fetch_class(Z_STRVAL_P(class_name),
         Z_STRLEN_P(class_name), opline->extended_value TSRMLS_CC);
 
 至于在后面如何执行，请查看下一小节：第六节 PHP保留类及特殊类

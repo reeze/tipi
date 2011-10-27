@@ -18,7 +18,7 @@ class SimpieCache
 	 */
 	public static function get_or_set($key, $callback, $expire=0)
 	{
-		$content = self::get($key);	
+		$content = self::get($key);
 
 		if($content !== NULL) {
 			return $content;
@@ -44,7 +44,7 @@ class SimpieCache
 		}
 
 		return file_get_contents(self::getCacheFile($key));
-	
+
 	}
 
 	/**
@@ -78,6 +78,6 @@ class SimpieCache
 
 	private function _hash_key($key)
 	{
-		return md5($key);	
+		return md5($key);
 	}
 }

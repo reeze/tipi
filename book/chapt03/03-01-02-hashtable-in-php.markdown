@@ -18,10 +18,10 @@ PHP使用如下两个数据结构来实现哈希表，HashTable结构体用于�
 而Bucket结构体用于保存具体的数据内容，如下：
 
 	[c]
-	typedef struct _hashtable { 
+	typedef struct _hashtable {
 		uint nTableSize;    	// hash Bucket的大小，最小为8，以2x增长。
 		uint nTableMask;		// nTableSize-1 ， 索引取值的优化
-		uint nNumOfElements; 	// hash Bucket中当前存在的元素个数，count()函数会直接返回此值 
+		uint nNumOfElements; 	// hash Bucket中当前存在的元素个数，count()函数会直接返回此值
 		ulong nNextFreeElement;	// 下一个数字索引的位置
 		Bucket *pInternalPointer;   // 当前遍历的指针（foreach比for快的原因之一）
 		Bucket *pListHead;          // 存储数组头元素指针
@@ -69,7 +69,7 @@ nTableSize字段用于标示哈希表的容量，哈希表的初始容量最小�
 				ht->arBuckets = tmp;
 			}
 		}
-		
+
 		return SUCCESS;
 	}
 
@@ -96,7 +96,7 @@ nTableSize字段用于标示哈希表的容量，哈希表的初始容量最小�
 设置好哈希表大小之后就需要为哈希表申请存储数据的空间了，如上面初始化的代码，
 根据是否需要持久保存而条用了不同的内存申请方法，是需要需要持久体现的是在前面PHP生命周期里介绍的：
 持久内容能在多个请求之间可访问，而如果是非持久存储则会在请求结束时释放占用的空间。
-具体内容将在内存管理章节中进行介绍。 
+具体内容将在内存管理章节中进行介绍。
 
 
 HashTable中的nNumOfElements字段很好理解，每插入一个元素或者unset删掉元素时会更新这个字段。
@@ -136,7 +136,7 @@ PHP中可以不指定索引值向数组中添加元素，这时将默认使用�
 		struct bucket *pListLast;   // 整个哈希表该元素的上一个元素
 		struct bucket *pNext;		// 存放在同一个hash Bucket内的下一个元素
 		struct bucket *pLast;		// 同一个哈希bucket的上一个元素
-		char arKey[1]; 	
+		char arKey[1];
 		/*存储字符索引，此项必须放在最未尾，因为此处只字义了1个字节，存储的实际上是指向char *key的值，
 		这就意味着可以省去再赋值一次的消耗，而且，有时此值并不需要，所以同时还节省了空间。
 		*/

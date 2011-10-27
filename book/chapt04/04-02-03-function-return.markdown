@@ -61,7 +61,7 @@ ZEND_RETURN_SPEC_TMP_HANDLER或ZEND_RETURN_SPEC_TMP_HANDLER。
         if (EG(active_op_array)->return_reference == ZEND_RETURN_REF) {
 
             //  返回引用时不允许常量和临时变量
-            if (IS_CONST == IS_CONST || IS_CONST == IS_TMP_VAR) {   
+            if (IS_CONST == IS_CONST || IS_CONST == IS_TMP_VAR) {
                 /* Not supposed to happen, but we'll allow it */
                 zend_error(E_NOTICE, "Only variable references \
                     should be returned by reference");
@@ -111,7 +111,7 @@ ZEND_RETURN_SPEC_TMP_HANDLER或ZEND_RETURN_SPEC_TMP_HANDLER。
                     zval *ret;
 
                     ALLOC_ZVAL(ret);
-                    INIT_PZVAL_COPY(ret, retval_ptr);   //  复制一份给返回值 
+                    INIT_PZVAL_COPY(ret, retval_ptr);   //  复制一份给返回值
                     zval_copy_ctor(ret);
                     *EG(return_value_ptr_ptr) = ret;
                 } else {
@@ -122,8 +122,8 @@ ZEND_RETURN_SPEC_TMP_HANDLER或ZEND_RETURN_SPEC_TMP_HANDLER。
                 zval *ret;
 
                 ALLOC_ZVAL(ret);
-                INIT_PZVAL_COPY(ret, retval_ptr);    //  复制一份给返回值 
-                *EG(return_value_ptr_ptr) = ret;    
+                INIT_PZVAL_COPY(ret, retval_ptr);    //  复制一份给返回值
+                *EG(return_value_ptr_ptr) = ret;
             }
         }
 

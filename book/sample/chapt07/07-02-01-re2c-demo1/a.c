@@ -8,7 +8,7 @@ char *scan(char *p){
 #define YYLIMIT p
 #define YYMARKER q
 #define YYFILL(n)
-	
+
 #line 13 "a.c"
 {
 	YYCTYPE yych;

@@ -19,12 +19,12 @@ class MarkdownPage
 
 	public function __construct($data, $parser=null)
 	{
-		$this->file = isset($data['file']) ? $data['file'] : NULL;	
-		$this->text = isset($data['text']) ? $data['text'] : NULL;	
+		$this->file = isset($data['file']) ? $data['file'] : NULL;
+		$this->text = isset($data['text']) ? $data['text'] : NULL;
 
 		if($this->file) {
 			if(!file_exists($this->file)) throw new PageNotFoundException("Page Not Found:{$this->file}");
-			$this->text = file_get_contents($this->file);	
+			$this->text = file_get_contents($this->file);
 		}
 
 		if(!$parser) {
@@ -37,19 +37,19 @@ class MarkdownPage
 
 	public function toHtml()
 	{
-		return $this->output;	
+		return $this->output;
 	}
 
 	public function getLastUpdatedAt()
 	{
 		static $last_updated_at = null;
 		if($last_updated_at) return $last_updated_at;
-		
+
 		return ($last_updated_at = $this->file ? filemtime($this->file) : null);
 	}
 
 	public function getPageFilePath() {
-		return $this->file ? $this->file : null;	
+		return $this->file ? $this->file : null;
 	}
 
 	public function getPageContent($render=null) {
@@ -57,11 +57,11 @@ class MarkdownPage
 			return $render->render(null, true);
 		}
 		else {
-			return file_get_contents($this->getPageFilePath());	
+			return file_get_contents($this->getPageFilePath());
 		}
 	}
 }
 
-class PageNotFoundException extends Exception 
+class PageNotFoundException extends Exception
 {
 }

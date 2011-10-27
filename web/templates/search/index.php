@@ -10,7 +10,7 @@ function init() {
 	var options = new google.search.SearcherOptions();
 
 	options.setNoResultsString("找不到结果");
-	options.setExpandMode(GSearchControl.EXPAND_MODE_OPEN); 
+	options.setExpandMode(GSearchControl.EXPAND_MODE_OPEN);
 
 	webSearcher.setUserDefinedLabel("搜索结果");
 	webSearcher.setSiteRestriction("php-internal.com");

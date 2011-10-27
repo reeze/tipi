@@ -15,7 +15,7 @@
         zval value; /* zval结构，PHP内部变量的存储结构，在第一小节有说明 */
         int flags;  /* 常量的标记如 CONST_PERSISTENT | CONST_CS */
         char *name; /* 常量名称 */
-        uint name_len;  
+        uint name_len;
         int module_number;  /* 模块号 */
     } zend_constant;
 
@@ -90,7 +90,7 @@ define是PHP的内置函数，在Zend/zend_builtin_functions.c文件中定义了
         echo 'no';
     }
     //$var = ^_^;   //语法错误
-    $var = constant("^_^"); 
+    $var = constant("^_^");
 
 通过defined函数测试表示，‘^_^’这个常量已经定义好，这样的常量无法直接调用，
 只能使用constant语句来使用，
@@ -112,7 +112,7 @@ define是PHP的内置函数，在Zend/zend_builtin_functions.c文件中定义了
 以上通过define定义的常量的模块编号都是PHP_USER_CONSTANT，这表示是用户定义的常量。
 除此之外我们在平时使用较多的，如在显示所有级别错误报告时使用的E_ALL常量就有点不同了。
 这里我们以cgi模式为例说明标准常量的定义过程。
-整个调用顺序如下所示：  
+整个调用顺序如下所示：
 **[php_cgi_startup() -> php_module_startup() -> zend_startup() -> zend_register_standard_constants()]**
 
     [c]

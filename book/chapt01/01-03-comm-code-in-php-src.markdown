@@ -38,7 +38,7 @@
 
 	[c]
 	#define STR(x) #x
-	
+
 	int main(int argc char** argv)
 	{
 		printf("%s\n", STR(It's a long string)); // 输出 It's a long str
@@ -65,7 +65,7 @@ PHP源码中大量使用了宏操作，比如PHP5.3新增加的垃圾收集机�
 为什么在宏定义时需要使用do-while语句呢? 我们知道do-while循环语句是先执行循环体再判断条件是否成立，
 所以说至少会执行一次。当使用do{ }while(0)时由于条件肯定为false，代码也肯定只执行一次，
 肯定只执行一次的代码为什么要放在do-while语句里呢? 这种方式适用于宏定义中存在多语句的情况。
-如下所示代码： 
+如下所示代码：
 
     [c]
     #define TEST(a, b)  a++;b++;
@@ -121,8 +121,8 @@ PHP源码中大量使用了宏操作，比如PHP5.3新增加的垃圾收集机�
     [c]
     #line 838 "Zend/zend_language_scanner.c"
 
-[\#line](http://www.cppreference.com/wiki/preprocessor/line)预处理用于改变当前的行号（\_\_LINE__）和文件名（\_\_FILE__）。 
-如上所示代码，将当前的行号改变为838，文件名Zend/zend_language_scanner.c 
+[\#line](http://www.cppreference.com/wiki/preprocessor/line)预处理用于改变当前的行号（\_\_LINE__）和文件名（\_\_FILE__）。
+如上所示代码，将当前的行号改变为838，文件名Zend/zend_language_scanner.c
 它的作用体现在编译器的编写中，我们知道编译器对C 源码编译过程中会产生一些中间文件，通过这条指令，
 可以保证文件名是固定的，不会被这些中间文件代替，有利于进行调试分析。
 
@@ -224,7 +224,7 @@ PHP源码中大量使用了宏操作，比如PHP5.3新增加的垃圾收集机�
             char *docref_ext;   //指定文件的扩展名(必须含有’.')。
 
             zend_bool html_errors;  //否在出错信息中使用HTML标记。
-            zend_bool xmlrpc_errors;   
+            zend_bool xmlrpc_errors;
 
             long xmlrpc_error_number;
 

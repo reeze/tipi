@@ -67,8 +67,8 @@ ZEND_VM_SET_OPCODE_HANDLER是zend_vm_set_opcode_handler函数的接口宏，zend
                 _UNUSED_CODE, /* 15             */
                 _CV_CODE      /* 16 = IS_CV     */
             };
-            return zend_opcode_handlers[opcode * 25 
-                    + zend_vm_decode[op->op1.op_type] * 5 
+            return zend_opcode_handlers[opcode * 25
+                    + zend_vm_decode[op->op1.op_type] * 5
                     + zend_vm_decode[op->op2.op_type]];
     }
 
@@ -97,7 +97,7 @@ handler所指向的方法基本都存在于Zend/zend_vm_execute.h文件文件。
 在execute函数中，处理函数的执行是在一个while(1)循环作用范围中。如下：
 
     [c]
-    
+
 	while (1) {
             int ret;
     #ifdef ZEND_WIN32
@@ -157,15 +157,15 @@ handler所指向的方法基本都存在于Zend/zend_vm_execute.h文件文件。
 ZEND_VM_ENTER()定义在Zend/zend_vm_execute.h的开头，如下：
 
 	[c]
-	#define ZEND_VM_CONTINUE()   return 0 
-	#define ZEND_VM_RETURN()     return 1 
-	#define ZEND_VM_ENTER()      return 2 
-	#define ZEND_VM_LEAVE()      return 3 
+	#define ZEND_VM_CONTINUE()   return 0
+	#define ZEND_VM_RETURN()     return 1
+	#define ZEND_VM_ENTER()      return 2
+	#define ZEND_VM_LEAVE()      return 3
 
 这些在中间代码的执行函数中都有用到，这里的ZEND_VM_ENTER()表示return 2。
 在前面的内容中我们有说到在调用了EX(opline)->handler(execute_data TSRMLS_CC))后会将返回值赋值给ret。
 然后根据ret判断下一步操作，这里的递归函数是返回２，于是下一步操作是：
-	
+
 	[c]
     op_array = EG(active_op_array);
     goto zend_vm_enter;

@@ -9,9 +9,9 @@
 在excute函数中，有以下代码：
 
     [c]
-    while (1) { 
+    while (1) {
 
-		... 
+		...
 		if ((ret = EX(opline)->handler(execute_data TSRMLS_CC)) > 0) {
 			switch (ret) {
 				case 1:
@@ -24,8 +24,8 @@
 					execute_data = EG(current_execute_data);
 				default:
 					break;
-			}     
-		}     
+			}
+		}
 		...
 	}
 这里的EX(opline)->handler(...)将op_array中的操作顺序执行，
@@ -39,16 +39,16 @@ ZEND_ASSIGN_SPEC_CV_CONST_HANDLER的最后会调用ZEND_VM_NEXT_OPCODE()将op_ar
 
 	[c]
 	//_zend_compiler_globals 编译时信息，包括函数表等
-	zend_compiler_globals    *compiler_globals;  
+	zend_compiler_globals    *compiler_globals;
 	//_zend_executor_globals 执行时信息
-	zend_executor_globals    *executor_globals; 
+	zend_executor_globals    *executor_globals;
 	//_php_core_globals 主要存储php.ini内的信息
-	php_core_globals         *core_globals; 
+	php_core_globals         *core_globals;
 	//_sapi_globals_struct SAPI的信息
-	sapi_globals_struct      *sapi_globals; 
+	sapi_globals_struct      *sapi_globals;
 
 在执行的过程中，变量名及指针主要存储于_zend_executor_globals的符号表中，_zend_executor_globals的结构这样的：
- 	
+
 	[c]
 	struct _zend_executor_globals {
 	...

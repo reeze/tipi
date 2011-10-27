@@ -11,7 +11,7 @@ function tag_for($tag_name, $text, $options)
 	foreach($options as $key => $value) {
 		$tag .= "{$key}=\"" . addslashes($value) . "\" ";
 	}
-	
+
 	$tag .= ">{$text}</{$tag_name}>";
 
 	return $tag;

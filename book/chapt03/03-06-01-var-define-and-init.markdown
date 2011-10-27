@@ -22,14 +22,14 @@ CV是PHP在5.1后增加的一个在编译期的缓存。如我们在使用VLD查
 这个$a变量就是op_type为IS_CV的变量。
 
 >**NOTE**
->IS_CV值的设置是在语法解析时进行的。    
+>IS_CV值的设置是在语法解析时进行的。
 >参见Zend/zend_complie.c文件中的zend_do_end_variable_parse函数。
 
 在这个函数中，获取这个赋值操作的左值和右值的代码为：
 
     [c]
     zval *value = &opline->op2.u.constant;
-	zval **variable_ptr_ptr = _get_zval_ptr_ptr_cv(&opline->op1, 
+	zval **variable_ptr_ptr = _get_zval_ptr_ptr_cv(&opline->op1,
 										EX(Ts), BP_VAR_W TSRMLS_CC);
 
 由于右值为一个数值，我们可以理解为一个常量，则直接取操作数存储的constant字段，
@@ -40,7 +40,7 @@ CV是PHP在5.1后增加的一个在编译期的缓存。如我们在使用VLD查
 在_get_zval_cv_lookup函数中关键代码为：
 
     [c]
-    zend_hash_quick_find(EG(active_symbol_table), cv->name, cv->name_len+1, 
+    zend_hash_quick_find(EG(active_symbol_table), cv->name, cv->name_len+1,
     									cv->hash_value, (void **)ptr)
 
 这是一个HashTable的查找函数，它的作用是从EG(active_symbol_table)中查找名称为cv->name的变量，并将这个值赋值给ptr。
@@ -134,14 +134,14 @@ PZVAL_IS_REF(variable_ptr)判断is_ref__gc字段是否为0。在左值不等于�
 	garbage = *variable_ptr;
 	*variable_ptr = *value;
 	INIT_PZVAL(variable_ptr);   //  初始化一个新的zval变量容器
-	zval_copy_ctor(variable_ptr);   
+	zval_copy_ctor(variable_ptr);
 	zendi_zval_dtor(garbage);
 	return variable_ptr;
 
 
 >**QUESTION**
->在这个例子中，若将 **$c = $a;** 换成 **$c = &$a;**，$a，$b和$c三个变量的引用计数会发生什么变化？    
->将 **$b = &$a**; 换成 **$b = $a;** 呢？    
+>在这个例子中，若将 **$c = $a;** 换成 **$c = &$a;**，$a，$b和$c三个变量的引用计数会发生什么变化？
+>将 **$b = &$a**; 换成 **$b = $a;** 呢？
 >大家可以将答案回复在下面：）
 
 

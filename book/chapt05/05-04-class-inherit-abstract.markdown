@@ -16,7 +16,7 @@ PHP中使用extends关键字来进行类的继承，一个类只能继承一个�
 
 PHP内核将类的继承实现放在了"编译阶段"，因此使用VLD生成中间代码时会发现并没有关于继承的相关信息。
 通过对extends关键字的词法分析和语法分析，在Zend/zend_complie.c文件中
-找到继承实现的编译函数zend_do_inheritance()。其调用顺序如下: 
+找到继承实现的编译函数zend_do_inheritance()。其调用顺序如下:
 [zend_do_early_binding] --> [do_bind_inherited_class()] --> [zend_do_inheritance()]
 
     [c]
@@ -87,7 +87,7 @@ PHP内核将类的继承实现放在了"编译阶段"，因此使用VLD生成中
 在此函数中，如果子类没有父类中定义的方法，则所有的此类方法都会被继承，包括私有访问控制权限的方法。
 
 看一个PHP的示例：
-    
+
     [php]
     class Base {
         private function privateMethod() {
@@ -264,7 +264,7 @@ zend_do_begin_function_declaration函数。在此函数中有如下代码：
 抽象类，接口，普通类都是保存在zend_class_entry结构体中，他们只通过一个标志字段来区分，
 抽象类和接口还有一个共性：无法实例化。那我们看看Zend在那里限制的。要实例化一个对象我们只能使用new关键字来进行。
 下面是执行new是进行的操作:
-	
+
 	[c]
 	static int ZEND_FASTCALL  ZEND_NEW_SPEC_HANDLER(ZEND_OPCODE_HANDLER_ARGS)
 	{

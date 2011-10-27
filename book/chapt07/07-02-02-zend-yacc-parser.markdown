@@ -10,7 +10,7 @@ Bison分析器文件是定义了名为yyparse并且实现了某个语法的函�
 除此这外我们还必须提供额外的一些函数：
 如词法分析器、分析器报告错误时调用的错误报告函数等等。
 我们知道一个完整的C程序必须以名为main的函数开头，如果我们要生成一个可执行文件，并且要运行语法解析器，
-那么我们就需要有main函数，并且在某个地方直接或间接调用yyparse，否则语法分析器永远都不会运行。 
+那么我们就需要有main函数，并且在某个地方直接或间接调用yyparse，否则语法分析器永远都不会运行。
 
 先看下bison的示例：[逆波兰记号计算器](：http://www.gnu.org/software/bison/manual/html_node/RPN-Calc.html#RPN-Calc)
 
@@ -69,7 +69,7 @@ Bison分析器文件是定义了名为yyparse并且实现了某个语法的函�
 	}
 
 	void yyerror (char const *s) {
-		fprintf (stderr, "%s\n", s); 
+		fprintf (stderr, "%s\n", s);
 	}
 
 	int main (void) {
@@ -77,7 +77,7 @@ Bison分析器文件是定义了名为yyparse并且实现了某个语法的函�
 	}
 
 我们先看下运行的效果：
-	
+
 	[shell]
 	bison demo.y
 	gcc -o test -lm test.tab.c
@@ -91,10 +91,10 @@ Bison分析器文件是定义了名为yyparse并且实现了某个语法的函�
 
 这是一个逆波兰记号计算器的示例，在命令行中输入 3 7 + 回车，输出10
 
-一般来说，使用Bison设计语言的流程，从语法描述到编写一个编译器或者解释器,有三个步骤: 
+一般来说，使用Bison设计语言的流程，从语法描述到编写一个编译器或者解释器,有三个步骤:
 
 * 以Bison可识别的格式正式地描述语法。对每一个语法规则，描述当这个规则被识别时相应的执行动作，动作由C语句序列。即我们在示例中看到的%%和%%这间的内容。
-* 描述编写一个词法分析器处理输入并将记号传递给语法分析器（即yylex函数一定要存在）。词法分析器既可是手工编写的C代码, 也可以由lex产生，后面我们会讨论如何将re2c与bison结合使用。上面的示例中是直接手工编写C代码实现一个命令行读取内容的词法分析器。 
+* 描述编写一个词法分析器处理输入并将记号传递给语法分析器（即yylex函数一定要存在）。词法分析器既可是手工编写的C代码, 也可以由lex产生，后面我们会讨论如何将re2c与bison结合使用。上面的示例中是直接手工编写C代码实现一个命令行读取内容的词法分析器。
 * 编写一个调用Bison产生的分析器的控制函数，在示例中是main函数直接调用。编写错误报告函数（即yyerror函数）。
 
 将这些源代码转换成可执行程序，需要按以下步骤进行：
@@ -136,7 +136,7 @@ Bison分析器文件是定义了名为yyparse并且实现了某个语法的函�
 	extern int yylex(znode *zendlval);
 	void yyerror(char const *);
 
-	#define YYSTYPE znode	//关键点一，znode定义在demo_scanner.h	
+	#define YYSTYPE znode	//关键点一，znode定义在demo_scanner.h
 	%}
 
 	%pure_parser	//	关键点二
@@ -144,7 +144,7 @@ Bison分析器文件是定义了名为yyparse并且实现了某个语法的函�
 	%token T_BEGIN
 	%token T_NUMBER
 	%token T_LOWER_CHAR
-	%token T_UPPER_CHAR	
+	%token T_UPPER_CHAR
 	%token T_EXIT
 	%token T_UNKNOWN
 	%token T_INPUT_ERROR
@@ -174,7 +174,7 @@ Bison分析器文件是定义了名为yyparse并且实现了某个语法的函�
 	%%
 
 	void yyerror(char const *s) {
-		printf("%s\n", s);	
+		printf("%s\n", s);
 	}
 
 这个语法文件有两个关键点：
@@ -200,13 +200,13 @@ Bison分析器文件是定义了名为yyparse并且实现了某个语法的函�
 	typedef struct _znode {
 		int op_type;
 		zval constant;
-	}znode;	
+	}znode;
 
 这里我们同样也复制了PHP的zval结构，但是我们也只取了关于整型，浮点型和字符串型的结构。
 op_type用于记录操作的类型，constant记录分析过程获取的数据。
 一般来说，在一个简单的程序中，对所有的语言结构的语义值使用同一个数据类型就足够用了。比如在前一小节的逆波兰记号计算器示例就只有double类型。
 而且Bison默认是对于所有语义值使用int类型。如果要指明其它的类型，可以像我们示例一样将YYSTYPE定义成一个宏:
-	
+
 	[c]
 	#define YYSTYPE znode
 
@@ -232,7 +232,7 @@ op_type用于记录操作的类型，constant记录分析过程获取的数据�
 	  <!*> {yyleng = YYCURSOR - SCNG(yy_text);}	//	记录字符串长度　
 
 main函数发生了一些改变：
-	
+
 	int main(int argc, char* argv[])
 	{
 		BEGIN(INITIAL);	//	全局初始化，需要放在scan调用之前
@@ -245,7 +245,7 @@ main函数发生了一些改变：
 在新的main函数中，我们新增加了yyparse函数的调用，此函数在执行过程中会自动调用yylex函数。
 
 如果需要运行这个程序，则需要执行下面的命令：
-	
+
 	[shell]
 	re2c -o demo_scanner.c -c -t demo_scanner_def.h demo_scanner.l
 	bison -d demo.y
@@ -272,11 +272,11 @@ main函数发生了一些改变：
 	    at /home/martin/project/c/phpsrc/main/main.c:2225
 	#7  0x08351b97 in main (argc=4, argv=0xbffff424)
 	    at /home/martin/project/c/phpsrc/sapi/cli/php_cli.c:1190
-	
+
 在PHP源码中，词法分析器的最终是调用re2c规则定义的lex_scan函数，而提供给Bison的函数则为zendlex。
 而yyparse被zendparse代替。
 
-	
 
- 
+
+
 

@@ -1,5 +1,5 @@
 tipi.lo: /home/martin/project/c/phpsrc/ext/tipi/tipi.c
-	$(LIBTOOL) --mode=compile $(CC)  -I. -I/home/martin/project/c/phpsrc/ext/tipi $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /home/martin/project/c/phpsrc/ext/tipi/tipi.c -o tipi.lo 
+	$(LIBTOOL) --mode=compile $(CC)  -I. -I/home/martin/project/c/phpsrc/ext/tipi $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /home/martin/project/c/phpsrc/ext/tipi/tipi.c -o tipi.lo
 $(phplibdir)/tipi.la: ./tipi.la
 	$(LIBTOOL) --mode=install cp ./tipi.la $(phplibdir)
 

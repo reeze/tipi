@@ -37,14 +37,14 @@ class News extends MarkdownPage
 	}
 
 	public function getPubDate() {
-		list($y, $m, $d) = explode('-', $this->page_name);	
+		list($y, $m, $d) = explode('-', $this->page_name);
 
 		return "$y-$m-$d";
 	}
 
 	public function getUrl($absolute=IS_ABSOLUTE_URL)
 	{
-		return url_for_news($this->page_name, $absolute);	
+		return url_for_news($this->page_name, $absolute);
 	}
 
     public function getTitle() {
@@ -52,7 +52,7 @@ class News extends MarkdownPage
     }
 
 	public function getAbsTitle() {
-		return "[NEWS]" . $this->getTitle();	
+		return "[NEWS]" . $this->getTitle();
 	}
 }
 

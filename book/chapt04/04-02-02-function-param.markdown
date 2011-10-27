@@ -31,8 +31,8 @@
         zend_bool array_type_hint;  /* 数组类型提示 */
         zend_bool allow_null;   /* 是否允许为NULL　*/
         zend_bool pass_by_reference;    /*　是否引用传递 */
-        zend_bool return_reference; 
-        int required_num_args;  
+        zend_bool return_reference;
+        int required_num_args;
     } zend_arg_info;
 
 >**NOTE**

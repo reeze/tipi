@@ -45,7 +45,7 @@ if test "$PHP_TIPI" != "no"; then
 
   dnl # --with-tipi -> check for lib and symbol presence
   dnl LIBNAME=tipi # you may want to change this
-  dnl LIBSYMBOL=tipi # you most likely want to change this 
+  dnl LIBSYMBOL=tipi # you most likely want to change this
 
   dnl PHP_CHECK_LIBRARY($LIBNAME,$LIBSYMBOL,
   dnl [

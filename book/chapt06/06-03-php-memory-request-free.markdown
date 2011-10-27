@@ -29,7 +29,7 @@ ZendMM向系统进行的内存申请，并不是有需要时向系统即时申�
 	[c]
 	   ZEND_ASSIGN_SPEC_CV_CONST_HANDLER (......)
 	-> ALLOC_ZVAL(......)
-	-> ZEND_FAST_ALLOC(......) 
+	-> ZEND_FAST_ALLOC(......)
 	-> emalloc (......)
 	-> _emalloc(......)
 	-> _zend_mm_alloc_int(.....)
@@ -89,19 +89,19 @@ ZendMM并不会直接立刻将内存交回给系统，而是只在自身维护�
     if (ZEND_MM_IS_FREE_BLOCK(next_block)) {
         zend_mm_remove_from_free_list(heap, (zend_mm_free_block *) next_block);
         size += ZEND_MM_FREE_BLOCK_SIZE(next_block);
-    }    
+    }
     if (ZEND_MM_PREV_BLOCK_IS_FREE(mm_block)) {
         mm_block = ZEND_MM_PREV_BLOCK(mm_block);
         zend_mm_remove_from_free_list(heap, (zend_mm_free_block *) mm_block);
         size += ZEND_MM_FREE_BLOCK_SIZE(mm_block);
-    }    
+    }
     if (ZEND_MM_IS_FIRST_BLOCK(mm_block) &&
         ZEND_MM_IS_GUARD_BLOCK(ZEND_MM_BLOCK_AT(mm_block, size))) {
         zend_mm_del_segment(heap, (zend_mm_segment *) ((char *)mm_block - ZEND_MM_ALIGNED_SEGMENT_SIZE));
     } else {
         ZEND_MM_BLOCK(mm_block, ZEND_MM_FREE_BLOCK, size);
         zend_mm_add_to_free_list(heap, (zend_mm_free_block *) mm_block);
-    }    
+    }
 
 这段代码逻辑比较清晰，主要是根据当前要销毁的内存块**mm_block**在**zend_mm_heap**
 双向链表中所处的位置进行不同的操作。如果下一个节点还是free的内存，则将下一个节点合并;

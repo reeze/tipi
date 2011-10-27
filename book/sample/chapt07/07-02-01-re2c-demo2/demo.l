@@ -5,7 +5,7 @@
 Scanner scanner_globals;
 
 #define YYCTYPE char
-#define YYFILL(n) 
+#define YYFILL(n)
 #define STATE(name)  yyc##name
 #define BEGIN(state) YYSETCONDITION(STATE(state))
 #define LANG_SCNG(v) (scanner_globals.v)

@@ -25,7 +25,7 @@ C++的新标准[C++0x](http://en.wikipedia.org/wiki/C%2B%2B0x)也开始支持了
 
 	$array = array(1, 2, 3, 4);
 	array_walk($array, create_function('$value', 'echo $value'));
-	
+
 
 这段代码只是将数组中的值依次输出，当然也能做更多的事情。 那为什么这不算真正的匿名函数呢，
 我们先看看这个函数的返回值，这个函数返回一个字符串，
@@ -77,7 +77,7 @@ php是怎么保证这个函数是全局唯一的? lambda_1看起来也是一个�
 上面代码的倒数2两行也说明了这个问题，实际上并没有定义名为lambda_1的函数。
 
 也就是说我们的lambda_1和create_function返回的lambda_1并不是一样的!? 怎么会这样呢? 那只能说明我们没有看到实质，
-只看到了表面，表面是我们在echo的时候输出了lambda_1，而我们的lambda_1是我们自己敲入的. 
+只看到了表面，表面是我们在echo的时候输出了lambda_1，而我们的lambda_1是我们自己敲入的.
 我们还是使用[debug_zval_dump](http://cn.php.net/manual/en/function.debug-zval-dump.php)函数来看看吧。
 
 	[php]
@@ -109,12 +109,12 @@ php是怎么保证这个函数是全局唯一的? lambda_1看起来也是一个�
 
 该函数在定义了一个函数之后，给函数起了个名字，它将函数名的第一个字符变为了'\0'也就是空字符，然后在函数表中查找是否已经定义了这个函数，
 如果已经有了则生成新的函数名， 第一个字符为空字符的定义方式比较特殊， 这样在用户代码中就无法定义出这样的函数了， 这样也就不存在命名冲突的问题了，
-这也算是种取巧的做法了， 在了解到这个特殊的函数之后，我们其实还是可以调用到这个函数的， 只要我们在函数名前加一个空字符就可以了， 
+这也算是种取巧的做法了， 在了解到这个特殊的函数之后，我们其实还是可以调用到这个函数的， 只要我们在函数名前加一个空字符就可以了，
 chr()函数可以帮我们生成这样的字符串， 例如前面创建的函数可以通过如下的方式访问到:
 
 	[php]
 	<?php
-	
+
 	$my_func = chr(0) . "lambda_1";
 	$my_func(); // Hello
 
@@ -127,8 +127,8 @@ chr()函数可以帮我们生成这样的字符串， 例如前面创建的函�
 
 
 ## 真正的匿名函数
-在PHP5.3引入的众多功能中， 除了匿名函数还有一个特性值得讲讲: 
-新引入的[__invoke](http://www.php.net/manual/en/language.oop5.magic.php#language.oop5.magic.invoke) 
+在PHP5.3引入的众多功能中， 除了匿名函数还有一个特性值得讲讲:
+新引入的[__invoke](http://www.php.net/manual/en/language.oop5.magic.php#language.oop5.magic.invoke)
 [魔幻方法](http://www.php.net/manual/en/language.oop5.magic.php)。
 
 ### __invoke魔幻方法
@@ -160,7 +160,7 @@ chr()函数可以帮我们生成这样的字符串， 例如前面创建的函�
 	echo get_class($func); 	// Closure
 
 原来匿名函数也只是一个普通的类而已。熟悉Javascript的同学对匿名函数的使用方法很熟悉了，
- PHP也使用和Javascript类似的语法来[定义](http://cn.php.net/manual/en/functions.anonymous.php)， 
+ PHP也使用和Javascript类似的语法来[定义](http://cn.php.net/manual/en/functions.anonymous.php)，
 匿名函数可以赋值给一个变量， 因为匿名函数其实是一个类实例， 所以能复制也是很容易理解的，
  在Javascript中可以将一个匿名函数赋值给一个对象的属性， 例如:
 
@@ -187,7 +187,7 @@ PHP使用闭包(Closure)来实现匿名函数， 匿名函数最强大的功能�
 
 	$func(); // Hello TIPI Team
 
-这个use语句看起来挺别扭的， 尤其是和Javascript比起来， 不过这也应该是PHP-Core综合考虑才使用的语法， 
+这个use语句看起来挺别扭的， 尤其是和Javascript比起来， 不过这也应该是PHP-Core综合考虑才使用的语法，
 因为和Javascript的作用域不同， PHP在函数内定义的变量默认就是局部变量， 而在Javascript中则相反，
 除了显式定义的才是局部变量， PHP在变异的时候则无法确定变量是局部变量还是上层作用域内的变量， 当然也可能有办法在编译时确定，
 不过这样对于语言的效率和复杂性就有很大的影响。
@@ -228,7 +228,7 @@ PHP使用闭包(Closure)来实现匿名函数， 匿名函数最强大的功能�
 	$i=100;
 	$counter = function() use($i) {
 		debug_zval_dump($i);
-	};  
+	};
 
 	$counter();
 
@@ -243,7 +243,7 @@ PHP使用闭包(Closure)来实现匿名函数， 匿名函数最强大的功能�
 	1      ZEND_DECLARE_LAMBDA_FUNCTION                             '%00%7Bclosure
 	2      ASSIGN                                                   !1, ~1
 	3      INIT_FCALL_BY_NAME                                       !1
-	4      DO_FCALL_BY_NAME                              0          
+	4      DO_FCALL_BY_NAME                              0
 	5    > RETURN                                                   1
 
 	function name:  {closure}
@@ -265,7 +265,7 @@ PHP使用闭包(Closure)来实现匿名函数， 匿名函数最强大的功能�
 	{
 		zend_op *opline = EX(opline);
 		zend_function *op_array;
-			  
+
 		if (zend_hash_quick_find(EG(function_table), Z_STRVAL(opline->op1.u.constant), Z_STRLEN(opline->op1.u.constant), Z_LVAL(opline->op2.u.constant), (void *) &op_arra
 	y) == FAILURE ||
 			op_array->type != ZEND_USER_FUNCTION) {
@@ -275,9 +275,9 @@ PHP使用闭包(Closure)来实现匿名函数， 匿名函数最强大的功能�
 		zend_create_closure(&EX_T(opline->result.u.var).tmp_var, op_array TSRMLS_CC);
 
 		ZEND_VM_NEXT_OPCODE();
-	}   
+	}
 
-该函数调用了zend_create_closure()函数来创建一个闭包对象, 
+该函数调用了zend_create_closure()函数来创建一个闭包对象,
 那我们继续看看位于$PHP_SRC/Zend/zend_closures.c的zend_create_closure()函数都做了些什么。
 
 	[c]
@@ -296,9 +296,9 @@ PHP使用闭包(Closure)来实现匿名函数， 匿名函数最强大的功能�
 				HashTable *static_variables = closure->func.op_array.static_variables;
 
 				// 为函数申请存储静态变量的哈希表空间
-				ALLOC_HASHTABLE(closure->func.op_array.static_variables); 
+				ALLOC_HASHTABLE(closure->func.op_array.static_variables);
 				zend_hash_init(closure->func.op_array.static_variables, zend_hash_num_elements(static_variables), NULL, ZVAL_PTR_DTOR, 0);
-				
+
 				// 循环当前静态变量列表， 使用zval_copy_static_var方法处理
 				zend_hash_apply_with_arguments(static_variables TSRMLS_CC, (apply_func_args_t)zval_copy_static_var, 1, closure->func.op_array.static_variables);
 			}

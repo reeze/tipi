@@ -3,7 +3,7 @@ Check for tipi presence
 --SKIPIF--
 <?php if (!extension_loaded("tipi")) print "skip"; ?>
 --FILE--
-<?php 
+<?php
 echo "tipi extension is available";
 /*
 	you can add regression tests for your extension here

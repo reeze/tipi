@@ -26,13 +26,13 @@ int hash_lookup(HashTable *ht, char *key, void **result)
 
 	if(bucket == NULL) return FAILED;
 
-	// find the right bucket from the link list 
+	// find the right bucket from the link list
 	while(bucket)
 	{
 		if(strcmp(bucket->key, key) == 0)
 		{
 			LOG_MSG("HashTable found key in index: %i with  key: %s value: %p\n", index, key, bucket->value);
-			*result = bucket->value;	
+			*result = bucket->value;
 			return SUCCESS;
 		}
 
@@ -80,7 +80,7 @@ int hash_remove(HashTable *ht, char *key)
 
 	if(bucket == NULL) return FAILED;
 
-	// find the right bucket from the link list 
+	// find the right bucket from the link list
 	while(bucket)
 	{
 		if(strcmp(bucket->key, key) == 0)
@@ -88,7 +88,7 @@ int hash_remove(HashTable *ht, char *key)
 			LOG_MSG("Found key in index: %i with  key: %s value: %p\n", index, key, bucket->value);
 
 			if(prev != NULL) {
-				prev->next = bucket->next;	
+				prev->next = bucket->next;
 			}
 
 			free(bucket->key);
@@ -141,7 +141,7 @@ static int hash_resize(HashTable *ht)
 	for(i=0; i < org_size; ++i)
 	{
 		Bucket *cur = org_buckets[i];
-		while(cur != NULL) 
+		while(cur != NULL)
 		{
 			// rehash: insert again
 			hash_insert(ht, cur->key, cur->value);
@@ -163,6 +163,6 @@ static void resize_hash_table_if_needed(HashTable *ht)
 	if(ht->size - ht->elem_num <= 1)
 	{
 		LOG_MSG("HashTable need resize, size: %i, elem_num: %i\n", ht->size, ht->elem_num);
-		hash_resize(ht);	
+		hash_resize(ht);
 	}
 }

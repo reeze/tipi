@@ -17,7 +17,7 @@
   http://groups.google.com/group/symfony-devs/browse_thread/thread/58a0d015622c13cb/925d4d7a87795fd5
   http://fabien.potencier.org/article/47/pragmatism-over-theory-protected-vs-private
   PHP中的访问控制符protected/private, PHP中的知名框架Symfony/Doctrine不推荐在框架中使用private。
-  在很多其他的脚本语言中其实并不存在真正意义上的private方法，使用protected方法能方便用户 
+  在很多其他的脚本语言中其实并不存在真正意义上的private方法，使用protected方法能方便用户
   对框架本身进行扩展，而不需要修改框架本身，当然也有人反对，因为如果用户使用了protected的方法，
   那么就会对这些方法产生依赖，在框架进行升级的时候就需要考虑这些方法的兼容性。
   这几个地址上的讨论其实没有谁真正说服谁。
