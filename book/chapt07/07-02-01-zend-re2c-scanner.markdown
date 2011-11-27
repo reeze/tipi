@@ -1,10 +1,11 @@
 # 词法解析
 
-[re2c](http://www.re2c.org/)是一个扫描器制作工具，可以创建非常快速灵活的扫描器。它可以产生高效代码，基于C语言，可以支持C/C++代码。
-与其它类似的扫描器不同，它偏重于为正则表达式产生高效代码（和他的名字一样）。因此，这比传统的词法分析器有更广泛的应用范围。
+[re2c](http://www.re2c.org/)是一个扫描器制作工具，可以创建非常快速灵活的扫描器。
+它可以产生高效代码，基于C语言，可以支持C/C++代码。与其它类似的扫描器不同，
+它偏重于为正则表达式产生高效代码（和他的名字一样）。因此，这比传统的词法分析器有更广泛的应用范围。
 你可以在[sourceforge.net](http://sourceforge.net/projects/re2c/)获取源码。
 
-PHP在最开始的词法解析器是使用的是flex，后来PHP的改为使用re2c。
+PHP在最开始的词法解析器是使用的是flex，后来改为使用re2c。
 在源码目录下的Zend/zend_language_scanner.l 文件是re2c的规则文件，
 如果需要修改该规则文件需要安装re2c才能重新编译。
 
@@ -63,10 +64,12 @@ re2c调用方式：
 
 >NOTE
 re2c中条件表达式相关的宏为YYSETCONDITION和YYGETCONDITION，分别表示设置条件范围和获取条件范围。
-在PHP的词法规则中共有10种，其全部在zend_language_scanner_def.h文件中。此文件并非手写，而是re2c自动生成的。如果需要生成和使用条件表达式，在编译成c时需要添加-c 和-t参数。
+在PHP的词法规则中共有10种，其全部在zend_language_scanner_def.h文件中。此文件并非手写，
+而是re2c自动生成的。如果需要生成和使用条件表达式，在编译成c时需要添加-c 和-t参数。
 
 在PHP的词法解析中，它有一个全局变量:language_scanner_globals，此变量为一结构体，记录当前re2c解析的状态，文件信息，解析过程信息等。
 它在zend_language_scanner.l文件中直接定义如下：
+
     [c]
 	#ifdef ZTS
     ZEND_API ts_rsrc_id language_scanner_globals_id;
@@ -88,8 +91,8 @@ re2c中条件表达式相关的宏为YYSETCONDITION和YYGETCONDITION，分别表
     # define LANG_SCNG(v) (language_scanner_globals.v)
 
 结合前面的全局变量和条件表达式宏的定义，我们可以知道PHP的词法解析是通过全局变量在一次解析过程中存在。
-那么这个条件表达式具体是怎么使用的呢？我们看下面一个例子。这是一个可以识别<?php为开始，?>为结束，识别字符，数字等的简单字符串识别器。
-它使用了re2c的条件表达式，代码如下：
+那么这个条件表达式具体是怎么使用的呢？我们看下面一个例子。这是一个可以识别<?php为开始，?>为结束，
+识别字符，数字等的简单字符串识别器。它使用了re2c的条件表达式，代码如下：
 
     [c]
     #include <stdio.h>
