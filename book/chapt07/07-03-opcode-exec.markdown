@@ -1,4 +1,5 @@
 # 中间代码的执行
+
 在[<< 第二章第三小节 PHP脚本的执行 -- opcode >>][opcode]中， 我们对opcode进行了一个简略的说明。
 这一小节我们讲这些中间代码在Zend虚拟机中是如何被执行的。
 
@@ -20,6 +21,8 @@
     ZEND_API void (*zend_execute)(zend_op_array *op_array TSRMLS_DC);
 
 这是一个全局的指针函数，它的作用就是执行中间代码。在PHP内核启动时(zend_startup)时，这个全局指针函数将会指向execute函数。
+注意函数指针前面的修饰符ZEND_API,这说明这是ZendAPI的一部分。这里系统会默认实现一个执行函数，
+也就是说我们的扩展也可以实现自己的执行函数，这是作为扩展一个手段，方便我们对PHP进行扩展。
 与此一起的还有PHP的中间代码编译函数zend_compile_file（文件形式）zend_compile_string(字符串形式)。
 
     [c]
@@ -28,6 +31,10 @@
 	zend_execute = execute;
 	zend_execute_internal = NULL;
 	zend_throw_exception_hook = NULL;
+
+
+这几个全局函数执行均只想了系统默认实现的几个函数，比如compile_file和compile_string,这两个函数，
+比如在APC等opcode扩展中就可以覆盖这里默认的函数实现，来增加一些缓存功能。
 
 到这里我们找到中间代码执行的最终函数：execute(Zend/zend_vm_execure.h)。
 在这个函数中我们会发现所有的中间代码的执行最终都会调用handler。
@@ -152,8 +159,9 @@ handler所指向的方法基本都存在于Zend/zend_vm_execute.h文件文件。
         zend_execute(EG(active_op_array) TSRMLS_CC);
     }
 
-这里有一些奇怪，明明zend_execute等于execute，这在前面的内容中已经说明过了，岂不是程序永远会执行第一个判断条件后的内容？
-在我们这个版本中，程序的执行是这样的，笔者认为这是代码作者对向后兼容的一种妥协。
+前面提到zend_execute API可能会被覆盖，这里就进行了简单的判断，如果扩展覆盖了opcode执行函数，
+则进行特殊的逻辑。
+
 ZEND_VM_ENTER()定义在Zend/zend_vm_execute.h的开头，如下：
 
 	[c]
