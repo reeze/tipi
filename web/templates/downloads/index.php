@@ -11,8 +11,10 @@ TIPI项目，主要包括: 深入理解PHP，以及相关的项目,本站所有�
 
 <p>目前提供PDF以及CHM格式版本的下载，当前版本为：<span class="current-version"><?php echo TIPI::getVersion(); ?></span>：</p>
 <div id="download-list" class="clearfix">
-	<div style='padding-left: 100px;' class="fl"><a target='_blank' href="<?php echo url_for("/releases/" . TIPI::getVersion() . ".pdf"); ?>"><img src="<?php echo url_for("/images/icon_pdf.png"); ?>" /></a></div>
-	<div style='padding-left: 100px;' class="fl"><a target='_blank' href="<?php echo url_for("/releases/" . TIPI::getVersion() . ".chm"); ?>"><img src="<?php echo url_for("/images/icon_chm.png"); ?>" /></a></div>
+	<div style='padding-left: 100px;' class="fl"><a target='_blank' href="<?php echo url_for("https://github.com/reeze/tipi/blob/master/web/releases/" . TIPI::getVersion() . ".pdf?raw=true");?>">
+	<img src="<?php echo url_for("/images/icon_pdf.png"); ?>" /></a></div>
+	<div style='padding-left: 100px;' class="fl"><a target='_blank' href="<?php echo url_for("https://github.com/reeze/tipi/blob/master/web/releases/" . TIPI::getVersion() . ".chm?raw=true");?>">
+	<img src="<?php echo url_for("/images/icon_chm.png"); ?>" /></a></div>
 </div>
 <p>
 本站所有的内容都托管在github上,我们目前推荐从： <a href="http://github.com/reeze/tipi">http://github.com/reeze/tipi</a>下载。
