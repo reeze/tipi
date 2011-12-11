@@ -37,7 +37,7 @@ function stylesheet_include_tag_embed($style_names)
 {
 	$styles = '';
 	if(!is_array($style_names)) $style_names = array($style_names);
-	
+
 	foreach($style_names as $style) {
 		$styles .= file_get_contents(ROOT_PATH . "/css/$style");
 	}

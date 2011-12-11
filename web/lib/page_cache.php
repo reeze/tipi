@@ -31,7 +31,7 @@ else {
 	if($headers !== null) {
 		foreach(json_decode($headers) as $header) {
 			header($header);
-		}	
+		}
 	}
 	echo $output;
 	exit;
@@ -48,7 +48,7 @@ function catch_and_cache_page_output()
 	if(!empty($headers)) {
 		SimpieCache::set($key . 'headers', json_encode($headers), 0);
 	}
-	
+
 	// 输出内容
 	echo $output;
 }

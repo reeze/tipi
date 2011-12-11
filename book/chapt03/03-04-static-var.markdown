@@ -146,7 +146,7 @@ opcode的编译阶段完成后就开始opcode的执行了。
             retval = zend_std_get_static_property(EX_T(opline->op2.u.var).class_entry, Z_STRVAL_P(varname), Z_STRLEN_P(varname), 0 TSRMLS_CC);
         } else {
 			// 取符号表，这里我们取的是EG(active_op_array)->static_variables
-            target_symbol_table = zend_get_target_symbol_table(opline, EX(Ts), type, varname TSRMLS_CC);    
+            target_symbol_table = zend_get_target_symbol_table(opline, EX(Ts), type, varname TSRMLS_CC);
             ...//   省略
             if (zend_hash_find(target_symbol_table, varname->value.str.val, varname->value.str.len+1, (void **) &retval) == FAILURE) {
                 switch (type) {

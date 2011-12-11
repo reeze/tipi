@@ -33,7 +33,7 @@ PHP将缓存添加到内存管理机制中做了如下一些操作：
 
     [c]
     struct _zend_mm_heap {
-	
+
     #if ZEND_MM_CACHE
         unsigned int        cached; //  已缓存元素使用内存的总大小
         zend_mm_free_block *cache[ZEND_MM_NUM_BUCKETS]; //  存放被缓存的块

@@ -53,7 +53,7 @@ int yylex (void) {
 }
 
 void yyerror (char const *s) {
-	fprintf (stderr, "%s\n", s); 
+	fprintf (stderr, "%s\n", s);
 }
 
 int main (void) {

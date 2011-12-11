@@ -1,7 +1,7 @@
 # 函数间的转换
 
 在函数调用的执行代码中我们会看到这样一些强制转换：
-    
+
     [c]
     EX(function_state).function = (zend_function *) op_array;
 
@@ -44,19 +44,19 @@
     #include <stdlib.h>
 
     int main() {
-        typedef  union _utype 
-        { 
-            int i; 
-            char ch[2]; 
-        } utype; 
+        typedef  union _utype
+        {
+            int i;
+            char ch[2];
+        } utype;
 
         utype a;
 
         a.i = 10;
-        a.ch[0] = '1'; 
+        a.ch[0] = '1';
         a.ch[1] = '1';
 
-        printf("a.i= %d a.ch=%s",a.i, a.ch); 
+        printf("a.i= %d a.ch=%s",a.i, a.ch);
         getchar();
 
         return (EXIT_SUCCESS);
@@ -75,7 +75,7 @@
     struct _zend_op_array {
         /* Common elements */
         zend_uchar type;
-        char *function_name;		
+        char *function_name;
         zend_class_entry *scope;
         zend_uint fn_flags;
         union _zend_function *prototype;
@@ -125,5 +125,5 @@
 
 但是一个zend_op_array结构转换成zend_function是不能再次转变成zend_internal_function结构的，反之亦然。
 
-其实zend_function就是一个混合的数据结构，这种结构在一定程序上节省了内存空间。 
+其实zend_function就是一个混合的数据结构，这种结构在一定程序上节省了内存空间。
 

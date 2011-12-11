@@ -40,12 +40,12 @@ static int le_tipi;
  * Every user visible function must have an entry in tipi_functions[].
  */
 const zend_function_entry tipi_functions[] = {
-	PHP_FE(tipi_test,	NULL)		
-	PHP_FE(tipi_debug_function_dump,	NULL)		
-	PHP_FE(tipi_debug_function_dump_all,	NULL)		
-	PHP_FE(tipi_debug_zval_dump,	NULL)		
-	PHP_FE(tipi_debug_class_dump,	NULL)		
-	PHP_FE(tipi_debug_object_dump,	NULL)		
+	PHP_FE(tipi_test,	NULL)
+	PHP_FE(tipi_debug_function_dump,	NULL)
+	PHP_FE(tipi_debug_function_dump_all,	NULL)
+	PHP_FE(tipi_debug_zval_dump,	NULL)
+	PHP_FE(tipi_debug_class_dump,	NULL)
+	PHP_FE(tipi_debug_object_dump,	NULL)
 	{NULL, NULL, NULL}	/* Must be the last line in tipi_functions[] */
 };
 /* }}} */
@@ -99,7 +99,7 @@ static void php_tipi_init_globals(zend_tipi_globals *tipi_globals)
  */
 PHP_MINIT_FUNCTION(tipi)
 {
-	/* If you have INI entries, uncomment these lines 
+	/* If you have INI entries, uncomment these lines
 	REGISTER_INI_ENTRIES();
 	*/
 	return SUCCESS;
@@ -171,9 +171,9 @@ PHP_FUNCTION(tipi_test)
 	RETURN_STRINGL(strg, len, 0);
 }
 /* }}} */
-/* The previous line is meant for vim and emacs, so it can correctly fold and 
-   unfold functions in source code. See the corresponding marks just before 
-   function definition, where the functions purpose is also documented. Please 
+/* The previous line is meant for vim and emacs, so it can correctly fold and
+   unfold functions in source code. See the corresponding marks just before
+   function definition, where the functions purpose is also documented. Please
    follow this convention for the convenience of others editing your code.
 */
 
@@ -198,7 +198,7 @@ zval* tipi_get_php_symbol(char* name, int name_length)
 			return *retval;
 		}
 	}
-	
+
 	st = &EG(symbol_table);
 	if (zend_hash_find(st, name, name_length, (void **) &retval) == SUCCESS) {
 		return *retval;
@@ -236,7 +236,7 @@ PHP_FUNCTION(tipi_debug_zval_dump)
 	}
 
 	efree(args);
-	
+
 }
 
 static void tipi_dump_function_detail(zend_function *func)
@@ -252,11 +252,11 @@ static void tipi_dump_function_detail(zend_function *func)
 /**
  * 输出函数信息
  */
-static void tipi_dump_function(zend_function *func) 
+static void tipi_dump_function(zend_function *func)
 {
 	zend_printf("-------------------- Function %s --------------------", func->common.function_name);
 	TIPI_LINE;
-	
+
 	tipi_dump_function_detail(func);
 	TIPI_LINE;
 }
@@ -324,7 +324,7 @@ PHP_FUNCTION(tipi_debug_function_dump)
 		}
 	}
 
-	
+
 	for (i = 0; i < argc; i++) {
 		name = Z_STRVAL_PP(args[i]);
 		name_len = Z_STRLEN_PP(args[i]);
@@ -338,7 +338,7 @@ PHP_FUNCTION(tipi_debug_function_dump)
 		}
 
 		if (zend_hash_find(EG(function_table), name, name_len + 1, (void **)&func) == SUCCESS) {
-			tipi_dump_function(func);		
+			tipi_dump_function(func);
 		}else{
 			zend_printf("cant find function %s\n", name);
 		}
@@ -361,7 +361,7 @@ static void tipi_print_function_table(HashTable *function_table) {
 
 		tipi_dump_function(func);
 	}
-	
+
 }
 
 static void tipi_print_methods(HashTable *function_table, char *class_name)
@@ -373,7 +373,7 @@ static void tipi_print_methods(HashTable *function_table, char *class_name)
 	for (zend_hash_internal_pointer_reset_ex(function_table, &pos);
 			zend_hash_get_current_data_ex(function_table, (void **) &func, &pos) == SUCCESS;
 			zend_hash_move_forward_ex(function_table, &pos)
-	    ) {		
+	    ) {
 		tipi_dump_method(func, class_name, ++i);
 	}
 }
@@ -399,7 +399,7 @@ static void tipi_dump_class(zend_class_entry **ce)
 		tipi_dump_class((zend_class_entry **)(&(*ce)->parent));
 	}
 	zend_printf("\n");
-	
+
 	zend_printf("refcount=%d \n", (*ce)->refcount);
 	zend_printf("constants_updated=%d \n", (*ce)->constants_updated);
 	zend_printf("ce_flags=%d \n", (*ce)->ce_flags);
@@ -424,7 +424,7 @@ static void tipi_dump_class(zend_class_entry **ce)
 	zend_printf("line start=%d \n  ", (*ce)->line_start);
 	zend_printf("line end=%d \n  ", (*ce)->line_end);
 	zend_printf("comment=%s \n  ", (*ce)->doc_comment);
-	
+
 }
 
 /**
@@ -456,7 +456,7 @@ PHP_FUNCTION(tipi_debug_class_dump)
 		}
 	}
 
-	
+
 	for (i = 0; i < argc; i++) {
 		name = Z_STRVAL_PP(args[i]);
 		name_len = Z_STRLEN_PP(args[i]);
@@ -470,7 +470,7 @@ PHP_FUNCTION(tipi_debug_class_dump)
 		}
 
 		if (zend_hash_find(EG(class_table), name, name_len + 1, (void **) &ce) == SUCCESS) {
-			tipi_dump_class(ce);		
+			tipi_dump_class(ce);
 		}else{
 			zend_printf("cant find class %s\n", name);
 		}

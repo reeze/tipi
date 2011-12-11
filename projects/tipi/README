@@ -39,7 +39,7 @@ void tipi_debug_function_dump_all()
 
 ## tipi_debug_class_dump
  -- 查看类结构 (PHP 5)
- 
+
 **说明**
 void tipi_debug_class_dump ( string class_name [, string class_name2 [, string ...]])
 

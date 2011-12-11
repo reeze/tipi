@@ -60,7 +60,7 @@ ZEND_NEW_SPEC_HANDLER函数首先会判断对象所对应的类是否为可实�
 
 在_object_and_properties_init函数中，程序会执行前面提到的类的类型的判断，然后更新类的静态变量等信息（在这前面的章节有说明），
 更新完成后，程序会设置zval的类型为IS_OBJECT。
-    
+
     [c]
     Z_TYPE_P(arg) = IS_OBJECT;
 

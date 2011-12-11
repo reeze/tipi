@@ -3,10 +3,10 @@
 #define T_NUMBER 2
 #define T_LOWER_CHAR 3
 #define T_UPPER_CHAR 4
-#define T_EXIT 5 
+#define T_EXIT 5
 #define T_UNKNOWN 6
 #define T_INPUT_ERROR 7
-#define T_END 8 
+#define T_END 8
 #define T_WHITESPACE 9
 
 typedef struct Scanner {

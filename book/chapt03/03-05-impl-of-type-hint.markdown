@@ -25,8 +25,8 @@ instanceof 用来测定一个给定的对象是否来自指定的对象类。ins
     array_print(1);
 
 以上的这段代码有一点问题，它触发了我们这次所介绍的类型提示，这段代码在PHP5.1之后的版本执行，会报错如下：
-    
-    Catchable fatal error: Argument 1 passed to array_print() must be an array, 
+
+    Catchable fatal error: Argument 1 passed to array_print() must be an array,
     integer given, called in  ...
 
 当我们把函数参数中的整形变量变为数组时，程序会正常运行，调用print_r函数输出数组。
@@ -50,7 +50,7 @@ instanceof 用来测定一个给定的对象是否来自指定的对象类。ins
 这段代码与前面的那个示例相比，函数的参数设置了一个默认值，但是这个默认值是一个整形变量，
 它与参数给定的类型提示Array不一样，因此，当我们运行这段代码时会很快看到程序会报错如下：
 
-    Fatal error: Default value for parameters with array type hint 
+    Fatal error: Default value for parameters with array type hint
     can only be an array or NULL
 
 为什么为很快看到报错呢？
@@ -177,4 +177,3 @@ zend_verify_arg_type的整个流程如图3.1所示：
 在上面的代码中，我们可以找到前面的报错信息中的一些关键字Argument、 passed to、called in等。
 这就是我们在调用函数或方法时类型提示显示错误信息的最终执行位置。
 
- 

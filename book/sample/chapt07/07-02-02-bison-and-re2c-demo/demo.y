@@ -12,7 +12,7 @@ void yyerror(char const *);
 %token T_BEGIN
 %token T_NUMBER
 %token T_LOWER_CHAR
-%token T_UPPER_CHAR	
+%token T_UPPER_CHAR
 %token T_EXIT
 %token T_UNKNOWN
 %token T_INPUT_ERROR
@@ -42,5 +42,5 @@ variable: T_NUMBER {$$ = $1;}
 %%
 
 void yyerror(char const *s) {
-	printf("%s\n", s);	
+	printf("%s\n", s);
 }

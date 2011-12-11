@@ -26,7 +26,7 @@ void *estrndup(void *ptr, int len){
 Scanner scanner_globals;
 
 #define YYCTYPE char
-#define YYFILL(n) 
+#define YYFILL(n)
 #define STATE(name)  yyc##name
 #define BEGIN(state) YYSETCONDITION(STATE(state))
 #define LANG_SCNG(v) (scanner_globals.v)
@@ -43,10 +43,10 @@ Scanner scanner_globals;
 
 /**
  * 搜索一个token
- */ 
+ */
 int scan(zval *zendlval){
 	SCNG(yy_text) = YYCURSOR;
-	
+
 #line 51 "demo_scanner.c"
 {
 	YYCTYPE yych;
@@ -405,7 +405,7 @@ yy40:
 
 }
 
-/** 
+/**
  * bison执行中必须存在的yylex函数
  */
 int yylex(znode *zendlval) {

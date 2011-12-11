@@ -16,7 +16,7 @@
 * **sapi**  包含了各种服务器抽象层的代码，例如apache的mod_php，cgi，fastcgi以及fpm等等接口。
 * **TSRM**  PHP的线程安全是构建在TSRM库之上的，PHP实现中常见的\*G宏通常是对TSRM的封装，TSRM(Thread Safe Resource Manager)线程安全资源管理器。
 * **tests**  PHP的测试脚本集合，包含PHP各项功能的测试文件
-* **win32**  这个目录主要包括Windows平台相关的一些实现，比如sokcet的实现在Windows下和\*Nix平台就不太一样，同时也包括了Windows下编译PHP相关的脚本。 
+* **win32**  这个目录主要包括Windows平台相关的一些实现，比如sokcet的实现在Windows下和\*Nix平台就不太一样，同时也包括了Windows下编译PHP相关的脚本。
 
 PHP的测试比较有意思，它使用PHP来测试PHP，测试php脚本在/run-tests。php，这个脚本读取tests目录中phpt文件。
 读者可以打开这些看看，php定义了一套简单的规则来测试，例如一下的这个测试脚本/tests/basic/001。phpt：
@@ -55,7 +55,7 @@ ctags支持非常多的语言，可以将源代码中的各种符号（如:函�
     $ ctags -R
 
 	#小技巧：在当前目录生成的tags文件中使用的是相对路径，
-	#若改用 ctags -R /server/ ，可以生成包含完整路径的ctags，就可以随意放到任意文件夹中了。 
+	#若改用 ctags -R /server/ ，可以生成包含完整路径的ctags，就可以随意放到任意文件夹中了。
 
     #在~/.vimrc中添加:
     set tags+=/server/php-src/tags
@@ -105,6 +105,6 @@ VIM可以读取tags文件，当我们在符号上（可以是变量名之类）�
     CTRL + -向后定位
     CTRL + SHIFT + -向前定位
 
-对于一些搜索类型的操作，可以考虑使用Editplus或其它文本编辑工具进行，这样的搜索速度相对来说会快一些。 
+对于一些搜索类型的操作，可以考虑使用Editplus或其它文本编辑工具进行，这样的搜索速度相对来说会快一些。
 如果使用Editplus进行搜索，一般是选择 【搜索】 中的 【在文件中查找...】
 

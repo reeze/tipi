@@ -52,8 +52,8 @@
         public final $var;
     }
 
-运行程序将报错：Fatal error: Cannot declare property Tipi::$var final, 
-the final modifier is allowed only for methods and classes in .. 
+运行程序将报错：Fatal error: Cannot declare property Tipi::$var final,
+the final modifier is allowed only for methods and classes in ..
 这个错误由zend_do_declare_property函数抛出：
 
     [c]
@@ -173,7 +173,7 @@ the final modifier is allowed only for methods and classes in ..
        private function method();
     }
 
-如果直接运行，程序会报错：Fatal error: Access type for interface method Ifce::method() must be omitted in 
+如果直接运行，程序会报错：Fatal error: Access type for interface method Ifce::method() must be omitted in
 这段代码对应到zend_do_begin_function_declaration函数中的代码，如下：
 
     [c]
@@ -199,7 +199,7 @@ the final modifier is allowed only for methods and classes in ..
         public static function __get();
     }
 
-若运行这段代码，则会显示Warning：Warning: The magic method __get() must have public visibility and cannot be static in 
+若运行这段代码，则会显示Warning：Warning: The magic method __get() must have public visibility and cannot be static in
 
 这段编译检测在zend_do_begin_function_declaration函数中对应的源码如下：
 
@@ -304,7 +304,7 @@ Zend引擎在调用的时候是怎么区分这两类方法的，比如我们静�
 		}
 
 		public function instanceFunc() {
-			echo "instance";	
+			echo "instance";
 		}
 	}
 

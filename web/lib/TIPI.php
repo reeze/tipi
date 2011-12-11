@@ -5,7 +5,7 @@ class TIPI
 	public static function getVersion()
 	{
 		static $version = NULL;
-		
+
 		if(!$version) {
 			$version = trim(file_get_contents(TIPI_ROOT_PATH . "/VERSION"));
 		}
@@ -15,7 +15,7 @@ class TIPI
 
 	public function haveNewVersion()
 	{
-		return self::getRequestParam('v') != self::getVersion();	
+		return self::getRequestParam('v') != self::getVersion();
 	}
 
 	// Simple Wrapper
@@ -26,21 +26,21 @@ class TIPI
 
 	public static function getHomeUrlForPdf()
 	{
-		return self::getHomeUrlFor('pdf');	
+		return self::getHomeUrlFor('pdf');
 	}
 
 	public static function getHomeUrlForEpub()
 	{
-		return self::getHomeUrlFor('epub');	
+		return self::getHomeUrlFor('epub');
 	}
 
 	public static function getHomeUrlForChm()
 	{
-		return self::getHomeUrlFor('chm');	
+		return self::getHomeUrlFor('chm');
 	}
 
 	protected static function getHomeUrlFor($type)
 	{
-		return url_for("http://www.php-internal.com/?v=" . self::getVersion() . "&ref=$type");	
+		return url_for("http://www.php-internal.com/?v=" . self::getVersion() . "&ref=$type");
 	}
 }

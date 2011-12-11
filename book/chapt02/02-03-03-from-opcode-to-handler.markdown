@@ -70,7 +70,7 @@
                 _UNUSED_CODE, /* 14             */
                 _UNUSED_CODE, /* 15             */
                 _CV_CODE      /* 16 = IS_CV     */
-            };  
+            };
             return zend_opcode_handlers[
                  opcode * 25 + zend_vm_decode[op->op1.op_type] * 5
                          + zend_vm_decode[op->op2.op_type]];
@@ -101,7 +101,7 @@
     ASSIGN     =>      ZEND_ASSIGN_SPEC_VAR_CONST_HANDLER
                        ZEND_ASSIGN_SPEC_VAR_TMP_HANDLER
                        ZEND_ASSIGN_SPEC_VAR_VAR_HANDLER
-                       ZEND_ASSIGN_SPEC_VAR_CV_HANDLER            
+                       ZEND_ASSIGN_SPEC_VAR_CV_HANDLER
     //变量加法：
     ASSIGN_SUB =>   ZEND_ASSIGN_SUB_SPEC_VAR_CONST_HANDLER,
                         ZEND_ASSIGN_SUB_SPEC_VAR_TMP_HANDLER,
@@ -154,19 +154,19 @@ VAR TMP CV UNUSED CONST
 	            _UNUSED_CODE, /* 14             */
 	            _UNUSED_CODE, /* 15             */
 	            _CV_CODE      /* 16 = IS_CV     */
-	        };  
-	
+	        };
+
 	   	 //很显然，我们把opcode和相对应的写到了/tmp/php.log文件中
 	   	 int op_index;
 	   	 op_index = opcode * 25 + zend_vm_decode[op->op1.op_type] * 5 + zend_vm_decode[op->op2.op_type];
-	
+
 	   	 FILE *stream;
 	   	 if((stream = fopen("/tmp/php.log", "a+")) != NULL){
 	   		 fprintf(stream, "opcode: %d , zend_opcode_handlers_index:%d\n", opcode, op_index);
-	   	 }    
+	   	 }
 	   	 fclose(stream);
-	
-	
+
+
 	        return zend_opcode_handlers[
 	             opcode * 25 + zend_vm_decode[op->op1.op_type] * 5
 	                     + zend_vm_decode[op->op2.op_type]];

@@ -24,7 +24,7 @@ CGI程序反复加载是CGI性能低下的主要原因，如果CGI程序保持�
    1. 当客户端请求到达Web Server时，FastCGI进程管理器选择并连接到一个CGI解释器。
       Web server将CGI环境变量和标准输入发送到FastCGI子进程php-cgi。
    1. FastCGI子进程完成处理后将标准输出和错误信息从同一连接返回Web Server。当FastCGI子进程关闭连接时，
-      请求便告处理完成。FastCGI子进程接着等待并处理来自FastCGI进程管理器(运行在Web Server中)的下一个连接。 
+      请求便告处理完成。FastCGI子进程接着等待并处理来自FastCGI进程管理器(运行在Web Server中)的下一个连接。
 	  在CGI模式中，php-cgi在此便退出了。
 
 ## PHP中的CGI实现
@@ -208,14 +208,14 @@ fcgi_close函数在前面提的fcgi_finish_request函数中，在请求应答完
 
     [c]
     SG(request_info).cookie_data = sapi_module.read_cookies(TSRMLS_C);
-	
+
 所有使用PHP的场合都需要定义自己的SAPI，例如在第一小节的Apache模块方式中，
 sapi_module是apache2_sapi_module，其对应read_cookies方法的是php_apache_sapi_read_cookies函数，
 而在我们这里，读取cookie的函数是sapi_cgi_read_cookies。
 再次说明定义SAPI结构的理由：统一接口，面向接口的编程，具有更好的扩展性和适应性。
 
 ## 参考资料
-  
-* http://www.fastcgi.com/drupal/node/2  
-* http://baike.baidu.com/view/641394.htm  
+
+* http://www.fastcgi.com/drupal/node/2
+* http://baike.baidu.com/view/641394.htm
 

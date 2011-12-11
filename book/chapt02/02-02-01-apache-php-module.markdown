@@ -14,9 +14,9 @@ PHP模块通过注册apache2的ap_hook_post_config挂钩，在Apache启动的时
 除了这种启动时的加载方式，Apache的模块可以在运行的时候动态装载，
 这意味着对服务器可以进行功能扩展而不需要重新对源代码进行编译，甚至根本不需要停止服务器。
 我们所需要做的仅仅是给服务器发送信号HUP或者AP_SIG_GRACEFUL通知服务器重新载入模块。
-但是在动态加载之前，我们需要将模块编译成为动态链接库。此时的动态加载就是加载动态链接库。 
+但是在动态加载之前，我们需要将模块编译成为动态链接库。此时的动态加载就是加载动态链接库。
 Apache中对动态链接库的处理是通过模块mod_so来完成的，因此mod_so模块不能被动态加载，
-它只能被静态编译进Apache的核心。这意味着它是随着Apache一起启动的。 
+它只能被静态编译进Apache的核心。这意味着它是随着Apache一起启动的。
 
 Apache是如何加载模块的呢？我们以前面提到的mod_php5模块为例。
 首先我们需要在Apache的配置文件httpd.conf中添加一行：
@@ -187,7 +187,7 @@ mod_php5也定义了属于Apache的sapi_module_struct结构:
 
     [c]
     SG(request_info).cookie_data = sapi_module.read_cookies(TSRMLS_C);
-	
+
 对于每一个服务器在加载时，我们都指定了sapi_module，而Apache的sapi_module是apache2_sapi_module。
 其中对应read_cookies方法的是php_apache_sapi_read_cookies函数。
 这也是定义SAPI结构的理由：统一接口，面向接口的编程，具有更好的扩展性和适应性。

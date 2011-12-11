@@ -35,7 +35,7 @@ EG(symbol_table)是一个HashTable的结构，用来存放所有的全局变量�
 ## $_GET、$_POST等变量的初始化
 
 **$_GET、$_COOKIE、$_SERVER、$_ENV、$_FILES、$_REQUEST**这六个变量都是通过如下的调用序列进行初始化。
-**[main() -> php_request_startup() -> php_hash_environment()  ]**  
+**[main() -> php_request_startup() -> php_hash_environment()  ]**
 在请求初始化时，通过调用 **php_hash_environment** 函数初始化以上的六个预定义的变量。
 如下所示为php_hash_environment函数的代码。在代码之后我们以$_POST为例说明整个初始化的过程。
 

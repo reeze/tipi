@@ -67,7 +67,7 @@ class SimpieView
 	private function _render($view_path, $params=array(), $return=false, $file_type=null)
 	{
 		if(!file_exists($view_path)) {
-			throw new SimpieViewNotFoundException("View path:{$view_path} not found");	
+			throw new SimpieViewNotFoundException("View path:{$view_path} not found");
 		}
 
 		if(!$file_type) {
@@ -92,7 +92,7 @@ class SimpieView
 		require $view_path;
 
 		if($return) {
-			return ob_get_clean();	
+			return ob_get_clean();
 		}
 	}
 
@@ -108,12 +108,12 @@ class SimpieView
 
 		# Transform text using parser.
 		$output = $parser->transform(file_get_contents($view_path));
-		
+
 		if($return)	{
 			return $output;
 		}
 		else {
-			echo $output;	
+			echo $output;
 		}
 	}
 }

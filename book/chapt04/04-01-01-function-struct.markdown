@@ -4,7 +4,7 @@
 
 	[c]
 	#define ZEND_INTERNAL_FUNCTION              1
-	#define ZEND_USER_FUNCTION                  2  
+	#define ZEND_USER_FUNCTION                  2
 	#define ZEND_OVERLOADED_FUNCTION            3
 	#define ZEND_EVAL_CODE                      4
 	#define ZEND_OVERLOADED_FUNCTION_TEMPORARY  5
@@ -16,7 +16,7 @@
 用户自定义函数是非常常用的函数种类，如下面的代码，定义了一个用户自定义的函数：
 
 	[php]
-	<?php 
+	<?php
 
 	function tipi( $name ){
 		$return = "Hi! " . $name;
@@ -32,7 +32,7 @@
 PHP内核也会“帮你“返回NULL。
 
 通过 [<<第六节 变量的作用域>>][var-scope] 可知，ZE在执行过程中，会将运行时信息存储于_zend_execute_data中：
-	
+
 	[c]
 	struct _zend_execute_data {
 		//...省略部分代码
@@ -61,17 +61,17 @@ PHP内核也会“帮你“返回NULL。
 			zend_uchar type;  /* never used */
 			char *function_name; 	//函数名称
 			zend_class_entry *scope; //函数所在的类作用域
-			zend_uint fn_flags;		// 作为方法时的访问类型等，如ZEND_ACC_STATIC等  
+			zend_uint fn_flags;		// 作为方法时的访问类型等，如ZEND_ACC_STATIC等
 			union _zend_function *prototype; //函数原型
 			zend_uint num_args;		//参数数目
 			zend_uint required_num_args; //需要的参数数目
 			zend_arg_info *arg_info;  //参数信息指针
 			zend_bool pass_rest_by_reference;
-			unsigned char return_reference;  //返回值 
+			unsigned char return_reference;  //返回值
 		} common;
 
 		zend_op_array op_array;   //函数中的操作
-		zend_internal_function internal_function;  
+		zend_internal_function internal_function;
 	} zend_function;
 
 *zend_function*的结构中的op_array存储了该函数中所有的操作，当函数被调用时，ZE就会将这个op_array中的opline一条条顺次执行，

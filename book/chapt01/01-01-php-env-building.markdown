@@ -48,13 +48,13 @@
 	./buildconf
 
 执行完以后就可以开始configure了，configure有很多的参数，比如指定安装目录，是否开启相关模块等选项：
-	
+
 	[bash]
 	./configure --help # 查看可用参数
 
 为了尽快得到可以测试的环境，我们仅编译一个最精简的PHP。通过执行 ./configure --disable-all来进行配置。
 以后如果需要其他功能可以重新编译。如果configure命令出现错误，可能是缺少PHP所依赖的库，各个系统的环境可能不一样。
-出现错误可根据出错信息上网搜索。 直到完成configure。configure完成后我们就可以开始编译了。 
+出现错误可根据出错信息上网搜索。 直到完成configure。configure完成后我们就可以开始编译了。
 
 	[bash]
     ./configure --disable-all

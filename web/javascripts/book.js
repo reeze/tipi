@@ -31,7 +31,7 @@ $(function() {
 
 	$.each(['page_outline', 'share_page', 'font_size'], function(index, id) {
 		$('#' + id).hover(function() {
-			toggle_pannel(id + '_pannel', this);	
+			toggle_pannel(id + '_pannel', this);
 
 			$('#' + id + '_pannel').mouseleave(function() {
 				$(this).fadeOut();
@@ -40,11 +40,11 @@ $(function() {
 	});
 
 	$("#share_page_pannel a").click(function() {
-		$('#share_page_pannel').hide();	
+		$('#share_page_pannel').hide();
 	});
 
 	$("#page_outline_pannel a").click(function() {
-		$("#page_outline_pannel").toggle();	
+		$("#page_outline_pannel").toggle();
 	});
 
 	// change the font-size of the book body

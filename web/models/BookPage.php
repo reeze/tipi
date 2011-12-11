@@ -34,10 +34,10 @@ class BookPage extends MarkdownPage
 		// markdown文件的大纲标题信息
 		$this->headers = is_array($this->meta['headers']) ? $this->meta['headers'] : array();
     }
-	
+
 	// Pdf版的内容需要重新对标题级别调整一下以便生成目录
 	public function reAssignHeaderLevel($level) {
-		if($this->isChapterIndex() && $level == 1) return $level; 
+		if($this->isChapterIndex() && $level == 1) return $level;
 
 		// 所有层级增加一级
 		return $level + $this->getPageLevel() - 1;
@@ -49,7 +49,7 @@ class BookPage extends MarkdownPage
 
 	public function getPageLevel() {
 		$filename = array_pop(explode('/', $this->page_name));
-		return self::_getChapterLevelByFilename($filename);	
+		return self::_getChapterLevelByFilename($filename);
 	}
 
 	public function getHeaders() {
@@ -104,7 +104,7 @@ class BookPage extends MarkdownPage
              $filepath = substr($allArticleList[$index], 11, - (strlen(self::extension) + 1));
              return new self($filepath);
         }
-       
+
 
 		return NULL;
     }
@@ -138,7 +138,7 @@ class BookPage extends MarkdownPage
     public function getTitle() {
         if ($this->title === NULL) {
 			if(isset($this->headers[0]) && $this->headers[0]['level'] == 1) {
-				$this->title = $this->headers[0]['text'];	
+				$this->title = $this->headers[0]['text'];
 			}
         }
 
@@ -147,10 +147,10 @@ class BookPage extends MarkdownPage
 
 	public function getUrl($absolute=IS_ABSOLUTE_URL)
 	{
-		return url_for_book($this->page_name, $absolute);	
+		return url_for_book($this->page_name, $absolute);
 	}
 
-	
+
 	/**
 	 * 返回完整的章节名称, 例如在RSS输出等地方需要完整的章节名称.
      *
@@ -177,7 +177,7 @@ class BookPage extends MarkdownPage
             list($chapt_seq, $sect_seq, $sub_seq) = explode('-', $page);
         }
 
-        
+
 
 		$num_chs_map = array(
 			'01' => "一",
@@ -201,7 +201,7 @@ class BookPage extends MarkdownPage
 			'19' => '十九',
 			'20' => '二十',
 		);
-		
+
 		$title = $this->getTitle();
 
 		// 类似目录以及附录等页面
@@ -212,7 +212,7 @@ class BookPage extends MarkdownPage
 
 		// 每章的介绍页面
 		$is_section_index_page = (!$is_index_page && !$is_sub_section_page && $sect_seq == '00');
-		
+
 		// 小节页面
 		$is_section_page = (!$is_section_index_page && (int)$sect_seq > 0);
 
@@ -223,7 +223,7 @@ class BookPage extends MarkdownPage
 			$title = $prefix . $title;
 		}
 		else if($is_section_page) {
-			$title = "第" . (isset($num_chs_map[$chapt_seq]) ? $num_chs_map[$chapt_seq] : $chapt_seq) . "章 » " . $title; 
+			$title = "第" . (isset($num_chs_map[$chapt_seq]) ? $num_chs_map[$chapt_seq] : $chapt_seq) . "章 » " . $title;
 		}
 
 		// $is_section_index_page and $is_index_page and all other page
@@ -371,12 +371,12 @@ class BookPage extends MarkdownPage
 		foreach(self::getFlatPages() as $page) {
 			$pages[] = new self($page['page_name'], '../../book', $is_for_print);
 		}
-	
+
 		return $pages;
 	}
 
 	public static function getFlatPagesArrayForPrint() {
-		return self::getFlatPagesArray(true);	
+		return self::getFlatPagesArray(true);
 	}
 
 	/**
@@ -396,13 +396,13 @@ class BookPage extends MarkdownPage
 		$match_pages = array();
 		$pages = self::getFlatPagesArray();
 		foreach($pages as $page) {
-			// TODO	
+			// TODO
 		}
-		return array();	
+		return array();
 	}
 
 	private static function _strDistance($str1, $str2) {
-		// TODO	
+		// TODO
 	}
 
     /**
@@ -449,7 +449,7 @@ class BookPage extends MarkdownPage
     /**
      * 初始化单个文件路径章节列表数据
      * @param <type> $chapterDir
-     * @return <type> 
+     * @return <type>
      */
     private static function _initChapterListData($chapterDir) {
         $data = array();

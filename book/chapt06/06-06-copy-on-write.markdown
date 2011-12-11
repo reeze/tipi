@@ -22,13 +22,13 @@ COW最早应用在*nix系统中对线程与内存使用的优化，后面广泛�
     var_dump(memory_get_usage());
 
     foreach($tipi_copy as $i){
-        $j += count($i); 
+        $j += count($i);
     }
     var_dump(memory_get_usage());
 
 	?>
 	//-----执行结果-----
-	$ php t.php 
+	$ php t.php
 	int(630904)
 	int(10479840)
 	int(10479944)
@@ -48,7 +48,7 @@ COW最早应用在*nix系统中对线程与内存使用的优化，后面广泛�
 
 	[php]
 	<?php
-    //$tipi = array_fill(0, 3, 'php-internal');  
+    //$tipi = array_fill(0, 3, 'php-internal');
     //这里不再使用array_fill来填充 ，为什么？
     $tipi[0] = 'php-internal';
     $tipi[1] = 'php-internal';
@@ -65,7 +65,7 @@ COW最早应用在*nix系统中对线程与内存使用的优化，后面广泛�
 
 	?>
 	//-----执行结果-----
-	$ php t.php 
+	$ php t.php
 	int(629384)
 	tipi: (refcount=2, is_ref=0)=array (0 => (refcount=1, is_ref=0)='php-internal', 1 => (refcount=1, is_ref=0)='php-internal', 2 => (refcount=1, is_ref=0)='php-internal')
 	copy: (refcount=2, is_ref=0)=array (0 => (refcount=1, is_ref=0)='php-internal', 1 => (refcount=1, is_ref=0)='php-internal', 2 => (refcount=1, is_ref=0)='php-internal')
@@ -89,7 +89,7 @@ COW最早应用在*nix系统中对线程与内存使用的优化，后面广泛�
 这个变量，就是前面关于变量的章节提到的：引用计数。
 
 这里有一个比较典型的例子：
-	
+
 	[php]
 	<?php
 		$foo = 1;
@@ -97,13 +97,13 @@ COW最早应用在*nix系统中对线程与内存使用的优化，后面广泛�
 		$bar = $foo;
 		xdebug_debug_zval('foo');
 		$bar = 2;
- 		xdebug_debug_zval('foo');	
+ 		xdebug_debug_zval('foo');
 	?>
 	//-----执行结果-----
 	foo: (refcount=1, is_ref=0)=1
 	foo: (refcount=2, is_ref=0)=1
 	foo: (refcount=1, is_ref=0)=1
-	
+
 经过前文对变量的章节，我们可以理解当$foo被赋值时，$foo变量的引用计数为1。
 当$foo的值被赋给$bar时，PHP并没有将内存直接复制一份交给$bar，
 而是直接把$foo和$bar指向同一个地址。这时，我们可以看到refcount=2;
@@ -195,8 +195,8 @@ PHP对值的写时复制的操作，主要依赖于两个参数：**refcount__gc
 	$tipi['love'] = '2';
 	echo $foo['love'];
 	?>
-	
-这个例子最后会输出 2 ， 大家会非常惊讶于$tipi怎么会影响到$foo, 
+
+这个例子最后会输出 2 ， 大家会非常惊讶于$tipi怎么会影响到$foo,
 这完全是两个不同的变量么！至少我们希望是这样。
 
 >**NOTE**

@@ -11,7 +11,7 @@
 	<?php
 		function foo(){
 			echo "I'm foo!";
-		}	
+		}
 		foo();
 	?>
 
@@ -22,16 +22,16 @@
 	line     # *  op                           fetch          ext  return  operands
 	---------------------------------------------------------------------------------
 	 		      DO_FCALL                                      0          'foo'
-	 		      NOP                                                      
+	 		      NOP
 	 		    > RETURN                                                   1
-	
+
 	function name:  foo
 	line     # *  op                           fetch          ext  return  operands
 	---------------------------------------------------------------------------------
 	   4     0  >   ECHO                                                     'I%27m+foo%21'
 	   5     1    > RETURN                                                   null
-	
-	
+
+
 上面是去除了一些枝节信息的的opcodes，可以看到执行时函数部分的opcodes是单独独立出来的，这点对于函数的执行特别重要，下面的部分会详细介绍。
 现在，我们把焦点放到对foo函数的调用上面。调用foo的OPCODE是“DO_FCALL“， DO_FCALL进行函数调用操作时，ZE会在function_table中根据函数名
 （如前所述，这里的函数名经过str_tolower的处理，所以PHP的函数名大小写不敏感)查找函数的定义， 如果不存在，
@@ -50,7 +50,7 @@
 内部函数的执行与用户函数不同。用户函数是php语句一条条“翻译”成op_line组成的一个op_array，而内部函数则是用C来实现的，因为执行环境也是C环境，
 所以可以直接调用。如下面的例子：
 
-	[php]	
+	[php]
 	<?php
 		$foo = 'test';
 		print_r($foo);

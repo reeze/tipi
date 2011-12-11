@@ -48,29 +48,29 @@ PHP的内存管理可以被看作是分层（hierarchical）的。
 		size_t _size;	/* block的大小*/
 		size_t _prev;	/* 计算前一个块有用到*/
 	} zend_mm_block_info;
-	 
-	 
+
+
 	typedef struct _zend_mm_block {
 		zend_mm_block_info info;
 	} zend_mm_block;
-	 
+
 	typedef struct _zend_mm_small_free_block {	/* 双向链表 */
 		zend_mm_block_info info;
 		struct _zend_mm_free_block *prev_free_block;	/* 前一个块 */
 		struct _zend_mm_free_block *next_free_block;	/* 后一个块 */
 	} zend_mm_small_free_block;	/* 小的空闲块*/
-	 
+
 	typedef struct _zend_mm_free_block {	/* 双向链表 + 树结构 */
 		zend_mm_block_info info;
 		struct _zend_mm_free_block *prev_free_block;	/* 前一个块 */
 		struct _zend_mm_free_block *next_free_block;	/* 后一个块 */
-	 
+
 		struct _zend_mm_free_block **parent;	/* 父结点 */
 		struct _zend_mm_free_block *child[2];	/* 两个子结点*/
 	} zend_mm_free_block;
-	 
-	 
-	 
+
+
+
 	struct _zend_mm_heap {
 		int                 use_zend_alloc;	/* 是否使用zend内存管理器 */
 		void               *(*_malloc)(size_t);	/* 内存分配函数*/
@@ -98,7 +98,7 @@ PHP的内存管理可以被看作是分层（hierarchical）的。
 		zend_mm_free_block *free_buckets[ZEND_MM_NUM_BUCKETS*2];	/* 小块内存数组，相当索引的角色 */
 		zend_mm_free_block *large_free_buckets[ZEND_MM_NUM_BUCKETS];	/* 大块内存数组，相当索引的角色 */
 		zend_mm_free_block *rest_buckets[2];	/* 剩余内存数组*/
-	 
+
 	};
 
 
@@ -159,10 +159,10 @@ free_buckets列表是用于存放小块内存，而与之对应的large_free_buc
 	[c]
 	#define ZEND_MM_LARGE_BUCKET_INDEX(S) zend_mm_high_bit(S)
 
-	
+
 	static inline unsigned int zend_mm_high_bit(size_t _size)
 	{
-	
+
 	..//省略若干不同环境的实现
 		unsigned int n = 0;
 		while (_size != 0) {
@@ -213,12 +213,12 @@ rest_buckts[0]所在的双向链表中，这个操作和前面的双向链表操
 	[c]
 	/* Heaps with user defined storage */
 	typedef struct _zend_mm_storage zend_mm_storage;
-	 
+
 	typedef struct _zend_mm_segment {
 	    size_t    size;
 	    struct _zend_mm_segment *next_segment;
 	} zend_mm_segment;
-	 
+
 	typedef struct _zend_mm_mem_handlers {
 	    const char *name;
 	    zend_mm_storage* (*init)(void *params);    //    初始化函数
@@ -228,7 +228,7 @@ rest_buckts[0]所在的双向链表中，这个操作和前面的双向链表操
 	    zend_mm_segment* (*_realloc)(zend_mm_storage *storage, zend_mm_segment *ptr, size_t size);    //    重新分配内存函数
 	    void (*_free)(zend_mm_storage *storage, zend_mm_segment *ptr);    //    释放内存函数
 	} zend_mm_mem_handlers;
-	 
+
 	struct _zend_mm_storage {
 	    const zend_mm_mem_handlers *handlers;    //    处理函数集
 	    void *data;
@@ -236,7 +236,7 @@ rest_buckts[0]所在的双向链表中，这个操作和前面的双向链表操
 
 
 以上代码的关键在于存储层处理函数的结构体，对于不同的内存分配方案，所不同的就是内存分配的处理函数。
-其中以name字段标识不同的分配方案。在图6.1中，我们可以看到PHP在存储层共有4种内存分配方案: 
+其中以name字段标识不同的分配方案。在图6.1中，我们可以看到PHP在存储层共有4种内存分配方案:
 malloc，win32，mmap_anon，mmap_zero默认使用malloc分配内存，
 如果设置了ZEND_WIN32宏，则为windows版本，调用HeapAlloc分配内存，剩下两种内存方案为匿名内存映射，
 并且PHP的内存方案可以通过设置变量来修改。其官方说明如下：
@@ -247,7 +247,7 @@ malloc，win32，mmap_anon，mmap_zero默认使用malloc分配内存，
 
 在代码中，对于这4种内存分配方案，分别对应实现了zend_mm_mem_handlers中的各个处理函数。
 配合代码的简单说明如下：
-	
+
 	[c]
 	/* 使用mmap内存映射函数分配内存 写入时拷贝的私有映射，并且匿名映射，映射区不与任何文件关联。*/
 	# define ZEND_MM_MEM_MMAP_ANON_DSC {"mmap_anon", zend_mm_mem_dummy_init, zend_mm_mem_dummy_dtor, zend_mm_mem_dummy_compact, zend_mm_mem_mmap_anon_alloc, zend_mm_mem_mmap_realloc, zend_mm_mem_mmap_free}
