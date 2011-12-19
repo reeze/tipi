@@ -199,12 +199,14 @@ free_buckets列表是用于存放小块内存，而与之对应的large_free_buc
 ![图6.3 large_free_buckets列表结构](../images/chapt06/06-02-03-large_free_buckets.jpg)
 
 从内存分配的过程中可以看出，内存块查找判断顺序是小块内存列表，接着是大块内存列表，
-最后是剩余内存列表。在heap结构中，此列表对就rest_buckets字段，这是一个只有两个元素的数组。
-而我们常用的插入和查找操作是针对第一个元素，即heap->rest_buckets[0]。
+最后是剩余内存列表。在heap结构中，此列表对就rest_buckets字段，这是一个包含两个元素的数组，
+但是同时也是一个双向队列，其中rest_buckets[0]为队列的头，rest_buckets[1]为队列的尾。
+而我们常用的插入和查找操作是针对第一个元素，即heap->rest_buckets[0]，
+当然，这是一个双向队列，并没有实际上的队列头和队列尾，这仅仅是作为一种区分方式的”队列头“。
 在添加内存时，如果所需要的内存块的大小大于初始化时设置的ZEND_MM_SEG_SIZE的值（在heap结构中为block_size字段）
 与ZEND_MM_ALIGNED_SEGMENT_SIZE(等于8)和ZEND_MM_ALIGNED_HEADER_SIZE(等于8)的和的差，则会将新生成的块插入
-rest_buckts[0]所在的双向链表中，这个操作和前面的双向链表操作一样，都是在第一个元素的后面插入新的元素。
-此列表的结构和free_bucket类型，只是这个列表所在的数组没有那么多元素，也没有相应的hash函数。
+rest_buckts所在的双向链表中，这个操作和前面的双向链表操作一样，都是从”队列头“插入新的元素。
+此列表的结构和free_bucket类似，只是这个列表所在的数组没有那么多元素，也没有相应的hash函数。
 
 在heap层下面是存储层，存储层的作用是将内存分配的方式对堆层透明化。
 在PHP的源码中有注释显示相关代码为"Storage Manager"。
