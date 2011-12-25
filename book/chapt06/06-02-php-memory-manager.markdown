@@ -128,9 +128,32 @@ ZEND_MM_SMALL_SIZE宏的作用是判断所申请的内存大小是否为小块�
 这样就保证了free_buckets不会出现数组溢出的情况。
 
 在内存管理初始化时，PHP内核对初始化free_buckets列表。
-由于free_buckets[]数组会自动分配内存，但此时free_block的双向链表都是没有指向具体的元素的，
-于是在初始化函数zend_mm_init中执行下列代码，对于偶数位的元素（索引从0开始）将其左指针和右指针都指向自己。
-从而初始化每个双向链表的开始元素。
+从heap的定义我们可知free_buckets是一个数组指针，其存储的本质是指向zend_mm_free_block结构体的指针。
+开始时这些指针都没有指向具体的元素，只是一个简单的指针空间。
+free_buckets列表在实际使用过程中只存储指针，这些指针以两个为一对（即数组从0开始，两个为一对），分别存储一个个双向链表的头尾指针。
+其结构如图6.2所示。
+
+![图6.2 free_buckets列表结构](../images/chapt06/06-02-02-free_buckets.jpg)
+
+对于free_buckets列表位置的获取，关键在于ZEND_MM_SMALL_FREE_BUCKET宏，宏代码如下：
+
+    [c]
+    #define ZEND_MM_SMALL_FREE_BUCKET(heap, index) \
+	(zend_mm_free_block*) ((char*)&heap->free_buckets[index * 2] + \
+		sizeof(zend_mm_free_block*) * 2 - \
+		sizeof(zend_mm_small_free_block))
+
+仔细看这个宏实现，发现在它的计算过程是取free_buckets列表的偶数位的内存地址加上
+两个指针的内存大小并减去zend_mm_small_free_block结构所占空间的大小。
+而zend_mm_free_block结构和zend_mm_small_free_block结构的差距在于两个指针。
+据此计算过程可知，ZEND_MM_SMALL_FREE_BUCKET宏会获取free_buckets列表
+index对应双向链表的第一个zend_mm_free_block的prev_free_block指向的位置。
+free_buckets的计算仅仅与prev_free_block指针和next_free_block指针相关，
+所以free_buckets列表也仅仅需要存储这两个指针。
+
+那么，这个数组在最开始是怎样的呢？
+在初始化函数zend_mm_init中free_buckets与large_free_buckts列表一起被初始化。
+如下代码：
 
 	[c]
 	p = ZEND_MM_SMALL_FREE_BUCKET(heap, 0);
@@ -141,14 +164,21 @@ ZEND_MM_SMALL_SIZE宏的作用是判断所申请的内存大小是否为小块�
 		heap->large_free_buckets[i] = NULL;
 	}
 
-以上的这个初始化的操作结果，在使用free_bitmap标记是否该双向链表已经使用过时有用。
-整个free_buckets列表的结构如图6.2所示。
+对于free_buckets列表来说，在循环中，偶数位的元素（索引从0开始）将其next_free_block和prev_free_block都指向自己，
+以i=0为例，free_buckets的第一个元素(free_buckets[0])存储的是第二个元素(free_buckets[1])的地址，
+第二个元素存储的是第一个元素的地址。
+此时将可能会想一个问题，在整个free_buckets列表没有内容时，ZEND_MM_SMALL_FREE_BUCKET在获取第一个zend_mm_free_block时，
+此zend_mm_free_block的next_free_block元素和prev_free_block元素却分别指向free_buckets[0]和free_buckets[1]。
 
-![图6.2 free_buckets列表结构](../images/chapt06/06-02-02-free_buckets.jpg)
+在整个循环初始化过程中都没有free_buckets数组的下标操作，它的移动是通过地址操作，以加两个sizeof(zend_mm_free_block\*)实现，
+这里的sizeof(zend_mm_free_block*)是获取指针的大小。比如现在是在下标为0的元素的位置，
+加上两个指针的值后，指针会指向下标为2的地址空间，从而实现数组元素的向后移动，
+也就是zend_mm_free_block->next_free_block和zend_mm_free_block->prev_free_block位置的后移。
+这种不存储zend_mm_free_block数组，仅存储其指针的方式不可不说精妙。虽然在理解上有一些困难，但是节省了内存。
 
-
-如上为free_buckets列表的结构图，当有新的元素需要插入到列表时，需要先根据块的大小查找index，
-查找到index后，在此index对应的双向列表的头部插入新的元素。
+free_buckets列表使用free_bitmap标记是否该双向链表已经使用过时有用。
+当有新的元素需要插入到列表时，需要先根据块的大小查找index，
+查找到index后，在此index对应的双向链表的头部插入新的元素。
 
 
 free_buckets列表的作用是存储小块内存，而与之对应的large_free_buckets列表的作用是存储大块的内存，
