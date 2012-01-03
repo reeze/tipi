@@ -23,7 +23,7 @@ function url_for($url, $absolute=false)
 		$backtrace = debug_backtrace();
 
 		$base_path = dirname(dirname(__FILE__));    // 这个路径是物理路径, 由于使用
-		$document_root = $_SERVER['DOCUMENT_ROOT']; // 这个路径可能是软链接
+		$document_root = DOCUMENT_ROOT_PATH ? DOCUMENT_ROOT_PATH : $_SERVER['DOCUMENT_ROOT']; // 这个路径可能是软链接
 		$script_root = dirname($_SERVER['SCRIPT_FILENAME']);
 		// 获取最后的一个调用, 也就是被请求的脚本路径
 		$request_script = dirname($backtrace[count($backtrace) - 1]['file']);

@@ -14,10 +14,13 @@ define('DISQUS_SHORT_NAME', 'tipiphp');
 define('SITE_NAME', 'TIPI: 深入理解PHP内核');
 define('SITE_DESC', 'TIPI(Thinking In PHP Internal)是一个开源项目，关注PHP的内部实现。PHP源码阅读、分析，Zend引擎，PHP扩展，脚本语言实现');
 
-# Jia this UID for share statics
+
 define('JIATHIS_UID', 905000);
 
 define('ROOT_PATH', dirname(__FILE__));
 define('TEMPLATE_PATH', ROOT_PATH . "/templates");
 define('NEWS_ROOT_PATH', ROOT_PATH . "/../news");
 define('TIPI_ROOT_PATH', dirname(ROOT_PATH));
+
+//默认请留空，如果$_SERVER['DOCUMENT_ROOT'] 变量与SCRIPT_FILENAME 路径不同导致CSS路径生成出错，请手动设置
+define('DOCUMENT_ROOT_PATH', '');
