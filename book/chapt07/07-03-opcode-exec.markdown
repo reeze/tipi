@@ -22,10 +22,10 @@
     [c]
     ZEND_API void (*zend_execute)(zend_op_array *op_array TSRMLS_DC);
 
-这是一个全局的指针函数，它的作用就是执行中间代码。在PHP内核启动时(zend_startup)时，这个全局指针函数将会指向execute函数。
-注意函数指针前面的修饰符ZEND_API，这说明这是ZendAPI的一部分。这里系统会默认实现一个执行函数，
-也就是说我们的扩展也可以实现自己的执行函数，这是作为扩展一个手段，方便我们对PHP进行扩展。
-与此一起的还有PHP的中间代码编译函数zend_compile_file（文件形式）和zend_compile_string(字符串形式)。
+这是一个全局的函数指针，它的作用就是执行中间代码。
+在PHP内核启动时(zend_startup)时，这个全局函数指针将会指向execute函数。
+注意函数指针前面的修饰符ZEND_API，这是ZendAPI的一部分。
+在zend_execute函数指针赋值时，还有PHP的中间代码编译函数zend_compile_file（文件形式）和zend_compile_string(字符串形式)。
 
     [c]
     zend_compile_file = compile_file;
@@ -35,10 +35,12 @@
 	zend_throw_exception_hook = NULL;
 
 
-这几个全局函数均只调用了系统默认实现的几个函数，比如compile_file和compile_string这两个函数，
-比如在APC等opcode优化扩展中就可以覆盖这里默认的函数实现，来增加一些缓存功能。
+这几个全局的函数指针均只调用了系统默认实现的几个函数，比如compile_file和compile_string函数，
+他们都是以全局函数指针存在，这种实现方式在PHP内核中比比皆是，其优势在于更低的耦合度，甚至可以定制这些函数。
+比如在APC等opcode优化扩展中就是通过替换系统默认的zend_compile_file函数指针为自己的函数指针my_compile_file，
+并且在my_compile_file中增加缓存等功能。
 
-到这里我们找到中间代码执行的最终函数：execute(Zend/zend_vm_execure.h)。
+到这里我们找到了中间代码执行的最终函数：execute(Zend/zend_vm_execure.h)。
 在这个函数中我们会发现所有的中间代码的执行最终都会调用handler。
 
     [c]
@@ -47,10 +49,10 @@
 
 这里的handler是一个函数指针，它指向执行该opcode时调用的处理函数。
 此时我们需要看看handler函数指针是如何被设置的。
-在前面我们的提到和execute一起设置的全局指针函数：zend_compile_string。
+在前面我们有提到和execute一起设置的全局指针函数：zend_compile_string。
 它的作用是编译字符串为中间代码。在Zend/zend_language_scanner.c文件中有compile_string函数的实现。
 在此函数中，当解析完中间代码后，一般情况下，它会执行pass_two(Zend/zend_opcode.c)函数。
-pass_two这个函数，从其命名上真有点看不出其意义是什么？
+pass_two这个函数，从其命名上真有点看不出其意义是什么。
 但是我们关注的是在函数内部，它遍历整个中间代码集合，
 调用ZEND_VM_SET_OPCODE_HANDLER(opline);为每个中间代码设置处理函数。
 ZEND_VM_SET_OPCODE_HANDLER是zend_vm_set_opcode_handler函数的接口宏，
@@ -212,7 +214,30 @@ handler所指向的方法基本都存在于Zend/zend_vm_execute.h文件文件。
 ![图7.2 Zend中间代码调用路径图](../images/chapt07/07-03-01-zend-opcodes.png)
 
 
+以上是opcode的执行过程，与过程相比，过程中的数据会更加重要，那么在执行过程中的核心数据结构有哪些呢？
 
+    typedef struct _zend_execute_data zend_execute_data;
+        
+    struct _zend_execute_data {
+        struct _zend_op *opline;
+        zend_function_state function_state;
+        zend_function *fbc; /* Function Being Called */
+        zend_class_entry *called_scope;
+        zend_op_array *op_array;
+        zval *object;
+        union _temp_variable *Ts;
+        zval ***CVs;
+        HashTable *symbol_table;
+        struct _zend_execute_data *prev_execute_data;
+        zval *old_error_reporting;
+        zend_bool nested;
+        zval **original_return_value;
+        zend_class_entry *current_scope;
+        zend_class_entry *current_called_scope;
+        zval *current_this;
+        zval *current_object;
+        struct _zend_op *call_opline;
+    };
 
 
 
