@@ -215,23 +215,34 @@ handler所指向的方法基本都存在于Zend/zend_vm_execute.h文件文件。
 
 
 以上是opcode的执行过程，与过程相比，过程中的数据会更加重要，那么在执行过程中的核心数据结构有哪些呢？
+在Zend/zend_vm_execute.h文件中的execute函数实现中，zend_execute_data类型的execute_data变量贯穿整个中间代码的执行过程，
+其在调用时并没有直接使用execute_data，而是使用EX宏代替，其定义在Zend/zend_compile.h文件中，如下：
 
+    [c]
+    #define EX(element) execute_data.element
+
+因此我们在execute函数中会看到EX(fbc)，EX(object)等宏调用，
+它们是调用函数局部变量execute_data的元素：execute_data.fbc和execute_data.object。
+execute_data不仅仅只有fbc、object等元素，它包含了执行过程中的中间代码，上一次执行的函数，函数执行的当前作用域，类等信息。
+其结构如下：
+
+    [c]
     typedef struct _zend_execute_data zend_execute_data;
         
     struct _zend_execute_data {
         struct _zend_op *opline;
         zend_function_state function_state;
         zend_function *fbc; /* Function Being Called */
-        zend_class_entry *called_scope;
-        zend_op_array *op_array;
+        zend_class_entry *called_scope; 
+        zend_op_array *op_array;  /* 当前执行的中间代码 */
         zval *object;
         union _temp_variable *Ts;
         zval ***CVs;
-        HashTable *symbol_table;
-        struct _zend_execute_data *prev_execute_data;
+        HashTable *symbol_table; /* 符号表 */
+        struct _zend_execute_data *prev_execute_data;   /* 前一条中间代码执行的环境*/
         zval *old_error_reporting;
         zend_bool nested;
-        zval **original_return_value;
+        zval **original_return_value; /* */
         zend_class_entry *current_scope;
         zend_class_entry *current_called_scope;
         zval *current_this;
@@ -239,8 +250,17 @@ handler所指向的方法基本都存在于Zend/zend_vm_execute.h文件文件。
         struct _zend_op *call_opline;
     };
 
+在前面的中间代码执行过程中有介绍：中间代码的执行最终是通过EX(opline)->handler(execute_data TSRMLS_CC)来调用最终的中间代码程序。
+在这里就将execute函数中初始化好的execture_data传递给执行程序。
+
+部分字段说明如下：
+
+* symbol_table字段： 符号表，存放局部变量，这在前面的[<< 第六节 变量的生命周期 »	 变量的作用域 >>][var-scope]有过说明。
+在execute_data初始时，EX(symbol_table) = EG(active_symbol_table);
+
 
 
 [opcode]: 				?p=chapt02/02-03-02-opcode
 [opcode-handler]: 		?p=chapt02/02-03-03-from-opcode-to-handler
 [function-return]:       ?p=chapt04/04-02-03-function-return
+[var-scope]: 			?p=chapt03/03-06-02-var-scope

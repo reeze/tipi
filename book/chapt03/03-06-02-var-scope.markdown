@@ -43,7 +43,7 @@
 同理，如果程序运行于某个函数中，Zend内核会遍历查询与其对应的active_symbol_table，
 而每个函数的active_symbol_table是相对独立的，由此而实现的作用域的独立。
 
-展来来看，如果我们调用的一个函数中的变量，ZE使用_zend_execute_data来存储
+展开来看，如果我们调用的一个函数中的变量，ZE使用_zend_execute_data来存储
 某个单独的op_array（每个函数都会生成单独的op_array)执行过程中所需要的信息，它的结构如下：
 
 	[c]
@@ -70,9 +70,10 @@
 
 函数中的局部变量就存储在_zend_execute_data的symbol_table中，在执行当前函数的op_array时，
 全局zend_executor_globals中的*active_symbol_table会指向当前_zend_execute_data中的*symbol_table。
-而此时，其他函数中的symbol_table不会出现在当前的active_symbol_table中，
-其他函数中的变量也就不会被找到，
-局部变量的作用域就是以这种方式来实现的。
+因为每个函数调用开始时都会重新初始化EG(active_symbol_table)为NULL，
+在这个函数的所有opcode的执行过程中这个全局变量会一直存在，并且所有的局部变量修改都是在它上面操作完成的，如前面的赋值操作等。
+而此时，其他函数中的symbol_table会存放在栈中，将当前函数执行完并返回时，程序会将之前保存的zend_execute_data恢复，
+从而其他函数中的变量也就不会被找到，局部变量的作用域就是以这种方式来实现的。
 相关操作在 Zend/zend_vm_execute.h 文件中定义的execute函数中一目了然，如下所示代码：
 
     [c]
