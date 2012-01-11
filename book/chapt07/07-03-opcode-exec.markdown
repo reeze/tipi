@@ -22,7 +22,8 @@
     [c]
     ZEND_API void (*zend_execute)(zend_op_array *op_array TSRMLS_DC);
 
-这是一个全局的函数指针，它的作用就是执行中间代码。
+这是一个全局的函数指针，它的作用就是执行PHP代码文件解析完的转成的zend_op_array。
+和zend_execute相同的还有一个zedn_execute_internal函数，它用来执行内部函数。
 在PHP内核启动时(zend_startup)时，这个全局函数指针将会指向execute函数。
 注意函数指针前面的修饰符ZEND_API，这是ZendAPI的一部分。
 在zend_execute函数指针赋值时，还有PHP的中间代码编译函数zend_compile_file（文件形式）和zend_compile_string(字符串形式)。

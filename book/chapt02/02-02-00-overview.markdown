@@ -72,6 +72,23 @@
         ...
     };
 
+其中一些函数指针的说明如下：
+
+* startup 当SAPI初始化时，首先会调用该函数。如果服务器处理多个请求时，该函数只会调用一次。
+比如Apache的SAPI，它是以mod_php5的Apache模块的形式加载到Apache中的，
+在这个SAPI中，startup函数只在父进程中创建一次，在其fork的子进程中不会调用。
+* activate 此函数会在每个请求开始时调用，它会再次初始化每个请求前的数据结构。
+* deactivate 此函数会在每个请求结束时调用，它用来确保所有的数据都，以及释放在activate中初始化的数据结构。
+* shutdown 关闭函数，它用来释放所有的SAPI的数据结构、内存等。
+* ub_write 不缓存的写操作(unbuffered write)，它是用来将PHP的数据输出给客户端，
+如在CLI模式下，其最终是调用fwrite实现向标准输出输出内容；在Apache模块中，它最终是调用Apache提供的方法rwrite。
+* sapi_error 报告错误用，大多数的SAPI都是使用的PHP的默认实现php_error。
+* flush 刷新输出，在CLI模式下通过使用C语言的库函数fflush实现，在php_mode5模式下，使用Apache的提供的函数函数rflush实现。
+* read_cookie 在SAPI激活时，程序会调用此函数，并且将此函数获取的值赋值给SG(request_info).cookie_data。
+在CLI模式下，此函数会返回NULL。
+* read_post 此函数和read_cookie一样也是在SAPI激活时调用，它与请求的方法相关，当请求的方法是POST时，程序会操作$_POST、$HTTP_RAW_POST_DATA等变量。
+* send_header 发送头部信息，此方法一般的SAPI都会定制，其所不同的是，有些的会调服务器自带的（如Apache），有些的需要你自己实现（如 FastCGI）。
+
 以上的这些结构在各服务器的接口实现中都有定义。如Apache2的定义：
 
     [c]
