@@ -1,12 +1,8 @@
 #ifndef _HASH_TABLE_H_
 #define _HASH_TABLE_H_ 1
-#define HASH_TABLE_INIT_SIZE 15
-#define HASH_INDEX(ht, key) (hash_str((key)) % (ht)->size)
 
-#define INIT_HASH_TABLE(ht) do {								\
-	HashTable *##ht = (HashTable *)malloc(sizeof(HashTable));	\
-	hash_init(##ht);											\
-} while(0)
+#define HASH_TABLE_INIT_SIZE 6
+#define HASH_INDEX(ht, key) (hash_str((key)) % (ht)->size)
 
 #if defined(DEBUG)
 #  define LOG_MSG printf

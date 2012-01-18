@@ -123,31 +123,45 @@ Bucket结构体是一个单链表，这是为了解决多个key哈希冲突的�
 	int hash_insert(HashTable *ht, char *key, void *value)
 	{
 		// check if we need to resize the hashtable
-		resize_hash_table_if_needed(ht);    // 哈希表不固定大小，当插入的内容快占满哈表的存储空间
-											// 将对哈希表进行扩容， 以便容纳所有的元素
+		resize_hash_table_if_needed(ht);
 
-		int index = HASH_INDEX(ht, key);	// 找到key所映射到的索引
+		int index = HASH_INDEX(ht, key);
 
 		Bucket *org_bucket = ht->buckets[index];
-		Bucket *bucket = (Bucket *)malloc(sizeof(Bucket)); // 为新元素申请空间
+		Bucket *tmp_bucket = org_bucket;
 
-		bucket->key	  = strdup(key);
-		// 将值内容保存进来， 这里只是简单的将指针指向要存储的内容，而没有将内容复制。
-		bucket->value = value;  
+		// check if the key exits already
+		while(tmp_bucket)
+		{
+			if(strcmp(key, tmp_bucket->key) == 0)
+			{
+				LOG_MSG("[update]\tkey: %s\n", key);
+				tmp_bucket->value = value;
 
-		LOG_MSG("Insert data p: %p\n", value);
+				return SUCCESS;
+			}
 
-		ht->elem_num += 1; // 记录一下现在哈希表中的元素个数
+			tmp_bucket = tmp_bucket->next;
+		}
 
-		if(org_bucket != NULL) { // 发生了碰撞，将新元素放置在链表的头部
-			LOG_MSG("Index collision found with org hashtable: %p\n", org_bucket);
+		Bucket *bucket = (Bucket *)malloc(sizeof(Bucket));
+
+		bucket->key   = key;
+		bucket->value = value;
+		bucket->next  = NULL;
+
+		ht->elem_num += 1;
+
+		if(org_bucket != NULL)
+		{
+			LOG_MSG("[collision]\tindex:%d key:%s\n", index, key);
 			bucket->next = org_bucket;
 		}
 
 		ht->buckets[index]= bucket;
 
-		LOG_MSG("Element inserted at index %i, now we have: %i elements\n",
-			index, ht->elem_num);
+		LOG_MSG("[insert]\tindex:%d key:%s\tht(num:%d)\n",
+			index, key, ht->elem_num);
 
 		return SUCCESS;
 	}
@@ -162,29 +176,31 @@ Bucket结构体是一个单链表，这是为了解决多个key哈希冲突的�
 		int index = HASH_INDEX(ht, key);
 		Bucket *bucket = ht->buckets[index];
 
-		if(bucket == NULL) return FAILED;
-
-		// 查找这个链表以便找到正确的元素，通常这个链表应该是只有一个元素的，也就不用多次
-		// 循环。要保证这一点需要有一个合适的哈希算法，见前面相关哈希函数的链接。
+		if(bucket == NULL) goto failed;
+		 
 		while(bucket)
 		{
 			if(strcmp(bucket->key, key) == 0)
-			{
-				LOG_MSG("HashTable found key in index: %i with  key: %s value: %p\n",
-					index, key, bucket->value);
-				*result = bucket->value;	
+			{ 
+				LOG_MSG("[lookup]\t found %s\tindex:%i value: %p\n",
+					key, index, bucket->value);
+				*result = bucket->value;
+
 				return SUCCESS;
-			}
+			} 
 
 			bucket = bucket->next;
 		}
 
-		LOG_MSG("HashTable lookup missed the key: %s\n", key);
+	failed:
+		LOG_MSG("[lookup]\t key:%s\tfailed\t\n", key);
 		return FAILED;
 	}
 
-PHP中数组是基于哈希表实现的，依次给数组添加元素时，元素之间是有先后顺序的，而这里的哈希表在物理位置上显然是接近平均分布的，
-这样是无法根据插入的先后顺序获取到这些元素的，在PHP的实现中Bucket结构体还维护了另一个指针字段来维护元素之间的关系。
+
+PHP中数组是基于哈希表实现的，依次给数组添加元素时，元素之间是有先后顺序的，
+而这里的哈希表在物理位置上显然是接近平均分布的，这样是无法根据插入的先后顺序获取到这些元素的，
+在PHP的实现中Bucket结构体还维护了另一个指针字段来维护元素之间的关系。
 具体内容在后一小节PHP中的HashTable中进行详细说明。上面的例子就是PHP中实现的一个精简版。
 
 >**NOTE**
