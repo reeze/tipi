@@ -380,6 +380,8 @@ class BookPage extends MarkdownPage
 	}
 
 	/**
+	 * 找到目录中和page_name相近的章节
+	 *
 	 * TIPI的目录结构经常会发生变化, 导致地址经常会发生变化, 为此需要对老的地址做一些处理,
 	 * 否则一些用户收藏的地址就会无效, 所以采用两种方式来处理:
 	 *
@@ -392,17 +394,26 @@ class BookPage extends MarkdownPage
 	 *
 	 * return array  array('0.8' => 'chapt03/03-01-00-**')
 	 */
-	public static function getSuggestPagesFromName($page_name) {
-		$match_pages = array();
-		$pages = self::getFlatPagesArray();
+	public static function getSimilarPagesFromPageName($page_name, $min_percentage=80) {
+		$matched_pages = array();
+		$pages = self::getFlatPages();
+
 		foreach($pages as $page) {
-			// TODO	
+			$match_chars = similar_text($page_name, $page['page_name'], $percentage);
+			if($percentage < $min_percentage) continue;
+
+			$matched_pages[$percentage] = $page['page_name'];
 		}
-		return array();	
+
+		krsort($matched_pages, SORT_NUMERIC);
+
+		return $matched_pages;
 	}
 
-	private static function _strDistance($str1, $str2) {
-		// TODO	
+	public static function getMostSimilarPageFromPageName($page_name) {
+		$similar_pages = self::getSimilarPagesFromPageName($page_name);	
+
+		return array_shift($similar_pages);
 	}
 
     /**

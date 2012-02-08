@@ -30,6 +30,14 @@ try
 }
 catch(PageNotFoundException $e)
 {
+	// 尝试查找是否是因为章节调整导致地址发生变化导致的404
+	// 通过永久重定向解决搜索引擎和错误地址的问题
+	if($similar_page_name = BookPage::getMostSimilarPageFromPageName($page_name)) {
+		redirect_to("/book?p=" . $similar_page_name, 301);
+	}
+
+	var_dump($similar_page_name);
+
 	$view = new SimpieView("../templates/book_page_404.php", "../templates/layout/book.php");
 	$view->render(array(
 		'book_page' => $page_name,
