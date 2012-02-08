@@ -36,8 +36,6 @@ catch(PageNotFoundException $e)
 		redirect_to("/book?p=" . $similar_page_name, 301);
 	}
 
-	var_dump($similar_page_name);
-
 	$view = new SimpieView("../templates/book_page_404.php", "../templates/layout/book.php");
 	$view->render(array(
 		'book_page' => $page_name,
