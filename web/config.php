@@ -21,6 +21,3 @@ define('ROOT_PATH', dirname(__FILE__));
 define('TEMPLATE_PATH', ROOT_PATH . "/templates");
 define('NEWS_ROOT_PATH', ROOT_PATH . "/../news");
 define('TIPI_ROOT_PATH', dirname(ROOT_PATH));
-
-//默认请留空，如果$_SERVER['DOCUMENT_ROOT'] 变量与SCRIPT_FILENAME 路径不同导致CSS路径生成出错，请手动设置
-define('DOCUMENT_ROOT_PATH', '');

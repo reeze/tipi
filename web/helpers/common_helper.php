@@ -22,11 +22,16 @@ function url_for($url, $absolute=false)
 	if(!$base_url) {
 		$backtrace = debug_backtrace();
 
-		$base_path = dirname(dirname(__FILE__));    // 这个路径是物理路径, 由于使用
-		$document_root = DOCUMENT_ROOT_PATH ? DOCUMENT_ROOT_PATH : $_SERVER['DOCUMENT_ROOT']; // 这个路径可能是软链接
-		$script_root = dirname($_SERVER['SCRIPT_FILENAME']);
+		$base_path 		= dirname(dirname(__FILE__));    		// 这个路径是项目的物理路径,
+		$document_root	= realpath($_SERVER['DOCUMENT_ROOT']); 	// 这个路径可能是软链接
+
+		// 比如phpcloud的document_root和预期的有包含关系不存在，如果这样则把项目目录修改为文档根目录
+		if(strpos($base_path, $document_root) !== 0) {
+			$document_root = $base_path;
+		}
+		$script_root = realpath(dirname($_SERVER['SCRIPT_FILENAME']));
 		// 获取最后的一个调用, 也就是被请求的脚本路径
-		$request_script = dirname($backtrace[count($backtrace) - 1]['file']);
+		$request_script = realpath(dirname($backtrace[count($backtrace) - 1]['file']));
 		$base_url = substr($script_root, strlen($document_root), strlen($script_root) - strlen($document_root));
 
 		$offset = strlen($request_script) - strlen($base_path);
