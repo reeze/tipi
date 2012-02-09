@@ -29,7 +29,7 @@ function is_external_url($url)
  * 		url_for("/") 这返回项目的主目录一般为根域名, 而在开发时可能不是, 
  * 		例如链接到书籍首页的地址为: url_for("/book/?p=index")
  */
-function url_for($url, $absolute=true)
+function url_for($url, $absolute=false)
 {
 	if(is_external_url($url)) return $url;
 
@@ -56,9 +56,8 @@ function url_for($url, $absolute=true)
 	}
 
 	$protocal = (isset($_SERVER['HTTP_PORT']) && $_SERVER['HTTP_PORT'] == '443') ? 'https' : 'http';
-
 	$port	  = (isset($_SERVER['HTTP_PORT']) && $_SERVER['HTTP_PORT']) ? $_SERVER['HTTP_PORT'] : "";
-	$port_str = ($port == '80' || $port == '443') ? "" : ":" . $port;
+	$port_str = $port ? (($port == '80' || $port == '443') ? "" : ":" . $port) : "";
 
 	// !isset的情况下就是在命令行模式下的，这时使用默认的线上host信息
 	$host     = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : ONLINE_HOSTNAME;
