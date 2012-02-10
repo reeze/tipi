@@ -3,6 +3,9 @@
 // 包含一些常用的类和helper
 require_once dirname(__FILE__) . "/../config.php";
 
+// Bootstrap
+require_once dirname(__FILE__) . "/../bootstrap.php";
+
 // 增加页面级别的缓存
 require_once dirname(__FILE__) . "/page_cache.php";
 

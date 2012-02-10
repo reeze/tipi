@@ -5,6 +5,11 @@ date_default_timezone_set('Asia/Shanghai');
 // 应用上线的地址
 define('ONLINE_HOSTNAME', 'www.php-internal.com');
 
+// 从Github获取章节修订历史的接口信息
+define('GITHUB_API_BASE', 'https://api.github.com/');
+define('GITHUB_API_USER', 'reeze');
+define('GITHUB_API_REPOS','tipi');
+
 define('IN_PROD_MODE', ($_SERVER['HTTP_HOST'] == ONLINE_HOSTNAME ? true : false)); 
 
 // 线上模式下开启缓存，也可以手动修改
@@ -14,10 +19,14 @@ define('DISQUS_SHORT_NAME', 'tipiphp');
 define('SITE_NAME', 'TIPI: 深入理解PHP内核');
 define('SITE_DESC', 'TIPI(Thinking In PHP Internal)是一个开源项目，关注PHP的内部实现。PHP源码阅读、分析，Zend引擎，PHP扩展，脚本语言实现');
 
-
+// 用于统计TIPI的分享情况
 define('JIATHIS_UID', 905000);
 
 define('ROOT_PATH', dirname(__FILE__));
 define('TEMPLATE_PATH', ROOT_PATH . "/templates");
 define('NEWS_ROOT_PATH', ROOT_PATH . "/../news");
 define('TIPI_ROOT_PATH', dirname(ROOT_PATH));
+
+/* TIPI的缓存保存目录，默认为临时目录，如果有需要请修改为自己设置的目录 */
+// define('TIPI_CACHE_DIR', dirname(__FILE__) . '/tmp');
+

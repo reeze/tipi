@@ -1,10 +1,7 @@
 <?php
 
-require_once dirname(__FILE__) . "/SimpieCache.php";
-require_once dirname(__FILE__) . "/TIPI.php";
-
 /**
- * 简单的页面缓存。通过URL+TIPI版本的方式来进行页面的缓存。
+ * 简单的页面缓存。通过URL进行页面的缓存。
  * 通过捕获output buffer来将输出内容进行缓存。目前页面均没有
  * 会改变页面内容的行为。所以可以简单进行缓存.
  *
@@ -17,18 +14,20 @@ require_once dirname(__FILE__) . "/TIPI.php";
  */
 if(!ENABLE_PAGE_CACHE || !empty($_POST)) return;
 
-$key = $_SERVER['REQUEST_URI'] . TIPI::getVersion();
+$key = $_SERVER['REQUEST_URI'];
 
-$output = SimpieCache::get($key);
+$cache_dir 	= defined('TIPI_CACHE_DIR') ? TIPI_CACHE_DIR : null;
+$cache 		= new SimpieCache($cache_dir);
+$output 	= $cache->get($key);
 
-if($output === null) {
+if($output === false) {
 	// 将输出缓存起来
 	register_shutdown_function('catch_and_cache_page_output');
 	ob_start();
 }
 else {
-	$headers = SimpieCache::get($key . "headers");
-	if($headers !== null) {
+	$headers = $cache->get($key . "headers");
+	if($headers !== false) {
 		foreach(json_decode($headers) as $header) {
 			header($header);
 		}	
@@ -39,14 +38,14 @@ else {
 
 function catch_and_cache_page_output()
 {
-	global $key;
+	global $cache, $key;
 	$output = ob_get_clean();
-	SimpieCache::set($key, $output, 0);
+	$cache->set($key, $output);
 
 	// 缓存输出的头信息
 	$headers = headers_list();
 	if(!empty($headers)) {
-		SimpieCache::set($key . 'headers', json_encode($headers), 0);
+		$cache->set($key . 'headers', json_encode($headers));
 	}
 	
 	// 输出内容
