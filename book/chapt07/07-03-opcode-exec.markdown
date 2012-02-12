@@ -42,7 +42,7 @@
 并且在my_compile_file中增加缓存等功能。
 
 到这里我们找到了中间代码执行的最终函数：execute(Zend/zend_vm_execure.h)。
-在这个函数中我们会发现所有的中间代码的执行最终都会调用handler。
+在这个函数中所有的中间代码的执行最终都会调用handler。这个handler是什么呢？
 
     [c]
     if ((ret = EX(opline)->handler(execute_data TSRMLS_CC)) > 0) {
@@ -222,7 +222,7 @@ handler所指向的方法基本都存在于Zend/zend_vm_execute.h文件文件。
     [c]
     #define EX(element) execute_data.element
 
-因此我们在execute函数中会看到EX(fbc)，EX(object)等宏调用，
+因此我们在execute函数或在opcode的实现函数中会看到EX(fbc)，EX(object)等宏调用，
 它们是调用函数局部变量execute_data的元素：execute_data.fbc和execute_data.object。
 execute_data不仅仅只有fbc、object等元素，它包含了执行过程中的中间代码，上一次执行的函数，函数执行的当前作用域，类等信息。
 其结构如下：
@@ -252,12 +252,70 @@ execute_data不仅仅只有fbc、object等元素，它包含了执行过程中�
     };
 
 在前面的中间代码执行过程中有介绍：中间代码的执行最终是通过EX(opline)->handler(execute_data TSRMLS_CC)来调用最终的中间代码程序。
-在这里就将execute函数中初始化好的execture_data传递给执行程序。
+在这里会将主管中间代码执行的execute函数中初始化好的execture_data传递给执行程序。
 
-部分字段说明如下：
+zend_execute_data结构体部分字段说明如下：
 
+* opline字段：struct _zend_op类型，当前执行的中间代码
+* op_array字段： zend_op_array类型，当前执行的中间代码队列
+* fbc字段：zend_function类型，已调用的函数
+* called_scope字段：zend_class_entry类型，当前调用对象作用域，常用操作是EX(called_scope) = Z_OBJCE_P(EX(object))，
+即将刚刚调用的对象赋值给它。
 * symbol_table字段： 符号表，存放局部变量，这在前面的[<< 第六节 变量的生命周期 »	 变量的作用域 >>][var-scope]有过说明。
 在execute_data初始时，EX(symbol_table) = EG(active_symbol_table);
+* prev_execute_data字段：前一条中间代码执行的中间数据，用于函数调用等操作的运行环境恢复。
+
+在execute函数中初始化时，会调用zend_vm_stack_alloc函数分配内存。
+这是一个栈的分配操作，对于一段PHP代码的上下文环境，它存在于这样一个分配的空间作放置中间数据用，并作为栈顶元素。
+当有其它上下文环境的切换（如函数调用），此时会有一个新的元素生成，上一个上下文环境会被新的元素压下去，
+新的上下文环境所在的元素作为栈顶元素存在。
+
+在zend_vm_stack_alloc函数中我们可以看到一些PHP内核中的优化。
+比如在分配时，这里会存在一个最小分配单元，在zend_vm_stack_extend函数中，
+分配的最小单位是ZEND_VM_STACK_PAGE_SIZE((64 * 1024) - 64)，这样可以在一定范围内控制内存碎片的大小。
+又比如判断栈元素是否为空，在PHP5.3.1之前版本(如5.3.0)是通过第四个元素elelments与top的位置比较来实现，
+而从PHP5.3.1版本开始，struct _zend_vm_stack结构就没有第四个元素，直接通过在当前地址上增加整个结构体的长度与top的地址比较实现。
+两个版本结构代码及比较代码如下：
+
+    [c]
+    // PHP5.3.0
+    struct _zend_vm_stack {
+        void **top;
+        void **end;
+        zend_vm_stack prev;
+        void *elements[1];
+    };
+
+    if (UNEXPECTED(EG(argument_stack)->top == EG(argument_stack)->elements)) {
+    }
+
+    //  PHP5.3.1
+    struct _zend_vm_stack {
+        void **top;
+        void **end;
+        zend_vm_stack prev;
+    };
+
+    if (UNEXPECTED(EG(argument_stack)->top == ZEND_VM_STACK_ELEMETS(EG(argument_stack)))) {
+    }
+
+    #define ZEND_VM_STACK_ELEMETS(stack) \
+	((void**)(((char*)(stack)) + ZEND_MM_ALIGNED_SIZE(sizeof(struct _zend_vm_stack))))
+
+当一个上下文环境结束其生命周期后，如果回收这段内存呢？
+还是以函数为例，我们在前面的函数章节中<< [函数的返回][function-return] >>中我们知道每个函数都会有一个函数返回，
+即使没有在函数的实现中定义，也会默认返回一个NULL。以ZEND_RETURN_SPEC_CONST_HANDLER实现为例，
+在函数的返回最后都会调用一个函数**zend_leave_helper_SPEC**。
+
+在zend_leave_helper_SPEC函数中，对于执行过程中的函数处理有几个关键点：
+
+* 上下文环境的切换：这里的关键代码是：EG(current_execute_data) = EX(prev_execute_data);。
+EX(prev_execute_data)用于保留当前函数调用前的上下文环境，从而达到恢复和切换的目的。
+* 当前上下文环境所占用内存空间的释放：这里的关键代码是：zend_vm_stack_free(execute_data TSRMLS_CC);。
+zend_vm_stack_free函数的实现存在于Zend/zend_execute.h文件，它的作用就是释放栈元素所占用的内存。
+* 返回到之前的中间代码执行路径中：这里的关键代码是：ZEND_VM_LEAVE();。
+我们从zend_vm_execute.h文件的开始部分就知道ZEND_VM_LEAVE宏的效果是返回3。
+在执行中间代码的while循环当中，当ret=3时，这个执行过程就会恢复之前上下文环境，继续执行。
 
 
 
@@ -265,3 +323,4 @@ execute_data不仅仅只有fbc、object等元素，它包含了执行过程中�
 [opcode-handler]: 		?p=chapt02/02-03-03-from-opcode-to-handler
 [function-return]:       ?p=chapt04/04-02-03-function-return
 [var-scope]: 			?p=chapt03/03-06-02-var-scope
+[function-return]:      ?p=chapt04/04-02-03-function-return
