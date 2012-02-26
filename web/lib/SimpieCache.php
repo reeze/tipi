@@ -56,7 +56,7 @@ class SimpieCache
 		$this->cache_dir = $cache_dir;
 	}
 
-	public function setGlobalCacheFilePrefix($prefix) {
+	public static function setGlobalCacheFilePrefix($prefix) {
 		self::$global_cache_prefix = $prefix;
 	}
 
@@ -122,7 +122,7 @@ class SimpieCache
 			$expire = 31536000; // 1 year later
 		}
 
-		@touch($this->getCacheFile(), time() + $expire);
+		@touch($this->getCacheFile($key), time() + $expire);
 
 		return true;
 	}

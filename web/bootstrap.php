@@ -2,6 +2,7 @@
 
 require_once dirname(__FILE__) . "/lib/SimpieCache.php";
 require_once dirname(__FILE__) . "/lib/TIPI.php";
+require_once dirname(__FILE__) . "/lib/GithubVersionManager.php";
 require_once dirname(__FILE__) . "/models/BookPage.php";
 
 /* ---------------------------------------------------------------------------
@@ -14,3 +15,8 @@ require_once dirname(__FILE__) . "/models/BookPage.php";
  * 不过对于TIPI来说丙没有什么问题
  */
 SimpieCache::setGlobalCacheFilePrefix(TIPI::getVersion());
+
+/**
+ * 用户获取各图书页面的更新和修改历史信息
+ */
+BookPage::setVersionManger(new GithubVersionManager(GITHUB_API_USER, GITHUB_API_REPOS, GITHUB_API_BRANCH));

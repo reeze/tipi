@@ -13,7 +13,7 @@ class TIPI
 		return $version ? $version : 'Unkown';
 	}
 
-	public function haveNewVersion()
+	public static function haveNewVersion()
 	{
 		return self::getRequestParam('v') != self::getVersion();	
 	}

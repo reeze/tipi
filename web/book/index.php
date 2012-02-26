@@ -10,22 +10,22 @@ try
 {
 	ensure_page_name_safe($page_name);
 
-	// 章节列表
-	$chapt_list = BookPage::getChapterList();
-
 	$page = new BookPage($page_name);
-	$page_file = $page->getPageFilePath();
 
-	// 是详细页面还是索引目录页,目录页不需要侧边栏
-	$is_detail_view = ($page_name != 'index');
+	$page_last_update_time = $page->getLastUpdatedAt(true, "Y-m-d H:h");
 
+	// 如果获取修改时间失败，则先暂时禁用缓存，否则无法重新获取最后修改时间
+	if($page_last_update_time === false) {
+		PageCache::disable();
+	}
 
 	$view = new SimpieView($page->toHtml(), "../templates/layout/book.php", SimpieView::IS_RAW_TEXT);
 	$view->render(array(
 		'title' => $page->getTitle(),
 		'page'  => $page,
-		'chapt_list' => $chapt_list,
-		'is_detail_view' => $is_detail_view,
+		'chapt_list' => BookPage::getChapterList(),
+		'is_detail_view' => ($page_name != 'index'), // 目录页不需要边栏
+		'page_last_update_time' => $page_last_update_time,
 	));
 }
 catch(PageNotFoundException $e)
@@ -36,10 +36,19 @@ catch(PageNotFoundException $e)
 		redirect_to("/book?p=" . $similar_page_name, 301);
 	}
 
-	$view = new SimpieView("../templates/book_page_404.php", "../templates/layout/book.php");
+	header($_SERVER['SERVER_PROTOCOL'] . " 404 Not Found");  
+	header("Status: 404 Not Found"); 
+
+	$view = 404;
+	$title = "Page Not Found";
+
+	$view = new SimpieView("../templates/book_page_$view.php", "../templates/layout/book.php");
 	$view->render(array(
 		'book_page' => $page_name,
-		'title' => "Page Not Found",
+		'exception' => $e,
+		'title' 	=> $title,
+		'rev' 		=> $rev,
+		'exception' => $e,
 		'is_detail_view' => true,
 		'chapt_list' => $chapt_list,
 	));

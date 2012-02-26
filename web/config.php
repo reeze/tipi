@@ -6,9 +6,9 @@ date_default_timezone_set('Asia/Shanghai');
 define('ONLINE_HOSTNAME', 'www.php-internal.com');
 
 // 从Github获取章节修订历史的接口信息
-define('GITHUB_API_BASE', 'https://api.github.com/');
 define('GITHUB_API_USER', 'reeze');
 define('GITHUB_API_REPOS','tipi');
+define('GITHUB_API_BRANCH', 'release');
 
 define('IN_PROD_MODE', ($_SERVER['HTTP_HOST'] == ONLINE_HOSTNAME ? true : false)); 
 
@@ -28,5 +28,4 @@ define('NEWS_ROOT_PATH', ROOT_PATH . "/../news");
 define('TIPI_ROOT_PATH', dirname(ROOT_PATH));
 
 /* TIPI的缓存保存目录，默认为临时目录，如果有需要请修改为自己设置的目录 */
-// define('TIPI_CACHE_DIR', dirname(__FILE__) . '/tmp');
-
+define('TIPI_CACHE_DIR', dirname(__FILE__) . '/tmp');

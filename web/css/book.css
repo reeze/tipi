@@ -500,3 +500,7 @@
 .book-img img {
 	max-width: 720px;
 }
+
+#page_last_update_time {
+	color: #bbb;
+}

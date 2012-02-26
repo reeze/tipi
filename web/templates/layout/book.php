@@ -27,6 +27,10 @@
 						<div id="book_body" class="inner-containner">
 							<?php echo $layout_content; ?>
 
+							<?php if($page_last_update_time): ?>
+							<div id="page_last_update_time">最后更新于：<span><?php echo $page_last_update_time?></span></div>
+							<?php endif; ?>
+
 							<?php if($is_detail_view): ?>
 								<?php SimpieView::include_partial("../templates/layout/_book_navor.php", array('page' => $page)); ?>
 							<?php endif; ?>
