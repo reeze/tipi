@@ -7,3 +7,4 @@
 *.swm
 build/chm/*.hh*
 build/chm/files/*
+web/tmp/*

@@ -6,13 +6,13 @@
 	* [第三节 常用代码][common-code-in-php-src]
 	* [第四节 小结][01-summary]
 
-- [第二章 概览][survey]
-	* [第一节 生命周期及Zend引擎概览][php-life-cycle]
-	* [第二节 SAPI][sapi-overview]
+- [第二章 用户代码的执行][survey]
+	* [第一节 PHP生命周期][php-life-cycle]
+	* [第二节 从SAPI开始][sapi-overview]
         + [Apache模块][php-module-in-apache]
         + [嵌入式][embedding-php]
         + [Fastcgi][fastcgi]
-	* [第三节 脚本的执行][script-execution]
+	* [第三节 Zend引擎与脚本执行][script-execution]
 		+ [词法分析和语法分析][lex-and-yacc]
 		+ [opcode][opcode]
 		+ [附：找到Opcode具体实现][opcode-handler]
@@ -75,7 +75,7 @@
 		+ [实现自己的语法][zend-custom-php-syntax]
 	* [第三节 中间码的执行][opcode-exec]
 	* [第四节 源码的加密解密实现][source-code-encrypt]
-	* 第五节 小结
+	* [第五节 小结][07-summary]
 
 - 第八章 线程安全
 
@@ -180,3 +180,4 @@
 [zend-custom-php-syntax]:   ?p=chapt07/07-02-03-custom-php-syntax
 [opcode-exec]:              ?p=chapt07/07-03-opcode-exec
 [source-code-encrypt]:      ?p=chapt07/07-04-source-code-encrypt
+[07-summary]:				?p=chapt07/07-05-summary
