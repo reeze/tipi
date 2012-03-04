@@ -190,7 +190,25 @@ mod_php5也定义了属于Apache的sapi_module_struct结构:
 	
 对于每一个服务器在加载时，我们都指定了sapi_module，而Apache的sapi_module是apache2_sapi_module。
 其中对应read_cookies方法的是php_apache_sapi_read_cookies函数。
-这也是定义SAPI结构的理由：统一接口，面向接口的编程，具有更好的扩展性和适应性。
+
+又如flush函数，在ext/standard/basic_functions.c文件中，其实现为sapi_flush：
+
+    [c]
+    SAPI_API int sapi_flush(TSRMLS_D)
+    {
+        if (sapi_module.flush) {
+            sapi_module.flush(SG(server_context));
+            return SUCCESS;
+        } else {
+            return FAILURE;
+        }
+    }
+
+如果我们定义了此前服务器接口的flush函数，则直接调用flush对应的函数，返回成功，否则返回失败。
+对于我们当前的Apache模块，其实现为php_apache_sapi_flush函数，最终会调用Apache的ap_rflush，刷新apache的输出缓冲区。
+当然，flush的操作有时也不会生效，因为当PHP执行flush函数时，其所有的行为完全依赖于Apache的行为，而自身却做不了什么，
+比如启用了Apache的压缩功能，当没有达到预定的输出大小时，即使使用了flush函数，Apache也不会向客户端输出对应的内容。
+
 
 ## Apache的运行过程
 Apache的运行分为启动阶段和运行阶段。
