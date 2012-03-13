@@ -217,6 +217,11 @@
 	_word-wrap: break-word;
 }
 
+#book_content code {
+	color: #007EBA;
+	margin: 2px;
+}
+
 .dialog_box {
 	-webkit-border-radius: 4px;
 	-moz-border-radius: 4px;
