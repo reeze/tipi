@@ -25,6 +25,7 @@ CV是PHP在5.1后增加的一个在编译期的缓存。如我们在使用VLD查
 >IS_CV值的设置是在语法解析时进行的。    
 >参见Zend/zend_complie.c文件中的zend_do_end_variable_parse函数。
 
+
 在这个函数中，获取这个赋值操作的左值和右值的代码为：
 
     [c]
@@ -34,9 +35,31 @@ CV是PHP在5.1后增加的一个在编译期的缓存。如我们在使用VLD查
 
 由于右值为一个数值，我们可以理解为一个常量，则直接取操作数存储的constant字段，
 关于这个字段的说明将在后面的虚拟机章节说明。
-左值是通过 _get_zval_ptr_ptr_cv函数获取zval值。这个函数最后的调用顺序为：
-[_get_zval_ptr_ptr_cv] --> [_get_zval_cv_lookup]
+左值是通过 _get_zval_ptr_ptr_cv函数获取zval值。
 
+    [c]
+    static zend_always_inline zval **_get_zval_ptr_ptr_cv(const znode *node, const temp_variable *Ts, int type TSRMLS_DC)
+	{
+		zval ***ptr = &CV_OF(node->u.var);
+
+		if (UNEXPECTED(*ptr == NULL)) {
+			return _get_zval_cv_lookup(ptr, node->u.var, type TSRMLS_CC);
+		}
+		return *ptr;
+	}
+
+	// 函数中的CV_OF宏定义
+	#define CV_OF(i)     (EG(current_execute_data)->CVs[i])
+
+_get_zval_ptr_ptr_cv函数程序会先判断变量是否存在于EX(CVs)，如果存在则直接返回，
+否则调用_get_zval_cv_lookup，通过HastTable操作在EG(active_symbol_table)表中查找变量。
+虽然HashTable的查找操作已经比较快了，但是与原始的数组操作相比还是不在一个数量级。
+这就是CV类型变量的性能优化点所在。
+CV以数组的方式缓存变量所在HashTable的值，以取得对变量更快的访问速度。
+
+
+如果变量不在EX(CVs)中，程序会调用_get_zval_cv_lookup。从而最后的调用顺序为：
+[_get_zval_ptr_ptr_cv] --> [_get_zval_cv_lookup]
 在_get_zval_cv_lookup函数中关键代码为：
 
     [c]
@@ -224,10 +247,29 @@ unset函数并不是一个真正意义上的函数，它是一种语言结构。
             BP_VAR_IS, varname TSRMLS_CC);
 		if (zend_hash_quick_del(target_symbol_table, varname->value.str.val,
                 varname->value.str.len+1, hash_value) == SUCCESS) {
-			...//省略
+			zend_execute_data *ex = execute_data;
+
+			do {
+				int i;
+
+				if (ex->op_array) {
+					for (i = 0; i < ex->op_array->last_var; i++) {
+						if (ex->op_array->vars[i].hash_value == hash_value &&
+							ex->op_array->vars[i].name_len == varname->value.str.len &&
+							!memcmp(ex->op_array->vars[i].name, varname->value.str.val, varname->value.str.len)) {
+							ex->CVs[i] = NULL;
+							break;
+						}
+					}
+				}
+				ex = ex->prev_execute_data;
+			} while (ex && ex->symbol_table == target_symbol_table);
 		}
 
 程序会先获取目标符号表，这个符号表是一个HashTable，然后将我们需要unset掉的变量从这个HashTable中删除。
+如果对HashTable的元素删除操作成功，程序还会对EX(CVs)内存储的值进行清空操作。
+以缓存机制来解释，在删除原始数据后，程序也会删除相对应的缓存内容，以免用户获取到赃数据。
+
 
 >**NOTE**
 >变量的销毁还涉及到垃圾回收机制（GC），请参见相关第六章内容
