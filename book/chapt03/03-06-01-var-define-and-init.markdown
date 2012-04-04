@@ -246,7 +246,7 @@ unset函数并不是一个真正意义上的函数，它是一种语言结构。
     target_symbol_table = zend_get_target_symbol_table(opline, EX(Ts),
             BP_VAR_IS, varname TSRMLS_CC);
 		if (zend_hash_quick_del(target_symbol_table, varname->value.str.val,
-                varname->value.str.len+1, hash_value) == SUCCESS) {
+                varname->value.str.len+1, hash_value) == SUCCESS) { //  删除HashTable元素
 			zend_execute_data *ex = execute_data;
 
 			do {
@@ -257,7 +257,7 @@ unset函数并不是一个真正意义上的函数，它是一种语言结构。
 						if (ex->op_array->vars[i].hash_value == hash_value &&
 							ex->op_array->vars[i].name_len == varname->value.str.len &&
 							!memcmp(ex->op_array->vars[i].name, varname->value.str.val, varname->value.str.len)) {
-							ex->CVs[i] = NULL;
+							ex->CVs[i] = NULL; // 置空EX(CVs)
 							break;
 						}
 					}
