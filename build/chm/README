@@ -1,0 +1,10 @@
+CHM生成说明
+
+生成步骤：
+
+* 执行build/chm/index.php，在build/chm/files下生成创建CHM文件所需的组成文件，
+在build/chm目录下生成以日期版本命名的CHM的三个索引文件。
+如2012年4月4日，版本为0.7.3，则会生成以RELEASE_2012-04-24_V0.7.3命名的三文件（.hhc，.hhk，.hhp）
+* 打开HTML Help Wordshop，创建新的工程，导入上面生成的三个文件
+* 选择File，点击Compile，生成.chm文件。
+* 执行build/chm/index.php，带上complied=1参数，将生成的.chm文件复制到release目录，当然也可以直接手动COPY
