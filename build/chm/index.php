@@ -17,6 +17,13 @@ define('ROOT', dirname(__FILE__) . "/");
 $filename = TIPI::getVersion();
 
 $tipichm = new TipiCHM($filename, $data);
+
+/* 执行HTML help Workshop的complie后 */
+if ($_GET['complied'] == 1) {
+    $tipichm->copyCHM();
+    die();
+}
+
 $tipichm->copyCSS(ROOT_PATH . "/css/book.css");
 $tipichm->copyCSS(ROOT_PATH . "/css/main.css");
 $tipichm->copyCSS(ROOT_PATH . "/css/chm.css");
@@ -32,8 +39,4 @@ $tipichm->createHHP();
 echo 'complete!';
 
 
-/* 执行HTML help Workshop的complie后 */
-if ($_GET['complied'] == 1) {
-    $tipichm->copyCHM();
-}
 
