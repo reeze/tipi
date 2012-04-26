@@ -18,8 +18,8 @@
 * **tests**  PHP的测试脚本集合，包含PHP各项功能的测试文件
 * **win32**  这个目录主要包括Windows平台相关的一些实现，比如sokcet的实现在Windows下和\*Nix平台就不太一样，同时也包括了Windows下编译PHP相关的脚本。 
 
-PHP的测试比较有意思，它使用PHP来测试PHP，测试php脚本在/run-tests。php，这个脚本读取tests目录中phpt文件。
-读者可以打开这些看看，php定义了一套简单的规则来测试，例如一下的这个测试脚本/tests/basic/001。phpt：
+PHP的测试比较有意思，它使用PHP来测试PHP，测试php脚本在/run-tests.php，这个脚本读取tests目录中phpt文件。
+读者可以打开这些看看，php定义了一套简单的规则来测试，例如一下的这个测试脚本/tests/basic/001.phpt：
 
 	[php]
 	--TEST--
@@ -33,7 +33,8 @@ PHP的测试比较有意思，它使用PHP来测试PHP，测试php脚本在/run-
 可能会有读者会想，如果测试的脚本不小心触发Fatal Error，或者抛出未被捕获的异常了，因为如果在同一个进程中执行，
 测试就会停止，后面的测试也将无法执行，php中有很多将脚本隔离的方法比如：
 system()，exec()等函数，这样可以使用主测试进程服务调度被测脚本和检测测试结果，通过这些外部调用执行测试。
-php测试使用了[proc_open()函数](http://www.php.net/manual/en/function.proc-open.php)，这样就可以保证测试脚本和被测试脚本之间能隔离开。
+php测试使用了[proc_open()函数](http://www.php.net/manual/en/function.proc-open.php)，
+这样就可以保证测试脚本和被测试脚本之间能隔离开。phpt文件的详细信息见 [<< 附录E phpt文件 >>
 
 
 ## PHP源码阅读方法
