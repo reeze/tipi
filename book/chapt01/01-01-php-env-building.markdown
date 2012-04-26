@@ -1,6 +1,6 @@
 # 第一节 环境搭建
 
-在开始学习PHP实现之前， 我们需要一个实验和学习的环境。下面介绍一下怎样在\*nix环境下准备和搭建PHP环境。
+在开始学习PHP实现之前，我们需要一个实验和学习的环境。下面介绍一下怎样在\*nix环境下准备和搭建PHP环境。
 
 >**NOTE**
 >(\*nix指的是类Unix环境，比如各种Linux发行版，FreeBSD， OpenSolaris， Mac OS X等操作系统)
@@ -10,24 +10,31 @@
 如果你喜欢使用svn/git等版本控制软件，也可以使用svn/git来获取最新的源代码。
 
 	[bash]
-	#svn
+	# git 官方地址
+	git clone https://git.php.net/repository/php-src.git
+	# 也可以访问github官方镜像
+	git clone git://github.com/php/php-src.git
+	cd php-src && git checkout origin PHP-5.3 # 签出5.3分支
+
+	# svn地址不变，不过不推荐从这里签出代码
 	cd ~
 	svn co http://svn.php.net/repository/php/php-src/branches/PHP_5_2 php-src-5.2 #5.2版本
 	svn co http://svn.php.net/repository/php/php-src/branches/PHP_5_3 php-src-5.3 #5.3版本
 
-	#git
-	cd ~
-	git clone git://github.com/php/php-src.git php-src
-
-笔者比较喜欢用版本控制软件签出代码，这样做的好处是能看到PHP每次修改的内容及日志信息，如果自己修改了其中的某些内容也能快速的查看到
-。(当然你还可以试着建立属于自己的源代码分支)
+笔者比较喜欢用版本控制软件签出代码，这样做的好处是能看到PHP每次修改的内容及日志信息，
+如果自己修改了其中的某些内容也能快速的查看到，如果你想修复PHP的某个Bug或者提交新功能的话，
+有版本控制也会容易的多，更多信息可以参考附录：[怎样为PHP做贡献][how-to-contribute]。
 
 >**NOTE**
->在笔者编写这些内容的时候PHP版本控制是还基于SVN的，上面提到的git镜像地址目前已经没有同步更新了，
+>目前PHP已经[迁移到Git](http://www.php.net/archive/2012.php#id2012-03-20-1)了，PHP的wiki上有关于
+>[迁移到Git的说明](https://wiki.php.net/vcs/gitfaq)，以及[使用Git的流程](https://wiki.php.net/vcs/gitfaq)
+>
+><strike>在笔者编写这些内容的时候PHP版本控制是还基于SVN的，上面提到的github镜像地址目前已经没有同步更新了，
 >由于把svn同步到git会对系统性能造成明显影响，加上社区还没有就到底是否迁移到git达成一致，所以也就停止了更新。
 >目前很多开源软件都开始转向了分布式版本控制系统([DVCS](http://en.wikipedia.org/wiki/Distributed_revision_control))，
 >例如Python语言在转向DVCS时对目前的分布式版本控制系统做了一个[详细的对比](http://www.python.org/dev/peps/pep-0374/)，
->如果以前没有接触过，笔者强烈建议试试这些版本控制软件。
+>如果以前没有接触过，笔者强烈建议试试这些版本控制软件。</strike>现在Github的同步基本是实时的。
+>所以习惯Github基本上可以把Github当做官方版本库了。
 
 ## 2.准备编译环境
 在\*nix环境下，需要安装编译构建环境。如果你用的是Ubuntu或者是用apt做为包管理的系统，可以通过如下命令快速安装：
@@ -48,6 +55,10 @@
 	./buildconf
 
 执行完以后就可以开始configure了，configure有很多的参数，比如指定安装目录，是否开启相关模块等选项：
+
+>**NOTE**
+>有的系统自带的`autoconf`程序版本会有Bug，可能导致扩展的配置无法更新，如果在执行./buildconf时
+>报错，可以更具出错信息安装合适版本的autoconf工具。
 	
 	[bash]
 	./configure --help # 查看可用参数
@@ -65,10 +76,10 @@
 在make 完以后，在sapi/cli目录里就已经有了php的可以执行文件. 执行一下命令：
 
 	[bash]
-	./sapi/cli/php -n -v
+	./sapi/cli/php -v
 
-命令中的-n参数表示不使用php.ini文件，-v参数表示输出版本号，如果命令执行完后看到输出php版本信息则说明编译成功。
-如果是make install的话则执行$prefix/bin/php这个路径的php。
+-v参数表示输出版本号，如果命令执行完后看到输出php版本信息则说明编译成功。
+如果是make install的话可以执行$prefix/bin/php这个路径的php。
 当然如果是安装在系统目录或者你的prefix目录在$PATH环境变量里的话，直接执行php就行了。
 
 >**NOTE**
@@ -79,3 +90,5 @@
 ## 推荐书籍和参考
 * linuxsir.org的make介绍 <http://www.linuxsir.org/main/doc/gnumake/GNUmake_v3.80-zh_CN_html/index.html>
 * 《Autotools A Practioner's Guide》
+
+[how-to-contribute]: ?p=D-how-to-contribute
