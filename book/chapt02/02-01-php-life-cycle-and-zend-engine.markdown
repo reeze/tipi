@@ -68,6 +68,40 @@ CLI/CGI模式的PHP属于单进程的SAPI模式。这类的请求在处理一次
 
 ![图2.1 单进程SAPI生命周期](../images/chapt02/02-01-01-cgi-lift-cycle.png)
 
+如上的图是非常简单，也很好理解。只是在各个阶段之间PHP还做了许许多多的工作。这里做一些补充：
+
+**启动**
+
+在调用每个模块的模块初始化前，会有一个初始化的过程，它包括：
+
+* 初始化若干全局变量。这里的初始化全局变量大多数情况下是将其设置为NULL，有一些除外，比如设置zuf（zend_utility_functions），
+以zuf.printf_function = php_printf为例，这里的php_printf在zend_startup函数中会被赋值给zend_printf作为全局函数指针使用，
+而zend_printf函数通常会作为常规字符串输出使用，比如显示程序调用栈的debug_print_backtrace就是使用它打印相关信息。
+
+* 初始化若干常量。这里的常量是PHP自己的一些常量，这些常量要么是硬编码在程序中,比如PHP_VERSION，要么是写在配置头文件中，
+比如PEAR_EXTENSION_DIR，这些是写在config.w32.h文件中。
+
+* 初始化ZEND引擎和核心组件。前面提到的zend_startup函数的作用就是初始化ZEND引擎，这里的初始化操作包括内存管理初始化、
+全局使用的函数指针初始化（如前面所说的zend_printf等），对PHP源文件进行词法分析、语法分析、
+中间代码执行的函数指针的赋值，初始化若干HashTable（比如函数表，常量表等等），为ini文件解析做准备，
+为PHP源文件解析做准备，注册内置函数（如strlen、define等），注册标准常量（如E_ALL、TRUE、NULL等）、注册GLOBALS全局变量等。
+
+* 解析php.ini。
+php_init_config函数的作用是读取php.ini文件，设置配置参数，加载zend扩展并注册PHP扩展函数。此函数分为如下几步：
+初始化参数配置表，查找定位php.ini文件（各种异常处理）
+
+* 初始化静态构建的模块和共享模块(MINIT)。
+
+
+**ACTIVATION**
+
+**运行**
+
+**DEACTIVATION**
+
+**结束**
+
+
 ### 多进程SAPI生命周期
 通常PHP是编译为apache的一个模块来处理PHP请求。Apache一般会采用多进程模式，
 Apache启动后会fork出多个子进程，每个进程的内存空间独立，每个子进程都会经过开始和结束环节，
