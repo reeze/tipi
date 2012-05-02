@@ -88,7 +88,19 @@ CLI/CGI模式的PHP属于单进程的SAPI模式。这类的请求在处理一次
 
 * 解析php.ini。
 php_init_config函数的作用是读取php.ini文件，设置配置参数，加载zend扩展并注册PHP扩展函数。此函数分为如下几步：
-初始化参数配置表，查找定位php.ini文件（各种异常处理）
+初始化参数配置表，调用当前模式下的ini初始化配置，比如CLI模式下，会做如下初始化：
+
+    [c]
+	INI_DEFAULT("report_zend_debug", "0");
+	INI_DEFAULT("display_errors", "1");
+
+不过在其它模式下却没有这样的初始化操作。接下来会的各种操作都是查找ini文件：
+
+* 判断是否有php_ini_path_override，在CLI模式下可以通过-c参数指定此路径（在php的命令参数中-c表示在指定的路径中查找ini文件）。
+* 如果没有php_ini_path_override，判断php_ini_ignore是否为非空（忽略php.ini配置，这里也就CLI模式下有用，使用-n参数）。
+* 如果不忽略ini配置，则开始处理php_ini_search_path（查找ini文件的路径），这些路径包括CWD(当前路径，不过这种不适用CLI模式)、
+ 执行脚本所在目录、环境变量PATH和PHPRC、
+
 
 * 初始化静态构建的模块和共享模块(MINIT)。
 
