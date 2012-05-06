@@ -74,19 +74,26 @@ CLI/CGI模式的PHP属于单进程的SAPI模式。这类的请求在处理一次
 
 在调用每个模块的模块初始化前，会有一个初始化的过程，它包括：
 
-* 初始化若干全局变量。这里的初始化全局变量大多数情况下是将其设置为NULL，有一些除外，比如设置zuf（zend_utility_functions），
+* **初始化若干全局变量**
+
+这里的初始化全局变量大多数情况下是将其设置为NULL，有一些除外，比如设置zuf（zend_utility_functions），
 以zuf.printf_function = php_printf为例，这里的php_printf在zend_startup函数中会被赋值给zend_printf作为全局函数指针使用，
 而zend_printf函数通常会作为常规字符串输出使用，比如显示程序调用栈的debug_print_backtrace就是使用它打印相关信息。
 
-* 初始化若干常量。这里的常量是PHP自己的一些常量，这些常量要么是硬编码在程序中,比如PHP_VERSION，要么是写在配置头文件中，
+* **初始化若干常量**
+
+这里的常量是PHP自己的一些常量，这些常量要么是硬编码在程序中,比如PHP_VERSION，要么是写在配置头文件中，
 比如PEAR_EXTENSION_DIR，这些是写在config.w32.h文件中。
 
-* 初始化ZEND引擎和核心组件。前面提到的zend_startup函数的作用就是初始化ZEND引擎，这里的初始化操作包括内存管理初始化、
+* **初始化ZEND引擎和核心组件**
+
+前面提到的zend_startup函数的作用就是初始化ZEND引擎，这里的初始化操作包括内存管理初始化、
 全局使用的函数指针初始化（如前面所说的zend_printf等），对PHP源文件进行词法分析、语法分析、
 中间代码执行的函数指针的赋值，初始化若干HashTable（比如函数表，常量表等等），为ini文件解析做准备，
 为PHP源文件解析做准备，注册内置函数（如strlen、define等），注册标准常量（如E_ALL、TRUE、NULL等）、注册GLOBALS全局变量等。
 
-* 解析php.ini。
+* **解析php.ini**
+
 php_init_config函数的作用是读取php.ini文件，设置配置参数，加载zend扩展并注册PHP扩展函数。此函数分为如下几步：
 初始化参数配置表，调用当前模式下的ini初始化配置，比如CLI模式下，会做如下初始化：
 
@@ -96,22 +103,154 @@ php_init_config函数的作用是读取php.ini文件，设置配置参数，加�
 
 不过在其它模式下却没有这样的初始化操作。接下来会的各种操作都是查找ini文件：
 
-* 判断是否有php_ini_path_override，在CLI模式下可以通过-c参数指定此路径（在php的命令参数中-c表示在指定的路径中查找ini文件）。
-* 如果没有php_ini_path_override，判断php_ini_ignore是否为非空（忽略php.ini配置，这里也就CLI模式下有用，使用-n参数）。
-* 如果不忽略ini配置，则开始处理php_ini_search_path（查找ini文件的路径），这些路径包括CWD(当前路径，不过这种不适用CLI模式)、
- 执行脚本所在目录、环境变量PATH和PHPRC、
+1. 判断是否有php_ini_path_override，在CLI模式下可以通过-c参数指定此路径（在php的命令参数中-c表示在指定的路径中查找ini文件）。
+1. 如果没有php_ini_path_override，判断php_ini_ignore是否为非空（忽略php.ini配置，这里也就CLI模式下有用，使用-n参数）。
+1. 如果不忽略ini配置，则开始处理php_ini_search_path（查找ini文件的路径），这些路径包括CWD(当前路径，不过这种不适用CLI模式)、
+执行脚本所在目录、环境变量PATH和PHPRC和配置文件中的PHP_CONFIG_FILE_PATH的值。
+1. 在准备完查找路径后，PHP会判断现在的ini路径（php_ini_file_name）是否为文件和是否可打开。
+如果这里ini路径是文件并且可打开，则会使用此文件， 也就是CLI模式下通过-c参数指定的ini文件的优先级是最高的，
+其次是PHPRC指定的文件，第三是在搜索路径中查找php-%sapi-module-name%.ini文件（如CLI模式下应该是查找php-cli.ini文件），
+最后才是搜索路径中查找php.ini文件。
 
 
-* 初始化静态构建的模块和共享模块(MINIT)。
+* **全局操作函数的初始化**
+
+php_startup_auto_globals函数会初始化在用户空间所使用频率很高的一些全局变量，如：$_GET、$_POST、$_FILES等。
+这里只是初始化，所调用的zend_register_auto_global函数也只是将这些变量名添加到CG(auto_globals)这个变量表。
+
+php_startup_sapi_content_types函数用来初始化SAPI对于不同类型内容的处理函数，
+这里的处理函数包括POST数据默认处理函数、默认数据处理函数等。
+
+* **初始化静态构建的模块和共享模块(MINIT)**
+
+php_register_internal_extensions_func函数用来注册静态构建的模块，也就是默认加载的模块，
+我们可以将其认为为内置模块。在PHP5.3.0版本中内置的模块包括PHP标准扩展模块（/ext/standard/目录，
+这里是我们用的最频繁的函数，比如字符串函数，数学函数，数组操作函数等等），日历扩展模块、FTP扩展模块、
+session扩展模块等。这些内置模块并不是一成不变的，在不同的PHP模板中，由于不同时间的需求或其它影响因素会导致这些默认加载的模块会变化，
+比如从代码中我们就可以看到mysql、xml等扩展模块曾经或将来会作为内置模块出现。
+
+模块初始化会执行两个操作：
+1. 将这些模块注册到已注册模块列表（module_registry），如果注册的模块已经注册过了，PHP会报Module XXX already loaded的错误。
+1. 将每个模块中包含的函数注册到函数表（ CG(function_table) ），如果函数无法添加，则会报 Unable to register functions, unable to load。
+
+在注册了静态构建的模块后，PHP会注册附加的模块，不同的模式下可以加载不同的模块集，比如在CLI模式下是没有这些附加的模块的。
+
+在内置模块和附加模块后，接下来是注册通过共享对象（比如DLL）和php.ini文件灵活配置的扩展。
+
+在所有的模块都注册后，PHP会马上执行模块初始化操作（zend_startup_modules）。
+它的整个过程就是依次遍历每个模块，调用每个模块的模块初始化函数，
+也就是在本小节前面所说的用宏PHP_MINIT_FUNCTION包含的内容。
+
+* **禁用函数和类**
+
+php_disable_functions函数用来禁用PHP的一些函数。这些被禁用的函数来自PHP的配置文件的disable_functions变量。
+其禁用的过程是调用zend_disable_function函数将指定的函数名从CG(function_table)函数表中删除。
+
+php_disable_classes函数用来禁用PHP的一些类。这些被禁用的类来自PHP的配置文件的disable_classes变量。
+其禁用的过程是调用zend_disable_class函数将指定的类名从CG(class_table)类表中删除。
 
 
 **ACTIVATION**
 
+在处理了文件相关的内容，PHP会调用php_request_startup做请求初始化操作。
+请求初始化操作，除了图中显示的调用每个模块的请求初始化函数外，还做了较多的其它工作，其主要内容如下：
+
+* **激活ZEND引擎**
+
+gc_reset函数用来重置垃圾收集机制，当然这是在PHP5.3之后才有的。
+
+init_compiler函数用来初始化编译器，比如将编译过程中在放opcode的数组清空，准备编译时用来的数据结构等等。
+
+init_executor函数用来初始化中间代码执行过程。
+在编译过程中，函数列表、类列表等都存放在编译时的全局变量中，
+在准备执行过程时，会将这些列表赋值给执行的全局变量中，如：EG(function_table) = CG(function_table);
+中间代码执行是在PHP的执行虚拟栈中，初始化时这些栈等都会一起被初始化。
+除了栈，还有存放变量的符号表(EG(symbol_table))会被初始化为50个元素的hashtable，存放对象的EG(objects_store)被初始化了1024个元素。
+PHP的执行环境除了上面的一些变量外，还有错误处理，异常处理等等，这些都是在这里被初始化的。
+通过php.ini配置的zend_extensions也是在这里被遍历调用activate函数。
+
+* **激活SAPI**
+
+sapi_activate函数用来初始化SG(sapi_headers)和SG(request_info)，并且针对HTTP请求的方法设置一些内容，
+比如当请求方法为HEAD时，设置SG(request_info).headers_only=1；
+此函数最重要的一个操作是处理请求的数据，其最终都会调用sapi_module.default_post_reader。
+而sapi_module.default_post_reader在前面的模块初始化是通过php_startup_sapi_content_types函数注册了
+默认处理函数为main/php_content_types.c文件中php_default_post_reader函数。
+此函数会将POST的原始数据写入$HTTP_RAW_POST_DATA变量。
+
+在处理了post数据后，PHP会通过sapi_module.read_cookies读取cookie的值，
+在CLI模式下，此函数的实现为sapi_cli_read_cookies，而在函数体中却只有一个return NULL;
+
+如果当前模式下有设置activate函数，则运行此函数，激活SAPI，在CLI模式下此函数指针被设置为NULL。
+
+* **环境初始化**
+
+这里的环境初始化是指在用户空间中需要用到的一些环境变量初始化，这里的环境包括服务器环境、请求数据环境等。
+实际到我们用到的变量，就是$_POST、$_GET、$_COOKIE、$_SERVER、$_ENV、$_FILES。
+和sapi_module.default_post_reader一样，sapi_module.treat_data的值也是在模块初始化时，
+通过php_startup_sapi_content_types函数注册了默认数据处理函数为main/php_variables.c文件中php_default_treat_data函数。
+
+以$_COOKIE为例，php_default_treat_data函数会对依据分隔符，将所有的cookie拆分并赋值给对应的变量。
+
+* **模块请求初始化**
+
+PHP通过zend_activate_modules函数实现模块的请求初始化，也就是我们在图中看到Call each extension's RINIT。
+此函数通过遍历注册在module_registry变量中的所有模块，调用其RINIT方法实现模块的请求初始化操作。
+
+
 **运行**
+
+php_execute_script函数包含了运行PHP脚本的全部过程。
+
+当一个PHP文件需要解析执行时，它可能会需要执行三个文件，其中包括一个前置执行文件、当前需要执行的主文件和一个后置执行文件。
+非当前的两个文件可以在php.ini文件通过auto_prepend_file参数和auto_append_file参数设置。
+如果将这两个参数设置为空，则禁用对应的执行文件。
+
+对于需要解析执行的文件，通过zend_compile_file（compile_file函数）做词法分析、语法分析和中间代码生成操作，返回此文件的所有中间代码。
+如果解析的文件有生成有效的中间代码，则调用zend_execute（execute函数）执行中间代码。
+如果在执行过程中出现异常并且用户有定义对这些异常的处理，则调用这些异常处理函数。
+在所有的操作都处理完后，PHP通过EG(return_value_ptr_ptr)返回结果。
 
 **DEACTIVATION**
 
+PHP关闭请求的过程是一个若干个关闭操作的集合，这个集合存在于php_request_shutdown函数中。
+这个集合包括如下内容：
+
+1. 调用所有通过register_shutdown_function()注册的函数。这些在关闭时调用的函数是在用户空间添加进来的。
+一个简单的例子，我们可以在脚本出错时调用一个统一的函数，给用户一个友好一些的页面，这个有点类似于网页中的404页面。
+1. 执行所有可用的__destruct函数。
+这里的析构函数包括在对象池（EG(objects_store）中的所有对象的析构函数以及EG(symbol_table)中各个元素的析构方法。
+1. 将所有的输出刷出去。
+1. 发送HTTP应答头。这也是一个输出字符串的过程，只是这个字符串可能符合某些规范。
+1. 遍历每个模块的关闭请求方法，执行模块的请求关闭操作，这就是我们在图中看到的Call each extension's RSHUTDOWN。
+1. 销毁全局变量表（PG(http_globals)）的变量。
+1. 通过zend_deactivate函数，关闭词法分析器、语法分析器和中间代码执行器。
+1. 调用每个扩展的post-RSHUTDOWN函数。只是基本每个扩展的post_deactivate_func函数指针都是NULL。
+1. 关闭SAPI，通过sapi_deactivate销毁SG(sapi_headers)、SG(request_info)等的内容。
+1. 关闭流的包装器、关闭流的过滤器。
+1. 关闭内存管理。
+1. 重新设置最大执行时间
+
 **结束**
+
+最终到了要收尾的地方了。
+
+* **flush**
+
+sapi_flush将最后的内容刷新出去。其调用的是sapi_module.flush，在CLI模式下等价于fflush函数。
+
+* **关闭ZEND引擎**
+
+zend_shutdown将关闭ZEND引擎。
+
+此时对应图中的流程，我们应该是执行每个模块的关闭模块操作。
+在这里只有一个zend_hash_graceful_reverse_destroy函数将module_registry销毁了。
+当然，它最终也是调用了关闭模块的方法的，其根源在于在初始化module_registry时就设置了这个hash表析构时调用ZEND_MODULE_DTOR宏。
+而ZEND_MODULE_DTOR宏对应的是module_destructor函数。
+在此函数中会调用模块的module_shutdown_func方法，即PHP_RSHUTDOWN_FUNCTION宏产生的那个函数。
+
+在关闭所有的模块后，PHP继续销毁全局函数表，销毁全局类表、销售全局变量表等。
+通过zend_shutdown_extensions遍历zend_extensions所有元素，调用每个扩展的shutdown函数。
 
 
 ### 多进程SAPI生命周期
