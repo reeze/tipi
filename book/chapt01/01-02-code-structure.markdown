@@ -19,7 +19,7 @@
 * **win32**  这个目录主要包括Windows平台相关的一些实现，比如sokcet的实现在Windows下和\*Nix平台就不太一样，同时也包括了Windows下编译PHP相关的脚本。 
 
 PHP的测试比较有意思，它使用PHP来测试PHP，测试php脚本在/run-tests.php，这个脚本读取tests目录中phpt文件。
-读者可以打开这些看看，php定义了一套简单的规则来测试，例如一下的这个测试脚本/tests/basic/001.phpt：
+读者可以打开这些看看，php定义了一套简单的规则来测试，例如以下的这个测试脚本/tests/basic/001.phpt：
 
 	[php]
 	--TEST--
@@ -36,7 +36,7 @@ system()，exec()等函数，这样可以使用主测试进程服务调度被测
 php测试使用了[proc_open()函数](http://www.php.net/manual/en/function.proc-open.php)，
 这样就可以保证测试脚本和被测试脚本之间能隔离开。phpt文件的编写详细信息可参考 附录[E phpt文件的编写](?p=E-phpt-file)。
 如果你真的那么感兴趣，那么研究下`$PHP_SRC/run-tests.php`脚本的实现也是不错的选择。这个测试框架刚开始
-由PHP的发明者Rasmus Lerdorf编写，后来进行了很多的改进。
+由PHP的发明者Rasmus Lerdorf编写，后来进行了很多的改进。后面可能会引入[并行测试](http://marc.info/?l=php-internals&m=133609491526265)的支持。
 
 ## PHP源码阅读工具
 ### 使用VIM + Ctags
