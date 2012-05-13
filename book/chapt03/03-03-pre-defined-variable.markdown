@@ -1,9 +1,9 @@
 # 第三节 预定义变量
 
-大家都知道PHP脚本在执行的时候用户全局变量(在用户空间显式定义的变量)会保存在一个HashTable数据类型的符号表(symbol_table)中，
-在PHP中有一些比较特殊的全局变量例如:
-$\_GET，$\_POST，$\_SERVER，$\_FILES等变量，我们并没有在程序中定义这些变量，并且这些变量也同样保存在符号表中，
-从这些表象我们不难得出结论：PHP是在脚本运行之前就将这些特殊的变量加入到了符号表中了。
+在PHP脚本执行的时候，用户全局变量(在用户空间显式定义的变量)会保存在一个HashTable数据类型的符号表(symbol_table)中，
+而我们用得非常多的在全局范围内有效的变量却与这些用户全局变量不同。
+例如:$\_GET，$\_POST，$\_SERVER，$\_FILES等变量，我们并没有在程序中定义这些变量，并且这些变量也同样保存在符号表中，
+从这些表象我们不难得出结论：PHP是在脚本运行之前就将这些特殊的变量加入到了符号表。
 
 ## 预定义变量$GLOBALS的初始化
 我们以cgi模式为例说明$GLOBALS的初始化。
@@ -24,13 +24,17 @@ $\_GET，$\_POST，$\_SERVER，$\_FILES等变量，我们并没有在程序中�
 		Z_TYPE_P(globals) = IS_ARRAY;
 		Z_ARRVAL_P(globals) = &EG(symbol_table);
 		zend_hash_update(&EG(symbol_table), "GLOBALS", sizeof("GLOBALS"),
-            &globals, sizeof(zval *), NULL);      //  添加全局变量GLOBALS
+            &globals, sizeof(zval *), NULL);      //  添加全局变量$GLOBALS
 	}
     ... //  省略
 
-上面的代码的关键点zend_hash_update函数的调用，它将变量名为GLOBALS的变量注册到EG(symbol_table)中，
-EG(symbol_table)是一个HashTable的结构，用来存放所有的全局变量。
-这在下面将要提到的$_GET等变量初始化时也会用到。
+php_request_startup函数在PHP的生命周期中属于请求初始化阶段，即每个请求都会执行这个函数。
+因此，对于每个用户请求，其用到的这些预定义的全局变量都会不同。
+$GLOVALS的关键点在于zend_hash_update函数的调用，它将变量名为GLOBALS的变量注册到EG(symbol_table)中，
+EG(symbol_table)是一个HashTable的结构，用来存放顶层作用域的变量。
+通过这个操作，GLOBAL变量与其它顶层的变量一样都会注册到了变量表，
+也可以和其它变量一样直接访问了。这在下面将要提到的$_GET等变量初始化时也会用到。
+
 
 ## $_GET、$_POST等变量的初始化
 
@@ -310,3 +314,19 @@ main/rfc1867.c
     }
 
 其它的$_FILES中的size、name等字段，其实现过程与type类似。
+
+## 预定义变量的获取
+
+在某个局部函数中使用类似于$GLOBALS变量这样的预定义变量，
+如果在此函数中有改变的它们的值的话，这些变量在其它局部函数调用时会发现也会同步变化。
+为什么呢？是否是这些变量存放在一个集中存储的地方？
+从PHP中间代码的执行来看，这些变量是存储在一个集中的地方：EG(symbol_table)。
+
+在模块初始化时，$GLOBALS在zend_startup函数中通过调用zend_register_auto_global将GLOBALS注册为预定义变量。
+$_GET、$_POST等在php_startup_auto_globals函数中通过zend_register_auto_global将_GET、_POST等注册为预定义变量。
+
+在通过$获取变量时，PHP内核都会通过这些变量名区分是否为全局变量（ZEND_FETCH_GLOBAL），
+其调用的判断函数为zend_is_auto_global，这个过程是在生成中间代码过程中实现的。
+如果是ZEND_FETCH_GLOBAL或ZEND_FETCH_GLOBAL_LOCK(global语句后的效果)，
+则在获取获取变量表时(zend_get_target_symbol_table)，
+直接返回EG(symbol_table)。则这些变量的所有操作都会在全局变量表进行。
