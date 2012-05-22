@@ -506,6 +506,10 @@
 	max-width: 720px;
 }
 
-#page_last_update_time {
+#page_last_update_time, #page_last_update_time a {
 	color: #bbb;
+	text-decoration: none;
+}
+#page_last_update_time a:hover {
+	text-decoration: underline;
 }

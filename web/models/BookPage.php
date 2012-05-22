@@ -56,6 +56,13 @@ class BookPage extends MarkdownPage
 
 		return self::$version_mrg->getRevisionHistories("book/{$this->page_name}." . self::extension);
 	}
+
+	public function getHistoriesUrl() {
+		return "https://github.com/" .
+					GITHUB_API_USER . "/" . GITHUB_API_REPOS . "/commits/" .
+					GITHUB_API_BRANCH . "/book/{$this->page_name}." . self::extension;
+	}
+
 	public function getLastUpdatedAt($remote=false, $format=null) {
 		if($remote && self::$version_mrg) {
 			try {
