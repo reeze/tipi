@@ -205,5 +205,18 @@ main函数：
 在这个定义中我们看到了若干的NULl定义，在前面一小节中说到SAPI时，我们是以cookie的读取为例，
 在这里也有读取cookie的实现——php_embed_read_cookies函数，但是这个函数的实现是一个空指针NULL。
 
+而这里的flush实现与Apache的不同:
+
+    [c]
+    static void php_embed_flush(void *server_context)
+    {
+        if (fflush(stdout)==EOF) {
+            php_handle_aborted_connection();
+        }
+    }
+
+flush是直接调用fflush(stdout)，以达到清空stdout的缓存的目的。
+如果输出失败（fflush成功返回0，失败返回EOF），则调用php_handle_aborted_connection，进入中断处理程序。
+
 ## 参与资料
 《Extending and Embedding PHP》

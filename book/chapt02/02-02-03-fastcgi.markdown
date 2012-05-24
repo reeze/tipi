@@ -212,7 +212,9 @@ fcgi_close函数在前面提的fcgi_finish_request函数中，在请求应答完
 所有使用PHP的场合都需要定义自己的SAPI，例如在第一小节的Apache模块方式中，
 sapi_module是apache2_sapi_module，其对应read_cookies方法的是php_apache_sapi_read_cookies函数，
 而在我们这里，读取cookie的函数是sapi_cgi_read_cookies。
-再次说明定义SAPI结构的理由：统一接口，面向接口的编程，具有更好的扩展性和适应性。
+从sapi_module结构可以看出flush对应的是sapi_cli_flush，在win或非win下，flush对应的操作不同，
+在win下，如果输出缓存失败，则会和嵌入式的处理一样，调用php_handle_aborted_connection进入中断处理程序，
+而其它情况则是没有任何处理程序。这个区别通过cli_win.c中的PHP_CLI_WIN32_NO_CONSOLE控制。
 
 ## 参考资料
   

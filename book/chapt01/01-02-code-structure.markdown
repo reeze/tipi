@@ -18,8 +18,8 @@
 * **tests**  PHP的测试脚本集合，包含PHP各项功能的测试文件
 * **win32**  这个目录主要包括Windows平台相关的一些实现，比如sokcet的实现在Windows下和\*Nix平台就不太一样，同时也包括了Windows下编译PHP相关的脚本。 
 
-PHP的测试比较有意思，它使用PHP来测试PHP，测试php脚本在/run-tests。php，这个脚本读取tests目录中phpt文件。
-读者可以打开这些看看，php定义了一套简单的规则来测试，例如一下的这个测试脚本/tests/basic/001。phpt：
+PHP的测试比较有意思，它使用PHP来测试PHP，测试php脚本在/run-tests.php，这个脚本读取tests目录中phpt文件。
+读者可以打开这些看看，php定义了一套简单的规则来测试，例如以下的这个测试脚本/tests/basic/001.phpt：
 
 	[php]
 	--TEST--
@@ -33,11 +33,13 @@ PHP的测试比较有意思，它使用PHP来测试PHP，测试php脚本在/run-
 可能会有读者会想，如果测试的脚本不小心触发Fatal Error，或者抛出未被捕获的异常了，因为如果在同一个进程中执行，
 测试就会停止，后面的测试也将无法执行，php中有很多将脚本隔离的方法比如：
 system()，exec()等函数，这样可以使用主测试进程服务调度被测脚本和检测测试结果，通过这些外部调用执行测试。
-php测试使用了[proc_open()函数](http://www.php.net/manual/en/function.proc-open.php)，这样就可以保证测试脚本和被测试脚本之间能隔离开。
+php测试使用了[proc_open()函数](http://www.php.net/manual/en/function.proc-open.php)，
+这样就可以保证测试脚本和被测试脚本之间能隔离开。phpt文件的编写详细信息可参考 附录[E phpt文件的编写](?p=E-phpt-file)。
+如果你真的那么感兴趣，那么研究下`$PHP_SRC/run-tests.php`脚本的实现也是不错的选择。这个测试框架刚开始
+由PHP的发明者Rasmus Lerdorf编写，后来进行了很多的改进。后面可能会引入[并行测试](http://marc.info/?l=php-internals&m=133609491526265)的支持。
 
-
-## PHP源码阅读方法
-### 使用VIM + Ctags查看源码
+## PHP源码阅读工具
+### 使用VIM + Ctags
 通常在Linux或其他\*Nix环境我们都使用[VIM](http://www.vim.org/)作为代码编辑工具，在纯命令终端下，它几乎是无可替代的。
 它具有非常强大的扩展机制，在文字编辑方面基本上无所不能。
 不过Emacs用户请不要激动，笔者还没有真正使用Emacs，虽然我知道它甚至可以[煮咖啡](http://people.ku.edu/~syliu/shredderyin/emacs_power.html)，
@@ -80,10 +82,11 @@ VIM可以读取tags文件，当我们在符号上（可以是变量名之类）�
 >**NOTE**
 >如果你使用的Mac OS X，运行ctags程序可能会出错，因为Mac OS X自带的ctags程序有些[问题](http://adamyoung.net/Exuberant-Ctags-OS-X)，
 >所以需要自己下载安装ctags，笔者推荐使用[homebrew](https://github.com/mxcl/homebrew)来安装。
+>如果执行还是会出错，请执行下`ctags -v 或着 which ctags`确保你执行的是新安装的ctags。
 
 
 ### 使用IDE查看代码
-如果不习惯使用VIM来看代码，也可以使用一些功能较丰富的IDE，比如Windows下可以使用Visual Studio 2010 Express 。
+如果不习惯使用VIM来看代码，也可以使用一些功能较丰富的IDE，比如Windows下可以使用Visual Studio 2010 Express。
 或者使用跨平台的[Netbeans](http://www.netbeans.org/)、[Eclipse](http://www.eclipse.org/)来查看代码，
 当然，这些工具都相对较**重量级**一些，不过这些工具不管是调试还是查看代码都相对较方便，
 

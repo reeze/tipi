@@ -12,7 +12,8 @@ try
 
 	$page = new BookPage($page_name);
 
-	$page_last_update_time = $page->getLastUpdatedAt(true, "Y-m-d H:h");
+	// 线下模式不显示修改时间，因为从Github读取需要的时间太长
+	$page_last_update_time = IN_PROD_MODE ? $page->getLastUpdatedAt(true, "Y-m-d H:h") : false;
 
 	// 如果获取修改时间失败，则先暂时禁用缓存，否则无法重新获取最后修改时间
 	if($page_last_update_time === false) {

@@ -95,6 +95,39 @@ define是PHP的内置函数，在Zend/zend_builtin_functions.c文件中定义了
 通过defined函数测试表示，‘^_^’这个常量已经定义好，这样的常量无法直接调用，
 只能使用constant语句来使用，
 否则在语法解析时会显示错误。
+
+除了CONST_CS标记，常量的flags字段通常还可以用CONST_PERSISTENT和CONST_CT_SUBST。
+
+CONST_PERSISTENT表示这个常量需要持久化，当然，这只是字面意思，从常量的销毁函数free_zend_constant看，
+
+    [c]
+    void free_zend_constant(zend_constant *c)
+    {
+        if (!(c->flags & CONST_PERSISTENT)) {
+            zval_dtor(&c->value);
+        }
+        free(c->name);
+    }
+
+如果常量设置了flags包含 CONST_PERSISTENT，则在销毁时不会销售常量结构中的value字段。
+比如，我们现在在内核中定义了一个常量TIPI，其value包含一个字符串“深入理解PHP内核”。
+一般来说当销毁一个变量时，它所占有的内存将会被完全回收; 同样,当我们销毁一个常量时，这个常量所占的内存也会被完全回收。
+如果我们设置了常量的flags包含 CONST_PERSISTENT，则在释放该常量时就不会释放“深入理解PHP内核”所占用的内存。
+从PHP的实现角度看，这个标记是有意义的，为什么这样说呢？
+我们知道，一般来说，语言中的一个对象（非面向对象中的对象）的生存期可以对应三种内存存储机制：
+
+* 栈：按后进先出的方式分分配，通常与子程序的调用和退出相关，常用于局部变量
+* 堆：可以在任意时刻分配，在C语言中，一般是使用malloc/calloc/realloc等分配，对于这样分配的内存，
+需要使用free释放内存，否则会造成内存泄露，程序结束后会由OS回收。
+* 静态： 被给定一个绝对地址，在程序的整个执行过程中都保持不变。比如一些全局变量，静态变量或代码中的字符串等。
+
+在PHP，只有标量才能被定义为常量，而在内核C代码中，一些字符串，数字等作为代码的一部分，
+并且他们被定义成PHP内核中的常量。这些常量属于静态对象，被给定了一个绝对地址，当释放这些常量时，
+我们并不需要将这些静态的内存释放掉，从而也就有了我们这里的CONST_PERSISTENT标记。
+
+CONST_CT_SUBST我们看注释可以知道其表示Allow compile-time substitution（在编译时可被替换）。
+在PHP内核中这些常量包括：TRUE、FALSE、NULL、ZEND_THREAD_SAFE和ZEND_DEBUG_BUILD五个。
+
 在上面的代码中有用到一个判断常量是否定义的函数，下面我们看看这个函数是如何实现的。
 
 ## defined判断常量是否设置
