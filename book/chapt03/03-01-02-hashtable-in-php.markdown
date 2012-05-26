@@ -28,7 +28,7 @@ PHP使用如下两个数据结构来实现哈希表，HashTable结构体用于�
 		Bucket *pListTail;          // 存储数组尾元素指针
 		Bucket **arBuckets;         // 存储hash数组
 		dtor_func_t pDestructor;	// 在删除元素时执行的回调函数，用于资源的释放
-		zend_bool persistent;
+		zend_bool persistent;       //指出了Bucket内存分配的方式。如果persisient为TRUE，则使用操作系统本身的内存分配函数为Bucket分配内存，否则使用PHP的内存分配函数。
 		unsigned char nApplyCount; // 标记当前hash Bucket被递归访问的次数（防止多次递归）
 		zend_bool bApplyProtection;// 标记当前hash桶允许不允许多次访问，不允许时，最多只能递归3次
 	#if ZEND_DEBUG
@@ -76,7 +76,7 @@ nTableSize字段用于标示哈希表的容量，哈希表的初始容量最小�
 例如如果设置初始大小为10，则上面的算法将会将大小调整为16。也就是始终将大小调整为接近初始大小的
 2的整数次方。
 
-为什么会做这样的调整呢？我们先看看HashTable将哈希值映射到槽位的方法，上一小节我使用了取模的方式来将哈希值
+为什么会做这样的调整呢？我们先看看HashTable将哈希值映射到槽位的方法，上一小节我们使用了取模的方式来将哈希值
 映射到槽位，例如大小为8的哈希表，哈希值为100， 则映射的槽位索引为: 100 % 8 = 4，由于索引通常从0开始，
 所以槽位的索引值为3，在PHP中使用如下的方式计算索引：
 
@@ -208,11 +208,80 @@ HashTable结构体中的pListHead和pListTail则维护整个哈希表的头元�
 * 复制，排序，倒置和销毁等操作。
 
 本小节选取其中的插入操作进行介绍。
+在PHP中不管是对数组的添加操作（zend_hash_add），还是对数组的更新操作（zend_hash_update），
+其最终都是调用_zend_hash_add_or_update函数完成，这在面向对象编程中相当于两个公有方法和一个公共的私有方法的结构，
+以实现一定程度上的代码复用。
+
+
+ZEND_API int _zend_hash_add_or_update(HashTable *ht, const char *arKey, uint nKeyLength, void *pData, uint nDataSize, void **pDest, int flag ZEND_FILE_LINE_DC)
+{
+	 //...省略变量初始化和nKeyLength <=0 的异常处理
+
+	h = zend_inline_hash_func(arKey, nKeyLength);
+	nIndex = h & ht->nTableMask;
+
+	p = ht->arBuckets[nIndex];
+	while (p != NULL) {
+		if ((p->h == h) && (p->nKeyLength == nKeyLength)) {
+			if (!memcmp(p->arKey, arKey, nKeyLength)) { //  更新操作
+				if (flag & HASH_ADD) {
+					return FAILURE;
+				}
+				HANDLE_BLOCK_INTERRUPTIONS();
+
+                //..省略debug输出
+
+				if (ht->pDestructor) {
+					ht->pDestructor(p->pData);
+				}
+				UPDATE_DATA(ht, p, pData, nDataSize);
+				if (pDest) {
+					*pDest = p->pData;
+				}
+				HANDLE_UNBLOCK_INTERRUPTIONS();
+				return SUCCESS;
+			}
+		}
+		p = p->pNext;
+	}
+
+	p = (Bucket *) pemalloc(sizeof(Bucket) - 1 + nKeyLength, ht->persistent);
+	if (!p) {
+		return FAILURE;
+	}
+	memcpy(p->arKey, arKey, nKeyLength);
+	p->nKeyLength = nKeyLength;
+	INIT_DATA(ht, p, pData, nDataSize);
+	p->h = h;
+	CONNECT_TO_BUCKET_DLLIST(p, ht->arBuckets[nIndex]); //Bucket双向链表操作
+	if (pDest) {
+		*pDest = p->pData;
+	}
+
+	HANDLE_BLOCK_INTERRUPTIONS();
+	CONNECT_TO_GLOBAL_DLLIST(p, ht);    // 将新的Bucket元素添加到数组的链接表的最后面
+	ht->arBuckets[nIndex] = p;
+	HANDLE_UNBLOCK_INTERRUPTIONS();
+
+	ht->nNumOfElements++;
+	ZEND_HASH_IF_FULL_DO_RESIZE(ht);		/*  如果此时数组的容量满了，则对其进行扩容。*/
+	return SUCCESS;
+}
+
+整个写入或更新的操作流程如下：
+
+1. 生成hash值，通过与nTableMask执行与操作，获取在arBuckets数组中的Bucket。
+1. 如果Bucket中已经存在元素，则遍历整个Bucket，查找是否存在相同的key值元素，如果有并且是update调用，则执行update数据操作。
+1. 创建新的Bucket元素，初始化数据，并将新元素添加到当前hash值对应的Bucket链表的最前面（CONNECT_TO_BUCKET_DLLIST）。
+1. 将新的Bucket元素添加到数组的链接表的最后面（CONNECT_TO_GLOBAL_DLLIST）。
+1. 将元素个数加1，如果此时数组的容量满了，则对其进行扩容。这里的判断是依据nNumOfElements和nTableSize的大小。
+如果nNumOfElements > nTableSize则会调用zend_hash_do_resize以2X的方式扩容（nTableSize << 1）。
 
 ## 哈希表的性能
 
 
 ## 其他语言中的HashTable实现
+
 ### Ruby使用的st库，Ruby中的两种hash实现
 
 ## 参考资料
