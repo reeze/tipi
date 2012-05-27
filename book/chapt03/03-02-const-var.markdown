@@ -192,3 +192,97 @@ EG(zend_constants)是一个HashTable（这在前面的章节中说明），
 它本身体通过宏REGISTER_MAIN_LONG_CONSTANT等注册了一些常量，如：PHP_VERSION，PHP_OS等。
 
 关于接口和类中的常量我们将在后面的类所在章节中详细说明。
+
+## 魔术常量
+
+PHP向它运行的任何脚本提供了大量的预定义常量。
+不过很多常量都是由不同的扩展库定义的，只有在加载了这些扩展库时才会出现，或者动态加载后，或者在编译时已经包括进去了。
+
+有七个魔术常量它们的值随着它们在代码中的位置改变而改变。
+例如 \__LINE__ 的值就依赖于它在脚本中所处的行来决定。
+这些特殊的常量不区分大小写。在手册中这几个变量的简单说明如下：
+
+几个 PHP 的“魔术常量”
+<table>
+<tr>
+<th>名称</th> <th>说明</th>
+</tr>
+<tr>
+<td>__LINE__</td><td>文件中的当前行号。</td>
+</tr>
+<tr>
+<td>__FILE__</td><td>文件的完整路径和文件名。如果用在被包含文件中，则返回被包含的文件名。自 PHP 4.0.2 起，__FILE__ 总是包含一个绝对路径（如果是符号连接，则是解析后的绝对路径），而在此之前的版本有时会包含一个相对路径。</td>
+</tr>
+<tr>
+<td>__DIR__</td><td>文件所在的目录。如果用在被包括文件中，则返回被包括的文件所在的目录。它等价于 dirname(__FILE__)。除非是根目录，否则目录中名不包括末尾的斜杠。（PHP 5.3.0中新增） =</td>
+</tr>
+<tr>
+<td>__FUNCTION__</td><td>函数名称（PHP 4.3.0 新加）。自 PHP 5 起本常量返回该函数被定义时的名字（区分大小写）。在 PHP 4 中该值总是小写字母的。</td>
+</tr>
+<tr>
+<td>__CLASS__</td><td>类的名称（PHP 4.3.0 新加）。自 PHP 5 起本常量返回该类被定义时的名字（区分大小写）。在 PHP 4 中该值总是小写字母的。</td>
+</tr>
+<tr>
+<td>__METHOD__</td><td>类的方法名（PHP 5.0.0 新加）。返回该方法被定义时的名字（区分大小写）。</td>
+</tr>
+<tr>
+<td>__NAMESPACE__</td><td>当前命名空间的名称（大小写敏感）。这个常量是在编译时定义的（PHP 5.3.0 新增）</td>
+</tr>
+<tr>
+</table>
+
+PHP内核会在词法解析时将这些相对静态的内容赋值给这些变量，而不是在运行时执行的分析。
+如下PHP代码：
+
+    [php]
+    <?PHP
+    echo __LINE__;
+    function demo() {
+        echo __FUNCTION__;
+    }
+    demo();
+
+
+其实PHP已经在词法解析时将这些常量换成了对应的值，以上的代码可以看成如下的PHP代码：
+
+    [php]
+    <?PHP
+    echo 2;
+    function demo() {
+        echo "demo";
+    }
+    demo();
+
+如果我们使用VLD扩展查看以上的两段代码生成的中间代码，你会发现其结果是一样的。
+
+前面我们有说PHP是在词法分析时做的赋值替换操作，以\__FUNCTION__为例，
+在Zend/zend_language_scanner.l文件中，\__FUNCTION__是一个需要分析垢元标记（token）：
+
+    [c]
+    <ST_IN_SCRIPTING>"__FUNCTION__" {
+        char *func_name = NULL;
+
+        if (CG(active_op_array)) {
+            func_name = CG(active_op_array)->function_name;
+        }
+
+        if (!func_name) {
+            func_name = "";
+        }
+        zendlval->value.str.len = strlen(func_name);
+        zendlval->value.str.val = estrndup(func_name, zendlval->value.str.len);
+        zendlval->type = IS_STRING;
+        return T_FUNC_C;
+    }
+
+
+就是这里，当当前中间代码处于一个函数中时，则将当前函数名赋值给zendlval，
+如果没有，则将空字符串赋值给zendlval(因此在顶级作用域名中直接打印\__FUNCTION__会输出空格)。
+这个值在语法解析时会直接赋值给返回值。这样我们就在生成的中间代码中看到了这些常量的位置都已经赋值好了。
+
+和\__FUNCTION__类似，在其附近的位置，上面表格中的其它常量也进行了类似的操作。
+
+>**NOTE**
+>在PHP5.4中增加了对于trait类的常量定义：\__TRAIT__。
+
+**这些常量其实相当于一个常量模板，或者说是一个占位符，在词法解析时这些模板或占位符就被替换成实际的值**
