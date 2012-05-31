@@ -230,7 +230,6 @@ ZEND_API int _zend_hash_add_or_update(HashTable *ht, const char *arKey, uint nKe
 				HANDLE_BLOCK_INTERRUPTIONS();
 
                 //..省略debug输出
-
 				if (ht->pDestructor) {
 					ht->pDestructor(p->pData);
 				}
