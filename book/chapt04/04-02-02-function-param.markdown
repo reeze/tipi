@@ -1,6 +1,6 @@
 # 函数的参数
-前一小节介绍了函数的定义，函数的定义只是一个将函数名注册到函数列表的过程，在了解了函数的定义后，我们来看看函数的参数。
-这一小节将包括用户自定义函数的参数和内部函数的参数两部分，详细内容如下：
+前一小节介绍了函数的定义，函数的定义是一个将函数名注册到函数列表的过程，在了解了函数的定义后，我们来看看函数的参数。
+这一小节将包括用户自定义函数的参数、内部函数的参数和参数的传递：
 
 ## 用户自定义函数的参数
 
@@ -50,7 +50,7 @@
 
 以上的分析是针对函数定义时的参数设置，这些参数是固定的。而在实际编写程序时可能我们会用到可变参数。
 此时我们会使用到函数 **func_num_args** 和 **func_get_args**。
-它们是以内部函数存在。于是在 Zend\zend_builtin_functions.c 文件中找到这两个函数的实现。
+它们是以内部函数存在。在 Zend\zend_builtin_functions.c 文件中找到这两个函数的实现。
 首先我们来看func_num_args函数的实现。其代码如下：
 
     [c]
@@ -158,6 +158,97 @@ zend_parse_parameters() 在解析参数的同时会尽可能地转换参数类�
 * | - 表明剩下的参数都是可选参数。如果用户没有传进来这些参数值，那么这些值就会被初始化成默认值。
 * / - 表明参数解析函数将会对剩下的参数以 SEPARATE_ZVAL_IF_NOT_REF() 的方式来提供这个参数的一份拷贝，除非这些参数是一个引用。
 * ! - 表明剩下的参数允许被设定为 NULL（仅用在 a、o、O、r和z身上）。如果用户传进来了一个 NULL 值，则存储该参数的变量将会设置为 NULL。
+
+## 参数的传递
+
+在PHP的运行过程中，如果函数有参数，当执行参数传递时，所传递参数的引用计数会发生变化。
+如和Xdebug的作者[Derick Rethans](http://derickrethans.nl/who.html)在其文章
+[php variables](http://derickrethans.nl/talks/phparch-php-variables-article.pdf)中的示例的类似代码：
+
+    [php]
+    function do_something($s) {
+           xdebug_debug_zval('s');
+            $s = 100;
+            return $s;
+    }
+
+    $a = 1111;
+    $b = do_something($a);
+    echo $b;
+
+如果你安装了xdebug，此时会输出s变量的refcount为3，如果使用debug_zval_dump，会输出4。
+因为此内部函数调用也对refcount执行了加1操作。
+这里的三个引用计数分别是：
+
+* function stack中的引用
+* function symbol table中引用
+* 原变量$a的引用。
+
+这个函数符号表只有用户定义的函数才需要，内置和扩展里的函数不需要此符号表。
+debug_zval_dump()是内置函数，并不需要符号表，所以只增加了1。 
+xdebug_debug_zval()传递的是变量名字符串，所以没有增加refcount。
+
+每个PHP脚本都有自己专属的全局符号表，而每个用户自定义的函数也有自己的符号表，
+这个符号表用来存储在这个函数作用域下的属于它自己的变量。当调用每个用户自定义的函数时，
+都会为这个函数创建一个符号表，当这个函数返回时都会释放这个符号表。
+
+当执行一个拥有参数的用户自定义的函数时，其实它相当于赋值一个操作，即$s = $a;
+只是这个赋值操作的引用计数会执行两次，除了给函数自定义的符号表，还有一个是给函数栈。
+
+参数的传递的第一步是SEND_VAR操作，这一步操作是在函数调用这一层级，如示例的PHP代码通过VLD生成的中间代码:
+
+    
+    compiled vars:  !0 = $a, !1 = $b
+    line     # *  op                           fetch          ext  return  operands
+    --------------------------------------------------------------------------------
+    -
+       2     0  >   EXT_STMT
+             1      NOP
+       7     2      EXT_STMT
+             3      ASSIGN                                                   !0, 1111
+       8     4      EXT_STMT
+             5      EXT_FCALL_BEGIN
+             6      SEND_VAR                                                 !0
+             7      DO_FCALL                                      1          'demo'
+             8      EXT_FCALL_END
+             9      ASSIGN                                                   !1, $1
+       9    10      EXT_STMT
+            11      ECHO                                                     !1
+            12    > RETURN                                                   1
+
+    branch: #  0; line:     2-    9; sop:     0; eop:    12
+    path #1: 0,
+    Function demo:
+
+函数调用是DO_FCALL，在此中间代码之前有一个SEND_VAR操作，此操作的作用是将实参传递给函数，
+并且将它添加到函数栈中。最终调用的具体代码参见zend_send_by_var_helper_SPEC_CV函数，
+在此函数中执行了引用计数加1（Z_ADDREF_P）操作和函数栈入栈操作（zend_vm_stack_push）。
+
+与第一步的SEND操作对应，第二步是RECV操作。
+RECV操作和SEND_VAR操作不同，它是归属于当前函数的操作，仅为此函数服务。
+它的作用是接收SEND过来的变量，并将它们添加到当前函数的符号表。示例函数生成的中间代码如下：
+
+    compiled vars:  !0 = $s
+    line     # *  op                           fetch          ext  return  operands
+    --------------------------------------------------------------------------------
+    -
+       2     0  >   EXT_NOP
+             1      RECV                                                     1
+       3     2      EXT_STMT
+             3      ASSIGN                                                   !0, 10
+       4     4      EXT_STMT
+             5    > RETURN                                                   !0
+       5     6*     EXT_STMT
+             7*   > RETURN                                                   null
+
+    branch: #  0; line:     2-    5; sop:     0; eop:     7
+
+参数和普通局部变量一样 ，都需要进行操作，都需要保存在符号表（或CVs里，不过查找一般都是直接从变量变量数组里查找的）。
+如果函数只是需要读这个变量，如果我们将这个变量复制一份给当前函数使用的话，在内存使用和性能方面都会有问题，而现在的方案却避免了这个问题，
+如我们的示例：使用类似于赋值的操作，将原变量的引用计数加一，将有变化时才将原变量引用计数减一，并新建变量。
+其最终调用是ZEND_RECV_SPEC_HANDLER。
+
+参数的压栈操作用户自定义的函数和内置函数都需要，而RECV操作仅用户自定义函数需要。
 
 
 [receive-arg]: 			?p=chapt03/03-05-impl-of-type-hint
