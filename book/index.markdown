@@ -22,6 +22,7 @@
 	* [第一节 变量的内部结构][variables-structure]
 		+ [哈希表(HashTable)][variables-hashtable]
 		+ [PHP的哈希表实现][variables-hashtable-in-php]
+		+ [链表简介][variables-zend-llist]
     * [第二节 常量][const-var]
 	* [第三节 预定义变量][pre-defined-variable]
 	* [第四节 静态变量][static-var]
@@ -127,6 +128,7 @@
 [variables-structure]: 	?p=chapt03/03-01-00-variables-structure
 [variables-hashtable]: 	?p=chapt03/03-01-01-hashtable
 [variables-hashtable-in-php]: 	?p=chapt03/03-01-02-hashtable-in-php
+[variables-zend-llist]: 	?p=chapt03/03-01-03-zend-llist
 [const-var]: 			?p=chapt03/03-02-const-var
 [pre-defined-variable]:	?p=chapt03/03-03-pre-defined-variable
 [static-var]:           ?p=chapt03/03-04-static-var
