@@ -76,3 +76,28 @@ Zend引擎的实现也很简单，如下两个是核心的数据接口，第一�
 和哈希表中的:`Bucket *pInternalPointer;`字段一个作用。
 
 ## 操作接口
+操作接口比较简单，本文不打算介绍接口的使用，这里简单说一下PHP源代码中的一个小的约定，
+
+如下为基本的链表遍历操作接口：
+
+	[c]
+	/* traversal */
+	ZEND_API void *zend_llist_get_first_ex(zend_llist *l, zend_llist_position *pos);
+	ZEND_API void *zend_llist_get_last_ex(zend_llist *l, zend_llist_position *pos);
+	ZEND_API void *zend_llist_get_next_ex(zend_llist *l, zend_llist_position *pos);
+	ZEND_API void *zend_llist_get_prev_ex(zend_llist *l, zend_llist_position *pos);
+
+	#define zend_llist_get_first(l) zend_llist_get_first_ex(l, NULL)
+	#define zend_llist_get_last(l) zend_llist_get_last_ex(l, NULL)
+	#define zend_llist_get_next(l) zend_llist_get_next_ex(l, NULL)
+	#define zend_llist_get_prev(l) zend_llist_get_prev_ex(l, NULL)
+
+一般情况下我们遍历只需要使用后面的那组宏定义函数即可，如果不想要改变链表内部指针，
+可以主动传递当前指针所指向的位置。
+
+PHP中很多的函数都会有`*_ex()`以及不带ex两个版本的函数，这主要是为了方便使用，
+和上面的代码一样，ex版本的通常是一个功能较全或者可选参数较多的版本，
+而在代码中很多地方默认的参数值都一样，为了方便使用，再封装一个普通版本。
+
+这里之所以使用宏而不是定义另一个函数是为了避免函数调用带来的消耗，
+不过有的情况下还要进行其他的操作，也是会再定义一个新的函数的。
