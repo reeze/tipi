@@ -31,7 +31,7 @@
 从这个例子出发，我们看下define定义常量的过程实现。
 
 ## define定义常量的过程
-define是PHP的内置函数，在Zend/zend_builtin_functions.c文件中定义了此函数的实现。如下所示为部分源码：
+define是PHP的内置函数，在Zend/zend\_builtin\_functions.c文件中定义了此函数的实现。如下所示为部分源码：
 
     [c]
 
@@ -93,7 +93,7 @@ define是PHP的内置函数，在Zend/zend_builtin_functions.c文件中定义了
     //$var = ^_^;   //语法错误
     $var = constant("^_^"); 
 
-通过defined函数测试表示，‘^_^’这个常量已经定义好，这样的常量无法直接调用，
+通过defined函数测试表示，`^_^`这个常量已经定义好，这样的常量无法直接调用，
 只能使用constant()方法来获取到，否则在语法解析时会报错，因为它不是一个合法的标示符。
 
 除了CONST_CS标记，常量的flags字段通常还可以用CONST_PERSISTENT和CONST_CT_SUBST。
@@ -111,12 +111,12 @@ CONST_PERSISTENT表示这个常量需要持久化。这里的持久化内存申�
 我们并不需要将这些静态的内存释放掉，从而也就有了我们这里的CONST_PERSISTENT标记。
 
 CONST_CT_SUBST我们看注释可以知道其表示Allow compile-time substitution（在编译时可被替换）。
-在PHP内核中这些常量包括：TRUE、FALSE、NULL、ZEND_THREAD_SAFE和ZEND_DEBUG_BUILD五个。
+在PHP内核中这些常量包括：TRUE、FALSE、NULL、ZEND\_THREAD\_SAFE和ZEND\_DEBUG\_BUILD五个。
 
 ## 标准常量的初始化
 
-通过define()函数定义的常量的模块编号都是PHP_USER_CONSTANT，这表示是用户定义的常量。
-除此之外我们在平时使用较多的常量：如错误报告级别E_ALL, E_WARNING等常量就有点不同了。
+通过define()函数定义的常量的模块编号都是PHP\_USER\_CONSTANT，这表示是用户定义的常量。
+除此之外我们在平时使用较多的常量：如错误报告级别E\_ALL, E\_WARNING等常量就有点不同了。
 这些是PHP内置定义的常量，他们属于标准常量。
 
 在Zend引擎启动后，会执行如下的标准常量注册操作。
@@ -228,8 +228,8 @@ PHP已经在词法解析时将这些常量换成了对应的值，以上的代�
 和\_\_FUNCTION\_\_类似，在其附近的位置，上面表格中的其它常量也进行了类似的操作。
 
 >**NOTE**
->前面有个比较特殊的地方，当func_name不存在时，\_\_FUNCTION\_\_被替换成空字符串，
->你可能会想，怎么会有变量名不存在的方法呢，这里并不是匿名方法，匿名方法的function_name
+>前面有个比较特殊的地方，当`func_name`不存在时，\_\_FUNCTION\_\_被替换成空字符串，
+>你可能会想，怎么会有变量名不存在的方法呢，这里并不是匿名方法，匿名方法的`function_name`
 >并不是空的，而是:"{closure}", 有兴趣的读者可以去代码找找在那里给定义了。
 >
 >这里涉及PHP字节码的编译，在PHP中，一个函数或者一个方法会变编译成一个opcode array
