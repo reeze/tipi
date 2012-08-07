@@ -201,7 +201,7 @@ PHP已经在词法解析时将这些常量换成了对应的值，以上的代�
 如果我们使用VLD扩展查看以上的两段代码生成的中间代码，你会发现其结果是一样的。
 
 前面我们有说PHP是在词法分析时做的赋值替换操作，以\_\_FUNCTION\_\_为例，
-在Zend/zend_language_scanner.l文件中，\_\_FUNCTION\_\_是一个需要分析垢元标记（token）：
+在Zend/zend\_language\_scanner.l文件中，\_\_FUNCTION\_\_是一个需要分析垢元标记（token）：
 
     [c]
     <ST_IN_SCRIPTING>"__FUNCTION__" {
