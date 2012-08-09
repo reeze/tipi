@@ -9,7 +9,7 @@ PHP提供了public、protected及private三个层次访问控制。这和其他�
 这几个关键字都用于修饰类的成员:
 
 * private 用于禁止除类本身以外(包括继承也属于非类本身)对成员的访问，用于隐藏类的内部数据和实现。
-* protectd 用于禁止除本类以及继承该类的类以外的任何访问。同样用于封装类的实现，同时给予类一定的扩展能力，
+* protected 用于禁止除本类以及继承该类的类以外的任何访问。同样用于封装类的实现，同时给予类一定的扩展能力，
   因为子类还是可以访问到这些成员。
 * public 最好理解，被public修饰的成员可以被任意的访问。
 
@@ -25,7 +25,7 @@ PHP提供了public、protected及private三个层次访问控制。这和其他�
 	|	T_PRIVATE				{ Z_LVAL($$.u.constant) = ZEND_ACC_PRIVATE; }
 
 
-这三种访问控制的标记是PHP内核中定义的三个常量，在Zend/zend_complic.h中，其定义如下：
+这三种访问控制的标记是PHP内核中定义的三个常量，在Zend/zend_compile.h中，其定义如下：
 
     [c]
     #define ZEND_ACC_PUBLIC		0x100
