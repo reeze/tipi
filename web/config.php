@@ -12,6 +12,9 @@ define('GITHUB_API_BRANCH', 'release');
 
 define('IN_PROD_MODE', ($_SERVER['HTTP_HOST'] == ONLINE_HOSTNAME ? true : false)); 
 
+// 现在线上部署在SAE上，web根目录和SAE的目录不一样。为子目录
+define('WWW_ROOT_DIR', (IN_PROD_MODE ? 'web' : 'web'));
+
 // 线上模式下开启缓存，也可以手动修改
 define('ENABLE_PAGE_CACHE', IN_PROD_MODE);
 
