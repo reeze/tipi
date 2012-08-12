@@ -1,55 +1,46 @@
 # 第六节 写时复制（Copy On Write）
 
-在开始之前，我们可以先看一段简单的代码：
-	
-	[php]
-	<?php   //例一
-		$foo = 1;
-		$bar = $foo;
-		echo $foo + $bar;
-	?>
+写时复制（[Copy on Write](http://en.wikipedia.org/wiki/Copy-on-write)，也缩写为COW)的应用场景非常多，
+比如Linux中对进程复制中内存使用的优化，在各种编程语言中，如C++的STL等等中均有类似的应用。
+COW是常用的优化手段，可以归类于：资源延迟分配。只有在真正需要使用资源时才占用资源，
+这样做的目的通常能减少资源的占用。
 
-执行这段代码，会打印出数字2。从内存的角度来分析一下这段代码“可能”是这样执行的：
-分配一块内存给foo变量，里面存储一个1； 再分配一块内存给bar变量，也存一个1，最后计算出结果输出。
-事实上，我们发现foo和bar变量因为值相同，完全可以使用同一块内存，这样，内存的使用就节省了一个1，
-并且，还省去了分配内存和管理内存地址的计算开销。
-没错，很多涉及到内存管理的系统，都实现了这种相同值共享内存的策略：**写时复制**
+不过这也不是绝对的，资源延时分配并不适用于所有的情况，需要根据具体的应用场景来使用，
+比如在某些场景下资源申请会很频繁，同时申请资源本身也会消耗大量的资源，这是可能需要进行资源预分配，
+比如很多语言通常都会自己实现内存管理层，通过预申请一个资源池来管理资源。
+内存的分配都通过这个抽象层来进行，因为通常要使用内存需要向操作系统进行申请，
+而申请内存的操作是[系统调用](http://zh.wikipedia.org/wiki/%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8)，
+系统调用代价非常大。所以预申请内存以减少系统调用的代价成本。
 
-很多时候，我们会因为一些术语而对其概念产生莫测高深的恐惧，而其实，他们的基本原理往往非常简单。
-本小节将介绍PHP中写时复制这种策略的实现：
+综合来讲需要权衡：资源的分配成本及频度。需要综合各个环节的成本，来达到总体最优。
 
->**NOTE**
->写时复制（[Copy on Write](http://en.wikipedia.org/wiki/Copy-on-write)，也缩写为COW)的应用场景非常多，
->比如Linux中对进程复制中内存使用的优化，在各种编程语言中，如C++的STL等等中均有类似的应用。
->COW是常用的优化手段，可以归类于：资源延迟分配。只有在真正需要使用资源时才占用资源，
->写时复制通常能减少资源的占用。
+在PHP内核中，COW是很常用的内存优化手段。在前面关于变量和内存的讨论中，
+引用计数对变量的销毁与回收中起着至关重要的作用。同时PHP的COW也是基于引用计数来实现的。
 
-注： 为节省篇幅，下文将统一使用COW来表示“写时复制”； 
+## 写时复制的作用
 
-## 推迟内存复制的优化
-
-正如前面所说，PHP中的COW可以简单描述为：如果通过赋值的方式赋值给变量时不会申请新内存来存放
+PHP中的写时复制可以简单描述为：如果通过赋值的方式赋值给变量时不会申请新内存来存放
 新变量所保存的值，而是简单的通过一个计数器来共用内存，只有在其中的一个引用指向变量的
 值发生变化时才申请新空间来保存值内容以减少对内存的占用。
-在很多场景下PHP都COW进行内存的优化。比如：变量的多次赋值、函数参数传递，并在函数体内修改实参等。
-    
-下面让我们看一个查看内存的例子，可以更容易看到COW在内存使用优化方面的明显作用：
+
+经过上面的描述，大家可能会COW有了个大概的印象，下面让我们看一个小例子，
+可以容易看到COW在内存使用优化方面的明显作用：
 
 	[php]
-	<?php  //例二
+	<?php
 	$j = 1;
-			var_dump(memory_get_usage());
+    var_dump(memory_get_usage());
 
-	$tipi = array_fill(0, 100000, 'php-internal');
-			var_dump(memory_get_usage());
+    $tipi = array_fill(0, 100000, 'php-internal');
+    var_dump(memory_get_usage());
 
-	$tipi_copy = $tipi;
-			var_dump(memory_get_usage());
+    $tipi_copy = $tipi;
+    var_dump(memory_get_usage());
 
-	foreach($tipi_copy as $i){
-		$j += count($i); 
-	}
-			var_dump(memory_get_usage());
+    foreach($tipi_copy as $i){
+        $j += count($i); 
+    }
+    var_dump(memory_get_usage());
 
 	//-----执行结果-----
 	$ php t.php 
@@ -63,90 +54,61 @@
 在这里`$tipi_copy`和`$tipi`变量的数据共同指向同一块内存，而没有复制。
 
 也就是说，即使我们不使用引用，一个变量被赋值后，只要我们不改变变量的值 ，也不会新申请内存用来存放数据。
-据此我们很容易就可以想到一些COW可以非常有效的控制内存使用的场景：
-只是使用变量进行计算而很少对其进行修改操作，如函数参数的传递，大数组的复制等等等不需要改变变量值的情形。
+据此我们很容易就可以想到一些COW可以非常有效的控制内存使用的场景，
+很多场景下我们通常只是使用变量进行计算而很少对其进行修改操作，如函数参数的传递，大数组的复制等。
+这样就能节省内存。
 
-
-##复制分离变化的值
-多个相同值的变量共用同一块内存的确节省了内存空间，但变量的值是会发生变化的，如果在上面的例子中，
-指向同一内存的值发生了变化（或者可能发生变化），就需要将变化的值“分离”出去，这个“分离”的操作，
-就是“复制”。
-
-
-在PHP中，Zend引擎为了区别同一个zval地址是否被多个变量共享，引入了ref_count和is_ref两个变量进行标识：
-
->**NOTE**
->__ref_count__和__is_ref__是定义于zval结构体中（见第一章第一小节）    
->__is_ref__标识是不是用户使用 & 的强制引用；	 
->__ref_count__是引用计数，用于标识此zval被多少个变量引用，即COW的自动引用，为0时会被销毁；	
-关于这两个变量的更多内容，跳转阅读：[第三章第六节：变量的赋值和销毁][var-define-and-init]的实现。    
->注：由此可见， $a=$b; 与 $a=&$b; 在PHP对内存的使用上没有区别（值不变化时）；	
-
-
-下面我们把**例二**稍做变化：如果`$copy`的值发生了变化，会发生什么？：
+在这个例子中，如果`$tipi_copy`的值发生了变化，`$tipi`的值是不应该发生变化的，
+那么，此时PHP内核又会如何去做呢？再看看下面的示例：
 
 	[php]
-	<?php //例三
-	//$tipi = array_fill(0, 3, 'php-internal');  
-	//这里不再使用array_fill来填充 ，为什么？
-	$tipi[0] = 'php-internal';
-	$tipi[1] = 'php-internal';
-	$tipi[2] = 'php-internal';
-	var_dump(memory_get_usage());
+	<?php
+    //$tipi = array_fill(0, 3, 'php-internal');  
+    //这里不再使用array_fill来填充 ，为什么？
+    $tipi[0] = 'php-internal';
+    $tipi[1] = 'php-internal';
+    $tipi[2] = 'php-internal';
+    var_dump(memory_get_usage());
 
-	$copy = $tipi;
-	xdebug_debug_zval('tipi', 'copy');
-	var_dump(memory_get_usage());
+    $copy = $tipi;
+    xdebug_debug_zval('tipi', 'copy');
+    var_dump(memory_get_usage());
 
-	$copy[0] = 'php-internal';
-	xdebug_debug_zval('tipi', 'copy');
-	var_dump(memory_get_usage());
+    $copy[0] = 'php-internal';
+    xdebug_debug_zval('tipi', 'copy');
+    var_dump(memory_get_usage());
 
 	//-----执行结果-----
 	$ php t.php 
 	int(629384)
-	tipi: (refcount=2, is_ref=0)=array (0 => (refcount=1, is_ref=0)='php-internal', 
-										1 => (refcount=1, is_ref=0)='php-internal', 
-										2 => (refcount=1, is_ref=0)='php-internal')
-	copy: (refcount=2, is_ref=0)=array (0 => (refcount=1, is_ref=0)='php-internal', 
-										1 => (refcount=1, is_ref=0)='php-internal', 
-										2 => (refcount=1, is_ref=0)='php-internal')
+	tipi: (refcount=2, is_ref=0)=array (0 => (refcount=1, is_ref=0)='php-internal', 1 => (refcount=1, is_ref=0)='php-internal', 2 => (refcount=1, is_ref=0)='php-internal')
+	copy: (refcount=2, is_ref=0)=array (0 => (refcount=1, is_ref=0)='php-internal', 1 => (refcount=1, is_ref=0)='php-internal', 2 => (refcount=1, is_ref=0)='php-internal')
 	int(629512)
-	tipi: (refcount=1, is_ref=0)=array (0 => (refcount=1, is_ref=0)='php-internal', 
-										1 => (refcount=2, is_ref=0)='php-internal', 
-										2 => (refcount=2, is_ref=0)='php-internal')
-	copy: (refcount=1, is_ref=0)=array (0 => (refcount=1, is_ref=0)='php-internal', 
-										1 => (refcount=2, is_ref=0)='php-internal', 
-										2 => (refcount=2, is_ref=0)='php-internal')
+	tipi: (refcount=1, is_ref=0)=array (0 => (refcount=1, is_ref=0)='php-internal', 1 => (refcount=2, is_ref=0)='php-internal', 2 => (refcount=2, is_ref=0)='php-internal')
+	copy: (refcount=1, is_ref=0)=array (0 => (refcount=1, is_ref=0)='php-internal', 1 => (refcount=2, is_ref=0)='php-internal', 2 => (refcount=2, is_ref=0)='php-internal')
 	int(630088)
 
-在这个例子中，我们可以发现以下特点：
+从上面例子我们可以看出，当一个数组整个被赋给一个变量时，不会申请同样大小的内存来保存内容，
+当数组的值被改变时，Zend内核才重新申请内存，然后赋之以新值，但不影响其他值。
+写时复制的最小粒度，是zval结构体，而对于zval结构体组成的集合（如数组和对象等），
+在需要复制内存时，将复杂对象分解为最小粒度来处理。这样做就使内存中复杂对象中某一部分做修改时，
+不必将该对象的所有元素全部“分离”出一份内存拷贝，所以上例中的1，2索引处的元素引用数量为2，
+也就是并没有将整个数组进行复制操作，只对修改的部分复制，从而节省了内存的使用。
 
-   1. $copy = $tipi；这种基本的赋值操作会触发COW的内存“共享”，不会产生内存复制；
-   1. COW的粒度为zval结构，由PHP中变量全部基于zval，所以COW的作用范围是全部的变量，而对于zval结构体组成的集合（如数组和对象等），
-在需要复制内存时，将复杂对象分解为最小粒度来处理。这样可以使内存中复杂对象中某一部分做修改时，
-不必将该对象的所有元素全部“分离复制”出一份内存拷贝；
-   
 >**NOTE**
->array_fill()填充数组时也采用了COW的策略，可能会影响对本例的演示，感兴趣的读者可以
->阅读：$PHP_SRC/ext/standard/array.c中PHP_FUNCTION(array_fill)的实现。    
->    
->xdebug_debug_zval()是xdebug扩展中的一个函数，用于输出变量在zend内部的引用信息。
->如果你没有安装xdebug扩展，也可以使用debug_zval_dump()来代替。
->参考：<http://www.php.net/manual/zh/function.debug-zval-dump.php>
+>前面实例中提到$tipi变量的值没有使用array_fill()来创建数组的原因是: array_fill()
+>出于对内存的占用考虑，也采用了COW的策略，可能会影响对本例的演示，感兴趣的读者可以
+>阅读：$PHP_SRC/ext/standard/array.c中PHP_FUNCTION(array_fill)的实现。
 
+## 写时复制的实现
 
-## 实现写时复制
-
-看完上面的三个例子，相信大家也可以了解到PHP中COW的实现原理：
-PHP中的COW基于引用计数__ref_count__和__is_ref__实现，
-多一个变量指针，就将__ref_count__加1， 反之减去1，减到0就销毁；
-同理，多一个强制引用&,就将__is_ref__加1，反之减去1。
+写时复制通常基于引用计数计数实现，多个引用指向同一快内存，在需要修改内存的时候如果发现
+内存有多个指向则申请内存保存修改后的数据，引用计数的作用则用于标示该内存是否是共享的。
 
 这里有一个比较典型的例子：
 	
 	[php]
-	<?php  //例四
+	<?php
 		$foo = 1;
 		xdebug_debug_zval('foo');
 		$bar = $foo;
@@ -166,49 +128,65 @@ PHP中的COW基于引用计数__ref_count__和__is_ref__实现，
 这不是我们想要的结果。于是，PHP内核将内存复制出来一份，并将其值更新为赋值的：2（这个操作也称为变量分离操作），
 同时原$foo变量指向的内存只有$foo指向，所以引用计数更新为：refcount=1。
 
+>**NOTE**
+>上面小例子中的xdebug_debug_zval()是xdebug扩展中的一个函数，用于输出变量在zend内部的引用信息。
+>如果你没有安装xdebug扩展，也可以使用debug_zval_dump()来代替。
+>参考：<http://www.php.net/manual/zh/function.debug-zval-dump.php>
 
-看上去很简单，但由于**&**运算符的存在，实际的情形要复杂的多。
-见下面的例子：
-![图6.6 &操作符引起的内存复制分离](../images/chapt06/06-06-cow-mem-copy.png)
-
-
-PHP的大多数工作都是进行文本处理，而变量是载体，不同类型的变量的使用贯穿着PHP的生命周期，
-变量的COW策略也就体现了Zend引擎对变量及其内存处理，具体可以参阅源码文件相关的内容：
+在很多场景下PHP都会进行写时赋值操作。比如：变量的多次赋值、函数参数传递，并在函数体内修改实参等。
+以在执行赋值中需要进的操作：zend_assign_to_variable()函数（**Zend/zend_execute.c**）的关键代码段为例：
 
 	[c]
-	Zend/zend_execute.c
-	========================================
-		zend_assign_to_variable_reference();
-		zend_assign_to_variable();
-		zend_assign_to_object();
-		zend_assign_to_variable();
-		
-	//以及下列宏定义的使用
-	Zend/zend.h
-	========================================
-		#define Z_REFCOUNT(z)           Z_REFCOUNT_P(&(z))
-		#define Z_SET_REFCOUNT(z, rc)       Z_SET_REFCOUNT_P(&(z), rc)
-		#define Z_ADDREF(z)         Z_ADDREF_P(&(z))
-		#define Z_DELREF(z)         Z_DELREF_P(&(z))
-		#define Z_ISREF(z)          Z_ISREF_P(&(z))
-		#define Z_SET_ISREF(z)          Z_SET_ISREF_P(&(z))
-		#define Z_UNSET_ISREF(z)        Z_UNSET_ISREF_P(&(z))
-		#define Z_SET_ISREF_TO(z, isref)    Z_SET_ISREF_TO_P(&(z), isref)	
-	
+    if (PZVAL_IS_REF(value) && Z_REFCOUNT_P(value) > 0) {
+        ALLOC_ZVAL(variable_ptr);
+        *variable_ptr_ptr = variable_ptr;
+        *variable_ptr = *value;
+        Z_SET_REFCOUNT_P(variable_ptr, 1);
+        zval_copy_ctor(variable_ptr);
+    } else {
+        *variable_ptr_ptr = value;
+        Z_ADDREF_P(value);
+    }
 
+从这段代码可以看出，如果要进行操作的值已经是引用类型，并且有变量指向这个值，
+则重新分配内存，同时对原有值不影响，否则只是将value的地址赋与变量，同时将值的zval_value.refcount加1。
+也就是标记这个值又有新的变量指向这个值，避免了内存复制。
 
-## 最后，请慎用引用**&**
+为了便于理解，再展示下PHP中的变量存储结构体zval（Zend/zend.h）的定义：
+
+	[c]
+	typedef struct _zval_struct zval;
+	...
+	struct _zval_struct {
+		/* Variable information */
+		zvalue_value value;     /* value */
+		zend_uint refcount__gc;
+		zend_uchar type;    /* active type */
+		zend_uchar is_ref__gc;
+	};
+
+PHP对值的写时复制的操作及垃圾收集机制均依赖于：**refcount__gc**与**is_ref__gc**字段。
+
+>**NOTE**
+>写时复制的规则比较繁琐，什么情况会导致写时复制及分离，是有非常多种情况的。
+>在这里只是举一个简单的例子帮助大家理解，后续会在附录中列举PHP中所有写时复制的相关规则。
+
+## 慎用引用**&**
 引用和前面提到的变量的引用计数和PHP中的引用并不是同一个东西，
 引用和C语言中的指针的类似，他们都可以通过不同的标示访问到同样的内容，
 但是PHP的引用则只是简单的变量别名，没有C指令的灵活性和限制。
 
+在PHP使用引用也需要对引用的行为有明确的认识才不至于误用，
+避免带来一些比较难以理解的的Bug。
 
-PHP中有非常多让人觉得意外的行为，有些因为历史原因，不能破坏兼容性而选择
-暂时不修复，或者有的使用场景比较少。在PHP中只能尽量的避开这些陷阱。
-例如下面这个例子。
+上面这个例子我们还可以理解，如果每个这种类似操作都要用户来关心。
+那PHP就是变换了语法的C了。而下面的这个例子，与其说是语言特性，
+倒不如说是更像BUG多一些。（事实上对此在PHP官方的邮件组里有也争论）
 
-由于引用操作符会导致PHP的COW策略优化，所以使用引用也需要对引用的行为有明确的认识才不至于误用，
-避免带来一些比较难以理解的的Bug。如果您认为您已经足够了解了PHP中的引用，可以尝试解释下面这个例子：
+>**NOTE**
+>PHP中有非常多让人觉得意外的行为，有些因为历史原因，不能破坏兼容性而选择
+>暂时不修复，或者有的使用场景比较少。在PHP中只能尽量的避开这些陷阱。
+>例如下面这个例子。
 
 	[php]
 	<?php
@@ -219,8 +197,5 @@ PHP中有非常多让人觉得意外的行为，有些因为历史原因，不�
 	echo $foo['love'];
 	
 这个例子最后会输出 2 ， 大家会非常惊讶于$tipi怎么会影响到$foo, 
-`$bar`变量的引用操作，将$foo['love']污染变成了引用，从而Zend没有
-对`$tipi['love']`的修改产生内存的复制分离。
-
-
-[var-define-and-init]:	?p=chapt03/03-06-01-var-define-and-init
+`$bar`变量的引用操作，将$foo['love']变成了引用。对`$tipi['love']`的修改
+没有产生copy on write。
