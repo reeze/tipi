@@ -37,10 +37,10 @@
 在局部变量中也存在一个名为$bar的变量，
 此时如何区分呢？
 
-对于全局变量，ZEND内核有一个_zend_executor_globals结构，该结构中的symbol_table就是全局符号表，
+对于全局变量，Zend引擎有一个_zend_executor_globals结构，该结构中的symbol_table就是全局符号表，
 其中保存了在顶层作用域中的变量。同样，函数或者对象的方法在被调用时会创建active_symbol_table来保存局部变量。
 当程序在顶层中使用某个变量时，ZE就会在symbol_table中进行遍历，
-同理，如果程序运行于某个函数中，Zend内核会遍历查询与其对应的active_symbol_table，
+同理，如果程序运行于某个函数中，Zend引擎会遍历查询与其对应的active_symbol_table，
 而每个函数的active_symbol_table是相对独立的，由此而实现的作用域的独立。
 
 展开来看，如果我们调用的一个函数中的变量，ZE使用_zend_execute_data来存储
