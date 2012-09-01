@@ -146,10 +146,3 @@ p {
 .book-img {
 	text-align: center;
 }
-
-@font-face {
-    font-family: 'Regular';
-    src: url('/css/hei.ttf');
-    font-weight: normal;
-    font-style: normal;
-}
