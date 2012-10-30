@@ -120,4 +120,5 @@ SPL的堆实现了 Countable 接口和 Iterator 接口，我们可以通过count
 
 
 
+
 [php-life-cycle-and-zend-engine]:         ?p=chapt02/02-01-php-life-cycle-and-zend-engine
