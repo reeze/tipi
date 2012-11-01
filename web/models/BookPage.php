@@ -85,7 +85,7 @@ class BookPage extends MarkdownPage
 	}
 	
 	// Pdf版的内容需要重新对标题级别调整一下以便生成目录
-	protected function reAssignHeaderLevel($level) {
+	public function reAssignHeaderLevel($level) {
 		if($this->isChapterIndex() && $level == 1) return $level; 
 
 		// 所有层级增加一级
