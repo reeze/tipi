@@ -56,7 +56,8 @@
     * [第六节 PHP保留类及特殊类][class-reserved-and-special-classes]
     * [第七节 对象][class-object]
     * [第八节 命名空间][class-namespace]
-    * [第九节 小结][05-summary]
+    * [第九节 标准类][spl]
+    * [第十节 小结][05-summary]
 
 - [第六章 内存管理][memory-management]
 	* [第一节 内存管理概述][memory-management-overview]
@@ -163,7 +164,8 @@
 [class-reserved-and-special-classes]:   ?p=chapt05/05-06-class-reserved-and-special-classes
 [class-object]:         ?p=chapt05/05-07-class-object
 [class-namespace]:      ?p=chapt05/05-08-class-namespace
-[05-summary]:           ?p=chapt05/05-09-summary
+[spl]:                  ?p=chapt05/05-09-spl
+[05-summary]:           ?p=chapt05/05-10-summary
 
 [memory-management]:		?p=chapt06/06-00-memory-management
 [memory-management-overview]:	?p=chapt06/06-01-memory-management-overview
