@@ -70,7 +70,7 @@ C++的新标准[C++0x](http://en.wikipedia.org/wiki/C%2B%2B0x)也开始支持了
 	lambda_1(); // 不存在这个函数
 
 上面这段代码的前面很好理解，create_function就是这么用的，后面指定函数名调用却失败了，这就有些不好理解了，
-php是怎么保证这个函数是全局唯一的? lambda_1看起来也是一个很普通的函数明，如果我们先定义一个叫做lambda_1的函数呢?
+php是怎么保证这个函数是全局唯一的? lambda_1看起来也是一个很普通的函数名，如果我们先定义一个叫做lambda_1的函数呢?
 这里函数的返回字符串会是lambda_2，它在创建函数的时候会检查是否这个函数是否存在知道找到合适的函数名，
 但如果我们在create_function之后定义一个叫做lambda_1的函数会怎么样呢? 这样就出现函数重复定义的问题了，
 这样的实现恐怕不是最好的方法，实际上如果你真的定义了名为lambda_1的函数也是不会出现我所说的问题的。这究竟是怎么回事呢?
@@ -139,7 +139,7 @@ chr()函数可以帮我们生成这样的字符串， 例如前面创建的函�
 	<?php
 	class Callme {
 		public function __invoke($phone_num) {
-			echo "Hello: $num";
+			echo "Hello: $phone_num";
 		}
 	}
 
