@@ -19,7 +19,7 @@
 					** 注意 ** 为了将图书的图片素材自包含. 同时能在web页面下访问到图片. 所以在编辑book/*.markdown文件的时候需要
 					注意图片资源的地址路径
 		javascript  
-	php-src	该目录为我们在项目中使用的php源文件.该目录为一个子模块. 请参考git submodule
+	php-src	该目录为我们在项目中使用的php源文件.该目录为一个子模块. 请参考[git submodule](http://book.git-scm.com/5_submodules.html)
 
 
 ## 文件命名约定
