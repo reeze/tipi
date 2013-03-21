@@ -1,6 +1,6 @@
 <div id="home_page" class='body-wrapper'>
 	<div id="main_logo">
-		<img src="images/main-logo.png" />
+		<img src="<?php echo url_for("/images/main-logo.png"); ?>" />
 	</div>
 
 	<div id="get-it">

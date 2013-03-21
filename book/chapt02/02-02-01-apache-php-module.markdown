@@ -143,7 +143,7 @@ php_ap2_register_hook函数的定义如下：
 handler挂钩是请求挂钩，它在服务器处理请求时调用。其中在post_config挂钩中启动php。
 它通过php_apache_server_startup函数实现。php_apache_server_startup函数通过调用sapi_startup启动sapi，
 并通过调用php_apache2_startup来注册sapi module struct（此结构在本节开头中有说明），
-最后调用php_module_startup来初始化PHP， 其中又会初始化ZEND引擎，以及填充zend_module_struct中
+最后调用php_module_startup来初始化PHP， 其中又会初始化Zend引擎，以及填充zend_module_struct中
 的treat_data成员(通过php_startup_sapi_content_types)等。
 
 到这里，我们知道了Apache加载mod_php5模块的整个过程，可是这个过程与我们的SAPI有什么关系呢？

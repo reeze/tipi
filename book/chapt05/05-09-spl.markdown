@@ -1,0 +1,166 @@
+# 标准类
+
+SPL，PHP标准库（Standard PHP Library），从 PHP 5.0 开始内置的接口和类的集合，从 PHP5.3 开始逐渐成熟并成为内核组件的一部分。
+但是由于其文档的稀少以及推行的力度不够，导致较多的PHP开发人员对其不了解，甚至闻所未闻。
+
+SPL是为了解决典型问题而存在，为了实现一些有效的数据访问接口和类。
+现在它包括对常规数据结构的访问，迭代器，异常处理，文件处理，数组处理和一些设计模式的实现。
+这些在程序设计的世界中都是一些典型的问题，以这样一种标准库的方式实现可以在很大程度上减少代码的冗余和提高开发的效率。
+
+SPL在PHP内核中以一个扩展的形式存在，在ext目录下有一个spl目录，这里存放了SPL的所有代码实现。
+从文件名我们可以看出其基本的操作实体：异常、数组、文件……。与其它扩展相比，SPL扩展没有太多不同的地方，
+它和json、date等扩展一起作为内置的模块（php_builtin_extensions）加载。
+具体流程可以参考[<< 第一节 生命周期和Zend引擎 >>][php-life-cycle-and-zend-engine]。
+在ext/spl目录中，有两个有些奇怪的目录：example和internal。
+这里都是一些.inc文件，它们是以PHP代码的形式实现了SPL的一些类。
+通过TODO文件中的说明，example中的.inc文件是即将实现的SPL，而internal目录中的.inc文件是已经实现了的SPL。
+也许这个扩展的开发人员的开发过程是先用PHP把相关代码写好，然后再依葫芦画瓢，换成C语言实现这些功能。
+
+SPL的代码结构和其它扩展一样，一个主文件spl.c，它包括模块初始化、请求初始化等扩展必须定义的方法，
+所有函数的定义以及所有函数和类的注册。在函数中或类中需要调用的一些公用方法存储在spl_function.c或spl_engine.c文件中。
+
+### 标准异常类
+
+SPL提供了一系列的标准异常类，包括逻辑异常和运行时异常逻辑异常下又包括函数调用失败异常、数据域异常、参数异常、长度异常等子类；
+运行时异常包括越界异常、溢出异常、范围异常（通常这里是指一个算术错误）、下溢异常（如当从一个空集合中移除一个元素）和不确定值异常。
+以上的分类也在代码层面体现，在spl_exceptions的模块初始化函数中，这两类被明显分开。
+这是业务在代码中的一种体现，我们在实现工作中的需求时，一个大的需求在分解后可能需要按函数或按类，
+甚至按文件进行物理上的分隔。SPL的异常类只是一个壳，他们都是从Exception继承下来的，所有的方法完全继承自Exception类。
+如果我们需要在项目中应用SPL的异常类，可以有选择的继承这些类，当有特定的需求需要实现时，可以覆盖这些方法继承自Exception类的方法。
+
+[Exception](http://cn2.php.net/manual/zh/class.exception.php)是PHP中所有异常的基类，
+自从PHP5.1.0开始引入，自此，我们可以以面向对象的方式处理错误。
+Exception类的声明如下：
+
+    [php]
+    Exception {
+        /* 属性 */
+        protected string $message ;
+        protected int $code ;
+        protected string $file ;
+        protected int $line ;
+
+        /* 方法 */
+        public __construct ([ string $message = "" [, int $code = 0 [, Exception $previous = NULL ]]] )
+        final public string getMessage ( void )
+        final public Exception getPrevious ( void )
+        final public int getCode ( void )
+        final public string getFile ( void )
+        final public int getLine ( void )
+        final public array getTrace ( void )
+        final public string getTraceAsString ( void )
+        public string __toString ( void )
+        final private void __clone ( void )
+    }
+
+其中message表示异常消息内容，code表示异常代码，file表示抛出异常的文件名，line表示抛出异常在该文件中的行号。
+下面从 PHP内核的角度说明这些属性及对应的方法。
+
+message表示异常的消息内容，其对应getMessage方法。message是自定义的异常消息，默认为空字符串。
+对于PHP内核来说，创建Exception对象时，有无message参数会影响 getMessage方法的返回值，
+以及显示异常时是否有with message %s等字样。message成员变量的作用是为了让用户更好的定义说明异常类。
+
+code表示异常代码，其对应getCode方法。和meesage成员变量一样，code也是用户自定义的内容，默认为0。
+
+file表示抛出异常的文件名，其对应getFile方法，返回值为执行文件的文件名，在PHP内核中存储此文件名的字段为 EG(active_op_array)->filename 
+此字段的值在生成一个opcode列表时，PHP的内核会将此前正在编译文件的文件名赋值给opcode的filename属性，
+如生成一个函数的op_array，在初始化op_array时，会执行上面所说的赋值操作，这里的赋值是通过编译的全局变量来传递的。
+当代码执行时，EG(active_op_array)表示正在执行的opcode列表。
+
+line表示抛出异常在该文件中的行号，其对应getLine方法，返回整数，即EG(opline_ptr)->lineno。
+对于每条PHP脚本生成的opcode，在编译时都会执行一次初始化操作，
+在这次初始化操作中，PHP内核会将当前正在编译的行号赋值给opcode的lineno属性。
+EG(opline_ptr)是PHP内核执行的当前opcode，抛出异常时对应的行号即为此对象的lineno属性。
+
+除了上面四个属性，异常类还包括一个非常重要的内容：异常的追踪信息。
+在异常类中，通过getTrace方法可以获取这些信息。此方法的作用相当于PHP的内置函数debug_backtrace。
+在代码实现层面他们最终都是调用zend_fetch_debug_backtrace函数。在此函数中通过回溯PHP的调用栈，返回代码追踪信息。
+与getTrace方法对应还有一个返回被串化值的方法getTraceAsString，以字符串替代数组返回异常追踪信息。
+
+在构造函数中，从PHP5.3.0增加$previous参数，表示异常链中的前一个异常。
+在catch块中可以抛出一个新的异常，并引用原始的异常，为调试提供更多的信息。
+
+### 数据结构
+
+SPL提供了一套标准的数据结构，这些都是在应用开发过程中的常用数据结构，如双向链表、堆、栈等。
+双向链表的数据结构由一个双向链表类（spl_dllist_object）、一个双向链表（spl_ptr_llist）
+和一个标准的双向链表元素结构体（spl_ptr_llist_element）组成
+这三者存在着包含关系，双向链表是类的组成之一，双向链表元素是双向链表头尾的结构。
+双向链表类实现了迭代器接口，我们可以直接用foreach遍历整个链表。
+其实现了 Countable 接口，即实现了count方法，我们可以直接对spl_dllist_object使用count函数获取链表中的元素个数。
+关于 Countable 接口，关键实现在于count函数，当存在SPL时，如果count的是一个对象，则会判断是否实现了Countable接口，
+如果实现了此接口，则会调用count方法并返回，否则返回对象的属性个数。
+
+队列（SplQueue）和栈（SplStack）都是双向链表的子类，
+栈操作的pop和push方法都是直接继承自父类，队列操作除了父类的操作外，增加了属于自己的enqueue和dequeue操作，
+不过它们只不过是父类的push方法和shift方法的别名。
+
+堆、大头堆、小头堆和优先队列是同一类数据结构，都是基于堆的实现。
+堆是一颗完全二叉树，常用于管理算法执行过程中的信息，应用场景包括堆排序，优先队列等。
+堆分为大头堆和小头堆，在定义上的区别是父节点的值是大于还是小于子节点的值，
+在SPL中，它们的区别以比较函数的不同体现，而比较函数的不同仅仅体现在比较时交换了下位置和函数名的不同。
+
+PHP的堆以数组的形式存储数据，默认初始化分配64个元素的内存空间，
+新元素插入时，如果当前元素的个数总和超过分配的值，则会将其空间扩大一倍，即*2。
+SplMaxHeap和SplMinHeap都是SplHeap类的子类，直接继承了SplHeap的所有方法和属性，各自实现了自己的compare方法。
+
+优先级队列是不同于先进先出队列的另一种队列，它每次从队列中取出的是具有最高优先权的元素，
+这里的优先是指元素的某一属性优先，以比较为例，可能是较大的优先，也可能是较小的优先。
+PHP实现的优先级队列默认是以大头堆实现，即较大的优先，如果要较小的优先，则需要继承SplPriorityQueue类，并重载compare方法。
+
+SPL的堆实现了 Countable 接口和 Iterator 接口，我们可以通过count函数获取堆的元素个数，
+以及直接foreach以访问数组的方式遍历堆中的元素，遍历顺序与比较函数相关。
+
+SplFixedArray类提供了数组的主要功能。
+一个SplFixedArray和一个常规的PHP数组之间的主要区别是：SplFixedArray所代表的数组长度是固定的，并只允许为整数的下标。
+与普通的数组相比，它的优点是实现了更快的数组操作。
+但这里的操作并不包括创建， 与原生的 array 相比，在创建对象的性能上大概有 1/3 的损耗。
+之所有SplFixedArray类拥有更快的数组操作性能，是因为它舍弃了PHP自带数组的HashTable数据结构，直接以C数组存储数据。
+由于只允许整数作为下标，并且数组长度是固定的，当获取一个元素时，只需要读取下标索引，返回C数组对应的元素即可。
+这与HashTable的实现相比，少了hash key的计算，对于hash冲突的处理等。
+换一句话说：SplFixedArray类基本就是C数组，只是作为PHP语法展现。
+
+和双向链表一样， SplFixedArray类实现了Iterator，ArrayAccess和Countable接口。
+从而可以直接用foreach遍历整个链表，可以以数组的方式访问对象，调用count方法获取数组的长度。
+在获取数组元素值时，如果所传递的不是整数的下标，则抛出RuntimeException: Index invalid or out of range异常。
+与获取元素末端，在设置数组元素时，如果所传递的不是整数的下标，会抛出RuntimeExceptione异常。
+如果所设置的下标已经存在的值，则会先释放旧值的空间，然后将新的值指向旧值的空间。
+当通过unset函数翻译数组中的元素时，如果参数指定的下标存在值，则释放值所占的空间，并设置为NULL。
+
+SplObjectStorage类实现了对象存储映射表，应用于需要唯一标识多个对象的存储场景。
+在PHP5.3.0之前仅能存储对象，之后可以针对每个对象添加一条对应的数据。
+SplObjectStorage类的数据存储依赖于PHP的HashTable实现，与传统的使用数组和spl_object_hash函数生成数组key相比，
+其直接使用HashTable的实现在性能上有较大的优势。
+有一些奇怪的是，在PHP手册中，SplObjectStorage类放在数据结构目录下。
+但是他的实现和观察者模式的接口放在同一个文件（ext/spl/spl_observer.c）。
+实际上他们并没有直接的关系。
+
+### 观察者模式
+
+观察者模式定义对象间的一种一对多的依赖关系，当一个对象的状态发生改变时，所有依赖于它的对象都得到通知并被自动更新
+观察者模式又称为发布-订阅（Publish-Subscribe）模式、模型-视图（Model-View）模式、源-监听（Source-Listener）模式、
+或从属者(Dependents)模式。
+一般来说，观察者模式包括如下四个角色：
+
+* 抽象主题（Subject）角色：主题角色将所有对观察者对象的引用保存在一个集合中，每个主题可以有任意多个观察者。
+抽象主题提供了增加和删除观察者对象的接口。
+* 抽象观察者（Observer）角色：为所有的具体观察者定义一个接口，在观察的主题发生改变时更新自己。
+* 具体主题（ConcreteSubject）角色：存储相关状态到具体观察者对象，当具体主题的内部状态改变时，给所有登记过的观察者发出通知。
+具体主题角色通常用一个具体子类实现。
+* 具体观察者（ConcretedObserver）角色：存储一个具体主题对象，存储相关状态，实现抽象观察者角色所要求的更新接口，
+以使得其自身状态和主题的状态保持一致。
+
+SPL实现了其中两个抽象角色：SplObserver接口和SplSubject接口。
+如果我们需要实现观察者模式，仅需要实现这两个接口即可。并且这两个接口定义在模块初始化的方法中。
+除了声明标准的接口函数，他们什么也没有做。
+这只是观察者模式的标准，具体的更新操作，添加操作等还是需要我们去实现。
+（有些不清楚作者为何在观察者模式的文件中放入其它类的实现，并且貌似没有什么直接的联系。难道是因为是同一个作者的原因？）
+
+### 迭代器
+
+SPL提供了大量的迭代器，适用于各种应用场景，遍历不同的对象。
+包括可以遍历时删除或修改元素的值或key（ArrayIterator）、空迭代器（EmptyIterator）、可以实现多迭代器遍历的MultipleIterator、文件目录迭代器等等。
+更多关于迭代器的类图以及说明参照： [SPL-StandardPHPLibrary](http://www.php.net/~helly/php/ext/spl/annotated.html)
+
+
+[php-life-cycle-and-zend-engine]:         ?p=chapt02/02-01-php-life-cycle-and-zend-engine

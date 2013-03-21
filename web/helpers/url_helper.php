@@ -53,6 +53,11 @@ function url_for($url, $absolute=false)
 		if($offset) {
 			$base_url = substr($base_url, 0, -$offset);
 		}
+
+		// SAE hack
+		if(WWW_ROOT_DIR) {
+			$base_url = substr($base_url, 0, -(strlen(WWW_ROOT_DIR) + 1));
+		}
 	}
 
 	$protocal = (isset($_SERVER['HTTP_PORT']) && $_SERVER['HTTP_PORT'] == '443') ? 'https' : 'http';

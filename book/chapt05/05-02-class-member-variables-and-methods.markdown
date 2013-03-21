@@ -283,6 +283,34 @@ the final modifier is allowed only for methods and classes in ..
 此函数会查找ce->function_table列表，在查找到方法后检查方法的访问控制权限，如果不允许访问，则报错，否则返回函数结构体。
 关于访问控制，我们在后面的小节中说明。
 
+## 方法(Function)与函数(Method)的异同
+
+在前面的章节里，笔者介绍了函数的实现，函数与方法的本质是比较相似的，都是将一系列的逻辑放到一个集合里执行, 
+但二者在使用中也存在很多的不同，这里我们讨论一下二者的实现。
+从实现的角度来看，二者内部代码都被最终解释为op_array，其执行是没有区别的（除非使用了$this/self等对象特有的变法或方法）,
+而二者的不同体现在两个方面：一是定义（注册）的实现；二是调用的实现；
+
+###定义（注册）方式的实现
+函数和方法都是在编译阶段注册到compiler_globals变量中的，二者都使用相同的内核处理函数**zend_do_begin_function_declaration()**
+和**zend_do_end_function_declaration()**来完成这一过程。
+二者的内部内容会被最终解释并存储为一个op_codes数组，但编译后“挂载”的位置不同，如下图：
+![图5.2 PHP中函数与方法的注册位置](../images/chapt05/05-02-02-method-funcion.png)
+
+>**NOTE**
+>使用vld等扩展查看OPCODES时，会发现函数和方法定义时的OPCODE都是**ZEND_NOP** 。
+>这是Zend引擎的一个优化，即在编译时进行已经完成定义，不需要在执行时再次定义。
+
+###调用方式的实现
+定义位置的不同，以及性质的不同，决定了方法比函数要进行更多的验证工作，
+方法的调用比函数的调用多一个名为**ZEND_INIT_METHOD_CALL**的OPCODE，
+其作用是把方法注册到execute_data.fbc , 然后就可以使用与函数相同的处理函数
+**ZEND_DO_FCALL_BY_NAME**进行处理。
+
+在**ZEND_DO_FCALL_BY_NAME()**处理函数中，绝大部分的处理没有区别，
+只在一些细节上使用了类似于if (EX(object)){...}来处理一些方法的特性，
+有兴趣的读者可以看一个PHP源码 $PHP_SOURCE/Zend/zend_vm_execute.h  
+中的相关代码。
+
 ## 静态方法和实例方法的小漏洞
 细心的读者应该注意到前面提到静态方法和实例方法都是保存在类结构体zend_class_entry.function_table中，那这样的话，
 Zend引擎在调用的时候是怎么区分这两类方法的，比如我们静态调用实例方法或者实例调用静态方法会怎么样呢？

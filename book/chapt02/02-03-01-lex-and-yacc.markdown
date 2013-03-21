@@ -84,7 +84,7 @@ $PHP_SRC/Zend/zend_language_scanner.l 文件是re2c的规则文件， 所以如�
 >**NOTE**
 >PHP在后续的版本中[可能会使用Lemon作为语法分析器](http://wiki.php.net/rfc/lemon)，
 >[Lemon](http://www.sqlite.org/src/doc/trunk/doc/lemon.html)是SQLite作者为SQLite中SQL所编写的词法分析器。
->Lemno具有线程安全以及可重入等特点，也能提供更直观的错误提示信息。
+>Lemon具有线程安全以及可重入等特点，也能提供更直观的错误提示信息。
 
 Bison和Flex类似，也是使用%%作为分界不过Bison接受的是标记(token)序列，根据定义的语法规则，来执行一些动作，
 Bison使用巴科斯范式([BNF](http://baike.baidu.com/view/1137652.htm))来描述语法。

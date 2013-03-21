@@ -33,8 +33,8 @@
 >由于把svn同步到git会对系统性能造成明显影响，加上社区还没有就到底是否迁移到git达成一致，所以也就停止了更新。
 >目前很多开源软件都开始转向了分布式版本控制系统([DVCS](http://en.wikipedia.org/wiki/Distributed_revision_control))，
 >例如Python语言在转向DVCS时对目前的分布式版本控制系统做了一个[详细的对比](http://www.python.org/dev/peps/pep-0374/)，
->如果以前没有接触过，笔者强烈建议试试这些版本控制软件。</strike>现在Github的同步基本是实时的。
->所以习惯Github基本上可以把Github当做官方版本库了。
+>如果以前没有接触过，笔者强烈建议试试这些版本控制软件。</strike>现在Github的同步是实时的。
+>所以习惯Github的话，基本上可以把Github当做官方版本库了。
 
 ## 2.准备编译环境
 在\*nix环境下，需要安装编译构建环境。如果你用的是Ubuntu或者是用apt做为包管理的系统，可以通过如下命令快速安装：
@@ -42,8 +42,12 @@
 	[bash]
 	sudo apt-get install build-essential
 
-如果你使用的是Mac OS，则需要安装Xcode。Xcode可以在Mac OS X的安装盘中找到，如果你有Apple ID的话，
+如果你使用的是Mac OS X，则需要安装Xcode。Xcode可以在Mac OS X的安装盘中找到，如果你有Apple ID的话，
 也可以登陆苹果开发者网站<http://developer.apple.com/>下载。
+
+>**NOTE**
+>如果你不愿意下载庞大的Xcode，也可以去<https://github.com/kennethreitz/osx-gcc-installer>下载安装包，
+>只安装所需的命令行工具。
 
 ## 3. 编译
 下一步可以开始编译了，本文只简单介绍基本的编译过程，不包含Apache的PHP支持以及Mysql等模块的编译。
@@ -57,13 +61,13 @@
 执行完以后就可以开始configure了，configure有很多的参数，比如指定安装目录，是否开启相关模块等选项：
 
 >**NOTE**
->有的系统自带的`autoconf`程序版本会有Bug，可能导致扩展的配置无法更新，如果在执行./buildconf时
->报错，可以更具出错信息安装合适版本的autoconf工具。
+>有的系统自带的`autoconf`程序版本会有Bug，可能导致扩展的配置无法更新，如果在执行`./buildconf`时
+>报错，可以根据出错信息安装合适版本的autoconf工具。
 	
 	[bash]
 	./configure --help # 查看可用参数
 
-为了尽快得到可以测试的环境，我们仅编译一个最精简的PHP。通过执行 ./configure --disable-all来进行配置。
+为了尽快得到可以测试的环境，我们仅编译一个最精简的PHP。通过执行 `./configure --disable-all`来进行配置。
 以后如果需要其他功能可以重新编译。如果configure命令出现错误，可能是缺少PHP所依赖的库，各个系统的环境可能不一样。
 出现错误可根据出错信息上网搜索。 直到完成configure。configure完成后我们就可以开始编译了。 
 
@@ -87,8 +91,11 @@
 
 后续的学习中可能会需要重复configure make 或者 make && make install 这几个步骤。
 
+## Windows环境的编译
+Windows环境下的编译可以参考官方Wiki的说明：<https://wiki.php.net/internals/windows/stepbystepbuild>
+
 ## 推荐书籍和参考
-* linuxsir.org的make介绍 <http://www.linuxsir.org/main/doc/gnumake/GNUmake_v3.80-zh_CN_html/index.html>
+*  [Gnu Make中文书册](http://www.yayu.org/book/gnu_make/index.html)
 * 《Autotools A Practioner's Guide》
 
 [how-to-contribute]: ?p=D-how-to-contribute

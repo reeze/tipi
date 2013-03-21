@@ -48,7 +48,7 @@ PHP开始执行以后会经过两个主要的阶段：处理请求之前的开�
 	}
 
 请求处理完后就进入了结束阶段，一般脚本执行到末尾或者通过调用exit()或die()函数，
-PHP都将进入结束阶段。和开始阶段对应，结束阶段也分为两个环节，一个在请求结束后停用模块(RSHUWDOWN，对应RINIT)，
+PHP都将进入结束阶段。和开始阶段对应，结束阶段也分为两个环节，一个在请求结束后停用模块(RSHUTDOWN，对应RINIT)，
 一个在SAPI生命周期结束（Web服务器退出或者命令行脚本执行完毕退出）时关闭模块(MSHUTDOWN，对应MINIT)。
 
 	[c]
@@ -85,9 +85,9 @@ CLI/CGI模式的PHP属于单进程的SAPI模式。这类的请求在处理一次
 这里的常量是PHP自己的一些常量，这些常量要么是硬编码在程序中,比如PHP_VERSION，要么是写在配置头文件中，
 比如PEAR_EXTENSION_DIR，这些是写在config.w32.h文件中。
 
-* **初始化ZEND引擎和核心组件**
+* **初始化Zend引擎和核心组件**
 
-前面提到的zend_startup函数的作用就是初始化ZEND引擎，这里的初始化操作包括内存管理初始化、
+前面提到的zend_startup函数的作用就是初始化Zend引擎，这里的初始化操作包括内存管理初始化、
 全局使用的函数指针初始化（如前面所说的zend_printf等），对PHP源文件进行词法分析、语法分析、
 中间代码执行的函数指针的赋值，初始化若干HashTable（比如函数表，常量表等等），为ini文件解析做准备，
 为PHP源文件解析做准备，注册内置函数（如strlen、define等），注册标准常量（如E_ALL、TRUE、NULL等）、注册GLOBALS全局变量等。
@@ -155,7 +155,7 @@ php_disable_classes函数用来禁用PHP的一些类。这些被禁用的类来�
 在处理了文件相关的内容，PHP会调用php_request_startup做请求初始化操作。
 请求初始化操作，除了图中显示的调用每个模块的请求初始化函数外，还做了较多的其它工作，其主要内容如下：
 
-* **激活ZEND引擎**
+* **激活Zend引擎**
 
 gc_reset函数用来重置垃圾收集机制，当然这是在PHP5.3之后才有的。
 
@@ -239,9 +239,9 @@ PHP关闭请求的过程是一个若干个关闭操作的集合，这个集合�
 
 sapi_flush将最后的内容刷新出去。其调用的是sapi_module.flush，在CLI模式下等价于fflush函数。
 
-* **关闭ZEND引擎**
+* **关闭Zend引擎**
 
-zend_shutdown将关闭ZEND引擎。
+zend_shutdown将关闭Zend引擎。
 
 此时对应图中的流程，我们应该是执行每个模块的关闭模块操作。
 在这里只有一个zend_hash_graceful_reverse_destroy函数将module_registry销毁了。

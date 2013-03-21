@@ -148,7 +148,7 @@ IS_NULL、IS_BOOL、IS_LONG、IS_DOUBLE、IS_STRING、IS_ARRAY、IS_OBJECT和IS_
 </tbody>
 </table>
 
-* 字符串Sting
+* 字符串String
 
 字符串的类型标示和其他数据类型一样，不过在存储字符串时多了一个字符串长度的字段。
 
