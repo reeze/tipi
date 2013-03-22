@@ -223,7 +223,7 @@ PHP源码中大量使用了宏操作，比如PHP5.3新增加的垃圾收集机�
             char *docref_root;  // 如果打开了html_errors指令，PHP将会在出错信息上显示超连接，
             char *docref_ext;   //指定文件的扩展名(必须含有’.')。
 
-            zend_bool html_errors;  //否在出错信息中使用HTML标记。
+            zend_bool html_errors;  //是否在出错信息中使用HTML标记。
             zend_bool xmlrpc_errors;   
 
             long xmlrpc_error_number;
