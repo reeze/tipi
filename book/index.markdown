@@ -1,5 +1,7 @@
 #目录
 
+## 第一部分 基本原理
+
 - [第一章 准备工作和背景知识][prepare-and-background]
 	* [第一节 环境搭建][build-env]
 	* [第二节 源码布局及阅读方法][code-structure]
@@ -33,7 +35,6 @@
 		+ [global语句][var-global]
 	* [第七节 数据类型转换][type-cast]
 	* [第八节 小结][03-summary]
-
 
 - [第四章 函数的实现][function]
     * [第一节 函数的内部结构][function-struct-overview]
@@ -84,31 +85,45 @@
 	* [第二节 线程、进程，并行，并发][thread-process-and-concurrent]
 	* [第三节 PHP中的线程安全][thread-safe-in-php]
 
-- 第九章 错误和异常处理
+- [第九章 错误和异常处理][error-and-exception-handle]
+	* [第一节 错误和异常]
+	* [第二节 错误及其处理]
+	* [第三节 异常]
+		+ 实现
+		+ 执行流
+		+ 处理
 
-- 第十章 文件和流
+- [第十章 输出缓存 Output Buffer][output-buffer]
+	* [第一节 输出缓冲及相关函数]
+	* [第二节 输出缓存应用]
+	* [第三接 输出缓存实现原理]
 
-- 第十一章 网络编程
+-------------
+## 第二部分 扩展开发及实践部分
 
-- 第十二章 配置文件
-
-- [第十三章 扩展开发][extension-dev]
+- [第十一章 扩展开发][extension-dev]
 	* 第一节 扩展开发概述
 
-- 第十四章 PHP新功能
+- 第十二章 文件和流
+
+- 第十三章 网络编程
+
+- 第十四章 配置文件
+
+- 第十五章 PHP新功能
 	* 命名空间(Namespace)
 	* 匿名函数
 	* 闭包
 	* Traits
 	* Generator
 
-- 第十五章 CPHP以外: PHP编译器
+- 第十六章 CPHP以外: PHP编译器
 	* HipHop
 	* phc
 	* Roadsend
 	* Phalanger
 
-- 第十六章 开发实例
+- 第十七章 开发实例
 	* 第一节 opcode缓存扩展
 	* 第二节 性能监控及优化扩展
 	* 第三节 扩展PHP语法,为PHP增加语法特性
