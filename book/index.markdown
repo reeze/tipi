@@ -79,7 +79,10 @@
 	* [第四节 源码的加密解密实现][source-code-encrypt]
 	* [第五节 小结][07-summary]
 
-- 第八章 线程安全
+- [第八章 线程安全][thread-safe]
+	* [第一节 线程安全概述][notes-on-thread-safe]
+	* [第二节 线程、进程，并行，并发][thread-process-and-concurrent]
+	* [第三节 PHP中的线程安全][thread-safe-in-php]
 
 - 第九章 错误和异常处理
 
@@ -97,16 +100,26 @@
 	* 匿名函数
 	* 闭包
 	* Traits
+	* Generator
 
 - 第十五章 CPHP以外: PHP编译器
 	* HipHop
 	* phc
 	* Roadsend
+	* Phalanger
 
 - 第十六章 开发实例
 	* 第一节 opcode缓存扩展
 	* 第二节 性能监控及优化扩展
 	* 第三节 扩展PHP语法,为PHP增加语法特性
+
+- 附录
+	* 附录A: PHP及Zend API
+	* 附录B PHP的历史
+	* 附录C VLD扩展使用指南
+	* 附录D 怎样为PHP贡献
+	* 附录E phpt测试文件说明
+	* 附录F PHP5.4.0新功能升级解析
 
 [prepare-and-background]: 	?p=chapt01/01-00-prepare-and-background
 [build-env]: 				?p=chapt01/01-01-php-env-building
