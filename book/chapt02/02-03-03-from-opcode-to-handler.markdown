@@ -35,7 +35,7 @@
 	}
 
 在执行的过程中，EX(opline)->handler（展开后为  *execute_data->opline->handler）存储了处理当前操作的函数指针。
-使用gdb调试，在execute函数处增加断电，使用p命令可以打印出类似这样的结果：
+使用gdb调试，在execute函数处增加断点，使用p命令可以打印出类似这样的结果：
 
 	[c]
 	(gdb) p *execute_data->opline->handler
