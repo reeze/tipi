@@ -94,8 +94,7 @@ nTableSize字段用于标示哈希表的容量，哈希表的初始容量最小�
 >如果是普通数字进行了二进制与之后会影响哈希值的结果。那么哈希函数计算的值的平均分布就可能出现影响。
 
 设置好哈希表大小之后就需要为哈希表申请存储数据的空间了，如上面初始化的代码，
-根据是否需要持久保存而条用了不同的内存申请方法，是需要需要持久体现的是在前面PHP生命周期里介绍的：
-持久内容能在多个请求之间可访问，而如果是非持久存储则会在请求结束时释放占用的空间。
+根据是否需要持久保存而调用了不同的内存申请方法。如前面PHP生命周期里介绍的,是否需要持久保存体现在：持久内容能在多个请求之间访问，而非持久存储是会在请求结束时释放占用的空间。
 具体内容将在内存管理章节中进行介绍。 
 
 HashTable中的nNumOfElements字段很好理解，每插入一个元素或者unset删掉元素时会更新这个字段。
@@ -212,60 +211,61 @@ HashTable结构体中的pListHead和pListTail则维护整个哈希表的头元�
 其最终都是调用_zend_hash_add_or_update函数完成，这在面向对象编程中相当于两个公有方法和一个公共的私有方法的结构，
 以实现一定程度上的代码复用。
 
+	[c]
 
-ZEND_API int _zend_hash_add_or_update(HashTable *ht, const char *arKey, uint nKeyLength, void *pData, uint nDataSize, void **pDest, int flag ZEND_FILE_LINE_DC)
-{
-	 //...省略变量初始化和nKeyLength <=0 的异常处理
+	ZEND_API int _zend_hash_add_or_update(HashTable *ht, const char *arKey, uint nKeyLength, void *pData, uint nDataSize, void **pDest, int flag ZEND_FILE_LINE_DC)
+	{
+		 //...省略变量初始化和nKeyLength <=0 的异常处理
 
-	h = zend_inline_hash_func(arKey, nKeyLength);
-	nIndex = h & ht->nTableMask;
+		h = zend_inline_hash_func(arKey, nKeyLength);
+		nIndex = h & ht->nTableMask;
 
-	p = ht->arBuckets[nIndex];
-	while (p != NULL) {
-		if ((p->h == h) && (p->nKeyLength == nKeyLength)) {
-			if (!memcmp(p->arKey, arKey, nKeyLength)) { //  更新操作
-				if (flag & HASH_ADD) {
-					return FAILURE;
+		p = ht->arBuckets[nIndex];
+		while (p != NULL) {
+			if ((p->h == h) && (p->nKeyLength == nKeyLength)) {
+				if (!memcmp(p->arKey, arKey, nKeyLength)) { //  更新操作
+					if (flag & HASH_ADD) {
+						return FAILURE;
+					}
+					HANDLE_BLOCK_INTERRUPTIONS();
+
+					//..省略debug输出
+					if (ht->pDestructor) {
+						ht->pDestructor(p->pData);
+					}
+					UPDATE_DATA(ht, p, pData, nDataSize);
+					if (pDest) {
+						*pDest = p->pData;
+					}
+					HANDLE_UNBLOCK_INTERRUPTIONS();
+					return SUCCESS;
 				}
-				HANDLE_BLOCK_INTERRUPTIONS();
-
-                //..省略debug输出
-				if (ht->pDestructor) {
-					ht->pDestructor(p->pData);
-				}
-				UPDATE_DATA(ht, p, pData, nDataSize);
-				if (pDest) {
-					*pDest = p->pData;
-				}
-				HANDLE_UNBLOCK_INTERRUPTIONS();
-				return SUCCESS;
 			}
+			p = p->pNext;
 		}
-		p = p->pNext;
-	}
 
-	p = (Bucket *) pemalloc(sizeof(Bucket) - 1 + nKeyLength, ht->persistent);
-	if (!p) {
-		return FAILURE;
-	}
-	memcpy(p->arKey, arKey, nKeyLength);
-	p->nKeyLength = nKeyLength;
-	INIT_DATA(ht, p, pData, nDataSize);
-	p->h = h;
-	CONNECT_TO_BUCKET_DLLIST(p, ht->arBuckets[nIndex]); //Bucket双向链表操作
-	if (pDest) {
-		*pDest = p->pData;
-	}
+		p = (Bucket *) pemalloc(sizeof(Bucket) - 1 + nKeyLength, ht->persistent);
+		if (!p) {
+			return FAILURE;
+		}
+		memcpy(p->arKey, arKey, nKeyLength);
+		p->nKeyLength = nKeyLength;
+		INIT_DATA(ht, p, pData, nDataSize);
+		p->h = h;
+		CONNECT_TO_BUCKET_DLLIST(p, ht->arBuckets[nIndex]); //Bucket双向链表操作
+		if (pDest) {
+			*pDest = p->pData;
+		}
 
-	HANDLE_BLOCK_INTERRUPTIONS();
-	CONNECT_TO_GLOBAL_DLLIST(p, ht);    // 将新的Bucket元素添加到数组的链接表的最后面
-	ht->arBuckets[nIndex] = p;
-	HANDLE_UNBLOCK_INTERRUPTIONS();
+		HANDLE_BLOCK_INTERRUPTIONS();
+		CONNECT_TO_GLOBAL_DLLIST(p, ht);    // 将新的Bucket元素添加到数组的链接表的最后面
+		ht->arBuckets[nIndex] = p;
+		HANDLE_UNBLOCK_INTERRUPTIONS();
 
-	ht->nNumOfElements++;
-	ZEND_HASH_IF_FULL_DO_RESIZE(ht);		/*  如果此时数组的容量满了，则对其进行扩容。*/
-	return SUCCESS;
-}
+		ht->nNumOfElements++;
+		ZEND_HASH_IF_FULL_DO_RESIZE(ht);		/*  如果此时数组的容量满了，则对其进行扩容。*/
+		return SUCCESS;
+	}
 
 整个写入或更新的操作流程如下：
 
