@@ -1,0 +1,6 @@
+*.log
+*.o
+*.lo
+*.la
+.libs
+*.cache
