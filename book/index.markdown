@@ -25,6 +25,7 @@
 		+ [哈希表(HashTable)][variables-hashtable]
 		+ [PHP的哈希表实现][variables-hashtable-in-php]
 		+ [链表简介][variables-zend-llist]
+		+ [堆栈的实现][zend-stack]
     * [第二节 常量][const-var]
 	* [第三节 预定义变量][pre-defined-variable]
 	* [第四节 静态变量][static-var]
