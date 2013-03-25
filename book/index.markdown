@@ -111,23 +111,29 @@
 
 - 第十四章 配置文件
 
-- 第十五章 PHP新功能
+- 第十五章 开发实例
+	* 第一节 opcode缓存扩展
+	* 第二节 性能监控及优化扩展
+	* 第三节 扩展PHP语法,为PHP增加语法特性
+
+-------------
+## 第三部分 Better Explain
+- 第十六章 PHP新功能
 	* 命名空间(Namespace)
 	* 匿名函数
 	* 闭包
 	* Traits
 	* Generator
 
-- 第十六章 CPHP以外: PHP编译器
+- 第十七章 CPHP以外: PHP编译器
 	* HipHop
 	* phc
 	* Roadsend
 	* Phalanger
 
-- 第十七章 开发实例
-	* 第一节 opcode缓存扩展
-	* 第二节 性能监控及优化扩展
-	* 第三节 扩展PHP语法,为PHP增加语法特性
+- 第十八章 PHP各版本中的那些变动及优化
+	* 哈希表的优化
+	* 安全模式为什么去掉了
 
 - 附录
 	* 附录A: PHP及Zend API
