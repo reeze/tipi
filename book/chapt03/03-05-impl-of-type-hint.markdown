@@ -54,7 +54,7 @@ instanceof 用来测定一个给定的对象是否来自指定的对象类。ins
     can only be an array or NULL
 
 为什么为很快看到报错呢？
-因为默认值的检测过程发生在成中间代码生成阶段，与运行时的报错不同，它还没有生成中间代码，也没有执行中间代码的过程。
+因为默认值的检测过程发生在中间代码生成阶段，与运行时的报错不同，它还没有生成中间代码，也没有执行中间代码的过程。
 在Zend/zend_language_parser.y文件中，我们找到函数的参数列表在编译时都会调用zend_do_receive_arg函数。
 而在这个函数的参数列表中，第5个参数（ znode *class_type）与我们这节所要表述的类型提示密切相关。
 这个参数的作用是声明类型提示中的类型，这里的类型有三种：
@@ -109,7 +109,7 @@ instanceof 用来测定一个给定的对象是否来自指定的对象类。ins
                 return zend_verify_arg_error(zf, arg_num, cur_arg_info, need_msg, class_name, "none", "" TSRMLS_CC);
             }
             if (Z_TYPE_P(arg) == IS_OBJECT) { // 既然是类对象参数, 传递的参数需要是对象类型
-				// 下面检查这个对象是否是参数提示类的实例对象, 这里是允许传递子类实力对象
+				// 下面检查这个对象是否是参数提示类的实例对象, 这里是允许传递子类实例对象
                 need_msg = zend_verify_arg_class_kind(cur_arg_info, fetch_type, &class_name, &ce TSRMLS_CC);
                 if (!ce || !instanceof_function(Z_OBJCE_P(arg), ce TSRMLS_CC)) {
                     return zend_verify_arg_error(zf, arg_num, cur_arg_info, need_msg, class_name, "instance of ", Z_OBJCE_P(arg)->name TSRMLS_CC);
