@@ -122,14 +122,14 @@ zend_do_fetch_static_variable函数的作用就是生成opcode，定义如下：
 ## 4. 执行中间代码
 
 opcode的编译阶段完成后就开始opcode的执行了。
-在Zend/zend_vm_opcodes.h文件中包含所有opcode的宏定义，这些宏丙没有特殊含义，只是作为opcode的唯一标示，
+在Zend/zend_vm_opcodes.h文件中包含所有opcode的宏定义，这些宏并没有特殊含义，只是作为opcode的唯一标示，
 包含本例中相关的如下两个宏的定义：
 
     [c]
     #define ZEND_FETCH_W                          83
     #define ZEND_ASSIGN_REF                       39
 
-前面第二章 [脚本的执行一节][from-op-code-to-handler]介绍了根据opcode查找到相应处理函数的方法。
+前面第二章 [脚本的执行一节][from-opcode-to-handler]介绍了根据opcode查找到相应处理函数的方法。
 通过中间代码调用映射方法计算得此时ZEND_FETCH_W 对应的操作为ZEND_FETCH_W_SPEC_CV_HANDLER。其代码如下：
 
     [c]
@@ -212,7 +212,7 @@ opcode的编译阶段完成后就开始opcode的执行了。
 	}
 
 由上可以看到zend_op_array中包含function_name字段，也就是当前函数的名称。
-再看看获取当前符号标的函数：
+再看看获取当前符号表的函数：
 
     [c]
     static inline HashTable *zend_get_target_symbol_table(const zend_op *opline, const temp_variable *Ts, int type, const zval *variable TSRMLS_DC)
