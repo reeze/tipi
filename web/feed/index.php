@@ -1,6 +1,7 @@
 <?php
 
 require_once "../lib/common.inc.php";
+require_once "../lib/FeedWriter/FeedItem.php";
 require_once "../lib/FeedWriter/FeedWriter.php";
 require_once "../lib/SimpieView.php";
 require_once "../models/News.php";
