@@ -43,7 +43,7 @@ class PageCache
 
 		$output 	= $this->cache->get($this->key);
 
-		if($output === false) {
+		if(!$output) {
 			// 将输出缓存起来
 			register_shutdown_function(array($this, 'end'));
 			ob_start();
@@ -67,7 +67,7 @@ class PageCache
 		// 缓存输出的头信息
 		// 但是忽略404 500 的请求request don't cache it 
 		$headers = headers_list();
-		if(self::$enable && !in_array("Status: 404 Not Found", $headers) && !in_array("Status: 500 Server Internal Error", $headers)) {
+		if(strlen($output) > 0 && self::$enable && !in_array("Status: 404 Not Found", $headers) && !in_array("Status: 500 Server Internal Error", $headers)) {
 			if(!empty($headers)) {
 				$this->cache->set($this->key . 'headers', json_encode($headers));
 			}
