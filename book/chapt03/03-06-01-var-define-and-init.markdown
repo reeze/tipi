@@ -13,7 +13,7 @@
 使用VLD扩展查看其生成的中间代码为 **ASSIGN**。
 依此，我们找到其执行的函数为 **ZEND_ASSIGN_SPEC_CV_CONST_HANDLER**。
 （找到这个函数的方法之一：$a为CV，10为CONST，操作为ASSIGN。
-其他方法可以参见[附：找到Opcode具体实现][opcode-handler]）
+其他方法可以参见[opcode处理函数查找][opcode-handler]）
 CV是PHP在5.1后增加的一个在编译期的缓存。如我们在使用VLD查看上面的PHP代码生成的中间代码时会看到：
 
     [c]
@@ -238,7 +238,7 @@ unset函数并不是一个真正意义上的函数，它是一种语言结构。
              3      UNSET_VAR                                                !0
              4    > RETURN                                                   1
 
-去掉关于赋值的中间代码，得到unset函数生成的中间代码为 **UNSET_VAR**，由于我们unse的是一个变量，
+去掉关于赋值的中间代码，得到unset函数生成的中间代码为 **UNSET_VAR**，由于我们unset的是一个变量，
 在Zend/zend_vm_execute.h文件中查找到其最终调用的执行中间代码的函数为： **ZEND_UNSET_VAR_SPEC_CV_HANDLER**
 关键代码代码如下：
 
@@ -268,7 +268,7 @@ unset函数并不是一个真正意义上的函数，它是一种语言结构。
 
 程序会先获取目标符号表，这个符号表是一个HashTable，然后将我们需要unset掉的变量从这个HashTable中删除。
 如果对HashTable的元素删除操作成功，程序还会对EX(CVs)内存储的值进行清空操作。
-以缓存机制来解释，在删除原始数据后，程序也会删除相对应的缓存内容，以免用户获取到赃数据。
+以缓存机制来解释，在删除原始数据后，程序也会删除相对应的缓存内容，以免用户获取到脏数据。
 
 
 >**NOTE**
