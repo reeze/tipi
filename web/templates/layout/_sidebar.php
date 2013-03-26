@@ -1,4 +1,4 @@
-<div id="feed_subscribe"><a href="<?php echo url_for("/feed/"); ?>">订阅TIPI的更新吧!</a></div>
+<div id="feed_subscribe"><a target="_blank" href="<?php echo url_for("/feed/"); ?>">订阅TIPI的更新吧!</a></div>
 <ul>
     <?php
     foreach ($chapt_list as $chapt) {
