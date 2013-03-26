@@ -37,3 +37,7 @@ TIPI项目是一个自发项目,	项目主要关注PHP的内部实现, 以及PHP
 * HonestQiao <http://www.wapm.cn/>  honestqiao@gmail.com
 
 [project-url]: http://www.php-internal.com/
+
+## 贡献者
+
+感谢这些贡献者：<https://github.com/reeze/tipi/contributors>
