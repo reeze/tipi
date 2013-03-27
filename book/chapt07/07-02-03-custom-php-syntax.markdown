@@ -89,7 +89,7 @@ zend_language_parser.y 文件，使用r2ec&flex来编译。
 第二步，在Zend/zend_compile.c中加入我们对OPCODE的处理，也就是将代码操作转化为op_array放入到opline中：
 
 	[c]
-	void zend_do_variable_name(znode *result, znode *variable TSRMLS_DC) /* {{{ */
+	void zend_do_variable_name(znode *result, znode *variable TSRMLS_DC)
 	{
 		// 生成一条zend_op
 		zend_op *opline = get_next_op(CG(active_op_array) TSRMLS_CC);

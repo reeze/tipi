@@ -27,7 +27,8 @@ class News extends MarkdownPage
 		$news_pages = array();
 		foreach($news as $page) {
 			// get page name
-			$page = array_pop(explode('/', $page));
+			$path_arr = explode('/', $page);
+			$page = array_pop($path_arr);
 			list($page_name) = explode('.', $page);
 			$news_pages[] = new self($page_name);
 		}
