@@ -13,7 +13,7 @@ $(function() {
 		// hide all other dialog_boxes
 		$(".dialog_box").hide();
 
-		pannel = $('#' + pannel_id);
+		var pannel = $('#' + pannel_id);
 
 		var width = $('#book_item_tools').width();
 		var right = width - ($(button).position().left + $(button).width());
