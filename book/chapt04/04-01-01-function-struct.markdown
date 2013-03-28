@@ -110,7 +110,7 @@ ZEND_INTERNAL_FUNCTION函数是由扩展、PHP内核、Zend引擎提供的内部
 * 调用方法，handler字段. 如果是ZEND_INTERNAL_FUNCTION， 那么ZE就调用zend_execute_internal，通过zend_internal_function.handler来执行这个函数。
   而用户自定义的函数需要生成中间代码，然后通过中间代码映射到相对就把方法调用。
 * 内置函数在结构中多了一个module字段，表示属于哪个模块。不同的扩展其模块不同。
-* type字段，在用户自定义的函数中，type字段几科无用，而内置函数中的type字段作为几种内部函数的区分。
+* type字段，在用户自定义的函数中，type字段几乎无用，而内置函数中的type字段作为几种内部函数的区分。
 
 ## 3.变量函数
 PHP 支持变量函数的概念。这意味着如果一个变量名后有圆括号，PHP 将寻找与变量的值同名的函数，并且将尝试执行它。

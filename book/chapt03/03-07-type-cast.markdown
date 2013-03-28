@@ -17,14 +17,14 @@ PHP变量之间的数据类型转换有两种: 隐式和显式转换。
 看一段代码：
 
     [php]
-    $string = "To love someone sincerely means to love all the people,  to love the world and life,  too."
+    $string = "To love someone sincerely means to love all the people,  to love the world and life,  too.";
     $integer = 10;
     $string = $integer;
 
 上面的代码，当执行完第三行代码，$string变量的类型就是一个整形了。
 通过VLD扩展可以查到第三次赋值操作的中间代码及操作数的类型，再找到赋值的最后实现为**zend_assign_to_variable**函数。
 这在前面的小节中已经详细介绍过了。我们这个例子是很简单的一种赋值，在源码中是直接将$string的ZVAL容器的指针指向$integer变量指向的指针，
-并将$integer的引用计数加1。这个操作在本质上改变了$string变量的内容，而原有的变量内容则被垃圾收集机制回收。关于赋值的具体细节，请返回上一节查看。
+并将$integer的引用计数加1。这个操作在本质上改变了$string变量的内容，而原有的变量内容则被垃圾收集机制回收。关于赋值的具体细节，请返回[上一节(变量的赋值和销毁)][var-define-and-init]查看。
 
 2．**运算式结果对变量的赋值操作**
 我们常说的隐式类型转换是将一个表达式的结果赋值给一个变量，在运算的过程中发生了隐式的类型转换。
@@ -167,7 +167,7 @@ PHP中允许的强制类型有:
 
 转换为NULL非常简单，对变量进行析构操作，然后将数据类型设为IS_NULL即可。
 可能读者会好奇(unset)$a和unset($a)这两者有没有关系，其实并没有关系，
-前者是将变量$a的类型变为NULL，这只是一个类型的变化，而后者是将这个变量释放，释放后当前作用域内该变量及不存在了。
+前者是将变量$a的类型变为NULL，这只是一个类型的变化，而后者是将这个变量释放，释放后当前作用域内该变量就不存在了。
 
 除了上面提到的与C语言很像，在其它语言中也经常见到的强制数据转换，PHP中有一个极具PHP特色的强制类型转换。
 PHP的标准扩展中提供了两个有用的方法settype()以及gettype()方法，前者可以动态的改变变量的数据类型，
@@ -218,4 +218,4 @@ gettype()方法则是返回变量的数据类型。在ext/standard/type.c文件�
 具体的转换规则由各个类型的处理函数处理，不管是自动还是强制类型转换，最终都会调用这些内部转换方法，
 这和前面的强制类型转换在本质上是一样的。
 
-
+[var-define-and-init]: ?p=chapt03/03-06-01-var-define-and-init
