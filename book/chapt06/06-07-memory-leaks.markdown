@@ -4,4 +4,8 @@
 
 ## 内存泄露的debug及工具
 
+### --enable-debug
+
+### valgrind --leak-check=full
+
 ## PHP的unclean shutown
