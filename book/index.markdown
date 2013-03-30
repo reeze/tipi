@@ -222,3 +222,5 @@
 [opcode-exec]:              ?p=chapt07/07-03-opcode-exec
 [source-code-encrypt]:      ?p=chapt07/07-04-source-code-encrypt
 [07-summary]:				?p=chapt07/07-05-summary
+
+[thread-safe-in-php]:       ?p=chapt08/08-03-zend-thread-safe-in-php
