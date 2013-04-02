@@ -137,12 +137,12 @@
 	* 安全模式为什么去掉了
 
 - 附录
-	* 附录A: PHP及Zend API
-	* 附录B PHP的历史
-	* 附录C VLD扩展使用指南
-	* 附录D 怎样为PHP贡献
-	* 附录E phpt测试文件说明
-	* 附录F PHP5.4.0新功能升级解析
+	* [附录A PHP及Zend API][appendix-a]
+	* [附录B PHP的历史][appendix-b]
+	* [附录C VLD扩展使用指南][appendix-c]
+	* [附录D 怎样为PHP贡献][appendix-d]
+	* [附录E phpt测试文件说明][appendix-e]
+	* [附录F PHP5.4.0新功能升级解析][appendix-f]
 
 [prepare-and-background]: 	?p=chapt01/01-00-prepare-and-background
 [build-env]: 				?p=chapt01/01-01-php-env-building
@@ -224,3 +224,10 @@
 [07-summary]:				?p=chapt07/07-05-summary
 
 [thread-safe-in-php]:       ?p=chapt08/08-03-zend-thread-safe-in-php
+
+[appendix-a]:				?p=A-PHP-Zend-API
+[appendix-b]:				?p=B-PHP-Versions-and-History
+[appendix-c]:				?p=C-php-vld
+[appendix-d]:				?p=D-how-to-contribute
+[appendix-e]:				?p=E-phpt-file
+[appendix-f]:				?p=F-upgrade-to-php-5-4-explain
