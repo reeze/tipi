@@ -119,20 +119,37 @@
 
 -------------
 ## 第三部分 Better Explain
+<<<<<<< HEAD
 - 第十六章 PHP新功能
+=======
+- 第十六章 PHP语言特性的实现
+    * [循环和迭代]
+        + foreach的实现
+    * [控制结构]
+
+- 第十七章 PHP新功能
+>>>>>>> 2ae280455baa74c2ef0c6b1a5f7b8e5a0b162d08
     * 命名空间(Namespace)
     * 匿名函数
     * 闭包
     * Traits
     * Generator
 
+<<<<<<< HEAD
 - 第十七章 CPHP以外: PHP编译器
+=======
+- 第十八章 CPHP以外: PHP编译器
+>>>>>>> 2ae280455baa74c2ef0c6b1a5f7b8e5a0b162d08
     * HipHop
     * phc
     * Roadsend
     * Phalanger
 
+<<<<<<< HEAD
 - 第十八章 PHP各版本中的那些变动及优化
+=======
+- 第十九章 PHP各版本中的那些变动及优化
+>>>>>>> 2ae280455baa74c2ef0c6b1a5f7b8e5a0b162d08
     * 哈希表的优化
     * 安全模式为什么去掉了
 
