@@ -3,7 +3,8 @@ error_reporting(E_ALL ^ E_NOTICE);
 date_default_timezone_set('Asia/Shanghai');
 
 // 应用上线的地址
-define('ONLINE_HOSTNAME', 'www.php-internal.com');
+define('OLD_DOMAIN', 'php-internal.com');
+define('ONLINE_HOSTNAME', 'www.php-internals.com');
 
 // 从Github获取章节修订历史的接口信息
 define('GITHUB_API_USER', 'reeze');
@@ -32,3 +33,10 @@ define('TIPI_ROOT_PATH', dirname(ROOT_PATH));
 
 /* TIPI的缓存保存目录，默认为临时目录，如果有需要请修改为自己设置的目录 */
 define('TIPI_CACHE_DIR', dirname(__FILE__) . '/tmp');
+
+/* Redirect all of the old request */
+if(strpos($_SERVER['HTTP_HOST'], OLD_DOMAIN) !== false) {
+	$location = "http://" . ONLINE_HOSTNAME . $_SERVER['REQUEST_URI'];
+	header("Location: $location", 301);
+	exit();
+}
