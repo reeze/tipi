@@ -13,7 +13,7 @@
 					<a href='<?php echo url_for("/about/"); ?>' class='last'>关于</a>
 				</div>
 				<div class="copyright-footer">
-				&copy; <?php echo date("Y"); ?> TIPI-Team <a href='http://www.php-internal.com'>http://www.php-internal.com/</a> All rights reserved.
+				&copy; <?php echo date("Y"); ?> TIPI-Team <a href='http://www.php-internals.com'>http://www.php-internals.com/</a> All rights reserved.
 				</div>
 			</div>
 			<div id="copyright" class='fr'>

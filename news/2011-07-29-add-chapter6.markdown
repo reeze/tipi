@@ -15,6 +15,6 @@
 
 TIPI团队
 
-这次发布时我们提供了CHM版本的[下载](http://www.php-internal.com/downloads/)，
+这次发布时我们提供了CHM版本的[下载](http://www.php-internals.com/downloads/)，
 
-[TIPI入口>>>](http://www.php-internal.com/book/)
+[TIPI入口>>>](http://www.php-internals.com/book/)

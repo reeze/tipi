@@ -41,6 +41,6 @@ class TIPI
 
 	protected static function getHomeUrlFor($type)
 	{
-		return url_for("http://www.php-internal.com/?v=" . self::getVersion() . "&ref=$type");	
+		return url_for("http://www.php-internals.com/?v=" . self::getVersion() . "&ref=$type");	
 	}
 }
