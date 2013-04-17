@@ -37,6 +37,6 @@ define('TIPI_CACHE_DIR', dirname(__FILE__) . '/tmp');
 /* Redirect all of the old request */
 if(strpos($_SERVER['HTTP_HOST'], OLD_DOMAIN) !== false) {
 	$location = "http://" . ONLINE_HOSTNAME . $_SERVER['REQUEST_URI'];
-	header("Location: $location", 301);
+	header("Location: $location", true, 301);
 	exit();
 }
