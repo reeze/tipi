@@ -12,6 +12,8 @@ try
 
 	$page = new BookPage($page_name);
 
+	$chapt_list = BookPage::getChapterList();
+
 	// 线下模式不显示修改时间，因为从Github读取需要的时间太长
 	$page_last_update_time = IN_PROD_MODE ? $page->getLastUpdatedAt(true, "Y-m-d H:h") : false;
 
@@ -24,7 +26,7 @@ try
 	$view->render(array(
 		'title' => $page->getTitle(),
 		'page'  => $page,
-		'chapt_list' => BookPage::getChapterList(),
+		'chapt_list' => $chapt_list,
 		'is_detail_view' => ($page_name != 'index'), // 目录页不需要边栏
 		'page_last_update_time' => $page_last_update_time,
 	));
@@ -48,8 +50,6 @@ catch(PageNotFoundException $e)
 		'book_page' => $page_name,
 		'exception' => $e,
 		'title' 	=> $title,
-		'rev' 		=> $rev,
-		'exception' => $e,
 		'is_detail_view' => true,
 		'chapt_list' => $chapt_list,
 	));
