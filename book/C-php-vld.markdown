@@ -7,8 +7,7 @@
 除了VLD扩展，我们常用的[XDebug扩展](http://xdebug.org/)的也有该牛人的身影。
 
 VLD扩展是一个开源的项目，在[这里](http://pecl.php.net/package/vld/)可以下载到最新的版本，
-虽然最新版本的更新也是一年前的事了。作者没有提供编译好的扩展，Win下使用VC6.0编译生成dll文件，
-可以看笔者的一篇文章([使用VC6.0生成VLD扩展](http://www.phppan.com/2009/09/use-vc6-create-vld-extend/))。
+虽然最新版本的更新也是一年前的事了。作者没有提供编译好的扩展，Win下使用VC6.0编译生成dll文件。
 
 *nix系统下直接configue,make,make install生成。如果遇到问题，请自行Google之。
 
