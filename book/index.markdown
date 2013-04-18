@@ -120,9 +120,9 @@
 -------------
 ## 第三部分 Better Explain
 - 第十六章 PHP语言特性的实现
-    * [循环和迭代]
-        + foreach的实现
-    * [控制结构]
+    * [第一节 循环语句][php-loop]
+        + [foreach的实现][php-foreach]
+    * [第二节 选择语句]
 
 - 第十七章 PHP新功能
     * 命名空间(Namespace)
@@ -230,6 +230,10 @@
 
 [thread-process-and-concurrent]:       ?p=chapt08/08-02-thread-process-and-concurrent
 [thread-safe-in-php]:       ?p=chapt08/08-03-zend-thread-safe-in-php
+
+[php-loop]:                 ?p=chapt16/16-01-00-php-loop
+[php-foreach]:              ?p=chapt16/16-01-01-php-foreach
+
 
 [appendix-a]:        		?p=A-PHP-Zend-API
 [appendix-b]:        		?p=B-PHP-Versions-and-History
