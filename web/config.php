@@ -34,6 +34,8 @@ define('TIPI_ROOT_PATH', dirname(ROOT_PATH));
 /* TIPI的缓存保存目录，默认为临时目录，如果有需要请修改为自己设置的目录 */
 define('TIPI_CACHE_DIR', dirname(__FILE__) . '/tmp');
 
+define('PAGE_CACHE_TIMEOUT', 60 * 60 * 24 * 1); // expire everyday
+
 /* Redirect all of the old request */
 if(strpos($_SERVER['HTTP_HOST'], OLD_DOMAIN) !== false) {
 	$location = "http://" . ONLINE_HOSTNAME . $_SERVER['REQUEST_URI'];
