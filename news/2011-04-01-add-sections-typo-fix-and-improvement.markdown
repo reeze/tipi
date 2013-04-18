@@ -10,6 +10,6 @@ TIPI团队在第一次发布后收到了大量的反馈, 多谢大家的支持, 
 1. 对前几章进行了大量的优化和内容丰富.
 1. 对阅读工具栏工具栏进行了优化,在滚动页面时工具栏将固定在页面最上方,方便读者在页面内进行跳转.
 
-点击[这里进行下载](http://www.php-internal.com/downloads/)。
+点击[这里进行下载](http://www.php-internals.com/downloads/)。
 
 TIPI团队
