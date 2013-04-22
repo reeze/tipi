@@ -8,6 +8,10 @@ body {
 	text-align: center;
 }
 
+/* For Sichuan */
+html{ filter:progid:DXImageTransform.Microsoft.BasicImage(grayscale=1); -webkit-filter: grayscale(100%); }
+img { _filter:progid:DXImageTransform.Microsoft.BasicImage(grayscale=0); -webkit-filter: grayscale(100%); } 
+
 a {
 	color: #1299DA;
 	text-decoration: underline;
