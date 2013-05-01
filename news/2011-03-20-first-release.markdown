@@ -44,7 +44,7 @@
 
 我们需要感谢我们家里的领导，没有有她们的支持，也就没有我们今天的发布，感谢她们的包容，感谢她们的照顾，感谢她们的理解和支持。谢谢！
 
-[tipi]: http://www.php-internal.com/
+[tipi]: http://www.php-internals.com/
 
 
 

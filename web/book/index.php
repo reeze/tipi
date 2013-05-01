@@ -19,7 +19,8 @@ try
 
 	// 如果获取修改时间失败，则先暂时禁用缓存，否则无法重新获取最后修改时间
 	if($page_last_update_time === false) {
-		PageCache::disable();
+		// Do not disable cache for now
+		// PageCache::disable();
 	}
 
 	$view = new SimpieView($page->toHtml(), "../templates/layout/book.php", SimpieView::IS_RAW_TEXT);

@@ -1,0 +1,4 @@
+User-agent: *
+
+# Sitemap files
+Sitemap: http://www.php-internals.com/feed/

@@ -3,17 +3,17 @@
 少年智则国智，少年富则国富，少年强则国强，少年独立则国独立，少年自由则国自由，少年进步则国进步......
 
 各位自认为是儿童的，不是儿童的；扮萌的或已成为大叔的同学，儿童节快乐！
-[TIPI团队](http://www.php-internal.com/team/)选择在这个应该纯粹一点的节日里，发布努力了两个月的成果。
+[TIPI团队](http://www.php-internals.com/team/)选择在这个应该纯粹一点的节日里，发布努力了两个月的成果。
 自最近一次的版本发布（2011-04-01）以来，关注的同学可能会注意到网站上
 没有新的变化，其实这段时间我们并没有减缓TIPI项目的进度，在第一次项目发布之后我们收到了很多的反馈，
 经过团队的讨论，我们决定暂缓新章节的编写，把精力集中在现有章节的改良上。
 总体来讲有如下变化：
 
 * 重构现有章节。将现有一些章节的内容进行了丰富。当然这并不是终点，我们会持续对内容进行优化。
-* 完成了[第五章](http://www.php-internal.com/book/?p=chapt05/05-00-class-and-oop)的编写。上次发布时发布了第五章类的第一二小节，这次我们完成了所有的内容。
+* 完成了[第五章](http://www.php-internals.com/book/?p=chapt05/05-00-class-and-oop)的编写。上次发布时发布了第五章类的第一二小节，这次我们完成了所有的内容。
 
-上次发布时我们提供了PDF版本的[下载](http://www.php-internal.com/releases/RELEASE_2011-06-01_V0.5.9.pdf)，
+上次发布时我们提供了PDF版本的[下载](http://www.php-internals.com/releases/RELEASE_2011-06-01_V0.5.9.pdf)，
 这次的发布没有带来新格式的下载，不过不要着急，
 CHM版本的下载将会在近期提供。
 
-[TIPI入口>>>](http://www.php-internal.com/book/)
+[TIPI入口>>>](http://www.php-internals.com/book/)

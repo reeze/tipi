@@ -55,7 +55,7 @@ self::CONSTANT类似的作用域解析符号(::)，这时的self才会作为指�
 在需要获取类名时会执行zend_do_fetch_class()函数：
 
 	[c]
-	void zend_do_fetch_class(znode *result, znode *class_name TSRMLS_DC) /* {{{ */
+	void zend_do_fetch_class(znode *result, znode *class_name TSRMLS_DC)
 	{
 		// ...
 		opline->opcode = ZEND_FETCH_CLASS;
@@ -85,7 +85,7 @@ self::CONSTANT类似的作用域解析符号(::)，这时的self才会作为指�
 上面省略了一些无关的代码，重点关注fetch_type变量。这是通过zend_get_class_fetch_type()函数获取到的。
 
 	[c]
-	int zend_get_class_fetch_type(const char *class_name, uint class_name_len) /* {{{ */
+	int zend_get_class_fetch_type(const char *class_name, uint class_name_len)
 	{
 		if ((class_name_len == sizeof("self")-1) &&
 			!memcmp(class_name, "self", sizeof("self")-1)) {
@@ -105,7 +105,7 @@ self::CONSTANT类似的作用域解析符号(::)，这时的self才会作为指�
 找到执行opcode为ZEND_FETCH_CLASS的执行函数:
 
 	[c]
-	zend_class_entry *zend_fetch_class(const char *class_name, uint class_name_len, int fetch_type TSRMLS_DC) /* {{{ */
+	zend_class_entry *zend_fetch_class(const char *class_name, uint class_name_len, int fetch_type TSRMLS_DC)
 	{
 		zend_class_entry **pce;
 		int use_autoload = (fetch_type & ZEND_FETCH_CLASS_NO_AUTOLOAD) == 0;

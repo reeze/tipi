@@ -119,6 +119,7 @@
 
 -------------
 ## 第三部分 Better Explain
+<<<<<<< HEAD
 
 ### 第十六章 PHP语言特性的实现
 
@@ -143,6 +144,29 @@
 
    * 哈希表的优化
    * 安全模式为什么去掉了
+=======
+- 第十六章 PHP语言特性的实现
+    * [第一节 循环语句][php-loop]
+        + [foreach的实现][php-foreach]
+    * [第二节 选择语句]
+
+- 第十七章 PHP新功能
+    * 命名空间(Namespace)
+    * 匿名函数
+    * 闭包
+    * Traits
+    * Generator
+
+- 第十八章 CPHP以外: PHP编译器
+    * HipHop
+    * phc
+    * Roadsend
+    * Phalanger
+
+- 第十九章 PHP各版本中的那些变动及优化
+    * 哈希表的优化
+    * 安全模式为什么去掉了
+>>>>>>> bb5b55c9b2d93e9cdda66582152b20d86ba871c3
 
 - 附录
     * [附录A PHP及Zend API][appendix-a]
@@ -234,9 +258,13 @@
 [thread-process-and-concurrent]:       ?p=chapt08/08-02-thread-process-and-concurrent
 [thread-safe-in-php]:       ?p=chapt08/08-03-zend-thread-safe-in-php
 
+[php-loop]:                 ?p=chapt16/16-01-00-php-loop
+[php-foreach]:              ?p=chapt16/16-01-01-php-foreach
+
+
 [appendix-a]:        		?p=A-PHP-Zend-API
 [appendix-b]:        		?p=B-PHP-Versions-and-History
 [appendix-c]:        		?p=C-php-vld
-[appendix-d]:        		?p=D-how-to-contribute
+[appendix-d]:        		?p=D-how-to-contribute-to-php
 [appendix-e]:        		?p=E-phpt-file
 [appendix-f]:        		?p=F-upgrade-to-php-5-4-explain
