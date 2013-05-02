@@ -119,56 +119,33 @@
 
 -------------
 ## 第三部分 Better Explain
-<<<<<<< HEAD
 
-### 第十六章 PHP语言特性的实现
+- 第十六章 PHP语言特性的实现
 
    * [循环和迭代]
        + foreach的实现
    * [控制结构]
 
-### 第十七章 PHP新功能
+- 第十七章 PHP新功能
    * 命名空间(Namespace)
    * 匿名函数
    * 闭包
    * Traits
    * Generator
-### 第十八章 CPHP以外: PHP编译器
+
+- 第十八章 CPHP以外: PHP编译器
 
    * HipHop
    * phc
    * Roadsend
    * Phalanger
-    
-### 第十九章 PHP各版本中的那些变动及优化
+
+- 第十九章 PHP各版本中的那些变动及优化
 
    * 哈希表的优化
    * 安全模式为什么去掉了
-=======
-- 第十六章 PHP语言特性的实现
-    * [第一节 循环语句][php-loop]
-        + [foreach的实现][php-foreach]
-    * [第二节 选择语句]
 
-- 第十七章 PHP新功能
-    * 命名空间(Namespace)
-    * 匿名函数
-    * 闭包
-    * Traits
-    * Generator
-
-- 第十八章 CPHP以外: PHP编译器
-    * HipHop
-    * phc
-    * Roadsend
-    * Phalanger
-
-- 第十九章 PHP各版本中的那些变动及优化
-    * 哈希表的优化
-    * 安全模式为什么去掉了
->>>>>>> bb5b55c9b2d93e9cdda66582152b20d86ba871c3
-
-- 附录
+### 附录
     * [附录A PHP及Zend API][appendix-a]
     * [附录B PHP的历史][appendix-b]
     * [附录C VLD扩展使用指南][appendix-c]
