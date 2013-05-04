@@ -32,6 +32,7 @@ PHP本身有自己的内存管理，如果发现PHP有内存泄露，可以尝�
 在开启debug模式下，PHP中会有一个函数`leak()`可以用于触发内存泄露，这个函数什么都不做，
 只是申请一块内存但不释放，其实现很简单：
 
+	[c]
 	/* {{{ proto void leak(int num_bytes=3)
 	   Cause an intentional memory leak, for testing/debugging purposes */
 	ZEND_FUNCTION(leak)
@@ -83,11 +84,11 @@ PHP本身有自己的内存管理，如果发现PHP有内存泄露，可以尝�
 1. 这个方法只能检测到使用了Zend内存管理的情况，对于直接使用malloc/free来申请内存的
    应用或扩展是无法检测到的。
 
-虽然有以上亮点限制`--enable-debug`编译选项在进行扩展或者PHP本身的开发时却是很有用的，
+虽然有以上的限制`--enable-debug`编译选项在进行扩展或者PHP本身的开发时却是很有用的，
 因为这样能快速的发现问题，而对于生产环境来说，后面提到的valgrind分析法可能会更有效一点。
 
 ### valgrind辅助法
-[valgrind][1]是一个动态分析工具构建框架，可以用来分析程序的内存、线程等问题探测，
+[valgrind](http://valgrind.org/)是一个动态分析工具构建框架，可以用来分析程序的内存、线程等问题探测，
 程序性能分析等。具体的功能见官网，这是非常值得尝试的工具。这里要使用的就是valgrind
 的内存错误分析工具。
 
