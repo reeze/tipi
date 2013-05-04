@@ -142,6 +142,9 @@
     * 哈希表的优化
     * 安全模式为什么去掉了
 
+- 第二十章 怎样系列(Guides: how to \*)
+	* 怎么样追查定位PHP的bug问题
+
 - 附录
     * [附录A PHP及Zend API][appendix-a]
     * [附录B PHP的历史][appendix-b]
