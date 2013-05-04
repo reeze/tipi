@@ -107,44 +107,44 @@ PHP提供了一个hook，我们可以在启动PHP前指定`USE_ZEND_ALLOC`环境
 
 valgrind程序可以这样对一个程序进行内存分析
 
-	[bash]
 	reeze@ubuntu:~$ export USE_ZEND_ALLOC=0   # 设置环境变量关闭内存管理
 	reeze@ubuntu:~$ cat leak.php 
 	<?php
 		leak();
 	reeze@ubuntu:~$ valgrind --leak-check=full php leak.php
-	==7748== Memcheck, a memory error detector
-	==7748== Copyright (C) 2002-2012, and GNU GPL'd, by Julian Seward et al.
-	==7748== Using Valgrind-3.8.1 and LibVEX; rerun with -h for copyright info
-	==7748== Command: php leak.php
-	==7748== 
-	==7748== HEAP SUMMARY:
-	==7748==     in use at exit: 60 bytes in 3 blocks
-	==7748==   total heap usage: 19,906 allocs, 19,903 frees, 3,782,702 bytes allocated
-	==7748== 
-	==7748== 3 bytes in 1 blocks are definitely lost in loss record 1 of 3
-	==7748==    at 0x4C2A66E: malloc (vg_replace_malloc.c:270)
-	==7748==    by 0x80FC56: _emalloc (zend_alloc.c:2348)
-	==7748==    by 0x858C7D: zif_leak (zend_builtin_functions.c:1346)         # 检测到我们的leak函数的泄露
-	==7748==    by 0x87C1CA: zend_do_fcall_common_helper_SPEC (zend_vm_execute.h:320)
-	==7748==    by 0x8816BC: ZEND_DO_FCALL_SPEC_CONST_HANDLER (zend_vm_execute.h:1640)
-	==7748==    by 0x87B17E: execute (zend_vm_execute.h:107)
-	==7748==    by 0x840AF0: zend_execute_scripts (zend.c:1236)
-	==7748==    by 0x7A1717: php_execute_script (main.c:2308)
-	==7748==    by 0x9403E8: main (php_cli.c:1189)
-	==7748== 
-	==7748== LEAK SUMMARY:
-	==7748==    definitely lost: 3 bytes in 1 blocks
-	==7748==    indirectly lost: 0 bytes in 0 blocks
-	==7748==      possibly lost: 0 bytes in 0 blocks
-	==7748==    still reachable: 57 bytes in 2 blocks
-	==7748==         suppressed: 0 bytes in 0 blocks
-	==7748== Reachable blocks (those to which a pointer was found) are not shown.
-	==7748== To see them, rerun with: --leak-check=full --show-reachable=yes
-	==7748== 
-	==7748== For counts of detected and suppressed errors, rerun with: -v
-	==7748== Use --track-origins=yes to see where uninitialised values come from
-	==7748== ERROR SUMMARY: 2 errors from 2 contexts (suppressed: 2 from 2)
+
+	Memcheck, a memory error detector
+	Copyright (C) 2002-2012, and GNU GPL'd, by Julian Seward et al.
+	Using Valgrind-3.8.1 and LibVEX; rerun with -h for copyright info
+	Command: php leak.php
+	
+	HEAP SUMMARY:
+	    in use at exit: 60 bytes in 3 blocks
+	  total heap usage: 19,906 allocs, 19,903 frees, 3,782,702 bytes allocated
+	
+	3 bytes in 1 blocks are definitely lost in loss record 1 of 3
+	   at 0x4C2A66E: malloc (vg_replace_malloc.c:270)
+	   by 0x80FC56: _emalloc (zend_alloc.c:2348)
+	   by 0x858C7D: zif_leak (zend_builtin_functions.c:1346)         # 检测到我们的leak函数的泄露
+	   by 0x87C1CA: zend_do_fcall_common_helper_SPEC (zend_vm_execute.h:320)
+	   by 0x8816BC: ZEND_DO_FCALL_SPEC_CONST_HANDLER (zend_vm_execute.h:1640)
+	   by 0x87B17E: execute (zend_vm_execute.h:107)
+	   by 0x840AF0: zend_execute_scripts (zend.c:1236)
+	   by 0x7A1717: php_execute_script (main.c:2308)
+	   by 0x9403E8: main (php_cli.c:1189)
+	
+	LEAK SUMMARY:
+	   definitely lost: 3 bytes in 1 blocks
+	   indirectly lost: 0 bytes in 0 blocks
+	     possibly lost: 0 bytes in 0 blocks
+	   still reachable: 57 bytes in 2 blocks
+	        suppressed: 0 bytes in 0 blocks
+	Reachable blocks (those to which a pointer was found) are not shown.
+	To see them, rerun with: --leak-check=full --show-reachable=yes
+	
+	For counts of detected and suppressed errors, rerun with: -v
+	Use --track-origins=yes to see where uninitialised values come from
+	ERROR SUMMARY: 2 errors from 2 contexts (suppressed: 2 from 2)
 
 
 如上面所示，这里对某个php脚本执行并检测内存泄露，valgrind顺利的发现了我们在leak函数中申请的内存
@@ -154,7 +154,7 @@ valgrind程序可以这样对一个程序进行内存分析
 我们可以修改php-fpm启动脚本，在启动脚本中增加环境变量`USE_ZEND_ALLOC=0`以及将bin文件由原来的
 php-fpm文件修改为由valgrind启动，并将valgrind的日志重定向到日志文件中，修改如下:
 
-	[patch]
+	修改内容：
 	+ export USE_ZEND_ALLOC=0
 	+
 	- php_fpm_BIN="/usr/local/php/bin/php-fpm"
@@ -165,14 +165,14 @@ php-fpm文件修改为由valgrind启动，并将valgrind的日志重定向到日
 	[bash]
 	$ php-fpm restart
 
-访问有内存泄露嫌疑的页面，这时指定的日志文件中就会有可能出现的内存泄露信息。
+重新访问有内存泄露嫌疑的页面，这时指定的日志文件中就会有可能出现的内存泄露信息。
 前面示例中的`--log-file=/home/reeze/valgrind-log/%p.log`其中的`%p`是一个占位符，
 指的是进程号，所以比如运行起来的进程ID是1那么会将日志输出到`1.log`文件，这主要是
 因为启动的程序可能会`fork()`出多个子进程，这样的好处是可以方便的知道具体是哪个进程的日志。
 
 更多关于valgrind的使用还是建议阅读相关的手册。PHP官方也有对valgrind的使用的[说明](https://bugs.php.net/bugs-getting-valgrind-log.php)
 
-## PHP的unclean shutown
+## PHP的unclean shutdown
 
 前面提到的关于使用`USE_ZEND_ALLOC=0`来关闭PHP内存管理，这里就有一个疑问：
 将内存管理关掉出了性能上的差别还有其他差别么？
@@ -202,7 +202,7 @@ php-fpm文件修改为由valgrind启动，并将valgrind的日志重定向到日
 	#define zend_try                                                \
 		{                                                           \
 			JMP_BUF *__orig_bailout = EG(bailout);                  \
-			JMP_BUF __bailout;                                      \
+			JMP_BUF __bailout;                                      \ 
 																	\
 			EG(bailout) = &__bailout;                               \
 			if (SETJMP(__bailout)==0) {
@@ -214,54 +214,70 @@ php-fpm文件修改为由valgrind启动，并将valgrind的日志重定向到日
 			EG(bailout) = __orig_bailout;                           \
 		}
 
+`zend_call_destructors`函数只在请求结束的最后执行所有对象的析构函数，由于
+我们的请求已经结束了，所以这里加了个try/catch防止执行的代码抛出异常，如果
+抛出异常只是简单的忽略它，因为我们已经不能做任何事情了。
+
+内核实现中是使用`zend_bailout()`函数来实现"抛出异常"的。
+
+	[c]
+	ZEND_API void _zend_bailout(char *filename, uint lineno)
+	{
+		// ...
+		CG(unclean_shutdown) = 1;  /* 标记 */
+		LONGJMP(*EG(bailout), FAILURE); // 跳转至响应的catch位置
+		// ...
+	}
+
+
 我们知道C语言并不支持异常，PHP中的try catch使用的是`jmp_buf`来模拟异常。
 
 我们来看一下一个实际的例子：
 
-	[bash]
 	reeze@ubuntu:~$ cat fatal.php
 	<?php
 	not_exists_func(); # 调用一个不存在的函数
 	reeze@ubuntu:~$ valgrind --leak-check=full php fatal.php
-	==7818== Memcheck, a memory error detector
-	==7818== Copyright (C) 2002-2012, and GNU GPL'd, by Julian Seward et al.
-	==7818== Using Valgrind-3.8.1 and LibVEX; rerun with -h for copyright info
-	==7818== Command: php fatal.php
-	==7818== 
+	Memcheck, a memory error detector
+	Copyright (C) 2002-2012, and GNU GPL'd, by Julian Seward et al.
+	Using Valgrind-3.8.1 and LibVEX; rerun with -h for copyright info
+	Command: php fatal.php
+	
 	Fatal error: Call to undefined function not_exists_func() in /home/parallels/fatal.php on line 3
-	==7818== 
-	==7818== HEAP SUMMARY:
-	==7818==     in use at exit: 686 bytes in 7 blocks
-	==7818==   total heap usage: 19,910 allocs, 19,903 frees, 3,783,288 bytes allocated
-	==7818== 
-	==7818== 628 (232 direct, 396 indirect) bytes in 1 blocks are definitely lost in loss record 7 of 7
-	==7818==    at 0x4C2A66E: malloc (vg_replace_malloc.c:270)
-	==7818==    by 0x80FC56: _emalloc (zend_alloc.c:2348)
-	==7818==    by 0x7DFDA6: compile_file (zend_language_scanner.l:334)
-	==7818==    by 0x60CBC5: phar_compile_file (phar.c:3397)
-	==7818==    by 0x840997: zend_execute_scripts (zend.c:1228)
-	==7818==    by 0x7A1717: php_execute_script (main.c:2308)
-	==7818==    by 0x9403E8: main (php_cli.c:1189)
-	==7818== 
-	==7818== LEAK SUMMARY:
-	==7818==    definitely lost: 232 bytes in 1 blocks # 内存泄露
-	==7818==    indirectly lost: 396 bytes in 4 blocks
-	==7818==      possibly lost: 0 bytes in 0 blocks
-	==7818==    still reachable: 58 bytes in 2 blocks
-	==7818==         suppressed: 0 bytes in 0 blocks
-	==7818== Reachable blocks (those to which a pointer was found) are not shown.
-	==7818== To see them, rerun with: --leak-check=full --show-reachable=yes
-	==7818== 
-	==7818== For counts of detected and suppressed errors, rerun with: -v
-	==7818== Use --track-origins=yes to see where uninitialised values come from
-	==7818== ERROR SUMMARY: 2 errors from 2 contexts (suppressed: 2 from 2)
+	
+	HEAP SUMMARY:
+	    in use at exit: 686 bytes in 7 blocks
+	  total heap usage: 19,910 allocs, 19,903 frees, 3,783,288 bytes allocated
+	
+	628 (232 direct, 396 indirect) bytes in 1 blocks are definitely lost in loss record 7 of 7
+	   at 0x4C2A66E: malloc (vg_replace_malloc.c:270)
+	   by 0x80FC56: _emalloc (zend_alloc.c:2348)
+	   by 0x7DFDA6: compile_file (zend_language_scanner.l:334)
+	   by 0x60CBC5: phar_compile_file (phar.c:3397)
+	   by 0x840997: zend_execute_scripts (zend.c:1228)
+	   by 0x7A1717: php_execute_script (main.c:2308)
+	   by 0x9403E8: main (php_cli.c:1189)
+	
+	LEAK SUMMARY:
+	   definitely lost: 232 bytes in 1 blocks # 内存泄露
+	   indirectly lost: 396 bytes in 4 blocks
+	     possibly lost: 0 bytes in 0 blocks
+	   still reachable: 58 bytes in 2 blocks
+	        suppressed: 0 bytes in 0 blocks
+	Reachable blocks (those to which a pointer was found) are not shown.
+	To see them, rerun with: --leak-check=full --show-reachable=yes
+	
+	For counts of detected and suppressed errors, rerun with: -v
+	Use --track-origins=yes to see where uninitialised values come from
+	ERROR SUMMARY: 2 errors from 2 contexts (suppressed: 2 from 2)
 
 
-我们看到valgrind发现有内存泄露，所以如果关闭了PHP的内存管理是有问题的，会导致内存
+这个脚本只是执行一个不存在的方法，最终抛出了致命错误而终止。这个看起来只是编码错误，
+但是我们看到valgrind发现有内存泄露，所以如果关闭了PHP的内存管理是有问题的，每次请求这个页面都会导致内存
 不停的泄露。
 
 而如果PHP内存管理打开了之后，如果发生了这种异常情况下的长跳转，PHP会将标志位：`CG(unclean_shutdown)`设置为true，
-在请求结束后会将所有的内存进行回收：
+在请求结束后会将所有的内存进行释放：
 
 	[c]
 	// Zend/zend_alloc.c
@@ -269,6 +285,7 @@ php-fpm文件修改为由valgrind启动，并将valgrind的日志重定向到日
 	{
 		// ...	
 		if (full_shutdown) { // full_shutdown == CG(unclean_shutdown) 
+			// 释放掉所有PHP堆栈中的内存
 			storage->handlers->dtor(storage);
 			if (!internal) {
 				free(heap);
@@ -292,7 +309,10 @@ php-fpm文件修改为由valgrind启动，并将valgrind的日志重定向到日
 		// ...	
 	}
 
-但是如果发了长跳转那么并不是简单的将内存回收到内存池，而是直接将所有的内存释放以避免内存泄露。
+如果发了unclean shutdown并不是简单的将内存回收到内存池，而是直接将所有的内存释放以避免内存泄露。
+这样的好处是实现简单，同时出现Fatal错误也是需要及时处理的问题。
 
-## 链接
-Valgrind: <http://valgrind.org/>
+## 参考
+1. Valgrind: <http://valgrind.org/>
+1. C语言实现异常处理：<http://www.cnblogs.com/jiayu1016/archive/2012/10/20/2732712.html>
+
