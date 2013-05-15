@@ -69,7 +69,8 @@
         + [新的垃圾回收机制][new-gc]
     * [第五节 内存管理中的缓存][php-memory-cache]
     * [第六节 写时复制(Copy-On-Write)][copy-on-write]
-    * [第七节 小结][06-summary]
+    * [第七节 内存泄露][memory-leaks]
+    * [第八节 小结][08-summary]
 
 - [第七章 Zend虚拟机][zend-vm]
     * [第一节 虚拟机概述][zend-vm-overview]
@@ -142,10 +143,17 @@
 
 - 第十九章 PHP各版本中的那些变动及优化
 
+<<<<<<< HEAD
    * 哈希表的优化
    * 安全模式为什么去掉了
 
 ### 附录
+=======
+- 第二十章 怎样系列(Guides: how to \*)
+	* 怎么样追查定位PHP的bug问题
+
+- 附录
+>>>>>>> a6b650eb0728a2f6aa212252dc6a436a127b6617
     * [附录A PHP及Zend API][appendix-a]
     * [附录B PHP的历史][appendix-b]
     * [附录C VLD扩展使用指南][appendix-c]
@@ -220,7 +228,8 @@
 [new-gc]:                   ?p=chapt06/06-04-01-new-garbage-collection
 [php-memory-cache]:         ?p=chapt06/06-05-php-memory-cache
 [copy-on-write]:            ?p=chapt06/06-06-copy-on-write
-[06-summary]:               ?p=chapt06/06-07-summary
+[memory-leaks]:               ?p=chapt06/06-07-memory-leaks
+[08-summary]:               ?p=chapt06/06-08-summary
 
 [zend-vm]:                  ?p=chapt07/07-00-zend-vm
 [zend-vm-overview]:         ?p=chapt07/07-01-zend-vm-overview

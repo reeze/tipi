@@ -1,5 +1,5 @@
 <div>
-	抱歉, 你要浏览的章节<b>: <?php echo $book_page; ?> </b>
+	抱歉, 你要浏览的章节<b>: <?php echo $book_page; ?> </b>不存在。
 
 	<br />
 	<br />
