@@ -234,7 +234,7 @@ Bucket结构体是一个单链表，这是为了解决多个key哈希冲突的�
 
 		LOG_MSG("[resize]\torg size: %i\tnew size: %i\n", org_size, ht->size);
 
-		Bucket **buckets = (Bucket **)calloc(ht->size, sizeof(Bucket **));
+		Bucket **buckets = (Bucket **)calloc(ht->size, sizeof(Bucket *));
 
 		Bucket **org_buckets = ht->buckets;
 		ht->buckets = buckets;
