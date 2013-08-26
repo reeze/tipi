@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
-#include "HashTable.h"
+#include "hashtable.h"
 
 #define TEST(tcase) printf(">>> [START CASE] " tcase "<<<\n")
 #define PASS(tcase) printf(">>> [PASSED] " tcase " <<<\n")
