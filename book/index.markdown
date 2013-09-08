@@ -249,3 +249,4 @@
 [appendix-d]:        		?p=D-how-to-contribute-to-php
 [appendix-e]:        		?p=E-phpt-file
 [appendix-f]:        		?p=F-upgrade-to-php-5-4-explain
+[appendix-g]:        		?p=G-re2c-mannual
