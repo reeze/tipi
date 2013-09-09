@@ -1,6 +1,6 @@
 # 附录G：re2c中文手册
 
-在PHP的实现过程中，包括PHP语言本身的词法分析，一共有多达8处的地方使用了re2c，如果我们常用的时间函数、pdo扩展等。对re2c的了解更能促进我们进PHP内核实现的认知。  
+在PHP的实现过程中，包括PHP语言本身的词法分析，一共有多达8处的地方使用了re2c，如我们常用的时间函数、pdo扩展等。对re2c的了解更能促进我们进PHP内核实现的认知。  
  
 本手册是re2c官网的manual.html文件翻译稿，仅适用于对re2c的初步了解，更多的资料见[re2c项目](http://sourceforge.net/projects/re2c/)中lessons目录和doc目录。
 
