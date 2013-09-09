@@ -38,8 +38,8 @@ re2c将生成如下代码：
 	        unsigned char yych;
 	
 	       yych = (unsigned char)*p;
-	        if(yych &lt;= '/') goto yy4;
-	        if(yych &gt;= ':') goto yy4;
+	        if(yych <= '/') goto yy4;
+	        if(yych >= ':') goto yy4;
 	        ++p;
 	        yych = (unsigned char)*p;
 	        goto yy7;
@@ -53,8 +53,8 @@ re2c将生成如下代码：
 	        ++p;
 	        yych = (unsigned char)*p;
 	yy7:
-	        if(yych &lt;= '/') goto yy3;
-	        if(yych &lt;= '9') goto yy6;
+	        if(yych <= '/') goto yy3;
+	        if(yych <= '9') goto yy6;
 	        goto yy3;
 	    }
 	
