@@ -120,44 +120,40 @@
 
 -------------
 ## 第三部分 Better Explain
-<<<<<<< HEAD
-- 第十六章 PHP新功能
-=======
+
 - 第十六章 PHP语言特性的实现
-    * [第一节 循环语句][php-loop]
-        + [foreach的实现][php-foreach]
-    * [第二节 选择语句]
+
+   * [循环和迭代]
+       + foreach的实现
+   * [控制结构]
 
 - 第十七章 PHP新功能
->>>>>>> 2ae280455baa74c2ef0c6b1a5f7b8e5a0b162d08
-    * 命名空间(Namespace)
-    * 匿名函数
-    * 闭包
-    * Traits
-    * Generator
+   * 命名空间(Namespace)
+   * 匿名函数
+   * 闭包
+   * Traits
+   * Generator
 
-<<<<<<< HEAD
-- 第十七章 CPHP以外: PHP编译器
-=======
 - 第十八章 CPHP以外: PHP编译器
->>>>>>> 2ae280455baa74c2ef0c6b1a5f7b8e5a0b162d08
-    * HipHop
-    * phc
-    * Roadsend
-    * Phalanger
+
+   * HipHop
+   * phc
+   * Roadsend
+   * Phalanger
+
+- 第十九章 PHP各版本中的那些变动及优化
 
 <<<<<<< HEAD
-- 第十八章 PHP各版本中的那些变动及优化
-=======
-- 第十九章 PHP各版本中的那些变动及优化
->>>>>>> 2ae280455baa74c2ef0c6b1a5f7b8e5a0b162d08
-    * 哈希表的优化
-    * 安全模式为什么去掉了
+   * 哈希表的优化
+   * 安全模式为什么去掉了
 
+### 附录
+=======
 - 第二十章 怎样系列(Guides: how to \*)
 	* 怎么样追查定位PHP的bug问题
 
 - 附录
+>>>>>>> a6b650eb0728a2f6aa212252dc6a436a127b6617
     * [附录A PHP及Zend API][appendix-a]
     * [附录B PHP的历史][appendix-b]
     * [附录C VLD扩展使用指南][appendix-c]
@@ -252,9 +248,13 @@
 [php-foreach]:              ?p=chapt16/16-01-01-php-foreach
 
 
+[error-and-exception-handle]:	?p=chapt09/09-00-error-and-exception-handle
+
+
 [appendix-a]:        		?p=A-PHP-Zend-API
 [appendix-b]:        		?p=B-PHP-Versions-and-History
 [appendix-c]:        		?p=C-php-vld
 [appendix-d]:        		?p=D-how-to-contribute-to-php
 [appendix-e]:        		?p=E-phpt-file
 [appendix-f]:        		?p=F-upgrade-to-php-5-4-explain
+[appendix-g]:        		?p=G-re2c-mannual
