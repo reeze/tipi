@@ -13,7 +13,7 @@ function init() {
 	options.setExpandMode(GSearchControl.EXPAND_MODE_OPEN); 
 
 	webSearcher.setUserDefinedLabel("搜索结果");
-	webSearcher.setSiteRestriction("php-internal.com");
+	webSearcher.setSiteRestriction("php-internals.com");
 	searchControl.setResultSetSize('large');
 	searchControl.addSearcher(webSearcher, options);
 	searchControl.draw(document.getElementById("search-zone"));

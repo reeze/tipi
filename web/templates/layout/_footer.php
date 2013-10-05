@@ -13,7 +13,7 @@
 					<a href='<?php echo url_for("/about/"); ?>' class='last'>关于</a>
 				</div>
 				<div class="copyright-footer">
-				&copy; <?php echo date("Y"); ?> TIPI-Team <a href='http://www.php-internal.com'>http://www.php-internal.com/</a> All rights reserved.
+				&copy; <?php echo date("Y"); ?> TIPI-Team <a href='http://www.php-internals.com'>http://www.php-internals.com/</a> All rights reserved.
 				</div>
 			</div>
 			<div id="copyright" class='fr'>
@@ -23,15 +23,3 @@
 		</div>
 	</div>
 </div>
-
-<script type="text/javascript">
-  var _gaq = _gaq || [];
-  _gaq.push(['_setAccount', 'UA-11029498-4']);
-  _gaq.push(['_trackPageview']);
-
-  (function() {
-    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-  })();
-</script>

@@ -9,7 +9,7 @@
 	<div style="text-align:center;font-size: 20em;padding-top: 180px;">TIPI</div>
 	<div id="cover">
 		<h1>TIPI:深入理解PHP内核</h1>
-		<p>www.php-internal.com<span><?php echo TIPI::getVersion(); ?></span></p>
+		<p>www.php-internals.com<span><?php echo TIPI::getVersion(); ?></span></p>
 
 	<div id="cover-extra">
 		<a href="<?php echo TIPI::getHomeUrlForChm(); ?>"><img src="get-lastest.png" /></a>

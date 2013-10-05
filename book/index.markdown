@@ -69,7 +69,8 @@
         + [新的垃圾回收机制][new-gc]
     * [第五节 内存管理中的缓存][php-memory-cache]
     * [第六节 写时复制(Copy-On-Write)][copy-on-write]
-    * [第七节 小结][06-summary]
+    * [第七节 内存泄露][memory-leaks]
+    * [第八节 小结][08-summary]
 
 - [第七章 Zend虚拟机][zend-vm]
     * [第一节 虚拟机概述][zend-vm-overview]
@@ -123,9 +124,9 @@
 - 第十六章 PHP新功能
 =======
 - 第十六章 PHP语言特性的实现
-    * [循环和迭代]
-        + foreach的实现
-    * [控制结构]
+    * [第一节 循环语句][php-loop]
+        + [foreach的实现][php-foreach]
+    * [第二节 选择语句]
 
 - 第十七章 PHP新功能
 >>>>>>> 2ae280455baa74c2ef0c6b1a5f7b8e5a0b162d08
@@ -152,6 +153,9 @@
 >>>>>>> 2ae280455baa74c2ef0c6b1a5f7b8e5a0b162d08
     * 哈希表的优化
     * 安全模式为什么去掉了
+
+- 第二十章 怎样系列(Guides: how to \*)
+	* 怎么样追查定位PHP的bug问题
 
 - 附录
     * [附录A PHP及Zend API][appendix-a]
@@ -228,7 +232,8 @@
 [new-gc]:                   ?p=chapt06/06-04-01-new-garbage-collection
 [php-memory-cache]:         ?p=chapt06/06-05-php-memory-cache
 [copy-on-write]:            ?p=chapt06/06-06-copy-on-write
-[06-summary]:               ?p=chapt06/06-07-summary
+[memory-leaks]:               ?p=chapt06/06-07-memory-leaks
+[08-summary]:               ?p=chapt06/06-08-summary
 
 [zend-vm]:                  ?p=chapt07/07-00-zend-vm
 [zend-vm-overview]:         ?p=chapt07/07-01-zend-vm-overview
@@ -243,9 +248,13 @@
 [thread-process-and-concurrent]:       ?p=chapt08/08-02-thread-process-and-concurrent
 [thread-safe-in-php]:       ?p=chapt08/08-03-zend-thread-safe-in-php
 
+[php-loop]:                 ?p=chapt16/16-01-00-php-loop
+[php-foreach]:              ?p=chapt16/16-01-01-php-foreach
+
+
 [appendix-a]:        		?p=A-PHP-Zend-API
 [appendix-b]:        		?p=B-PHP-Versions-and-History
 [appendix-c]:        		?p=C-php-vld
-[appendix-d]:        		?p=D-how-to-contribute
+[appendix-d]:        		?p=D-how-to-contribute-to-php
 [appendix-e]:        		?p=E-phpt-file
 [appendix-f]:        		?p=F-upgrade-to-php-5-4-explain

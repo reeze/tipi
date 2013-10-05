@@ -69,9 +69,9 @@ class PageCache
 		$headers = headers_list();
 		if(strlen($output) > 0 && self::$enable && !in_array("Status: 404 Not Found", $headers) && !in_array("Status: 500 Server Internal Error", $headers)) {
 			if(!empty($headers)) {
-				$this->cache->set($this->key . 'headers', json_encode($headers));
+				$this->cache->set($this->key . 'headers', json_encode($headers), PAGE_CACHE_TIMEOUT);
 			}
-			$this->cache->set($this->key, $output);
+			$this->cache->set($this->key, $output, PAGE_CACHE_TIMEOUT);
 		}
 		
 		echo $output;
