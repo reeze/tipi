@@ -248,9 +248,13 @@
 [php-foreach]:              ?p=chapt16/16-01-01-php-foreach
 
 
+[error-and-exception-handle]:	?p=chapt09/09-00-error-and-exception-handle
+
+
 [appendix-a]:        		?p=A-PHP-Zend-API
 [appendix-b]:        		?p=B-PHP-Versions-and-History
 [appendix-c]:        		?p=C-php-vld
 [appendix-d]:        		?p=D-how-to-contribute-to-php
 [appendix-e]:        		?p=E-phpt-file
 [appendix-f]:        		?p=F-upgrade-to-php-5-4-explain
+[appendix-g]:        		?p=G-re2c-mannual
