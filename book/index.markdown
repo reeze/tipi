@@ -143,17 +143,13 @@
 
 - 第十九章 PHP各版本中的那些变动及优化
 
-<<<<<<< HEAD
    * 哈希表的优化
    * 安全模式为什么去掉了
 
-### 附录
-=======
 - 第二十章 怎样系列(Guides: how to \*)
 	* 怎么样追查定位PHP的bug问题
 
 - 附录
->>>>>>> a6b650eb0728a2f6aa212252dc6a436a127b6617
     * [附录A PHP及Zend API][appendix-a]
     * [附录B PHP的历史][appendix-b]
     * [附录C VLD扩展使用指南][appendix-c]
