@@ -120,27 +120,31 @@
 
 -------------
 ## 第三部分 Better Explain
+
 - 第十六章 PHP语言特性的实现
-    * [第一节 循环语句][php-loop]
-        + [foreach的实现][php-foreach]
-    * [第二节 选择语句]
+
+   * [循环和迭代]
+       + foreach的实现
+   * [控制结构]
 
 - 第十七章 PHP新功能
-    * 命名空间(Namespace)
-    * 匿名函数
-    * 闭包
-    * Traits
-    * Generator
+   * 命名空间(Namespace)
+   * 匿名函数
+   * 闭包
+   * Traits
+   * Generator
 
 - 第十八章 CPHP以外: PHP编译器
-    * HipHop
-    * phc
-    * Roadsend
-    * Phalanger
+
+   * HipHop
+   * phc
+   * Roadsend
+   * Phalanger
 
 - 第十九章 PHP各版本中的那些变动及优化
-    * 哈希表的优化
-    * 安全模式为什么去掉了
+
+   * 哈希表的优化
+   * 安全模式为什么去掉了
 
 - 第二十章 怎样系列(Guides: how to \*)
 	* 怎么样追查定位PHP的bug问题
