@@ -242,6 +242,7 @@
 
 [error-and-exception-handle]:	?p=chapt09/09-00-error-and-exception-handle
 
+[output-buffer]:	?p=chapt10/10-00-output-buffer
 
 [appendix-a]:        		?p=A-PHP-Zend-API
 [appendix-b]:        		?p=B-PHP-Versions-and-History
