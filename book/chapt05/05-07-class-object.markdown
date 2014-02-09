@@ -44,10 +44,15 @@ ce是存储该对象的类结构，properties是一个HashTable，用来存放�
 
 ## 对象的创建
 
-在PHP代码中，对象的创建是通过关键字 **new** 进行的。从此关键字出发，我们遍历词法分析，语法分析和编译成中间代码等过程，
-得到其最后执行的函数为 **ZEND_NEW_SPEC_HANDLER** 。
+在PHP代码中，对象的创建是通过关键字 **new** 进行的。
+一个new操作最终会产生三个opcode，这三个opcode实际为创建对象的三个步骤：
 
-ZEND_NEW_SPEC_HANDLER函数首先会判断对象所对应的类是否为可实例化的类，
+1. ZEND_FETCH_CLASS 根据类名获取存储类的变量，其实现为一个hashtalbe EG(class_table) 的查找操作；
+2. NEW 初始化对象，并将EX(call)->fbc指向构造函数指针，初始化的操作我们在后面详细说明，其最后执行的函数为 ZEND_NEW_SPEC_HANDLER
+3. DO_FCALL_BY_NAME 调用构造函数，其调用和其它的函数调用是一样，都是调用zend_do_fcall_common_helper_SPEC
+
+第一步和第三步比较简单，我们详细介绍一下第二步：初始化对象。初始化对象调用ZEND_NEW_SPEC_HANDLER，
+它首先会判断对象所对应的类是否为可实例化的类，
 即判断类的ce_flags是否与ZEND_ACC_INTERFACE、ZEND_ACC_IMPLICIT_ABSTRACT_CLASS或ZEND_ACC_EXPLICIT_ABSTRACT_CLASS有交集，
 即判断类是否为接口或抽象类。
 
