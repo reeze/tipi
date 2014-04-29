@@ -4,7 +4,7 @@
 	</div>
 
 	<div id="get-it">
-		<span id="tipi-version"><?php echo Tipi::getVersion(); ?> [<em>PDF</em>, <em>CHM</em>]</span>
+		<span id="tipi-version"><?php echo Tipi::getDisplayVersion(); ?> [<em>PDF</em>, <em>CHM</em>, <em>MOBI</em>, <em>ePub</em>]</span>
 		<a class='read' href='<?php echo url_for("/book/"); ?>'><span>阅读</span></a>
 		<span id="get-it-sep"></span>
 		<a class='downloads' href='<?php echo url_for("/downloads/"); ?>'><span>下载</span></a>
@@ -39,8 +39,7 @@
 			<div class="inner">
 				<h2>使用<span>Enjoy It</span></h2>
 				<p>
-					我们提供《深入理解PHP内核》的在线阅读及PDF、CHM版的下载，后续也会提供epub格式的离线下载，这是在我们的计划当中的。
-					如果你网络环境不好，想离线浏览，您也可以下载我们的整个项目。请参考<a href="<?php echo url_for("/about/"); ?>">关于页面</a>，这里有本地使用的一些说明。
+					我们提供《深入理解PHP内核》的在线阅读及PDF、CHM、ePub、Mobie格式的下载，如果你网络环境不好，想离线浏览，您也可以下载我们的整个项目。请参考<a href="<?php echo url_for("/about/"); ?>">关于页面</a>，这里有本地使用的一些说明。
 				</p>
 				<p>
 					虽然TIPI项目主要关注PHP内部实现和相关技术的研究，作为互联网爱好者，无论是互联网产品还是电子书籍，
@@ -64,7 +63,7 @@
 					想要和我们保持联系很简单，可以通过上面的微博和我们联系，也可以订阅我们的更新。
 					</p>
 					<p>
-					如果你喜欢使用类似GReader之类RSS阅读器的话那最好不过了。点击上面的订阅图标订阅吧。
+					如果你喜欢使用SS阅读器的话那最好不过了。点击上面的订阅图标订阅吧。
 					当然，我们的RSS输出是全文的(我们恨透了非全文输出)。我们每写完一小节都会通过RSS输出，同时一些相关的更新信息也会通过这个源输出。
 					</p>
 				</div>

@@ -13,6 +13,13 @@ class TIPI
 		return $version ? $version : 'Unkown';
 	}
 
+	public static function getDisplayVersion()
+	{
+		list(, $date, $version) = explode("_", self::getVersion());
+
+		return "$version ($date)";
+	}
+
 	public static function haveNewVersion()
 	{
 		return self::getRequestParam('v') != self::getVersion();	
