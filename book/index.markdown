@@ -108,6 +108,7 @@
     * 第一节 扩展开发概述
 
 - 第十二章 文件和流
+	* stream wrapper
 
 - 第十三章 网络编程
 
@@ -133,7 +134,7 @@
     * Generator
 
 - 第十八章 CPHP以外: PHP编译器
-    * HipHop
+    * HipHop VM
     * phc
     * Roadsend
     * Phalanger

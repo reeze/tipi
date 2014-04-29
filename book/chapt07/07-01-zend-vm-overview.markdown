@@ -8,6 +8,20 @@
 虚拟机是一种抽象的计算机，它有自己的指令集，有自己的内存管理体系。
 在此类虚拟机上实现的语言比较低抽象层次的语言更加明了，更加简单易学。
 
+## 虚拟机的类型
+
+虚拟机是一种抽象的计算机，是对真实计算机的虚拟和模拟，现在的计算机有不同的
+指令集架构([ISA: Instruction Set Architecture](http://homedir.jct.ac.il/~citron/ca/isa.html))，
+ISA是处理的一个部分，不同的处理器会有不同的架构，最常见的有3种：
+
+- 基于栈的[Stack Machines](http://en.wikipedia.org/wiki/Stack_machine): 操作数保存在栈上。
+  而不是使用寄存器来保存，现在很少有真实机器采用这个模型。对于虚拟机来说因为指令空间占用少，
+  并且实现简单，很多虚拟机采用这种模型，比如：JVM，HHVM等。
+- 基于累加器的Accumulator Machines。这个模型使用称作累加器(Accumulator)的的寄存器来保存
+  一个操作数以及操作的结果
+- 基于通用寄存器的General-Purpose-Register Machines，这些寄存器没有特殊的用途。
+  编译器可以将操作数保存在这些寄存器中。ZendVM采用的就是基于寄存器的架构。
+
 ## Zend虚拟机核心实现代码
 为了方便读者对Zend引擎的实现有个全面的感觉，下面列出涉及到Zend引擎实现的核心代码文件功能参考。
 
