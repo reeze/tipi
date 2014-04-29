@@ -86,6 +86,12 @@ class BookPage extends MarkdownPage
 	
 	// Pdf版的内容需要重新对标题级别调整一下以便生成目录
 	public function reAssignHeaderLevel($level) {
+		// Apendex didn't need to reassign
+		// Assume Appendex is G-xxx-xxx
+		if (strpos($this->page_name, '-') == 1) {
+			return $level;
+		}
+
 		if($this->isChapterIndex() && $level == 1) return $level; 
 
 		// 所有层级增加一级
