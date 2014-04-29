@@ -16,6 +16,9 @@ TIPI项目，主要包括: 深入理解PHP，以及相关的项目,本站所有�
 	<div style='padding-left: 100px;' class="fl"><a target='_blank' href="<?php echo url_for("https://github.com/reeze/tipi/blob/master/web/releases/" . TIPI::getVersion() . ".chm?raw=true");?>">
 	<img src="<?php echo url_for("/images/icon_chm.png"); ?>" /></a></div>
 </div>
+
+<p>所有历史版本下载见: <a href="https://github.com/reeze/tipi/tree/master/web/releases">Github 历史页面</a></p>
+
 <p>
 本站所有的内容都托管在github上,我们目前推荐从： <a href="http://github.com/reeze/tipi">http://github.com/reeze/tipi</a>下载。
 从那里可以轻松的下载所有的内容，你也可以<a href="<?php echo url_for("/feed/");?>">订阅我们的更新</a>，我们每完成一小节都会在这里更新，
