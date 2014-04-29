@@ -148,3 +148,7 @@ p {
 .book-img {
 	text-align: center;
 }
+
+.book-img img {
+	max-width: 720px;
+}
