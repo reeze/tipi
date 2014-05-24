@@ -116,8 +116,9 @@ Bucket结构体是一个单链表，这是为了解决多个key哈希冲突的�
 
 		char *cur = key;
 
-		while(*(cur++) != '\0') {
+		while(*cur != '\0') {
 			hash +=	*cur;
+			++cur;
 		}
 
 		return hash;

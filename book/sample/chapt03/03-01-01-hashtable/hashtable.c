@@ -154,9 +154,10 @@ static int hash_str(char *key)
 
 	char *cur = key;
 
-	while(*(cur++) != '\0')
+	while(*cur != '\0')
 	{
 		hash +=	*cur;
+		++cur;
 	}
 
 	return hash;
