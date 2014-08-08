@@ -24,7 +24,7 @@ C++的新标准[C++0x](http://en.wikipedia.org/wiki/C%2B%2B0x)也开始支持了
 	<?php
 
 	$array = array(1, 2, 3, 4);
-	array_walk($array, create_function('$value', 'echo $value'));
+	array_walk($array, create_function('$value', 'echo $value;'));
 	
 
 这段代码只是将数组中的值依次输出，当然也能做更多的事情。 那为什么这不算真正的匿名函数呢，
