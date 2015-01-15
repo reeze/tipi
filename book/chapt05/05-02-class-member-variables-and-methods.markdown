@@ -199,7 +199,7 @@ the final modifier is allowed only for methods and classes in ..
         public static function __get();
     }
 
-若运行这段代码，则会显示 Warning: The magic method __get() must have public visibility and cannot be static in 
+若运行这段代码，则会显示： Warning: The magic method __get() must have public visibility and cannot be static in 
 
 这段编译检测在zend_do_begin_function_declaration函数中对应的源码如下：
 
