@@ -149,7 +149,7 @@ PHP内核将类的继承实现放在了"编译阶段"，因此使用VLD生成中
     $context->run();
 
     $cat = new Cat();
-    $context = new Context();
+    $context = new Context($cat);
     $context->run();
 
 上面是策略模式示例性的简单实现。对于不同的动物，其跑的方式不一样，
