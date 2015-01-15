@@ -149,7 +149,7 @@ PHP内核将类的继承实现放在了"编译阶段"，因此使用VLD生成中
     $context->run();
 
     $cat = new Cat();
-    $context = new Context();
+    $context = new Context($cat);
     $context->run();
 
 上面是策略模式示例性的简单实现。对于不同的动物，其跑的方式不一样，
@@ -262,7 +262,7 @@ zend_do_begin_function_declaration函数。在此函数中有如下代码：
 
 
 抽象类，接口，普通类都是保存在zend_class_entry结构体中，他们只通过一个标志字段来区分，
-抽象类和接口还有一个共性：无法实例化。那我们看看Zend在那里限制的。要实例化一个对象我们只能使用new关键字来进行。
+抽象类和接口还有一个共性：无法实例化。那我们看看Zend在哪里限制的。要实例化一个对象我们只能使用new关键字来进行。
 下面是执行new是进行的操作:
 	
 	[c]
