@@ -24,7 +24,7 @@ parent和static这几个关键字，但实际上除了static是关键字以外�
 上面的代码并没有报错，如果你把error_reporting(E_ALL)打开，就能看到实际是什么情况了:
 运行这段代码会出现“ Notice: Use of undefined constant self - assumed 'self'“，
 也就是说PHP把self当成一个普通常量了，尝试未定义的常量会把产量本身当成一个字符串，
-例如上例的”self"，不过同时会出一个NOTICE，这就是说self这个标示符并没有什么特殊的。
+例如上例的”self"，不过同时会出一个NOTICE，这就是说self这个标识符并没有什么特殊的。
 
 	[php]
 	<?php
@@ -33,7 +33,7 @@ parent和static这几个关键字，但实际上除了static是关键字以外�
 
 >**NOTE**
 >不同语言中的关键字的意义会有些区别，Wikipedia上的[解释](http://en.wikipedia.org/wiki/Keyword_(computer_programming))是：
->具有特殊含义的标示符或者单词，从这个意义上说$this也算是一个关键字，但在PHP的关键字列表中并没有。
+>具有特殊含义的标识符或者单词，从这个意义上说$this也算是一个关键字，但在PHP的关键字列表中并没有。
 >PHP的关键字和C/C++一样属于保留字(关键字)，关键字用于表示特定的语法形式，例如函数定义，流程控制等结构。
 >这些关键字有他们的特定的使用场景，而上面提到的self和parent并没有这样的限制。
 
@@ -159,7 +159,7 @@ self::CONSTANT类似的作用域解析符号(::)，这时的self才会作为指�
 	}
 
 从这个函数就能看出端倪了，当需要获取self类的时候，则将EG(scope)类返回，而EG(scope)指向的正是当前类。
-如果时parent类的话则从去EG(scope)->parent也就是当前类的父类，而static获取的时EG(called_scope)，
+如果是parent类的话则从去EG(scope)->parent也就是当前类的父类，而static获取的时EG(called_scope)，
 分别说说EG宏的这几个字段，前面已经介绍过EG宏，它可以展开为如下这个结构体:
 
 	[c]
@@ -184,13 +184,13 @@ self::CONSTANT类似的作用域解析符号(::)，这时的self才会作为指�
 	[php]
 	<?php
 	class A {
-		public static funcA() {
+		public static function funcA() {
 			static::funcB();
 		}
 	}
 
-	class B {
-		public static funcB() {
+	class B extends A {
+		public static function funcB() {
 			echo  "B::funcB()";
 		}
 	}
