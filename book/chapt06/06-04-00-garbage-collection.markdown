@@ -12,7 +12,7 @@ PHP也在语言层实现了内存的动态管理，这在前面的章节中已�
 
 在PHP5.3版本之前，PHP只有简单的基于引用计数的垃圾回收，当一个变量的[引用计数](http://docs.php.net/manual/zh/features.gc.refcounting-basics.php)变为0时，
 PHP将在内存中销毁这个变量，只是这里的垃圾并不能称之为垃圾。
-并且PHP在一个生命周期结束后就会释放此进程/线程所点的内容，这种方式决定了PHP在前期不需要过多考虑内存的泄露问题。
+并且PHP在一个生命周期结束后就会释放此进程/线程所占的内容，这种方式决定了PHP在前期不需要过多考虑内存的泄露问题。
 但是随着PHP的发展，PHP开发者的增加以及其所承载的业务范围的扩大，在PHP5.3中引入了更加完善的垃圾回收机制。
 新的垃圾回收机制解决了无法处理循环的引用内存泄漏问题。PHP5.3中的垃圾回收机制使用了文章[引用计数系统中的同步周期回收(Concurrent Cycle Collection in Reference Counted Systems)](http://www.research.ibm.com/people/d/dfb/papers/Bacon01Concurrent.pdf)
 中的同步算法。关于这个算法的介绍我们就不再赘述，在PHP的官方文档有图文并茂的介绍：[回收周期(Collecting Cycles)](http://docs.php.net/manual/zh/features.gc.collecting-cycles.php)。
