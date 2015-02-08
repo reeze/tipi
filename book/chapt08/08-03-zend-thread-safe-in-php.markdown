@@ -102,11 +102,12 @@ TSRMG的定义：
 其实这在我们写扩展的时候会经常用到：
 
 	[c]
-	#define TSRMLS_D void ***tsrm_ls
-	#define TSRMLS_DC , TSRMLS_D
+	#define TSRMLS_D void ***tsrm_ls   /* 不带逗号，一般是唯一参数的时候，定义时用 */
+	#define TSRMLS_DC , TSRMLS_D       /* 也是定义时用，不过参数前面有其他参数，所以需要个逗号 */
 	#define TSRMLS_C tsrm_ls
 	#define TSRMLS_CC , TSRMLS_C
 
+> **NOTICE** 写扩展的时候可能很多同学都分不清楚到底用哪一个，通过宏展开我们可以看到，他们分别是带逗号和不带逗号，以及申明及调用，那么英语中“D"就是代表：Define，而 后面的"C"是 Comma，逗号，前面的"C"就是Call。
  
 
 以上为ZTS模式下的定义，非ZTS模式下其定义全部为空。
