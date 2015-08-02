@@ -14,7 +14,7 @@
 	git clone https://git.php.net/repository/php-src.git
 	# 也可以访问github官方镜像
 	git clone git://github.com/php/php-src.git
-	cd php-src && git checkout origin PHP-5.3 # 签出5.3分支
+	cd php-src && git checkout PHP-5.3 # 签出5.3分支
 
 	# svn地址不变，不过不推荐从这里签出代码
 	cd ~
