@@ -15,11 +15,7 @@
 	# 也可以访问github官方镜像
 	git clone git://github.com/php/php-src.git
 	cd php-src && git checkout PHP-5.3 # 签出5.3分支
-
-	<strike># svn地址不变，不过不推荐从这里签出代码
-	cd ~
-	svn co http://svn.php.net/repository/php/php-src/branches/PHP_5_2 php-src-5.2 #5.2版本
-	svn co http://svn.php.net/repository/php/php-src/branches/PHP_5_3 php-src-5.3 #5.3版本</strike>
+	
 
 笔者比较喜欢用版本控制软件签出代码，这样做的好处是能看到PHP每次修改的内容及日志信息，
 如果自己修改了其中的某些内容也能快速的查看到，如果你想修复PHP的某个Bug或者提交新功能的话，
