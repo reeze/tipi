@@ -1,0 +1,143 @@
+for也是php中常用语法，实现过程相比while, do while更加复杂。如下一段脚本：
+
+<?php
+for($i=0; $i<10; $i++){
+    echo $i;
+}
+echo "end";
+生成的指令序列如下：
+
+compiled vars:  !0 = $i
+line     #* E I O op                           fetch          ext  return  operands
+-------------------------------------------------------------------------------------
+   2     0  E >   EXT_STMT                                          RES[  IS_UNUSED  ]         OP1[  IS_UNUSED  ] OP2[  IS_UNUSED  ]
+         1        ASSIGN                                            RES[  ]         OP1[  IS_CV !0 ] OP2[ ,  IS_CONST (96013921) 0 ]
+         2    >   IS_SMALLER                                        RES[  IS_TMP_VAR ~1 ]       OP1[  IS_CV !0 ] OP2[ ,  IS_CONST (96013922) 10 ]
+         3        EXT_STMT                                          RES[  IS_UNUSED  ]         OP1[  IS_UNUSED  ] OP2[  IS_UNUSED  ]
+         4      > JMPZNZ                                        8           OP1[  IS_TMP_VAR ~1 ] OP2[ , ->11 ]
+         5    >   POST_INC                                          RES[  IS_TMP_VAR ~2 ]       OP1[  IS_CV !0 ]
+         6        FREE                                                      OP1[  IS_TMP_VAR ~2 ]
+         7      > JMP                                                       OP1[ ->2 ]
+   3     8    >   EXT_STMT                                          RES[  IS_UNUSED  ]         OP1[  IS_UNUSED  ] OP2[  IS_UNUSED  ]
+         9        ECHO                                                      OP1[  IS_CV !0 ]
+   4    10      > JMP                                                       OP1[ ->5 ]
+   5    11    >   EXT_STMT                                          RES[  IS_UNUSED  ]         OP1[  IS_UNUSED  ] OP2[  IS_UNUSED  ]
+        12        ECHO                                                      OP1[  IS_CONST (96013924) 'end' ]
+   6    13      > RETURN                                                    OP1[  IS_CONST (96013925) 1 ]
+看上去指令非常多，实际上由for语法生成的指令只有3个：JMPZNZ，JMP，JMP。从语法分析过程中可以找到for语法编译时调用的函数：
+
+|   T_FOR
+        '('
+            for_expr
+        ';' { zend_do_free(&$3 TSRMLS_CC); $4.u.op.opline_num = get_next_op_number(CG(active_op_array)); }
+            for_expr
+        ';' { zend_do_extended_info(TSRMLS_C); zend_do_for_cond(&$6, &$7 TSRMLS_CC); }
+            for_expr
+        ')' { zend_do_free(&$9 TSRMLS_CC); zend_do_for_before_statement(&$4, &$7 TSRMLS_CC); }
+    for_statement { zend_do_for_end(&$7 TSRMLS_CC); }
+从语法分析过程中可以看出，编译for语法过程共调用了3个函数：zend_do_for_cond，zend_do_for_before_statement，zend_do_for_end。
+
+zend_do_for_cond是匹配到for语法条件时（第二个分号前的语句）调用的函数：
+
+void zend_do_for_cond(const znode *expr, znode *second_semicolon_token TSRMLS_DC) /* {{{ */
+{
+	int for_cond_op_number = get_next_op_number(CG(active_op_array));
+	zend_op *opline = get_next_op(CG(active_op_array) TSRMLS_CC);
+
+	opline->opcode = ZEND_JMPZNZ;
+	SET_NODE(opline->op1, expr);  /* the conditional expression */
+	second_semicolon_token->u.op.opline_num = for_cond_op_number;
+	SET_UNUSED(opline->op2);
+}
+在函数中生成了一条JMPZNZ指令，这条指令和之前遇到的指令不同，它是不管条件表达式的结果是1还是0，都进行跳转的指令。条件表达式的结果保存在op1中，跳转地址是哪里呢？现在还不知道，需要在其他函数中指定，所以将当前指令在opcode数组的下标传递给了second_semicolon_token节点，其他函数通过读取这个节点的值来获取JMPZNZ指令，从而给JMPZNZ指令的跳转地址赋值。
+
+JMPZNZ指令中Z和NZ的含义
+
+我们有时候会因为指令的各种名称而困惑，如JMP，JMPZ，JMPNZ，JMPZNZ，都是跳转指令，但可能会混淆。其实指令中的字母都是有含义的，Z代表的是Zero，NZ代表的是Not Zero，ZNZ代表的是Zero or Not Zero，当条件为0或不为0进行的跳转指令，ZNZ是条件为0和不为0都会进行跳转，只是跳转的地址不同。
+
+接下来会编译for语法的步长，步长是每执行一次循环体后都会执行的表达式。它的编译过程在条件表达式之后，循环体之前，但是for语句的执行过程是先执行条件表达式，后执行循环体，最后才执行步长。要做到步长在这三者之中最后执行，就需要一些跳转指令了。
+
+下面是步长指令编译过程：
+
+void zend_do_for_before_statement(const znode *cond_start, const znode *second_semicolon_token TSRMLS_DC) /* {{{ */
+{
+	zend_op *opline = get_next_op(CG(active_op_array) TSRMLS_CC);
+
+	opline->opcode = ZEND_JMP;
+	opline->op1.opline_num = cond_start->u.op.opline_num;
+	CG(active_op_array)->opcodes[second_semicolon_token->u.op.opline_num].extended_value = get_next_op_number(CG(active_op_array));
+	SET_UNUSED(opline->op1);
+	SET_UNUSED(opline->op2);
+
+	do_begin_loop(TSRMLS_C);
+
+	INC_BPC(CG(active_op_array));
+}
+在上面的函数中生成了一个JMP指令，跳转地址为条件表达式所在的地址，条件表达式的地址是通过$4.u.op.opline_num = get_next_op_number(CG(active_op_array))指定的。同时，将下一个指令地址赋值给了JMPZNZ指令的第二个跳转地址，刚才说道zend_do_for_before_statement是在循环体编译前被调用，所以下一个指令是循环体内的第一个指令。这样的话JMPZNZ指令就有了2个跳转地址，条件为1跳转一个，条件为0跳转到另一个。
+
+有了这个JMP指令后，每次执行完步长就会跳转到条件指令，由条件指令判断是否需要执行循环体。
+
+JMPZNZ两个地址跳转到哪里？
+
+当for语句的条件为1时，应该执行循环体内的语句，而JMPZNZ指令的下一条指令是步长指令，此时就不能通过指令指针后移来执行循环体语句了，需要一个JMP跳到循环体。当for语句的条件为0时，不再执行for语句块，需要跳过for循环体，执行for语句循环体外的下一条指令，JMPZNZ指令的第二个地址就保存了这条指令地址。
+
+当循环体内的语句执行完毕后，应该执行步长指令。这时应该在循环体的最后加上一个JMP，跳转到步长指令：
+
+void zend_do_for_end(const znode *second_semicolon_token TSRMLS_DC) /* {{{ */
+{
+	zend_op *opline = get_next_op(CG(active_op_array) TSRMLS_CC);
+
+	opline->opcode = ZEND_JMP;
+	opline->op1.opline_num = second_semicolon_token->u.op.opline_num+1;
+	CG(active_op_array)->opcodes[second_semicolon_token->u.op.opline_num].op2.opline_num = get_next_op_number(CG(active_op_array));
+	SET_UNUSED(opline->op1);
+	SET_UNUSED(opline->op2);
+
+	do_end_loop(second_semicolon_token->u.op.opline_num+1, 0 TSRMLS_CC);
+
+	DEC_BPC(CG(active_op_array));
+}
+函数新增了一个JMP指令，将指令的跳转地址设置为步长指令所在的下标。并且给JMPZNZ指令的第二个跳转地址赋值循环体后的下一条指令。
+
+经过以上编译过程，就形成一个循环的指令流，只有当JMPZNZ的条件为0时，才会跳出这个循环。
+
+为什么JMPZNZ指令的第一个跳转地址保存到了extended_value中？
+
+上面说到JMPZNZ指令需要保存两个跳转地址，还需要保存一个条件表达式结果，这条指令共需要保存三条信息，而指令只有两个操作数，第一个操作数保存了条件表达式结果，第二个操作数保存了for语法结束后的下一条指令，所以只能将跳转到for循环体的指令保存到extended_value中。
+
+然后看看JMPZNZ指令是如何执行的：
+
+static int ZEND_FASTCALL  ZEND_JMPZNZ_SPEC_CONST_HANDLER(ZEND_OPCODE_HANDLER_ARGS)
+{
+	USE_OPLINE
+
+	zval *val;
+	int retval;
+
+	SAVE_OPLINE();
+	val = opline->op1.zv;
+
+	if (IS_CONST == IS_TMP_VAR && EXPECTED(Z_TYPE_P(val) == IS_BOOL)) {
+		retval = Z_LVAL_P(val);
+	} else {
+		retval = i_zend_is_true(val);
+
+		if (UNEXPECTED(EG(exception) != NULL)) {
+			HANDLE_EXCEPTION();
+		}
+	}
+	if (EXPECTED(retval != 0)) {
+#if DEBUG_ZEND>=2
+		printf("Conditional jmp on true to %d\n", opline->extended_value);
+#endif
+		ZEND_VM_SET_OPCODE(&EX(op_array)->opcodes[opline->extended_value]);
+		ZEND_VM_CONTINUE(); /* CHECK_ME */
+	} else {
+#if DEBUG_ZEND>=2
+		printf("Conditional jmp on false to %d\n", opline->op2.opline_num);
+#endif
+		ZEND_VM_SET_OPCODE(&EX(op_array)->opcodes[opline->op2.opline_num]);
+		ZEND_VM_CONTINUE(); /* CHECK_ME */
+	}
+}
+可见，当条件为1时，跳转到extended_value指向的指令，条件为0时，跳转到op2.opline_num指向的指令。
