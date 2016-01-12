@@ -41,7 +41,7 @@
 比如在APC等opcode优化扩展中就是通过替换系统默认的zend_compile_file函数指针为自己的函数指针my_compile_file，
 并且在my_compile_file中增加缓存等功能。
 
-到这里我们找到了中间代码执行的最终函数：execute(Zend/zend_vm_execure.h)。
+到这里我们找到了中间代码执行的最终函数：execute(Zend/zend_vm_execute.h)。
 在这个函数中所有的中间代码的执行最终都会调用handler。这个handler是什么呢？
 
     [c]
