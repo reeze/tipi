@@ -15,7 +15,6 @@ MySQL的词法分析使用的Flex，除此之外还有作为UNIX系统标准词�
 它偏重于为正则表达式产生高效代码（和他的名字一样）。因此，这比传统的词法分析器有更广泛的应用范围。
 你可以在[sourceforge.net](http://sourceforge.net/projects/re2c/)获取源码。
 
-PHP在最开始的词法解析器是使用的是Flex，后来改为使用re2c。
 在源码目录下的Zend/zend_language_scanner.l 文件是re2c的规则文件，
 如果需要修改该规则文件需要安装re2c才能重新编译，生成新的规则文件。
 
