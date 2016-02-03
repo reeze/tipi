@@ -29,7 +29,7 @@ CGI程序反复加载是CGI性能低下的主要原因，如果CGI程序保持�
 
 ## PHP中的CGI实现
 
-PHP的CGI实现了Fastcgi协议，是一个TCP或UDP协议的服务器接受来自Web服务器的请求，
+PHP的CGI实现了FastCGI协议，是一个TCP或UDP协议的服务器接受来自Web服务器的请求，
 当启动时创建TCP/UDP协议的服务器的socket监听，并接收相关请求进行处理。随后就进入了PHP的生命周期：
 模块初始化，sapi初始化，处理PHP请求，模块关闭，sapi关闭等就构成了整个CGI的生命周期。
 
