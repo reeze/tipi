@@ -228,19 +228,29 @@ int main(void){
 它可以一直执行，在请求到达时不会花费时间去fork一个进程来处理(这是CGI最为人诟病的fork-and-execute模式)。
 正是因为他只是一个通信协议，它还支持分布式的运算，所以 FastCGI 程序可以在网站服务器以外的主机上执行，并且可以接受来自其它网站服务器的请求。
 
-FastCGI是与语言无关的、可伸缩架构的CGI开放扩展，将CGI解释器进程保持在内存中，以此获得较高的性能。
-CGI程序反复加载是CGI性能低下的主要原因，如果CGI程序保持在内存中并接受FastCGI进程管理器调度，
-则可以提供良好的性能、伸缩性、Fail-Over特性等。
+FastCGI 是与语言无关的、可伸缩架构的 CGI 开放扩展，将 CGI 解释器进程保持在内存中，以此获得较高的性能。
+CGI 程序反复加载是 CGI 性能低下的主要原因，如果 CGI 程序保持在内存中并接受 FastCGI 进程管理器调度，
+则可以提供良好的性能、伸缩性、Fail-Over 特性等。
 
-一般情况下，FastCGI的整个工作流程是这样的：
+#### FastCGI 工作流程如下：
 
-   1. Web Server启动时载入FastCGI进程管理器（IIS ISAPI或Apache Module)
-   1. FastCGI进程管理器自身初始化，启动多个CGI解释器进程(可见多个php-cgi)并等待来自Web Server的连接。
-   1. 当客户端请求到达Web Server时，FastCGI进程管理器选择并连接到一个CGI解释器。
-      Web server将CGI环境变量和标准输入发送到FastCGI子进程php-cgi。
-   1. FastCGI子进程完成处理后将标准输出和错误信息从同一连接返回Web Server。当FastCGI子进程关闭连接时，
-      请求便告处理完成。FastCGI子进程接着等待并处理来自FastCGI进程管理器(运行在Web Server中)的下一个连接。 
-	  在CGI模式中，php-cgi在此便退出了。
+ 1. FastCGI 进程管理器自身初始化，启动多个 CGI 解释器进程，并等待来自 Web Server 的连接。
+ 2. Web 服务器与 FastCGI 进程管理器进行 Socket 通信，通过 FastCGI 协议发送 CGI 环境变量和标准输入数据给 CGI 解释器进程。
+ 3. CGI 解释器进程完成处理后将标准输出和错误信息从同一连接返回 Web Server。
+ 4. CGI 解释器进程接着等待并处理来自 Web Server 的下一个连接。
+ 
+FastCGI 与传统 CGI 模式的区别之一则是 Web 服务器不是直接执行 CGI 程序了，而是通过 Socket 与 FastCGI 响应器（FastCGI 进程管理器）进行交互，Web 服务器需要将数据 CGI 1.1 的规范封装在遵循 FastCGI 协议包中发送给 FastCGI 响应器程序。也正是由于 FastCGI 进程管理器是基于 Socket 通信的，所以也是分布式的，Web 服务器可以和 CGI 响应器服务器分开部署。
+
+以 PHP 非分布式为例，FastCGI 的整个工作流程是这样的：
+
+   1. Web Server 启动时载入 FastCGI 进程管理器（IIS ISAPI 或 Apache Module)
+   2. FastCGI 进程管理器自身初始化，启动多个 CGI 解释器进程(可见多个 php-cgi)并等待来自 Web Server 的连接。
+   3. 当客户端请求到达 Web Server 时，FastCGI 进程管理器选择并连接到一个 CGI 解释器。
+      Web server 将 CGI 环境变量和标准输入发送到 FastCGI 子进程 php-cgi。
+   4. FastCGI 子进程完成处理后将标准输出和错误信息从同一连接返回 Web Server。当 FastCGI 子进程关闭连接时，
+      请求便告处理完成。FastCGI 子进程接着等待并处理来自 FastCGI 进程管理器（运行在 Web Server 中）的下一个连接。而在CGI模式中，php-cgi 在此便退出了。
+
+
 
 ## PHP中的CGI实现
 
