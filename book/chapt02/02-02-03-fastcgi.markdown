@@ -294,12 +294,10 @@ typedef struct _fcgi_header {
 } fcgi_header;
 ```
 **字段解释下：**
+
 `version`标识FastCGI协议版本。
-
 `type` 标识FastCGI记录类型，也就是记录执行的一般职能。
-
 `requestId`标识记录所属的FastCGI请求。
-
 `contentLength`记录的contentData组件的字节数。
 
 关于上面的`xxB1`和`xxB0`的协议说明：当两个相邻的结构组件除了后缀“B1”和“B0”之外命名相同时，它表示这两个组件可视为估值为B1<<8 + B0的单个数字。该单个数字的名字是这些组件减去后缀的名字。这个约定归纳了一个由超过两个字节表示的数字的处理方式。
