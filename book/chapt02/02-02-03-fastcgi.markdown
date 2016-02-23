@@ -8,6 +8,7 @@ CGI的一个目的是要独立于任何语言的，所以CGI可以用任何一�
 如php，perl，tcl等。
 
 ## CGI 的运行原理
+
    1. 客户端访问某个 URL 地址之后，通过 GET/POST/PUT 等方式提交数据，并通过 HTTP 协议向 Web 服务器发出请求。
    2. 服务器端的 HTTP Daemon（守护进程）启动一个子进程。然后在子进程中，将 HTTP 请求里描述的信息通过标准输入 stdin 和环境变量传递给 URL 指定的 CGI 程序，并启动此应用程序进行处理，处理结果通过标准输出 stdout 返回给 HTTP Daemon 子进程。
    3. 再由 HTTP Daemon 子进程通过 HTTP 协议返回给客户端。
@@ -17,6 +18,7 @@ CGI的一个目的是要独立于任何语言的，所以CGI可以用任何一�
 ![图2.7 CGI 运行原理示举例示意图](../images/chapt02/02-02-03-cgi.png)
 
 如图所示，本次请求的流程如下：
+
    1. 客户端访问 [http://127.0.0.1:9003/cgi-bin/user?id=1](http://127.0.0.1:9003/cgi-bin/user?id=1)
    2. 127.0.0.1 上监听 9003 端口的守护进程接受到该请求
    3. 通过解析 HTTP 头信息，得知是 GET 请求，并且请求的是 `/cgi-bin/` 目录下的 `user` 文件。
@@ -25,9 +27,9 @@ CGI的一个目的是要独立于任何语言的，所以CGI可以用任何一�
    6. 执行完毕之后，将结果通过标准输出返回到子进程。
    7. 子进程将结果返回给客户端。
   
-下面配合演示代码：
+#### 下面是演示代码：
 
- 1. Web 服务器演示
+##### Web 服务器程序
 
 ```c
 #include <stdio.h>
@@ -170,7 +172,7 @@ char* html_response(char *res, char *buf)
 
 97行则将包装后的 html 结果写入客户端 socket 描述符，返回给连接Web服务器的客户端。
   
-  2. CGI 程序(user.c) 
+##### CGI 程序(user.c) 
   
 ```c
 #include <stdio.h>
