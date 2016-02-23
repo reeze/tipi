@@ -232,25 +232,91 @@ FastCGI 是与语言无关的、可伸缩架构的 CGI 开放扩展，将 CGI �
 CGI 程序反复加载是 CGI 性能低下的主要原因，如果 CGI 程序保持在内存中并接受 FastCGI 进程管理器调度，
 则可以提供良好的性能、伸缩性、Fail-Over 特性等。
 
-#### FastCGI 工作流程如下：
+### FastCGI 工作流程如下：
 
  1. FastCGI 进程管理器自身初始化，启动多个 CGI 解释器进程，并等待来自 Web Server 的连接。
  2. Web 服务器与 FastCGI 进程管理器进行 Socket 通信，通过 FastCGI 协议发送 CGI 环境变量和标准输入数据给 CGI 解释器进程。
  3. CGI 解释器进程完成处理后将标准输出和错误信息从同一连接返回 Web Server。
  4. CGI 解释器进程接着等待并处理来自 Web Server 的下一个连接。
  
-FastCGI 与传统 CGI 模式的区别之一则是 Web 服务器不是直接执行 CGI 程序了，而是通过 Socket 与 FastCGI 响应器（FastCGI 进程管理器）进行交互，Web 服务器需要将数据 CGI 1.1 的规范封装在遵循 FastCGI 协议包中发送给 FastCGI 响应器程序。也正是由于 FastCGI 进程管理器是基于 Socket 通信的，所以也是分布式的，Web 服务器可以和 CGI 响应器服务器分开部署。
+![图2.8 FastCGI 运行原理示举例示意图](../images/chapt02/02-02-03-fastcgi-demo.png)
 
-以 PHP 非分布式为例，FastCGI 的整个工作流程是这样的：
+FastCGI 与传统 CGI 模式的区别之一则是 Web 服务器不是直接执行 CGI 程序了，而是通过 Socket 与 FastCGI 响应器（FastCGI 进程管理器）进行交互，也正是由于 FastCGI 进程管理器是基于 Socket 通信的，所以也是分布式的，Web 服务器可以和 CGI 响应器服务器分开部署。Web 服务器需要将数据 CGI/1.1 的规范封装在遵循 FastCGI 协议包中发送给 FastCGI 响应器程序。
 
-   1. Web Server 启动时载入 FastCGI 进程管理器（IIS ISAPI 或 Apache Module)
-   2. FastCGI 进程管理器自身初始化，启动多个 CGI 解释器进程(可见多个 php-cgi)并等待来自 Web Server 的连接。
-   3. 当客户端请求到达 Web Server 时，FastCGI 进程管理器选择并连接到一个 CGI 解释器。
-      Web server 将 CGI 环境变量和标准输入发送到 FastCGI 子进程 php-cgi。
-   4. FastCGI 子进程完成处理后将标准输出和错误信息从同一连接返回 Web Server。当 FastCGI 子进程关闭连接时，
-      请求便告处理完成。FastCGI 子进程接着等待并处理来自 FastCGI 进程管理器（运行在 Web Server 中）的下一个连接。而在CGI模式中，php-cgi 在此便退出了。
+### FastCGI 协议
 
+可能上面的内容理解起来还是很抽象，这是由于第一对FastCGI协议还没有一个大概的认识，第二没有实际代码的学习。所以需要预先学习下 [FastCGI 协议](http://www.fastcgi.com/devkit/doc/fcgi-spec.html )，不一定需要完全看懂，可大致了解之后，看完本篇再结合着学习理解消化。
 
+下面结合 PHP 的 FastCGI 的代码进行分析，不作特殊说明以下代码均来自于 PHP 源码。
+
+#### FastCGI 消息类型
+
+FastCGI 将传输的消息做了很多类型的划分，其结构体定义如下：
+```c
+typedef enum _fcgi_request_type {
+    FCGI_BEGIN_REQUEST      =  1, /* [in]                              */
+    FCGI_ABORT_REQUEST      =  2, /* [in]  (not supported)             */
+    FCGI_END_REQUEST        =  3, /* [out]                             */
+    FCGI_PARAMS             =  4, /* [in]  environment variables       */
+    FCGI_STDIN              =  5, /* [in]  post data                   */
+    FCGI_STDOUT             =  6, /* [out] response                    */
+    FCGI_STDERR             =  7, /* [out] errors                      */
+    FCGI_DATA               =  8, /* [in]  filter data (not supported) */
+    FCGI_GET_VALUES         =  9, /* [in]                              */
+    FCGI_GET_VALUES_RESULT  = 10  /* [out]                             */
+} fcgi_request_type;
+```
+
+#### 消息的发送顺序
+
+下图是一个比较常见消息传递流程
+
+最先发送的是`FCGI_BEGIN_REQUEST`，然后是`FCGI_PARAMS`和`FCGI_STDIN`，由于每个消息头（下面将详细说明）里面能够承载的最大长度是65535，所以这两种类型的消息不一定只发送一次，有可能连续发送多次。
+
+FastCGI 响应体处理完毕之后，将发送`FCGI_STDOUT`、`FCGI_STDERR`，同理也可能多次连续发送。最后以`FCGI_END_REQUEST`表示请求的结束。
+需要注意的一点，`FCGI_BEGIN_REQUEST`和`FCGI_END_REQUEST`分别标识着请求的开始和结束，与整个协议息息相关，所以他们的消息体的内容也是协议的一部分，因此也会有相应的结构体与之对应（后面会详细说明）。而环境变量、标准输入、标准输出、错误输出，这些都是业务相关，与协议无关，所以他们的消息体的内容则无结构体对应。
+
+由于整个消息是二进制连续传递的，所以必须定义一个统一的结构的消息头，这样以便读取每个消息的消息体，方便消息的切割。这在网络通讯中是非常常见的一种手段。
+
+#### FastCGI 消息头
+
+如上，FastCGI 消息分10种消息类型，有的是输入有的是输出。而所有的消息都以一个消息头开始。其结构体定义如下：
+```c
+typedef struct _fcgi_header {
+	unsigned char version;
+	unsigned char type;
+	unsigned char requestIdB1;
+	unsigned char requestIdB0;
+	unsigned char contentLengthB1;
+	unsigned char contentLengthB0;
+	unsigned char paddingLength;
+	unsigned char reserved;
+} fcgi_header;
+```
+**字段解释下：**
+`version`标识FastCGI协议版本。
+
+`type` 标识FastCGI记录类型，也就是记录执行的一般职能。
+
+`requestId`标识记录所属的FastCGI请求。
+
+`contentLength`记录的contentData组件的字节数。
+
+关于上面的`xxB1`和`xxB0`的协议说明：当两个相邻的结构组件除了后缀“B1”和“B0”之外命名相同时，它表示这两个组件可视为估值为B1<<8 + B0的单个数字。该单个数字的名字是这些组件减去后缀的名字。这个约定归纳了一个由超过两个字节表示的数字的处理方式。
+
+比如协议头中`requestId`和`contentLength`表示的最大值就是`65535`
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <limits.h>
+
+int main()
+{
+   unsigned char requestIdB1 = UCHAR_MAX;
+   unsigned char requestIdB0 = UCHAR_MAX;
+   printf("%d\n", (requestIdB1 << 8) + requestIdB0); // 65535
+}
+```
 
 ## PHP中的CGI实现
 
