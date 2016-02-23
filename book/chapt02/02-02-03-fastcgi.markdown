@@ -167,9 +167,7 @@ char* html_response(char *res, char *buf)
 如上代码中的重点：
 
 66~81行找到CGI程序的相对路径（我们为了简单，直接将其根目录定义为Web程序的当前目录），这样就可以在子进程中执行 CGI 程序了；同时设置环境变量，方便CGI程序运行时读取；
-
 94~95行将 CGI 程序的标准输出结果写入 Web 服务器守护进程的缓存中；
-
 97行则将包装后的 html 结果写入客户端 socket 描述符，返回给连接Web服务器的客户端。
   
 ##### CGI 程序(user.c) 
@@ -271,6 +269,8 @@ typedef enum _fcgi_request_type {
 
 下图是一个比较常见消息传递流程
 
+![图2.9 FastCGI 消息传递流程示意图](../images/chapt02/02-02-03-fastcgi-data.png)
+
 最先发送的是`FCGI_BEGIN_REQUEST`，然后是`FCGI_PARAMS`和`FCGI_STDIN`，由于每个消息头（下面将详细说明）里面能够承载的最大长度是65535，所以这两种类型的消息不一定只发送一次，有可能连续发送多次。
 
 FastCGI 响应体处理完毕之后，将发送`FCGI_STDOUT`、`FCGI_STDERR`，同理也可能多次连续发送。最后以`FCGI_END_REQUEST`表示请求的结束。
@@ -300,9 +300,10 @@ typedef struct _fcgi_header {
 `requestId`标识记录所属的FastCGI请求。
 `contentLength`记录的contentData组件的字节数。
 
-关于上面的`xxB1`和`xxB0`的协议说明：当两个相邻的结构组件除了后缀“B1”和“B0”之外命名相同时，它表示这两个组件可视为估值为B1<<8 + B0的单个数字。该单个数字的名字是这些组件减去后缀的名字。这个约定归纳了一个由超过两个字节表示的数字的处理方式。
+关于上面的`xxB1`和`xxB0`的协议说明：当两个相邻的结构组件除了后缀“B1”和“B0”之外命名相同时，它表示这两个组件可视为估值为`B1<<8 + B0`的单个数字。该单个数字的名字是这些组件减去后缀的名字。这个约定归纳了一个由超过两个字节表示的数字的处理方式。
 
-比如协议头中`requestId`和`contentLength`表示的最大值就是`65535`
+比如协议头中`requestId`和`contentLength`表示的最大值就是 65535。
+
 ```c
 #include <stdio.h>
 #include <stdlib.h>
@@ -315,6 +316,81 @@ int main()
    printf("%d\n", (requestIdB1 << 8) + requestIdB0); // 65535
 }
 ```
+
+你可能会想到如果一个消息体长度超过65535怎么办，则分割为多个相同类型的消息发送即可。
+
+#### FCGI_BEGIN_REQUEST 的定义
+
+```c
+typedef struct _fcgi_begin_request {
+	unsigned char roleB1;
+	unsigned char roleB0;
+	unsigned char flags;
+	unsigned char reserved[5];
+} fcgi_begin_request;
+```
+
+**字段解释:**
+`role`表示Web服务器期望应用扮演的角色。分为三个角色（而我们这里讨论的情况一般都是响应器角色）
+
+```c
+typedef enum _fcgi_role {
+	FCGI_RESPONDER	= 1,
+	FCGI_AUTHORIZER	= 2,
+	FCGI_FILTER	= 3
+} fcgi_role;
+```
+
+而`FCGI_BEGIN_REQUEST`中的`flags`组件包含一个控制线路关闭的位：`flags & FCGI_KEEP_CONN`：如果为0，则应用在对本次请求响应后关闭线路。如果非0，应用在对本次请求响应后不会关闭线路；Web服务器为线路保持响应性。
+
+#### FCGI_END_REQUEST 的定义
+
+```c
+typedef struct _fcgi_end_request {
+    unsigned char appStatusB3;
+    unsigned char appStatusB2;
+    unsigned char appStatusB1;
+    unsigned char appStatusB0;
+    unsigned char protocolStatus;
+    unsigned char reserved[3];
+} fcgi_end_request;
+```
+
+**字段解释:**
+`appStatus`组件是应用级别的状态码。
+`protocolStatus`组件是协议级别的状态码；`protocolStatus`的值可能是：
+
+	FCGI_REQUEST_COMPLETE：请求的正常结束。
+	FCGI_CANT_MPX_CONN：拒绝新请求。这发生在Web服务器通过一条线路向应用发送并发的请求时，后者被设计为每条线路每次处理一个请求。
+	FCGI_OVERLOADED：拒绝新请求。这发生在应用用完某些资源时，例如数据库连接。
+	FCGI_UNKNOWN_ROLE：拒绝新请求。这发生在Web服务器指定了一个应用不能识别的角色时。
+
+`protocolStatus`在 PHP 中的定义如下
+
+```c
+typedef enum _fcgi_protocol_status {
+	FCGI_REQUEST_COMPLETE	= 0,
+	FCGI_CANT_MPX_CONN		= 1,
+	FCGI_OVERLOADED			= 2,
+	FCGI_UNKNOWN_ROLE		= 3
+} dcgi_protocol_status;
+```
+
+需要注意`dcgi_protocol_status`和`fcgi_role`各个元素的值都是 FastCGI 协议里定义好的，而非 PHP 自定义的。
+
+### 消息通讯样例
+为了简单的表示，消息头只显示消息的类型和消息的 id，其他字段都不予以显示。而一行表示一个数据包。下面的例子来自于官网
+
+```
+{FCGI_BEGIN_REQUEST,   1, {FCGI_RESPONDER, 0}}
+{FCGI_PARAMS,          1, "\013\002SERVER_PORT80\013\016SERVER_ADDR199.170.183.42 ... "}
+{FCGI_STDIN,           1, "quantity=100&item=3047936"}
+{FCGI_STDOUT,          1, "Content-type: text/html\r\n\r\n<html>\n<head> ... "}
+{FCGI_END_REQUEST,     1, {0, FCGI_REQUEST_COMPLETE}}
+```
+
+配合上面各个结构体，则可以大致想到 FastCGI 响应器的解析和响应流程：
+首先读取消息头，得到其类型为`FCGI_BEGIN_REQUEST`，然后解析其消息体，得知其需要的角色就是`FCGI_RESPONDER`，`flag`为0，表示请求结束后关闭线路。然后解析第二段消息，得知其消息类型为`FCGI_PARAMS`，然后直接将消息体里的内容以回车符切割后存入环境变量。与之类似，处理完毕之后，则返回了`FCGI_STDOUT`消息体和`FCGI_END_REQUEST`消息体供 Web 服务器解析。
 
 ## PHP中的CGI实现
 
