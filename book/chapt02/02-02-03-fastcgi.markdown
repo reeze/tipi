@@ -1,12 +1,225 @@
 # FastCGI
+在讨论 FastCGI 之前，不得不说传统的 CGI 的工作原理，同时应该大概了解 [CGI 1.1 协议](https://datatracker.ietf.org/doc/rfc3875/)
 
-## FastCGI简介
-
-[CGI](http://zh.wikipedia.org/wiki/CGI)全称是“通用网关接口”(Common Gateway Interface)，
-它可以让一个客户端，从网页浏览器向执行在Web服务器上的程序请求数据。
+## CGI 简介
+[CGI](http://zh.wikipedia.org/wiki/CGI)全称是“通用网关接口”(Common Gateway Interface)，它可以让一个客户端，从网页浏览器向执行在Web服务器上的程序请求数据。
 CGI描述了客户端和这个程序之间传输数据的一种标准。
 CGI的一个目的是要独立于任何语言的，所以CGI可以用任何一种语言编写，只要这种语言具有标准输入、输出和环境变量。
 如php，perl，tcl等。
+
+## CGI 的运行原理
+   1. 客户端访问某个 URL 地址之后，通过 GET/POST/PUT 等方式提交数据，并通过 HTTP 协议向 Web 服务器发出请求。
+   2. 服务器端的 HTTP Daemon（守护进程）启动一个子进程。然后在子进程中，将 HTTP 请求里描述的信息通过标准输入 stdin 和环境变量传递给 URL 指定的 CGI 程序，并启动此应用程序进行处理，处理结果通过标准输出 stdout 返回给 HTTP Daemon 子进程。
+   3. 再由 HTTP Daemon 子进程通过 HTTP 协议返回给客户端。
+
+上面的这段话理解可能还是比较抽象，下面我们就通过一次 GET 请求为例进行详细说明。
+
+![图2.7 CGI 运行原理示举例示意图](../images/chapt02/02-02-03-cgi.png)
+
+如图所示，本次请求的流程如下：
+   1. 客户端访问 [http://127.0.0.1:9003/cgi-bin/user?id=1](http://127.0.0.1:9003/cgi-bin/user?id=1)
+   2. 127.0.0.1 上监听 9003 端口的守护进程接受到该请求
+   3. 通过解析 HTTP 头信息，得知是 GET 请求，并且请求的是 `/cgi-bin/` 目录下的 `user` 文件。
+   4. 将 uri 里的 `id=1` 通过存入 `QUERY_STRING` 环境变量。
+   5. Web 守护进程 fork 一个子进程，然后在子进程中执行 user 程序，通过环境变量获取到`id`。
+   6. 执行完毕之后，将结果通过标准输出返回到子进程。
+   7. 子进程将结果返回给客户端。
+  
+下面配合演示代码：
+
+ 1. Web 服务器演示
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <netinet/in.h>
+#include <string.h>
+    
+#define SERV_PORT 9003
+ 
+char* str_join(char *str1, char *str2);
+char* html_response(char *res, char *buf);
+   
+int main(void)
+{
+    int lfd, cfd;
+    struct sockaddr_in serv_addr,clin_addr;
+    socklen_t clin_len;
+    char buf[1024],web_result[1024];
+    int len;
+    FILE *cin;
+  
+    if((lfd = socket(AF_INET,SOCK_STREAM,0)) == -1){
+        perror("create socket failed");
+        exit(1);
+    }
+      
+    memset(&serv_addr, 0, sizeof(serv_addr));
+    serv_addr.sin_family = AF_INET;
+    serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+    serv_addr.sin_port = htons(SERV_PORT);
+  
+    if(bind(lfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) == -1)
+    {
+        perror("bind error");
+        exit(1);
+    }
+  
+    if(listen(lfd, 128) == -1)
+    {
+        perror("listen error");
+        exit(1);
+    }
+     
+    signal(SIGCLD,SIG_IGN);
+   
+    while(1)
+    {
+        clin_len = sizeof(clin_addr);
+        if ((cfd = accept(lfd, (struct sockaddr *)&clin_addr, &clin_len)) == -1)
+        {
+            perror("接收错误\n");
+            continue;
+        }
+ 
+        cin = fdopen(cfd, "r");
+        setbuf(cin, (char *)0);
+        fgets(buf,1024,cin); //读取第一行
+        printf("\n%s", buf);
+ 
+        //============================ cgi 环境变量设置演示 ============================
+         
+        // 例如 "GET /cgi-bin/user?id=1 HTTP/1.1";
+ 
+        char *delim = " ";
+        char *p;
+        char *method, *filename, *query_string;
+        char *query_string_pre = "QUERY_STRING=";
+ 
+        method = strtok(buf,delim);         // GET
+        p = strtok(NULL,delim);             // /cgi-bin/user?id=1 
+        filename = strtok(p,"?");           // /cgi-bin/user
+         
+        if (strcmp(filename,"/favicon.ico") == 0)
+        {
+            continue;
+        }
+ 
+        query_string = strtok(NULL,"?");    // id=1
+        putenv(str_join(query_string_pre,query_string));
+ 
+        //============================ cgi 环境变量设置演示 ============================
+ 
+        int pid = fork();
+  
+        if (pid > 0)
+        {
+            close(cfd);
+        }
+        else if (pid == 0)
+        {
+            close(lfd);
+            FILE *stream = popen(str_join(".",filename),"r");
+            fread(buf,sizeof(char),sizeof(buf),stream);
+            html_response(web_result,buf);
+            write(cfd,web_result,sizeof(web_result));
+            pclose(stream);
+            close(cfd);
+            exit(0);
+        }
+        else
+        {
+            perror("fork error");
+            exit(1);
+        }
+    }
+   
+    close(lfd);
+       
+    return 0;
+}
+ 
+char* str_join(char *str1, char *str2)
+{
+    char *result = malloc(strlen(str1)+strlen(str2)+1);
+    if (result == NULL) exit (1);
+    strcpy(result, str1);
+    strcat(result, str2);
+   
+    return result;
+}
+ 
+char* html_response(char *res, char *buf)
+{
+    char *html_response_template = "HTTP/1.1 200 OK\r\nContent-Type:text/html\r\nContent-Length: %d\r\nServer: mengkang\r\n\r\n%s";
+ 
+    sprintf(res,html_response_template,strlen(buf),buf);
+     
+    return res;
+}
+```
+如上代码中的重点：
+
+66~81行找到CGI程序的相对路径（我们为了简单，直接将其根目录定义为Web程序的当前目录），这样就可以在子进程中执行 CGI 程序了；同时设置环境变量，方便CGI程序运行时读取；
+
+94~95行将 CGI 程序的标准输出结果写入 Web 服务器守护进程的缓存中；
+
+97行则将包装后的 html 结果写入客户端 socket 描述符，返回给连接Web服务器的客户端。
+  
+  2. CGI 程序(user.c) 
+  
+```c
+#include <stdio.h>
+#include <stdlib.h>
+// 通过获取的 id 查询用户的信息
+int main(void){
+ 
+    //============================ 模拟数据库 ============================
+    typedef struct 
+    {
+        int  id;
+        char *username;
+        int  age;
+    } user;
+ 
+    user users[] = {
+        {},
+        {
+            1,
+            "mengkang.zhou",
+            18
+        }
+    };
+    //============================ 模拟数据库 ============================
+ 
+ 
+    char *query_string;
+    int id;
+ 
+    query_string = getenv("QUERY_STRING");
+     
+    if (query_string == NULL)
+    {
+        printf("没有输入数据");
+    } else if (sscanf(query_string,"id=%d",&id) != 1)
+    {
+        printf("没有输入id");
+    } else
+    {
+        printf("用户信息查询<br>学号: %d<br>姓名: %s<br>年龄: %d",id,users[id].username,users[id].age);
+    }
+     
+    return 0;
+}
+```
+将上面的 CGI 程序编译成gcc user.c -o user，放在上面web程序的 `./cgi-bin/` 目录下。
+代码中的第28行，从环境变量中读取前面在Web服务器守护进程中设置的环境变量，是我们演示的重点。
+
+## FastCGI 简介
 
 [FastCGI](http://en.wikipedia.org/wiki/FastCGI)是Web服务器和处理程序之间通信的一种[协议](http://andylin02.iteye.com/blog/648412)，
 是CGI的一种改进方案，[FastCGI](http://baike.baidu.com/view/641394.htm)像是一个常驻(long-lived)型的CGI，
