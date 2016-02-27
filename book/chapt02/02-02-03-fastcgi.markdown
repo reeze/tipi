@@ -40,127 +40,117 @@ CGI的一个目的是要独立于任何语言的，所以CGI可以用任何一�
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <string.h>
-    
+
 #define SERV_PORT 9003
- 
-char* str_join(char *str1, char *str2);
-char* html_response(char *res, char *buf);
-   
-int main(void)
-{
+
+char *str_join(char *str1, char *str2);
+
+char *html_response(char *res, char *buf);
+
+int main(void) {
     int lfd, cfd;
-    struct sockaddr_in serv_addr,clin_addr;
+    struct sockaddr_in serv_addr, clin_addr;
     socklen_t clin_len;
-    char buf[1024],web_result[1024];
+    char buf[1024], web_result[1024];
     int len;
     FILE *cin;
-  
-    if((lfd = socket(AF_INET,SOCK_STREAM,0)) == -1){
+
+    if ((lfd = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
         perror("create socket failed");
         exit(1);
     }
-      
+
     memset(&serv_addr, 0, sizeof(serv_addr));
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
     serv_addr.sin_port = htons(SERV_PORT);
-  
-    if(bind(lfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) == -1)
-    {
+
+    if (bind(lfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) == -1) {
         perror("bind error");
         exit(1);
     }
-  
-    if(listen(lfd, 128) == -1)
-    {
+
+    if (listen(lfd, 128) == -1) {
         perror("listen error");
         exit(1);
     }
-     
-    signal(SIGCLD,SIG_IGN);
-   
-    while(1)
-    {
+
+    signal(SIGCLD, SIG_IGN);
+
+    while (1) {
         clin_len = sizeof(clin_addr);
-        if ((cfd = accept(lfd, (struct sockaddr *)&clin_addr, &clin_len)) == -1)
-        {
+        if ((cfd = accept(lfd, (struct sockaddr *) &clin_addr, &clin_len)) == -1) {
             perror("接收错误\n");
             continue;
         }
- 
+
         cin = fdopen(cfd, "r");
-        setbuf(cin, (char *)0);
-        fgets(buf,1024,cin); //读取第一行
+        setbuf(cin, (char *) 0);
+        fgets(buf, 1024, cin); //读取第一行
         printf("\n%s", buf);
- 
+
         //============================ cgi 环境变量设置演示 ============================
-         
+
         // 例如 "GET /cgi-bin/user?id=1 HTTP/1.1";
- 
+
         char *delim = " ";
         char *p;
         char *method, *filename, *query_string;
         char *query_string_pre = "QUERY_STRING=";
- 
-        method = strtok(buf,delim);         // GET
-        p = strtok(NULL,delim);             // /cgi-bin/user?id=1 
-        filename = strtok(p,"?");           // /cgi-bin/user
-         
-        if (strcmp(filename,"/favicon.ico") == 0)
-        {
+
+        method = strtok(buf, delim);         // GET
+        p = strtok(NULL, delim);             // /cgi-bin/user?id=1 
+        filename = strtok(p, "?");           // /cgi-bin/user
+
+        if (strcmp(filename, "/favicon.ico") == 0) {
             continue;
         }
- 
-        query_string = strtok(NULL,"?");    // id=1
-        putenv(str_join(query_string_pre,query_string));
- 
+
+        query_string = strtok(NULL, "?");    // id=1
+        putenv(str_join(query_string_pre, query_string));
+
         //============================ cgi 环境变量设置演示 ============================
- 
+
         int pid = fork();
-  
-        if (pid > 0)
-        {
+
+        if (pid > 0) {
             close(cfd);
         }
-        else if (pid == 0)
-        {
+        else if (pid == 0) {
             close(lfd);
-            FILE *stream = popen(str_join(".",filename),"r");
-            fread(buf,sizeof(char),sizeof(buf),stream);
-            html_response(web_result,buf);
-            write(cfd,web_result,sizeof(web_result));
+            FILE *stream = popen(str_join(".", filename), "r");
+            fread(buf, sizeof(char), sizeof(buf), stream);
+            html_response(web_result, buf);
+            write(cfd, web_result, sizeof(web_result));
             pclose(stream);
             close(cfd);
             exit(0);
         }
-        else
-        {
+        else {
             perror("fork error");
             exit(1);
         }
     }
-   
+
     close(lfd);
-       
+
     return 0;
 }
- 
-char* str_join(char *str1, char *str2)
-{
-    char *result = malloc(strlen(str1)+strlen(str2)+1);
-    if (result == NULL) exit (1);
+
+char *str_join(char *str1, char *str2) {
+    char *result = malloc(strlen(str1) + strlen(str2) + 1);
+    if (result == NULL) exit(1);
     strcpy(result, str1);
     strcat(result, str2);
-   
+
     return result;
 }
- 
-char* html_response(char *res, char *buf)
-{
+
+char *html_response(char *res, char *buf) {
     char *html_response_template = "HTTP/1.1 200 OK\r\nContent-Type:text/html\r\nContent-Length: %d\r\nServer: mengkang\r\n\r\n%s";
- 
-    sprintf(res,html_response_template,strlen(buf),buf);
-     
+
+    sprintf(res, html_response_template, strlen(buf), buf);
+
     return res;
 }
 ```
@@ -175,44 +165,41 @@ char* html_response(char *res, char *buf)
 ```c
 #include <stdio.h>
 #include <stdlib.h>
+
 // 通过获取的 id 查询用户的信息
-int main(void){
- 
+int main(void) {
+
     //============================ 模拟数据库 ============================
-    typedef struct 
-    {
-        int  id;
+    typedef struct {
+        int id;
         char *username;
-        int  age;
+        int age;
     } user;
- 
+
     user users[] = {
-        {},
-        {
-            1,
-            "mengkang.zhou",
-            18
-        }
+            {},
+            {
+                    1,
+                    "mengkang.zhou",
+                    18
+            }
     };
     //============================ 模拟数据库 ============================
- 
- 
+
+
     char *query_string;
     int id;
- 
+
     query_string = getenv("QUERY_STRING");
-     
-    if (query_string == NULL)
-    {
+
+    if (query_string == NULL) {
         printf("没有输入数据");
-    } else if (sscanf(query_string,"id=%d",&id) != 1)
-    {
+    } else if (sscanf(query_string, "id=%d", &id) != 1) {
         printf("没有输入id");
-    } else
-    {
-        printf("用户信息查询<br>学号: %d<br>姓名: %s<br>年龄: %d",id,users[id].username,users[id].age);
+    } else {
+        printf("用户信息查询<br>学号: %d<br>姓名: %s<br>年龄: %d", id, users[id].username, users[id].age);
     }
-     
+
     return 0;
 }
 ```
