@@ -39,11 +39,13 @@ PHP解决并发的思路非常简单，既然存在资源竞争，那么直接�
     {
         memset(array_globals, 0, sizeof(zend_array_globals));
     }
-    // ...
+
+    /* code... */
+
     PHP_MINIT_FUNCTION(array) /* {{{ */
     {
         ZEND_INIT_MODULE_GLOBALS(array, php_array_init_globals, NULL);
-        // ...
+        /* code... */
     }
 
 这里的声明和初始化操作都是区分ZTS和非ZTS。
@@ -67,36 +69,130 @@ PHP解决并发的思路非常简单，既然存在资源竞争，那么直接�
 
     #endif
 
-对于非ZTS的情况，直接就是声明变量，初始化变量；对于ZTS情况，PHP内核会添加TSRM，对应到这里的代码时不再是声明全局变量，
-而是用ts_rsrc_id代替，初始化时不再是初始化变量，而是调用ts_allocate_id函数在多线程环境中给当前这个模块申请一个全局变量并返回资源ID。
+对于非ZTS的情况，直接就是声明变量，初始化变量；对于ZTS情况，PHP内核会添加TSRM，不再是声明全局变量，而是用ts_rsrc_id代替，初始化时不再是初始化变量，而是调用ts_allocate_id函数在多线程环境中给当前这个模块申请一个全局变量并返回资源ID。资源ID变量名由模块名和global_id组成。
 
-资源ID变量名由模块名和global_id组成。
-它是一个自增的整数，整个进程会共享这个变量，在进程SAPI初始调用，初始化TSRM环境时，
-id_count作为一个静态变量将被初始化为0。这是一个非常简单的实现，自增。
-确保了资源不会冲突，每个线程的独立。
+### TSRM 环境的初始化
+
+在各个 SAPI main 函数中通过调用 tsrm_startup 来初始化 TSRM 环境。
+
+    [c]
+    /* The memory manager table */
+    static tsrm_tls_entry	**tsrm_tls_table=NULL;
+    static int				tsrm_tls_table_size;
+    static ts_rsrc_id		id_count;
+
+    TSRM_API int tsrm_startup(int expected_threads, int expected_resources, int debug_level, char *debug_filename)
+    {
+        /* code... */
+
+        tsrm_tls_table_size = expected_threads; // SAPI 初始化时预计分配的线程数，一般都为1
+
+        tsrm_tls_table = (tsrm_tls_entry **) calloc(tsrm_tls_table_size, sizeof(tsrm_tls_entry *));
+
+        /* code... */
+
+        id_count=0;
+
+        resource_types_table_size = expected_resources; // SAPI 初始化时预先分配的资源表大小，一般也为1
+
+        resource_types_table = (tsrm_resource_type *) calloc(resource_types_table_size, sizeof(tsrm_resource_type));
+
+        /* code... */
+
+        return 1;
+    }
+
+精简出其中完成的三个重要的工作，初始化了 tsrm_tls_table 链表、resource_types_table 数组，以及 id_count。而这三个全局变量是所有线程共享的，实现了线程间的内存管理一致性。其中涉及到两个关键的数据结构
+
+    [c]
+    typedef struct _tsrm_tls_entry tsrm_tls_entry;
+
+    struct _tsrm_tls_entry {
+        void **storage;// 本节点的全局变量数组
+        int count;// 本节点全局变量数
+        THREAD_T thread_id;// 本节点对应的线程 ID
+        tsrm_tls_entry *next;// 下一个节点的指针
+    };
+
+	typedef struct {
+		size_t size;// 被定义的全局变量结构体的大小
+		ts_allocate_ctor ctor;// 被定义的全局变量的构造方法指针
+		ts_allocate_dtor dtor;// 被定义的全局变量的析构方法指针
+		int done;
+	} tsrm_resource_type;
 
 
 ### 资源id的分配
 
-当通过ts_allocate_id函数分配全局资源ID时，PHP内核会锁一下，确保生成的资源ID的唯一，
-这里锁的作用是在时间维度将并发的内容变成串行，因为并发的根本问题就是时间的问题。
+由前面的数组扩展的例子我们知道初始化一个全局变量时需要使用 ZEND_INIT_MODULE_GLOBALS 宏，而其实际则是调用的 ts_allocate_id 函数在多线程环境下申请一个全局变量，然后返回分配的资源 ID。代码虽然比较多，实际还是比较清晰，下面附带注解进行说明：
 
-当加锁以后，id_count自增，生成一个资源ID，生成资源ID后，就会给当前资源ID分配存储的位置，
+    [c]
+    TSRM_API ts_rsrc_id ts_allocate_id(ts_rsrc_id *rsrc_id, size_t size, ts_allocate_ctor ctor, ts_allocate_dtor dtor)
+    {
+        int i;
+
+        TSRM_ERROR((TSRM_ERROR_LEVEL_CORE, "Obtaining a new resource id, %d bytes", size));
+
+        // 加上多线程互斥锁
+        tsrm_mutex_lock(tsmm_mutex);
+
+        /* obtain a resource id */
+        *rsrc_id = TSRM_SHUFFLE_RSRC_ID(id_count++); // 全局静态变量 id_count 加 1
+        TSRM_ERROR((TSRM_ERROR_LEVEL_CORE, "Obtained resource id %d", *rsrc_id));
+
+        /* store the new resource type in the resource sizes table */
+        // 因为 resource_types_table_size 是有初始值的（expected_resources），所以不是每次都要新增内存
+        if (resource_types_table_size < id_count) {
+            resource_types_table = (tsrm_resource_type *) realloc(resource_types_table, sizeof(tsrm_resource_type)*id_count);
+            if (!resource_types_table) {
+                tsrm_mutex_unlock(tsmm_mutex);
+                TSRM_ERROR((TSRM_ERROR_LEVEL_ERROR, "Unable to allocate storage for resource"));
+                *rsrc_id = 0;
+                return 0;
+            }
+            resource_types_table_size = id_count;
+        }
+
+        // 将全局变量结构体的大小、构造函数和析构函数都存入 tsrm_resource_type 的数组 resource_types_table 中
+        resource_types_table[TSRM_UNSHUFFLE_RSRC_ID(*rsrc_id)].size = size;
+        resource_types_table[TSRM_UNSHUFFLE_RSRC_ID(*rsrc_id)].ctor = ctor;
+        resource_types_table[TSRM_UNSHUFFLE_RSRC_ID(*rsrc_id)].dtor = dtor;
+        resource_types_table[TSRM_UNSHUFFLE_RSRC_ID(*rsrc_id)].done = 0;
+
+        /* enlarge the arrays for the already active threads */
+        // PHP内核会接着遍历所有线程为每一个线程的 tsrm_tls_entry 分配这个线程全局变量需要的内存空间。
+        for (i=0; i<tsrm_tls_table_size; i++) {
+            tsrm_tls_entry *p = tsrm_tls_table[i];
+
+            while (p) {
+                if (p->count < id_count) {
+                    int j;
+
+                    p->storage = (void *) realloc(p->storage, sizeof(void *)*id_count);
+                    for (j=p->count; j<id_count; j++) {
+                        p->storage[j] = (void *) malloc(resource_types_table[j].size);
+                        if (resource_types_table[j].ctor) {
+                            resource_types_table[j].ctor(p->storage[j], &p->storage);
+                        }
+                    }
+                    p->count = id_count;
+                }
+                p = p->next;
+            }
+        }
+
+        // 取消线程互斥锁
+        tsrm_mutex_unlock(tsmm_mutex);
+
+        TSRM_ERROR((TSRM_ERROR_LEVEL_CORE, "Successfully allocated new resource id %d", *rsrc_id));
+        return *rsrc_id;
+    }
+
+当通过 ts_allocate_id 函数分配全局资源ID时，PHP内核会锁一下，确保生成的资源ID的唯一，这里锁的作用是在时间维度将并发的内容变成串行，因为并发的根本问题就是时间的问题。当加锁以后，id_coun t自增，生成一个资源ID，生成资源ID后，就会给当前资源ID分配存储的位置，
 每一个资源都会存储在 resource_types_table 中，当一个新的资源被分配时，就会创建一个tsrm_resource_type。
-每次所有tsrm_resource_type以数组的方式组成tsrm_resource_table，其下标就是这个资源的ID。
-其实我们可以将tsrm_resource_table看做一个HASH表，key是资源ID，value是tsrm_resource_type结构。
-只是,任何一个数组都可以看作一个HASH表，如果数组的key值有意义的话。 
-resource_types_table的定义如下：
+每次所有 tsrm_resource_type 以数组的方式组成 tsrm_resource_table，其下标就是这个资源的ID。其实我们可以将tsrm_resource_table看做一个HASH表，key是资源ID，value是 tsrm_resource_type 结构。其实任何一个数组都可以看作一个HASH表，如果数组的key值有意义的话。
 
-	[c]
-	typedef struct {
-		size_t size;//资源的大小
-		ts_allocate_ctor ctor;//构造方法指针
-		ts_allocate_dtor dtor;//析构方法指针
-		int done;
-	} tsrm_resource_type;
-
-在分配了资源ID后，PHP内核会接着遍历**所有线程**为每一个线程的tsrm_tls_entry分配这个线程全局变量需要的内存空间。
+在分配了资源ID后，PHP内核会接着遍历**所有线程**为每一个线程的 tsrm_tls_entry 分配这个线程全局变量需要的内存空间。
 这里每个线程全局变量的大小在各自的调用处指定。
 
 每一次的ts_allocate_id调用，PHP内核都会遍历所有线程并为每一个线程分配相应资源，
