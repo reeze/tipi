@@ -160,7 +160,7 @@ PHP解决并发的思路非常简单，既然存在资源竞争，那么直接�
         resource_types_table[TSRM_UNSHUFFLE_RSRC_ID(*rsrc_id)].done = 0;
 
         /* enlarge the arrays for the already active threads */
-        // PHP内核会接着遍历所有线程为每一个线程的 tsrm_tls_entry 分配这个线程全局变量需要的内存空间。
+        // PHP内核会接着遍历所有线程为每一个线程的 tsrm_tls_entry
         for (i=0; i<tsrm_tls_table_size; i++) {
             tsrm_tls_entry *p = tsrm_tls_table[i];
 
@@ -170,8 +170,10 @@ PHP解决并发的思路非常简单，既然存在资源竞争，那么直接�
 
                     p->storage = (void *) realloc(p->storage, sizeof(void *)*id_count);
                     for (j=p->count; j<id_count; j++) {
+                        // 在该线程中为全局变量分配需要的内存空间
                         p->storage[j] = (void *) malloc(resource_types_table[j].size);
                         if (resource_types_table[j].ctor) {
+                            // 最后对指定的全局变量进行初始化
                             resource_types_table[j].ctor(p->storage[j], &p->storage);
                         }
                     }
