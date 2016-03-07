@@ -27,19 +27,55 @@ TRSM 的实现代码在 PHP 源码的 /TSRM 目录下，调用随处可见，通
 
 PHP解决并发的思路非常简单，既然存在资源竞争，那么直接规避掉此问题，
 将多个资源直接复制多份，多个线程竞争的全局变量在进程空间中各自都有一份，各做各的，完全隔离。
-以标准的数组扩展为例，首先会声明当前扩展的全局变量，
-然后在模块初始化时会调用全局变量初始化宏初始化array的，比如分配内存空间操作。
+以标准的数组扩展为例，首先会声明当前扩展的全局变量。
 
-这里的声明和初始化操作都是区分ZTS和非ZTS，对于非ZTS的情况，直接就是声明变量，初始化变量。
-对于ZTS情况，PHP内核会添加TSRM，对应到这里的代码时不再是声明全局变量，
-而是用ts_rsrc_id代替，初始化时不再是初始化变量，
-而是调用ts_allocate_id函数在多线程环境中给当前这个模块申请一个全局变量并返回资源ID。
+    [c]
+    // ext/standard/array.c
+    ZEND_DECLARE_MODULE_GLOBALS(array)
+
+然后在模块初始化时会调用全局变量初始化宏初始化array，比如分配内存空间操作。
+
+    [c]
+    static void php_array_init_globals(zend_array_globals *array_globals)
+    {
+        memset(array_globals, 0, sizeof(zend_array_globals));
+    }
+    // ...
+    PHP_MINIT_FUNCTION(array) /* {{{ */
+    {
+        ZEND_INIT_MODULE_GLOBALS(array, php_array_init_globals, NULL);
+        // ...
+    }
+
+这里的声明和初始化操作都是区分ZTS和非ZTS。
+
+    [c]
+    #ifdef ZTS
+
+    #define ZEND_DECLARE_MODULE_GLOBALS(module_name)							\
+        ts_rsrc_id module_name##_globals_id;
+
+    #define ZEND_INIT_MODULE_GLOBALS(module_name, globals_ctor, globals_dtor)	\
+        ts_allocate_id(&module_name##_globals_id, sizeof(zend_##module_name##_globals), (ts_allocate_ctor) globals_ctor, (ts_allocate_dtor) globals_dtor);
+
+    #else
+
+    #define ZEND_DECLARE_MODULE_GLOBALS(module_name)							\
+        zend_##module_name##_globals module_name##_globals;
+
+    #define ZEND_INIT_MODULE_GLOBALS(module_name, globals_ctor, globals_dtor)	\
+        globals_ctor(&module_name##_globals);
+
+    #endif
+
+对于非ZTS的情况，直接就是声明变量，初始化变量；对于ZTS情况，PHP内核会添加TSRM，对应到这里的代码时不再是声明全局变量，
+而是用ts_rsrc_id代替，初始化时不再是初始化变量，而是调用ts_allocate_id函数在多线程环境中给当前这个模块申请一个全局变量并返回资源ID。
 
 资源ID变量名由模块名和global_id组成。
 它是一个自增的整数，整个进程会共享这个变量，在进程SAPI初始调用，初始化TSRM环境时，
 id_count作为一个静态变量将被初始化为0。这是一个非常简单的实现，自增。
 确保了资源不会冲突，每个线程的独立。
- 
+
 
 ### 资源id的分配
 
