@@ -27,6 +27,7 @@ TRSM 的实现代码在 PHP 源码的 /TSRM 目录下，调用随处可见，通
 
 PHP解决并发的思路非常简单，既然存在资源竞争，那么直接规避掉此问题，
 将多个资源直接复制多份，多个线程竞争的全局变量在进程空间中各自都有一份，各做各的，完全隔离。
+
 以标准的数组扩展为例，首先会声明当前扩展的全局变量。
 
     [c]
@@ -69,17 +70,21 @@ PHP解决并发的思路非常简单，既然存在资源竞争，那么直接�
 
     #endif
 
-对于非ZTS的情况，直接就是声明变量，初始化变量；对于ZTS情况，PHP内核会添加TSRM，不再是声明全局变量，而是用ts_rsrc_id代替，初始化时不再是初始化变量，而是调用ts_allocate_id函数在多线程环境中给当前这个模块申请一个全局变量并返回资源ID。资源ID变量名由模块名和global_id组成。
+对于非ZTS的情况，直接声明变量，初始化变量；对于ZTS情况，PHP内核会添加TSRM，不再是声明全局变量，而是用ts_rsrc_id代替，初始化时也不再是初始化变量，而是调用ts_allocate_id函数在多线程环境中给当前这个模块申请一个全局变量并返回资源ID。其中，资源ID变量名由模块名加global_id组成。
 
 ### TSRM 环境的初始化
 
-在各个 SAPI main 函数中通过调用 tsrm_startup 来初始化 TSRM 环境。
+模块初始化阶段，在各个 SAPI main 函数中通过调用 tsrm_startup 来初始化 TSRM 环境。tsrm_startup函数会传入两个非常重要的参数，一个是expected_threads，表示预期的线程数， 一个是expected_resources，表示预期的资源数。不同的SAPI有不同的初始化值，比如mod_php5，cgi这些都是一个线程一个资源。
 
     [c]
     /* The memory manager table */
     static tsrm_tls_entry	**tsrm_tls_table=NULL;
     static int				tsrm_tls_table_size;
     static ts_rsrc_id		id_count;
+    
+    /* The resource sizes table */
+    static tsrm_resource_type	*resource_types_table=NULL;
+    static int					resource_types_table_size;
 
     TSRM_API int tsrm_startup(int expected_threads, int expected_resources, int debug_level, char *debug_filename)
     {
@@ -102,7 +107,7 @@ PHP解决并发的思路非常简单，既然存在资源竞争，那么直接�
         return 1;
     }
 
-精简出其中完成的三个重要的工作，初始化了 tsrm_tls_table 链表、resource_types_table 数组，以及 id_count。而这三个全局变量是所有线程共享的，实现了线程间的内存管理一致性。其中涉及到两个关键的数据结构
+精简出其中完成的三个重要的工作，初始化了 tsrm_tls_table 链表、resource_types_table 数组，以及 id_count。而这三个全局变量是所有线程共享的，实现了线程间的内存管理的一致性。其中涉及到两个关键的数据结构 tsrm_tls_entry 和 tsrm_resource_type。
 
     [c]
     typedef struct _tsrm_tls_entry tsrm_tls_entry;
@@ -173,7 +178,7 @@ PHP解决并发的思路非常简单，既然存在资源竞争，那么直接�
                         // 在该线程中为全局变量分配需要的内存空间
                         p->storage[j] = (void *) malloc(resource_types_table[j].size);
                         if (resource_types_table[j].ctor) {
-                            // 最后对指定的全局变量进行初始化
+                            // 最后对指定的全局变量进行初始化，这里 ts_allocate_ctor 函数的第二个参数不知道为什么预留，整个项目中实际都未用到过，对比PHP7发现第二个参数也的确已经移除了
                             resource_types_table[j].ctor(p->storage[j], &p->storage);
                         }
                     }
@@ -190,9 +195,9 @@ PHP解决并发的思路非常简单，既然存在资源竞争，那么直接�
         return *rsrc_id;
     }
 
-当通过 ts_allocate_id 函数分配全局资源ID时，PHP内核会锁一下，确保生成的资源ID的唯一，这里锁的作用是在时间维度将并发的内容变成串行，因为并发的根本问题就是时间的问题。当加锁以后，id_coun t自增，生成一个资源ID，生成资源ID后，就会给当前资源ID分配存储的位置，
-每一个资源都会存储在 resource_types_table 中，当一个新的资源被分配时，就会创建一个tsrm_resource_type。
-每次所有 tsrm_resource_type 以数组的方式组成 tsrm_resource_table，其下标就是这个资源的ID。其实我们可以将tsrm_resource_table看做一个HASH表，key是资源ID，value是 tsrm_resource_type 结构。其实任何一个数组都可以看作一个HASH表，如果数组的key值有意义的话。
+当通过 ts_allocate_id 函数分配全局资源ID时，PHP内核会先加上互斥锁，确保生成的资源ID的唯一，这里锁的作用是在时间维度将并发的内容变成串行，因为并发的根本问题就是时间的问题。当加锁以后，id_coun t自增，生成一个资源ID，生成资源ID后，就会给当前资源ID分配存储的位置，
+每一个资源都会存储在 resource_types_table 中，当一个新的资源被分配时，就会创建一个 tsrm_resource_type。
+每次所有 tsrm_resource_type 以数组的方式组成 tsrm_resource_table，其下标就是这个资源的ID。其实我们可以将 tsrm_resource_table 看做一个HASH表，key是资源ID，value是 tsrm_resource_type 结构。其实任何一个数组都可以看作一个HASH表，如果数组的key值有意义的话。
 
 在分配了资源ID后，PHP内核会接着遍历**所有线程**为每一个线程的 tsrm_tls_entry 分配这个线程全局变量需要的内存空间。
 这里每个线程全局变量的大小在各自的调用处指定。
@@ -201,11 +206,6 @@ PHP解决并发的思路非常简单，既然存在资源竞争，那么直接�
 如果这个操作是在PHP生命周期的请求处理阶段进行，岂不是会重复调用？
 
 PHP考虑了这种情况，ts_allocate_id的调用在模块初始化时就调用了。
-
-在模块初始化阶段，通过SAPI调用tsrm_startup启动TSRM，
-tsrm_startup函数会传入两个非常重要的参数，一个是expected_threads，表示预期的线程数，
-一个是expected_resources，表示预期的资源数。
-不同的SAPI有不同的初始化值，比如mod_php5，cgi这些都是一个线程一个资源。
 
 TSRM启动后，在模块初始化过程中会遍历每个扩展的模块初始化方法，
 扩展的全局变量在扩展的实现代码开头声明，在MINIT方法中初始化。
