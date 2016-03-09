@@ -41,14 +41,18 @@ PHP 解决并发的思路非常简单，既然存在资源竞争，那么直接�
     static tsrm_resource_type	*resource_types_table=NULL;
     static int					resource_types_table_size;
 
-`**tsrm_tls_table` 的全拼 thread safe resource manager thread local storage table，用来存放各个线程的 `tsrm_tls_entry` 链表。`tsrm_tls_table_size` 用来表示 `**tsrm_tls_table` 的大小。
+`**tsrm_tls_table` 的全拼 thread safe resource manager thread local storage table，用来存放各个线程的 `tsrm_tls_entry` 链表。
+
+`tsrm_tls_table_size` 用来表示 `**tsrm_tls_table` 的大小。
 
 `id_count` 作为全局变量资源的 id 生成器，是全局唯一且递增的。
 
-`*resource_types_table` 用来存放全局变量对应的资源。`resource_types_table_size` 表示 `*resource_types_table` 的大小。
+`*resource_types_table` 用来存放全局变量对应的资源。
 
-    其中涉及到两个关键的数据结构 tsrm_tls_entry 和 tsrm_resource_type。
+`resource_types_table_size` 表示 `*resource_types_table` 的大小。
 
+其中涉及到两个关键的数据结构 `tsrm_tls_entry` 和 `tsrm_resource_type`。
+    
     [c]
     typedef struct _tsrm_tls_entry tsrm_tls_entry;
 
@@ -67,7 +71,7 @@ PHP 解决并发的思路非常简单，既然存在资源竞争，那么直接�
     } tsrm_resource_type;
 
 
-当新增一个全局变量时，`id_count` 会自增1（加上线程互斥锁）。然后根据全局变量需要的内存、构造函数、析构函数生成对应的资源`tsrm_resource_type`，存入 `*resource_types_table`，然后根据该资源，为每个线程的所有`tsrm_tls_entry`节点添加其对应的全局变量。
+当新增一个全局变量时，`id_count` 会自增1（加上线程互斥锁）。然后根据全局变量需要的内存、构造函数、析构函数生成对应的资源`tsrm_resource_type`，存入 `*resource_types_table`，再根据该资源，为每个线程的所有`tsrm_tls_entry`节点添加其对应的全局变量。
 
 有了这个大致的了解，下面通过仔细分析 TSRM 环境的初始化和资源 ID 的分配来理解这一完整的过程。
 
