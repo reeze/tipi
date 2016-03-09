@@ -21,12 +21,171 @@ TRSM 的实现代码在 PHP 源码的 /TSRM 目录下，调用随处可见，通
 
 ## TSRM的实现
 
-进程保留着资源所有权的属性，线程做并发访问，PHP中引入的TSRM层关注的是对共享资源的访问，
+进程保留着资源所有权的属性，线程做并发访问，PHP 中引入的 TSRM 层关注的是对共享资源的访问，
 这里的共享资源是线程之间共享的存在于进程的内存空间的全局变量。
-当PHP在单进程模式下时，一个变量被声明在任何函数之外时，就成为一个全局变量。
+当 PHP 在单进程模式下时，一个变量被声明在任何函数之外时，就成为一个全局变量。
 
-PHP解决并发的思路非常简单，既然存在资源竞争，那么直接规避掉此问题，
+PHP 解决并发的思路非常简单，既然存在资源竞争，那么直接规避掉此问题，
 将多个资源直接复制多份，多个线程竞争的全局变量在进程空间中各自都有一份，各做各的，完全隔离。
+这句话说的非常抽象，到底 TSRM 是如何实现的呢，下面配合代码和绘图逐步说明。
+
+首先定义了如下几个非常重要的全局变量（这里的全局变量是多线程共享的）。
+
+    [c]
+    /* The memory manager table */
+    static tsrm_tls_entry	**tsrm_tls_table=NULL;
+    static int				tsrm_tls_table_size;
+    static ts_rsrc_id		id_count;
+
+    /* The resource sizes table */
+    static tsrm_resource_type	*resource_types_table=NULL;
+    static int					resource_types_table_size;
+
+`**tsrm_tls_table` 的全拼 thread safe resource manager thread local storage table，用来存放各个线程的 `tsrm_tls_entry` 链表。`tsrm_tls_table_size` 用来表示 `**tsrm_tls_table` 的大小。
+
+`id_count` 作为全局变量资源的 id 生成器，是全局唯一且递增的。
+
+`*resource_types_table` 用来存放全局变量对应的资源。`resource_types_table_size` 表示 `*resource_types_table` 的大小。
+
+    其中涉及到两个关键的数据结构 tsrm_tls_entry 和 tsrm_resource_type。
+
+    [c]
+    typedef struct _tsrm_tls_entry tsrm_tls_entry;
+
+    struct _tsrm_tls_entry {
+        void **storage;// 本节点的全局变量数组
+        int count;// 本节点全局变量数
+        THREAD_T thread_id;// 本节点对应的线程 ID
+        tsrm_tls_entry *next;// 下一个节点的指针
+    };
+
+    typedef struct {
+        size_t size;// 被定义的全局变量结构体的大小
+        ts_allocate_ctor ctor;// 被定义的全局变量的构造方法指针
+        ts_allocate_dtor dtor;// 被定义的全局变量的析构方法指针
+        int done;
+    } tsrm_resource_type;
+
+
+当新增一个全局变量时，`id_count` 会自增1（加上线程互斥锁）。然后根据全局变量需要的内存、构造函数、析构函数生成对应的资源`tsrm_resource_type`，存入 `*resource_types_table`，然后根据该资源，为每个线程的所有`tsrm_tls_entry`节点添加其对应的全局变量。
+
+有了这个大致的了解，下面通过仔细分析 TSRM 环境的初始化和资源 ID 的分配来理解这一完整的过程。
+
+### TSRM 环境的初始化
+
+模块初始化阶段，在各个 SAPI main 函数中通过调用 `tsrm_startup` 来初始化 TSRM 环境。`tsrm_startup` 函数会传入两个非常重要的参数，一个是 `expected_threads`，表示预期的线程数， 一个是 `expected_resources`，表示预期的资源数。不同的 SAPI 有不同的初始化值，比如mod_php5，cgi 这些都是一个线程一个资源。
+
+    [c]
+    TSRM_API int tsrm_startup(int expected_threads, int expected_resources, int debug_level, char *debug_filename)
+    {
+        /* code... */
+
+        tsrm_tls_table_size = expected_threads; // SAPI 初始化时预计分配的线程数，一般都为1
+
+        tsrm_tls_table = (tsrm_tls_entry **) calloc(tsrm_tls_table_size, sizeof(tsrm_tls_entry *));
+
+        /* code... */
+
+        id_count=0;
+
+        resource_types_table_size = expected_resources; // SAPI 初始化时预先分配的资源表大小，一般也为1
+
+        resource_types_table = (tsrm_resource_type *) calloc(resource_types_table_size, sizeof(tsrm_resource_type));
+
+        /* code... */
+
+        return 1;
+    }
+
+精简出其中完成的三个重要的工作，初始化了 tsrm_tls_table 链表、resource_types_table 数组，以及 id_count。而这三个全局变量是所有线程共享的，实现了线程间的内存管理的一致性。
+
+### 资源id的分配
+
+我们知道初始化一个全局变量时需要使用 ZEND_INIT_MODULE_GLOBALS 宏（下面的数组扩展的例子中会有说明），而其实际则是调用的 ts_allocate_id 函数在多线程环境下申请一个全局变量，然后返回分配的资源 ID。代码虽然比较多，实际还是比较清晰，下面附带注解进行说明：
+
+    [c]
+    TSRM_API ts_rsrc_id ts_allocate_id(ts_rsrc_id *rsrc_id, size_t size, ts_allocate_ctor ctor, ts_allocate_dtor dtor)
+    {
+        int i;
+
+        TSRM_ERROR((TSRM_ERROR_LEVEL_CORE, "Obtaining a new resource id, %d bytes", size));
+
+        // 加上多线程互斥锁
+        tsrm_mutex_lock(tsmm_mutex);
+
+        /* obtain a resource id */
+        *rsrc_id = TSRM_SHUFFLE_RSRC_ID(id_count++); // 全局静态变量 id_count 加 1
+        TSRM_ERROR((TSRM_ERROR_LEVEL_CORE, "Obtained resource id %d", *rsrc_id));
+
+        /* store the new resource type in the resource sizes table */
+        // 因为 resource_types_table_size 是有初始值的（expected_resources），所以不一定每次都要扩充内存
+        if (resource_types_table_size < id_count) {
+            resource_types_table = (tsrm_resource_type *) realloc(resource_types_table, sizeof(tsrm_resource_type)*id_count);
+            if (!resource_types_table) {
+                tsrm_mutex_unlock(tsmm_mutex);
+                TSRM_ERROR((TSRM_ERROR_LEVEL_ERROR, "Unable to allocate storage for resource"));
+                *rsrc_id = 0;
+                return 0;
+            }
+            resource_types_table_size = id_count;
+        }
+
+        // 将全局变量结构体的大小、构造函数和析构函数都存入 tsrm_resource_type 的数组 resource_types_table 中
+        resource_types_table[TSRM_UNSHUFFLE_RSRC_ID(*rsrc_id)].size = size;
+        resource_types_table[TSRM_UNSHUFFLE_RSRC_ID(*rsrc_id)].ctor = ctor;
+        resource_types_table[TSRM_UNSHUFFLE_RSRC_ID(*rsrc_id)].dtor = dtor;
+        resource_types_table[TSRM_UNSHUFFLE_RSRC_ID(*rsrc_id)].done = 0;
+
+        /* enlarge the arrays for the already active threads */
+        // PHP内核会接着遍历所有线程为每一个线程的 tsrm_tls_entry
+        for (i=0; i<tsrm_tls_table_size; i++) {
+            tsrm_tls_entry *p = tsrm_tls_table[i];
+
+            while (p) {
+                if (p->count < id_count) {
+                    int j;
+
+                    p->storage = (void *) realloc(p->storage, sizeof(void *)*id_count);
+                    for (j=p->count; j<id_count; j++) {
+                        // 在该线程中为全局变量分配需要的内存空间
+                        p->storage[j] = (void *) malloc(resource_types_table[j].size);
+                        if (resource_types_table[j].ctor) {
+                            // 最后对 p->storage[j] 地址存放的全局变量进行初始化，这里 ts_allocate_ctor 函数的第二个参数不知道为什么预留，整个项目中实际都未用到过，对比PHP7发现第二个参数也的确已经移除了
+                            resource_types_table[j].ctor(p->storage[j], &p->storage);
+                        }
+                    }
+                    p->count = id_count;
+                }
+                p = p->next;
+            }
+        }
+
+        // 取消线程互斥锁
+        tsrm_mutex_unlock(tsmm_mutex);
+
+        TSRM_ERROR((TSRM_ERROR_LEVEL_CORE, "Successfully allocated new resource id %d", *rsrc_id));
+        return *rsrc_id;
+    }
+
+当通过 ts_allocate_id 函数分配全局资源 ID 时，PHP 内核会先加上互斥锁，确保生成的资源 ID 的唯一，这里锁的作用是在时间维度将并发的内容变成串行，因为并发的根本问题就是时间的问题。当加锁以后，id_count 自增，生成一个资源 ID，生成资源 ID 后，就会给当前资源 ID 分配存储的位置，
+每一个资源都会存储在 resource_types_table 中，当一个新的资源被分配时，就会创建一个 tsrm_resource_type。
+所有 tsrm_resource_type 以数组的方式组成 tsrm_resource_table，其下标就是这个资源的 ID。
+其实我们可以将 tsrm_resource_table 看做一个 HASH 表，key 是资源 ID，value 是 tsrm_resource_type 结构（任何一个数组都可以看作一个 HASH 表，如果数组的key 值有意义的话）。
+
+在分配了资源 ID 后，PHP 内核会接着遍历**所有线程**为每一个线程的 tsrm_tls_entry 分配这个线程全局变量需要的内存空间。
+这里每个线程全局变量的大小在各自的调用处指定（也就是全局变量结构体的大小）。最后对地址存放的全局变量进行初始化。
+
+每一次的 ts_allocate_id 调用，PHP 内核都会遍历所有线程并为每一个线程分配相应资源，
+如果这个操作是在PHP生命周期的请求处理阶段进行，岂不是会重复调用？
+
+PHP 考虑了这种情况，ts_allocate_id 的调用在模块初始化时就调用了。
+
+TSRM 启动后，在模块初始化过程中会遍历每个扩展的模块初始化方法，
+扩展的全局变量在扩展的实现代码开头声明，在MINIT方法中初始化。
+其在初始化时会知会TSRM申请的全局变量以及大小，这里所谓的知会操作其实就是前面所说的ts_allocate_id函数。
+TSRM在内存池中分配并注册，然后将资源ID返回给扩展。
+
+### 全局变量的使用
 
 以标准的数组扩展为例，首先会声明当前扩展的全局变量。
 
@@ -72,146 +231,6 @@ PHP解决并发的思路非常简单，既然存在资源竞争，那么直接�
 
 对于非ZTS的情况，直接声明变量，初始化变量；对于ZTS情况，PHP内核会添加TSRM，不再是声明全局变量，而是用ts_rsrc_id代替，初始化时也不再是初始化变量，而是调用ts_allocate_id函数在多线程环境中给当前这个模块申请一个全局变量并返回资源ID。其中，资源ID变量名由模块名加global_id组成。
 
-### TSRM 环境的初始化
-
-模块初始化阶段，在各个 SAPI main 函数中通过调用 tsrm_startup 来初始化 TSRM 环境。tsrm_startup函数会传入两个非常重要的参数，一个是expected_threads，表示预期的线程数， 一个是expected_resources，表示预期的资源数。不同的SAPI有不同的初始化值，比如mod_php5，cgi这些都是一个线程一个资源。
-
-    [c]
-    /* The memory manager table */
-    static tsrm_tls_entry	**tsrm_tls_table=NULL;
-    static int				tsrm_tls_table_size;
-    static ts_rsrc_id		id_count;
-    
-    /* The resource sizes table */
-    static tsrm_resource_type	*resource_types_table=NULL;
-    static int					resource_types_table_size;
-
-    TSRM_API int tsrm_startup(int expected_threads, int expected_resources, int debug_level, char *debug_filename)
-    {
-        /* code... */
-
-        tsrm_tls_table_size = expected_threads; // SAPI 初始化时预计分配的线程数，一般都为1
-
-        tsrm_tls_table = (tsrm_tls_entry **) calloc(tsrm_tls_table_size, sizeof(tsrm_tls_entry *));
-
-        /* code... */
-
-        id_count=0;
-
-        resource_types_table_size = expected_resources; // SAPI 初始化时预先分配的资源表大小，一般也为1
-
-        resource_types_table = (tsrm_resource_type *) calloc(resource_types_table_size, sizeof(tsrm_resource_type));
-
-        /* code... */
-
-        return 1;
-    }
-
-精简出其中完成的三个重要的工作，初始化了 tsrm_tls_table 链表、resource_types_table 数组，以及 id_count。而这三个全局变量是所有线程共享的，实现了线程间的内存管理的一致性。其中涉及到两个关键的数据结构 tsrm_tls_entry 和 tsrm_resource_type。
-
-    [c]
-    typedef struct _tsrm_tls_entry tsrm_tls_entry;
-
-    struct _tsrm_tls_entry {
-        void **storage;// 本节点的全局变量数组
-        int count;// 本节点全局变量数
-        THREAD_T thread_id;// 本节点对应的线程 ID
-        tsrm_tls_entry *next;// 下一个节点的指针
-    };
-
-	typedef struct {
-		size_t size;// 被定义的全局变量结构体的大小
-		ts_allocate_ctor ctor;// 被定义的全局变量的构造方法指针
-		ts_allocate_dtor dtor;// 被定义的全局变量的析构方法指针
-		int done;
-	} tsrm_resource_type;
-
-
-### 资源id的分配
-
-由前面的数组扩展的例子我们知道初始化一个全局变量时需要使用 ZEND_INIT_MODULE_GLOBALS 宏，而其实际则是调用的 ts_allocate_id 函数在多线程环境下申请一个全局变量，然后返回分配的资源 ID。代码虽然比较多，实际还是比较清晰，下面附带注解进行说明：
-
-    [c]
-    TSRM_API ts_rsrc_id ts_allocate_id(ts_rsrc_id *rsrc_id, size_t size, ts_allocate_ctor ctor, ts_allocate_dtor dtor)
-    {
-        int i;
-
-        TSRM_ERROR((TSRM_ERROR_LEVEL_CORE, "Obtaining a new resource id, %d bytes", size));
-
-        // 加上多线程互斥锁
-        tsrm_mutex_lock(tsmm_mutex);
-
-        /* obtain a resource id */
-        *rsrc_id = TSRM_SHUFFLE_RSRC_ID(id_count++); // 全局静态变量 id_count 加 1
-        TSRM_ERROR((TSRM_ERROR_LEVEL_CORE, "Obtained resource id %d", *rsrc_id));
-
-        /* store the new resource type in the resource sizes table */
-        // 因为 resource_types_table_size 是有初始值的（expected_resources），所以不是每次都要新增内存
-        if (resource_types_table_size < id_count) {
-            resource_types_table = (tsrm_resource_type *) realloc(resource_types_table, sizeof(tsrm_resource_type)*id_count);
-            if (!resource_types_table) {
-                tsrm_mutex_unlock(tsmm_mutex);
-                TSRM_ERROR((TSRM_ERROR_LEVEL_ERROR, "Unable to allocate storage for resource"));
-                *rsrc_id = 0;
-                return 0;
-            }
-            resource_types_table_size = id_count;
-        }
-
-        // 将全局变量结构体的大小、构造函数和析构函数都存入 tsrm_resource_type 的数组 resource_types_table 中
-        resource_types_table[TSRM_UNSHUFFLE_RSRC_ID(*rsrc_id)].size = size;
-        resource_types_table[TSRM_UNSHUFFLE_RSRC_ID(*rsrc_id)].ctor = ctor;
-        resource_types_table[TSRM_UNSHUFFLE_RSRC_ID(*rsrc_id)].dtor = dtor;
-        resource_types_table[TSRM_UNSHUFFLE_RSRC_ID(*rsrc_id)].done = 0;
-
-        /* enlarge the arrays for the already active threads */
-        // PHP内核会接着遍历所有线程为每一个线程的 tsrm_tls_entry
-        for (i=0; i<tsrm_tls_table_size; i++) {
-            tsrm_tls_entry *p = tsrm_tls_table[i];
-
-            while (p) {
-                if (p->count < id_count) {
-                    int j;
-
-                    p->storage = (void *) realloc(p->storage, sizeof(void *)*id_count);
-                    for (j=p->count; j<id_count; j++) {
-                        // 在该线程中为全局变量分配需要的内存空间
-                        p->storage[j] = (void *) malloc(resource_types_table[j].size);
-                        if (resource_types_table[j].ctor) {
-                            // 最后对指定的全局变量进行初始化，这里 ts_allocate_ctor 函数的第二个参数不知道为什么预留，整个项目中实际都未用到过，对比PHP7发现第二个参数也的确已经移除了
-                            resource_types_table[j].ctor(p->storage[j], &p->storage);
-                        }
-                    }
-                    p->count = id_count;
-                }
-                p = p->next;
-            }
-        }
-
-        // 取消线程互斥锁
-        tsrm_mutex_unlock(tsmm_mutex);
-
-        TSRM_ERROR((TSRM_ERROR_LEVEL_CORE, "Successfully allocated new resource id %d", *rsrc_id));
-        return *rsrc_id;
-    }
-
-当通过 ts_allocate_id 函数分配全局资源ID时，PHP内核会先加上互斥锁，确保生成的资源ID的唯一，这里锁的作用是在时间维度将并发的内容变成串行，因为并发的根本问题就是时间的问题。当加锁以后，id_coun t自增，生成一个资源ID，生成资源ID后，就会给当前资源ID分配存储的位置，
-每一个资源都会存储在 resource_types_table 中，当一个新的资源被分配时，就会创建一个 tsrm_resource_type。
-每次所有 tsrm_resource_type 以数组的方式组成 tsrm_resource_table，其下标就是这个资源的ID。其实我们可以将 tsrm_resource_table 看做一个HASH表，key是资源ID，value是 tsrm_resource_type 结构。其实任何一个数组都可以看作一个HASH表，如果数组的key值有意义的话。
-
-在分配了资源ID后，PHP内核会接着遍历**所有线程**为每一个线程的 tsrm_tls_entry 分配这个线程全局变量需要的内存空间。
-这里每个线程全局变量的大小在各自的调用处指定。
-
-每一次的ts_allocate_id调用，PHP内核都会遍历所有线程并为每一个线程分配相应资源，
-如果这个操作是在PHP生命周期的请求处理阶段进行，岂不是会重复调用？
-
-PHP考虑了这种情况，ts_allocate_id的调用在模块初始化时就调用了。
-
-TSRM启动后，在模块初始化过程中会遍历每个扩展的模块初始化方法，
-扩展的全局变量在扩展的实现代码开头声明，在MINIT方法中初始化。
-其在初始化时会知会TSRM申请的全局变量以及大小，这里所谓的知会操作其实就是前面所说的ts_allocate_id函数。
-TSRM在内存池中分配并注册，然后将资源ID返回给扩展。
-后续每个线程通过资源ID定位全局变量，比如我们前面提到的数组扩展，
 如果要调用当前扩展的全局变量，则使用：ARRAYG(v)，这个宏的定义：
 
 	[c]
