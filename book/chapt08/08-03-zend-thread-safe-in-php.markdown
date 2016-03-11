@@ -209,15 +209,17 @@ PHP 解决并发的思路非常简单，既然存在资源竞争，那么直接�
 
 ![图8.2 PHP 线程安全示意图](../images/chapt08/08-03-01-tsrm.png)
 
+上图中还有一个困惑的地方，`tsrm_tls_table` 的元素是如何添加的，链表是如何实现的。我们把这个问题先留着，后面会讨论。
+
 每一次的 ts_allocate_id 调用，PHP 内核都会遍历所有线程并为每一个线程分配相应资源，
 如果这个操作是在PHP生命周期的请求处理阶段进行，岂不是会重复调用？
 
 PHP 考虑了这种情况，ts_allocate_id 的调用在模块初始化时就调用了。
 
 TSRM 启动后，在模块初始化过程中会遍历每个扩展的模块初始化方法，
-扩展的全局变量在扩展的实现代码开头声明，在MINIT方法中初始化。
-其在初始化时会知会TSRM申请的全局变量以及大小，这里所谓的知会操作其实就是前面所说的ts_allocate_id函数。
-TSRM在内存池中分配并注册，然后将资源ID返回给扩展。
+扩展的全局变量在扩展的实现代码开头声明，在 MINIT 方法中初始化。
+其在初始化时会知会 TSRM 申请的全局变量以及大小，这里所谓的知会操作其实就是前面所说的 ts_allocate_id 函数。
+TSRM 在内存池中分配并注册，然后将资源ID返回给扩展。
 
 ### 全局变量的使用
 
@@ -226,7 +228,7 @@ TSRM在内存池中分配并注册，然后将资源ID返回给扩展。
     [c]
     ZEND_DECLARE_MODULE_GLOBALS(array)
 
-然后在模块初始化时会调用全局变量初始化宏初始化array，比如分配内存空间操作。
+然后在模块初始化时会调用全局变量初始化宏初始化 array，比如分配内存空间操作。
 
     [c]
     static void php_array_init_globals(zend_array_globals *array_globals)
@@ -283,7 +285,126 @@ TSRMG的定义：
 
 去掉这一堆括号，TSRMG宏的意思就是从tsrm_ls中按资源ID获取全局变量，并返回对应变量的属性字段。
 
-那么现在的问题是这个tsrm_ls从哪里来的？
+那么现在的问题是这个 `tsrm_ls` 从哪里来的？
+
+### tsrm_ls 的初始化
+
+`tsrm_ls` 通过 `ts_resource(0)` 初始化。展开实际最后调用的是 `ts_resource_ex(0,NULL)` 。下面将 `ts_resource_ex` 一些宏展开，线程以 `pthread` 为例。
+
+    [c]
+    #define THREAD_HASH_OF(thr,ts)  (unsigned long)thr%(unsigned long)ts
+
+    static MUTEX_T tsmm_mutex;
+
+    void *ts_resource_ex(ts_rsrc_id id, THREAD_T *th_id)
+    {
+        THREAD_T thread_id;
+        int hash_value;
+        tsrm_tls_entry *thread_resources;
+
+        // tsrm_tls_table 在 tsrm_startup 已初始化完毕
+        if(tsrm_tls_table) {
+            // 初始化时 th_id = NULL;
+            if (!th_id) {
+
+                //第一次为空 还未执行过 pthread_setspecific 所以 thread_resources 指针为空
+                thread_resources = pthread_getspecific(tls_key);
+
+                if(thread_resources){
+                    TSRM_SAFE_RETURN_RSRC(thread_resources->storage, id, thread_resources->count);
+                }
+
+                thread_id = pthread_self();
+            } else {
+                thread_id = *th_id;
+            }
+        }
+        // 上锁
+        pthread_mutex_lock(tsmm_mutex);
+
+        // 直接取余，将其值作为数组下标，将不同的线程散列分布在 tsrm_tls_table 中
+        hash_value = THREAD_HASH_OF(thread_id, tsrm_tls_table_size);
+        // 在 SAPI 调用 tsrm_startup 之后，tsrm_tls_table_size = expected_threads
+        thread_resources = tsrm_tls_table[hash_value];
+
+        if (!thread_resources) {
+            // 如果还没，则新分配。
+            allocate_new_resource(&tsrm_tls_table[hash_value], thread_id);
+            // 分配完毕之后再执行到下面的 else 区间
+            return ts_resource_ex(id, &thread_id);
+        } else {
+             do {
+                // 沿着链表逐个匹配
+                if (thread_resources->thread_id == thread_id) {
+                    break;
+                }
+                if (thread_resources->next) {
+                    thread_resources = thread_resources->next;
+                } else {
+                    // 链表的尽头仍然没有找到，则新分配，接到链表的末尾
+                    allocate_new_resource(&thread_resources->next, thread_id);
+                    return ts_resource_ex(id, &thread_id);
+                }
+             } while (thread_resources);
+        }
+
+        TSRM_SAFE_RETURN_RSRC(thread_resources->storage, id, thread_resources->count);
+
+        // 解锁
+        pthread_mutex_unlock(tsmm_mutex);
+
+    }
+
+而 `allocate_new_resource` 则是为新的线程在对应的链表中分配内存，并且将所有的全局变量都加入到其 `stroage` 中。
+
+    [c]
+    static void allocate_new_resource(tsrm_tls_entry **thread_resources_ptr, THREAD_T thread_id)
+    {
+        int i;
+
+        (*thread_resources_ptr) = (tsrm_tls_entry *) malloc(sizeof(tsrm_tls_entry));
+        (*thread_resources_ptr)->storage = (void **) malloc(sizeof(void *)*id_count);
+        (*thread_resources_ptr)->count = id_count;
+        (*thread_resources_ptr)->thread_id = thread_id;
+        (*thread_resources_ptr)->next = NULL;
+
+        // 设置线程局部变量，在这里设置之后，再到 ts_resource_ex 里取
+        pthread_setspecific(*thread_resources_ptr);
+
+        if (tsrm_new_thread_begin_handler) {
+            tsrm_new_thread_begin_handler(thread_id, &((*thread_resources_ptr)->storage));
+        }
+
+        for (i=0; i<id_count; i++) {
+            if (resource_types_table[i].done) {
+                (*thread_resources_ptr)->storage[i] = NULL;
+            } else {
+                // 为新增的 tsrm_tls_entry 节点添加 resource_types_table 的资源
+                (*thread_resources_ptr)->storage[i] = (void *) malloc(resource_types_table[i].size);
+                if (resource_types_table[i].ctor) {
+                    resource_types_table[i].ctor((*thread_resources_ptr)->storage[i], &(*thread_resources_ptr)->storage);
+                }
+            }
+        }
+
+        if (tsrm_new_thread_end_handler) {
+            tsrm_new_thread_end_handler(thread_id, &((*thread_resources_ptr)->storage));
+        }
+
+        pthread_mutex_unlock(tsmm_mutex);
+    }
+
+在理解了 `tsrm_tls_table` 数组和其中链表的创建之后，再看这个返回宏
+
+    [c]
+    #define TSRM_SAFE_RETURN_RSRC(array, offset, range)		\
+        if (offset==0) {									\
+            return &array;									\
+        } else {											\
+            return array[TSRM_UNSHUFFLE_RSRC_ID(offset)];	\
+        }
+
+返回传入 `tsrm_tls_entry` 的 `storage` 其中 `offset` 对应的索引地址。到这里就明白了上面所说的 `TSRMG` 宏的定义了。
 
 其实这在我们写扩展的时候会经常用到：
 
@@ -298,11 +419,11 @@ TSRMG的定义：
 
 以上为ZTS模式下的定义，非ZTS模式下其定义全部为空。
 
-最后个问题，tsrm_ls是从什么时候开始出现的，从哪里来？要到哪里去?
+<!--最后个问题，tsrm_ls是从什么时候开始出现的，从哪里来？要到哪里去?
 
 答案就在php_module_startup函数中，在PHP内核的模块初始化时，
 如果是ZTS模式，则会定义一个局部变量tsrm_ls，这就是我们线程安全开始的地方。
-从这里开始，在每个需要的地方通过在函数参数中以宏的形式带上这个参数，实现线程的安全。
+从这里开始，在每个需要的地方通过在函数参数中以宏的形式带上这个参数，实现线程的安全。-->
 
 
 ## 参考资料
