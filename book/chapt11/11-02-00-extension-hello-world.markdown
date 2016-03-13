@@ -141,6 +141,14 @@ PHP 源代码目录中提供了一个可执行文件 `ext/ext_skel`，该文件�
 
 ### 4. 编译安装
 
+首先修改 `config.m4` ，去掉 `PHP_ARG_WITH` 和 `--with-tipi_demo01` 这两行前面的 `dnl` 注释。修改后如下
+
+    [shell]
+    PHP_ARG_WITH(tipi_demo01, for tipi_demo01 support,
+    dnl Make sure that the comment is aligned:
+    [  --with-tipi_demo01             Include tipi_demo01 support])
+
+
 在扩展目录（`ext/tipi_demo01/`）中，通过 `phpize` (我们在上面已经添加了软连接 `ln -s /usr/local/php7/bin/phpize /usr/bin/php7ize`) 生成 `configure` 系列文件。
 
     [shell]
