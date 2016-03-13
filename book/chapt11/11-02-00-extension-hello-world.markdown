@@ -96,7 +96,7 @@ PHP 源代码目录中提供了一个可执行文件 `ext/ext_skel`，该文件�
 
 ### 3. 完善扩展
 
-现在已经生成的扩展骨架代码，由于本例比较简单，我们只需完善我们申明的函数 `tipi_hello_world` 即可。找到
+现在已经生成的扩展骨架代码，由于本例比较简单，我们只需完善我们申明的函数 `tipi_hello_world` 即可。在 `tipi_demo01.c` 中找到
 
     [c]
     PHP_FUNCTION(tipi_hello_world)
