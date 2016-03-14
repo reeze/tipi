@@ -92,7 +92,7 @@ PHP 源代码目录中提供了一个可执行文件 `ext/ext_skel`，该文件�
 
 目录文件的完整描述可以参考官方的 [组成扩展的文件](http://php.net/manual/zh/internals2.structure.files.php) 说明。
 其中 `config.m4` 作为 UNIX 构建系统配置文件，指导 `phpize` 命令生成 `./configure` 脚本以及其他一系列文件。（其实 `phpize` 也是对 `buildconf` 的封装）
-补充说明 `test` 目录为单元测试脚本存放目录，`make test` 的时候会使用。其语法可参考 [phpt 测试文件说明](http://www.php-internals.com/book/?p=E-phpt-file)
+补充说明 `test` 目录为单元测试脚本存放目录，`make test` 的时候会使用。其语法可参考 [phpt 测试文件说明](/book/?p=E-phpt-file)
 
 ### 3. 完善扩展
 
@@ -136,8 +136,9 @@ PHP 源代码目录中提供了一个可执行文件 `ext/ext_skel`，该文件�
     }
 
 其中 `zend_parse_parameters` 从我们在原型中定义的参数 `name` 中获取传入的字符串，分配内存之后保存在指针 `*name`中， `name_len` 为传入字符串的长度。
-这里通过 `zend_parse_parameters` 来解析获取函数传入的参数，[zend_parse_parameters](http://www.php-internals.com/book/?p=chapt11/11-02-01-zend-parse-parameters) 的工作原理我们在下一小节中详细讲解。
-其中通过 `ecalloc` 来申请内存，具体可以参考本书的第六章的 [PHP中的内存管理](http://www.php-internals.com/book/?p=chapt06/06-02-php-memory-manager)。
+这里通过 `zend_parse_parameters` 来解析获取函数传入的参数，[zend_parse_parameters](/book/?p=chapt11/11-02-01-zend-parse-parameters) 的工作原理我们在下一小节中详细讲解。
+值得一提的是在 PHP7 中，官方新增了 Fast Parameter Parsing API ，能够更高效的解析参数，并且可读性更强。具体的使用，我们同样也会会在下节中详细说明。
+其中通过 `ecalloc` 来申请内存，具体可以参考本书的第六章的 [PHP中的内存管理](/book/?p=chapt06/06-02-php-memory-manager)。
 
 ### 4. 编译安装
 
