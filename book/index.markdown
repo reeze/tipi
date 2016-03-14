@@ -240,8 +240,7 @@
 [thread-safe-in-php]:       ?p=chapt08/08-03-zend-thread-safe-in-php
 
 [extension-hello-world]:    ?p=chapt11/11-02-00-extension-hello-world 
-[zend-parse-parameters]:    ?p=chapt11/11-02-02-zend-parse-parameters
-[fast-zpp]:                 ?p=chapt11/11-02-01-fast-zpp
+[zend-parse-parameters]:    ?p=chapt11/11-02-01-zend-parse-parameters
 
 [php-loop]:                 ?p=chapt16/16-01-00-php-loop
 [php-foreach]:              ?p=chapt16/16-01-01-php-foreach
