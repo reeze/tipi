@@ -125,7 +125,7 @@ z	        |zval *	            |无任何操作的zval
 `al|zb` 表示第一个参数为 `array`，第二个参数为 `long`，第三个参数为 `zval`，第四个参数为 `bool`。
 并且后面两个参数为可选。
 
-如果定了 `FAST_ZPP` ，则使用 Fast Parameter Parsing API 方式来解析参数。代码本身已经足以解释其作用了。
+如果定了 `FAST_ZPP` （该定义在 PHP7 `Zend/zend_API.h` 中），则使用 Fast Parameter Parsing API 方式来解析参数。代码本身已经足以解释其作用了。
 `ZEND_PARSE_PARAMETERS_START()` 的两个参数分别为最少参数数和最多参数数。
 `Z_PARAM_ARRAY()` 则将参数视为数组，`Z_PARAM_LONG()` 将参数视为长整型。
 而 `Z_PARAM_OPTIONAL` 则表示后面的参数为可选参数。完整地映射表关系，可参考本节最后的参考链接。
