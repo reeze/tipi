@@ -93,7 +93,7 @@ z	        |zval *	            |无任何操作的zval
 ## 使用 Fast Parameter Parsing API 取代 zend_parse_parameters
  
 官方推荐在 PHP7 中使用 Fast Parameter Parsing API，不仅效率上又提升，并且代码表意更加明确，易读性强。
-下面引用官方的说明，剪短翻译说明（完整地内容请参考本节末尾的参考链接）
+下面引用官方的说明，简短翻译说明（完整地内容请参考本节末尾的参考链接）
 
 以 `PHP_FUNCTION(array_slice)` 为例
 
