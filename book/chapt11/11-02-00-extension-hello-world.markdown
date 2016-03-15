@@ -8,7 +8,7 @@ PHP7 已经发了很久，所以本章以讲解 PHP7 扩展开发为主，附带
 
 ## 安装 PHP7
 
-在 [Github](https://github.com/php/php-src/releases) 上下的最新版，然后没安装太多的扩展，因为我仅仅是作为开发调试使用。
+在 [Github](https://github.com/php/php-src/releases) 下载的最新版，没安装太多的扩展，因为我仅仅是作为开发调试使用。
 为了和本机的 PHP5 环境不冲突，便使用了新如下命令，后面的讲解中，默认使用该环境。解压安装包，进入到安装包目录。
 
     [shell]
