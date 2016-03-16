@@ -106,6 +106,8 @@
 
 - [第十一章 扩展开发][extension-dev]
     * 第一节 扩展开发概述
+    * [第二节 创建第一个扩展][extension-hello-world]
+        + [扩展中参数的解析][zend-parse-parameters]
 
 - 第十二章 文件和流
 	* stream wrapper
@@ -236,6 +238,9 @@
 
 [thread-process-and-concurrent]:       ?p=chapt08/08-02-thread-process-and-concurrent
 [thread-safe-in-php]:       ?p=chapt08/08-03-zend-thread-safe-in-php
+
+[extension-hello-world]:    ?p=chapt11/11-02-00-extension-hello-world 
+[zend-parse-parameters]:    ?p=chapt11/11-02-01-zend-parse-parameters
 
 [php-loop]:                 ?p=chapt16/16-01-00-php-loop
 [php-foreach]:              ?p=chapt16/16-01-01-php-foreach
