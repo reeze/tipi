@@ -123,7 +123,6 @@ PHP 源代码目录中提供了一个可执行文件 `ext/ext_skel`，该文件�
     	char *result = NULL;
     	char *prefix = "hello world, ";
     
-    
     	if (zend_parse_parameters(argc TSRMLS_CC, "s", &name, &name_len) == FAILURE) 
     		return;
     
@@ -131,7 +130,9 @@ PHP 源代码目录中提供了一个可执行文件 `ext/ext_skel`，该文件�
     	strncat(result, prefix, strlen(prefix));
     	strncat(result, name, name_len);
     
-    	RETURN_STRING(result);
+    	ZVAL_STRING(return_value, result);
+        efree(result);
+        return;
     }
 
 其中 `zend_parse_parameters` 从我们在原型中定义的参数 `name` 中获取传入的字符串，分配内存之后保存在指针 `*name`中， `name_len` 为传入字符串的长度。
