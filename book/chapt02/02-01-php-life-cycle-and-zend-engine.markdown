@@ -249,7 +249,7 @@ zend_shutdown将关闭Zend引擎。
 而ZEND_MODULE_DTOR宏对应的是module_destructor函数。
 在此函数中会调用模块的module_shutdown_func方法，即PHP_RSHUTDOWN_FUNCTION宏产生的那个函数。
 
-在关闭所有的模块后，PHP继续销毁全局函数表，销毁全局类表、销售全局变量表等。
+在关闭所有的模块后，PHP继续销毁全局函数表，销毁全局类表、销毁全局变量表等。
 通过zend_shutdown_extensions遍历zend_extensions所有元素，调用每个扩展的shutdown函数。
 
 
