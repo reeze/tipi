@@ -25,7 +25,7 @@
     [shell]
     [root@localhost ext]# ./ext_skel --extname=tipi_file --proto=./tipi_file.proto
     
-完整的代码 [tipi_file.c](https://github.com/reeze/tipi/tree/master/book/sample/chapt11/11-02-05-zend-resource/tipi_file.c) 可以先有一个大致的了解，这样后面阅读时，思路可能会清晰很多。
+完整的代码 [tipi_file.c](https://github.com/reeze/tipi/tree/master/book/sample/chapt11/11-05-00-zend-resource/tipi_file.c) 可以先有一个大致的了解，这样后面阅读时，思路可能会清晰很多。
 
 ## 注册资源类型
 

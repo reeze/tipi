@@ -1,0 +1,17 @@
+# 第四节 使用 INI 指令
+
+有些时候我们可能希望一些初始化的配置项从 `php.ini` 里读取的，所以我们这里学习下添加 INI 指令。添加的方式有两种：一种是直接添加，另一种是配合全局变量。
+
+## 准备
+
+我们准备一个简单地扩展 demo，这个步骤不再重复说明，请参考前一节
+
+    [c]
+    [root@localhost ext]# cat ini.proto
+    string get_demo_init_value()
+    [root@localhost ext]# ./ext_skel --extname=tipi_ini_demo --proto=ini.proto
+
+## 直接添加
+
+
+
