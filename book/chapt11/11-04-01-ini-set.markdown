@@ -1,0 +1,19 @@
+## 配合全局变量添加
+
+首先需要复习下[全局变量的使用](/book/?p=chapt11/11-03-00-global-var)，这里就不重复说明了。
+完整的代码可以参考[配合全局变量添加 INI Demo](https://github.com/reeze/tipi/tree/master/book/sample/chapt11/11-04-01-ini-set/)
+与上面的步骤中不同的地方仅仅是把 `PHP_INI_BEGIN` 宏和 `PHP_INI_END` 宏中申明 INI 变量的宏不一样
+
+    [c]
+    PHP_INI_BEGIN()
+        STD_PHP_INI_ENTRY("tipi_ini_demo.global_value", "42", PHP_INI_ALL, OnUpdateLong, global_value, zend_tipi_ini_demo_globals, tipi_ini_demo_globals)
+    PHP_INI_END()
+    
+其他注册、注销，使用和前一小节一样，不过配合全局变量使用时，也通过全局变量宏来 INI 的值。
+
+    [c]
+    RETURN_LONG(TIPI_INI_DEMO_G(global_value));
+    // 等价于
+    RETURN_LONG(INI_INT("tipi_ini_demo.global_value"));
+
+测试也参考上一节即可。

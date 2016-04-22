@@ -69,3 +69,13 @@
     
 重新运行，结果则是 100 了，说明 `php.ini` 指令配置成功。
 
+    [shell]
+    php7 -d"extension=tipi_ini_demo.so" -r "var_dump(get_demo_init_value());\
+    	ini_set('tipi_ini_demo.global_value',200);\
+    	var_dump(ini_get('tipi_ini_demo.global_value'));"
+    int(100)
+    string(3) "200"
+
+运行时修改正常。
+
+
