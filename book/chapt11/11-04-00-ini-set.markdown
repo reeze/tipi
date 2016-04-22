@@ -54,9 +54,15 @@
 编译的步骤不再重复说明，请参考本章开头的方式
 
     [shell]
-    php7 -d"extension=tipi_ini_demo.so" -r "var_dump(get_demo_init_value());"
+    [root@localhost tipi_ini_demo]# php7 -d"extension=tipi_ini_demo.so" -r "var_dump(get_demo_init_value());"
+    int(42)
 
-执行结果为42。然后，添加 `php.ini` 指令
+执行结果为42。然后编辑 `php.ini` 
+
+    [shell]
+    vim /usr/local/php7/etc/php.ini
+    
+添加指令
 
     [shell]
     tipi_ini_demo.global_value = 100

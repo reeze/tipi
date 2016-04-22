@@ -154,6 +154,8 @@ PHP 源代码目录中提供了一个可执行文件 `ext/ext_skel`，该文件�
     [shell]
     php7ize
     ...
+    ./configure --with-php-config=/usr/local/php7/bin/php-config
+    ...
     make && make install
         
 ### 5. 测试
