@@ -1,0 +1,154 @@
+## 使用 INI 指令原理分析
+
+### 认识 zend_ini_entry
+
+    [c]
+    /* Zend/zend_globals.h */
+    typedef struct _zend_ini_entry zend_ini_entry;
+    
+    /* Zend/zend_ini.h */
+    struct _zend_ini_entry {
+        zend_string *name;
+        ZEND_INI_MH((*on_modify));
+        void *mh_arg1;
+        void *mh_arg2;
+        void *mh_arg3;
+        zend_string *value;
+        zend_string *orig_value;
+        void (*displayer)(zend_ini_entry *ini_entry, int type);
+        int modifiable;
+    
+        int orig_modifiable;
+        int modified;
+        int module_number;
+    };
+    
+    typedef struct _zend_ini_entry_def {
+    	const char *name;
+    	ZEND_INI_MH((*on_modify));
+    	void *mh_arg1;
+    	void *mh_arg2;
+    	void *mh_arg3;
+    	const char *value;
+    	void (*displayer)(zend_ini_entry *ini_entry, int type);
+    	int modifiable;
+    
+    	uint name_length;
+    	uint value_length;
+    } zend_ini_entry_def;
+
+相对 PHP5 中的字符串需要用 `char` + `uint` 结合表示，使用 `zend_string` 来表示字符串之后，这个结构表意更加的清楚、简洁。
+PHP7 中新定义了一个数据结构 `zend_ini_entry_def` 作为传入函数 `zend_register_ini_entries` 使用。其数据结构与 `_zend_ini_entry` 基本一致，仅仅少了一个 `orig_value` 字段而已。
+
+### 声明变量
+
+#### 使用 `PHP_INI_ENTRY` 宏
+
+    [c]
+    PHP_INI_BEGIN()
+        PHP_INI_ENTRY("tipi_ini_demo.global_value", "42", PHP_INI_ALL, NULL)
+    PHP_INI_END()
+
+展开之后
+
+    [c]
+    static const zend_ini_entry_def ini_entries[] = {
+        { "tipi_ini_demo.global_value", NULL, NULL, NULL, NULL, "42", NULL, PHP_INI_ALL, sizeof("tipi_ini_demo.global_value")-1, sizeof("42")-1 },
+        { NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0} 
+    };
+
+PHP5 中则是 `zend_ini_entry` 结构体数组，注意有所变化。
+`PHP_INI_END()`是在 `ini_entries[]` 末尾添加了一个空的 `zend_ini_entry_def` 数组元素，这样方便在 `while` 循环读取 `ini_entries[]` 时通过获取下一个元素的 `name` 是否为 NULL 来判断是否结束循环，防止数组越界。
+
+上面使用 `PHP_INI_ENTRY` 宏相当于声明了一个`zend_ini_entry_def`结构体，仅仅设置了名称、默认值和可以修改的时机这三个值。
+
+### 注册
+
+    [c]
+    /* Zend/zend_ini.h */
+    #define REGISTER_INI_ENTRIES() zend_register_ini_entries(ini_entries, module_number)
+
+为了简化讨论，此处我们不考虑线程安全的情况，注册函数如下：
+
+    [c]
+    /* Zend/zend_ini.c */
+    
+    ZEND_API int zend_register_ini_entries(const zend_ini_entry_def *ini_entry, int module_number)
+    {
+        zend_ini_entry *p;
+        zval *default_value;
+        
+        /* registered_zend_ini_directives 是一个全局静态变量 */
+        HashTable *directives = registered_zend_ini_directives;
+    
+        while (ini_entry->name) {
+            /* 当 name 字段不为空时 分配内存并赋值给一个 zend_ini_entry 指针变量 */
+            p = pemalloc(sizeof(zend_ini_entry), 1);
+            p->name = zend_string_init(ini_entry->name, ini_entry->name_length, 1);
+            p->on_modify = ini_entry->on_modify;
+            p->mh_arg1 = ini_entry->mh_arg1;
+            p->mh_arg2 = ini_entry->mh_arg2;
+            p->mh_arg3 = ini_entry->mh_arg3;
+            p->value = NULL;
+            p->orig_value = NULL;
+            p->displayer = ini_entry->displayer;
+            p->modifiable = ini_entry->modifiable;
+    
+            p->orig_modifiable = 0;
+            p->modified = 0;
+            p->module_number = module_number;
+    
+            /* 把指针变量 p 以 p->name 为 key 添加到 directives 中*/
+            if (zend_hash_add_ptr(directives, p->name, (void*)p) == NULL) {
+                if (p->name) {
+                    zend_string_release(p->name);
+                }
+                zend_unregister_ini_entries(module_number);
+                return FAILURE;
+            }
+            
+            if (((default_value = zend_get_configuration_directive(p->name)) != NULL) &&
+                (!p->on_modify || p->on_modify(p, Z_STR_P(default_value), p->mh_arg1, p->mh_arg2, p->mh_arg3, ZEND_INI_STAGE_STARTUP) == SUCCESS)) {
+    
+                p->value = zend_string_copy(Z_STR_P(default_value));
+            } else {
+                p->value = ini_entry->value ?
+                    zend_string_init(ini_entry->value, ini_entry->value_length, 1) : NULL;
+    
+                /* 当 p->on_modify 不为 NULL 时，在使用全局变量的例子中会用到 */
+                if (p->on_modify) {
+                    p->on_modify(p, p->value, p->mh_arg1, p->mh_arg2, p->mh_arg3, ZEND_INI_STAGE_STARTUP);
+                }
+            }
+            ini_entry++;
+        }
+        return SUCCESS;
+    }
+    
+### 读取 INI 指令值
+
+以我们的例子读取 `int` 类型的值为例
+
+    [c]
+    /* Zend/zend_ini.h */
+    #define INI_INT(name) zend_ini_long((name), sizeof(name)-1, 0)
+
+    [c]
+    ZEND_API zend_long zend_ini_long(char *name, uint name_length, int orig) /* {{{ */
+    {
+        zend_ini_entry *ini_entry;
+    
+        ini_entry = zend_hash_str_find_ptr(EG(ini_directives), name, name_length);
+        if (ini_entry) {
+            if (orig && ini_entry->modified) {
+                return (ini_entry->orig_value ? ZEND_STRTOL(ZSTR_VAL(ini_entry->orig_value), NULL, 0) : 0);
+            } else {
+                return (ini_entry->value      ? ZEND_STRTOL(ZSTR_VAL(ini_entry->value), NULL, 0)      : 0);
+            }
+        }
+    
+        return 0;
+    }
+
+因为前面注册的时候是以一个 `zend_ini_entry` 的 `name` 字段作为 `key` 存储的，所以这里也是根据传入的 `name` 在
+`EG(ini_directives)` 中查找。
