@@ -42,7 +42,7 @@ PHP7 中新定义了一个数据结构 `zend_ini_entry_def` 作为传入函数 `
 
 ### 声明变量
 
-#### 使用 `PHP_INI_ENTRY` 宏
+#### 使用 PHP_INI_ENTRY 宏
 
     [c]
     PHP_INI_BEGIN()
@@ -60,7 +60,19 @@ PHP7 中新定义了一个数据结构 `zend_ini_entry_def` 作为传入函数 `
 PHP5 中则是 `zend_ini_entry` 结构体数组，注意有所变化。
 `PHP_INI_END()`是在 `ini_entries[]` 末尾添加了一个空的 `zend_ini_entry_def` 数组元素，这样方便在 `while` 循环读取 `ini_entries[]` 时通过获取下一个元素的 `name` 是否为 NULL 来判断是否结束循环，防止数组越界。
 
-上面使用 `PHP_INI_ENTRY` 宏相当于声明了一个`zend_ini_entry_def`结构体，仅仅设置了名称、默认值和可以修改的时机这三个值。
+使用 `PHP_INI_ENTRY` 宏相当于声明了一个`zend_ini_entry_def`结构体，仅仅设置了名称、默认值和可以修改的时机这三个值。
+
+#### 使用 STD_PHP_INI_ENTRY 宏
+
+    [c]
+    PHP_INI_BEGIN()
+        STD_PHP_INI_ENTRY("tipi_ini_demo.global_value", "42", PHP_INI_ALL, OnUpdateLong, global_value, zend_tipi_ini_demo_globals, tipi_ini_demo_globals)
+    PHP_INI_END()
+    
+其参数的作用，在上一节已说明。
+其作用呢，实际是把 INI 指令值和全局变量指针 `tipi_ini_demo_globals` 关联起来，
+比如这里的 INI 指令 `tipi_ini_demo.global_value` 就与 `tipi_ini_demo_globals->global_value` 关联。
+当在更新该 INI 指令时，则根据 `ZEND_INI_MH(OnUpdateLong)` 来更新 `tipi_ini_demo_globals->global_value` 。 
 
 ### 注册
 
@@ -152,3 +164,5 @@ PHP5 中则是 `zend_ini_entry` 结构体数组，注意有所变化。
 
 因为前面注册的时候是以一个 `zend_ini_entry` 的 `name` 字段作为 `key` 存储的，所以这里也是根据传入的 `name` 在
 `EG(ini_directives)` 中查找。
+
+销毁和注册类似，也不再做过多的阐述，重点还是自己跟一跟代码，手动敲一敲。这一节的分析就写到这里。

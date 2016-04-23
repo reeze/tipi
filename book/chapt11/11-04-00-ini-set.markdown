@@ -16,6 +16,30 @@
 
 ### 声明
 
+`PHP_INI_ENTRY` 宏
+
+    [c]
+    /* main/php_ini.h */
+    #define PHP_INI_ENTRY		ZEND_INI_ENTRY
+    /* Zend/zend_ini.h */
+    ZEND_INI_ENTRY(name, default_value, modifiable, on_modify)
+    
+参数        	  |描述
+--------------|------------------------------------------------
+name          |ini 指令名
+default_value |默认值
+modifiable    |ini 指令可以被修改的位域
+on_modify     |修改 ini 指令的回调函数
+
+modifiable 可分为四种状态机：
+
+* ZEND_INI_USER  能够被用户脚本更改
+* ZEND_INI_PERDIR 能够在 .htaccess中更改
+* ZEND_INI_SYSTEM 能够在php.ini或http.conf等系统文件更改
+* ZEND_INI_ALL 能在所有地方更改
+
+关于 `on_modify` 参数的使用在下一小节使用 `STD_PHP_INI_ENTRY` 宏中使用
+
 打开`tipi_ini_demo.c`的`PHP_INI_BEGIN`宏和`PHP_INI_END`宏的注释。这里仅演示一个配置项
 
     [c]
