@@ -83,9 +83,14 @@ PHP_FUNCTION(tipi_hello_world)
 	char *result = NULL;
 	char *prefix = "hello world, ";
 
-
+#ifndef FAST_ZPP
 	if (zend_parse_parameters(argc TSRMLS_CC, "s", &name, &name_len) == FAILURE) 
 		return;
+#else
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		 Z_PARAM_STRING(name, name_len)
+	ZEND_PARSE_PARAMETERS_END();
+#endif
 
 	result = (char *) ecalloc(strlen(prefix) + name_len + 1, sizeof(char));
 	strncat(result, prefix, strlen(prefix));

@@ -108,6 +108,7 @@
     * 第一节 扩展开发概述
     * [第二节 创建第一个扩展][extension-hello-world]
         + [扩展中参数的解析][zend-parse-parameters]
+        + [扩展中使用函数][extension-php-function]
     * [第三节 使用全局变量][global-var]
         + [原理分析][global-var-analysis]
     * [第四节 使用 ini 指令][ini-set]
@@ -247,6 +248,7 @@
 
 [extension-hello-world]:    ?p=chapt11/11-02-00-extension-hello-world 
 [zend-parse-parameters]:    ?p=chapt11/11-02-01-zend-parse-parameters
+[extension-php-function]:   ?p=chapt11/11-02-02-php-function
 [global-var]:               ?p=chapt11/11-03-00-global-var
 [global-var-analysis]:      ?p=chapt11/11-03-01-global-var
 [ini-set]:                  ?p=chapt11/11-04-00-ini-set
