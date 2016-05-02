@@ -50,7 +50,7 @@ PHP的强项目前还是在Web开发方面。
     int main(int argc, char *argv[])
     {
         if (argc <= 1) {
-            printf("Usage: embed4 scriptfile";);
+            printf("Usage: embed4 scriptfile");
             return -1;
         }
         startup_php();
@@ -151,7 +151,7 @@ main函数：
     int main(int argc, char *argv[])
     {
         if (argc <= 1) {
-            printf("Usage: embed4 scriptfile";);
+            printf("Usage: embed4 scriptfile");
             return -1;
         }
         startup_php();
