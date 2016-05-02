@@ -570,5 +570,5 @@ sapi_module是apache2_sapi_module，其对应read_cookies方法的是php_apache_
 ## 参考资料
   
 * http://www.fastcgi.com/drupal/node/2  
-* http://baike.baidu.com/view/641394.htm  
+* [百度百科:fastcgi](http://baike.baidu.com/view/641394.htm)
 
