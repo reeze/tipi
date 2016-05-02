@@ -91,7 +91,7 @@
 Windows环境下的编译可以参考官方Wiki的说明：<https://wiki.php.net/internals/windows/stepbystepbuild>
 
 ## 推荐书籍和参考
-*  [Gnu Make中文书册](http://www.yayu.org/book/gnu_make/index.html)
+*  [Gnu Make中文书册](https://github.com/loverszhaokai/GNUMakeManual_CN)
 * 《Autotools A Practioner's Guide》
 
 [how-to-contribute]: ?p=D-how-to-contribute
