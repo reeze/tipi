@@ -92,7 +92,6 @@ PHP_FUNCTION(tipi_hello_world)
 
 	ZVAL_STRING(return_value, result);
         efree(result);
-        return;
 }
 /* }}} */
 
