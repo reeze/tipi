@@ -83,7 +83,6 @@ PHP_FUNCTION(tipi_hello_world)
 	char *result = NULL;
 	char *prefix = "hello world, ";
 
-
 	if (zend_parse_parameters(argc TSRMLS_CC, "s", &name, &name_len) == FAILURE) 
 		return;
 
@@ -91,7 +90,8 @@ PHP_FUNCTION(tipi_hello_world)
 	strncat(result, prefix, strlen(prefix));
 	strncat(result, name, name_len);
 
-	RETURN_STRING(result);
+	ZVAL_STRING(return_value, result);
+        efree(result);
 }
 /* }}} */
 
