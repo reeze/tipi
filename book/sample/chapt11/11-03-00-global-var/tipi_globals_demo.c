@@ -25,21 +25,19 @@
 #include "php.h"
 #include "php_ini.h"
 #include "ext/standard/info.h"
-#include "php_tipi_demo01.h"
+#include "php_tipi_globals_demo.h"
 
-/* If you declare any globals in php_tipi_demo01.h uncomment this:
-ZEND_DECLARE_MODULE_GLOBALS(tipi_demo01)
-*/
+ZEND_DECLARE_MODULE_GLOBALS(tipi_globals_demo)
 
 /* True global resources - no need for thread safety here */
-static int le_tipi_demo01;
+static int le_tipi_globals_demo;
 
 /* {{{ PHP_INI
  */
 /* Remove comments and fill if you need to have entries in php.ini
 PHP_INI_BEGIN()
-    STD_PHP_INI_ENTRY("tipi_demo01.global_value",      "42", PHP_INI_ALL, OnUpdateLong, global_value, zend_tipi_demo01_globals, tipi_demo01_globals)
-    STD_PHP_INI_ENTRY("tipi_demo01.global_string", "foobar", PHP_INI_ALL, OnUpdateString, global_string, zend_tipi_demo01_globals, tipi_demo01_globals)
+    STD_PHP_INI_ENTRY("tipi_globals_demo.global_value",      "42", PHP_INI_ALL, OnUpdateLong, global_value, zend_tipi_globals_demo_globals, tipi_globals_demo_globals)
+    STD_PHP_INI_ENTRY("tipi_globals_demo.global_string", "foobar", PHP_INI_ALL, OnUpdateString, global_string, zend_tipi_globals_demo_globals, tipi_globals_demo_globals)
 PHP_INI_END()
 */
 /* }}} */
@@ -49,9 +47,9 @@ PHP_INI_END()
    purposes. */
 
 /* Every user-visible function in PHP should document itself in the source */
-/* {{{ proto string confirm_tipi_demo01_compiled(string arg)
+/* {{{ proto string confirm_tipi_globals_demo_compiled(string arg)
    Return a string to confirm that the module is compiled in */
-PHP_FUNCTION(confirm_tipi_demo01_compiled)
+PHP_FUNCTION(confirm_tipi_globals_demo_compiled)
 {
 	char *arg = NULL;
 	size_t arg_len, len;
@@ -61,7 +59,7 @@ PHP_FUNCTION(confirm_tipi_demo01_compiled)
 		return;
 	}
 
-	strg = strpprintf(0, "Congratulations! You have successfully modified ext/%.78s/config.m4. Module %.78s is now compiled into PHP.", "tipi_demo01", arg);
+	strg = strpprintf(0, "Congratulations! You have successfully modified ext/%.78s/config.m4. Module %.78s is now compiled into PHP.", "tipi_globals_demo", arg);
 
 	RETURN_STR(strg);
 }
@@ -72,65 +70,34 @@ PHP_FUNCTION(confirm_tipi_demo01_compiled)
    follow this convention for the convenience of others editing your code.
 */
 
-/* {{{ proto string tipi_hello_world(string name)
+/* {{{ proto int tipi_get_global_var()
     */
-PHP_FUNCTION(tipi_hello_world)
+PHP_FUNCTION(tipi_get_global_var)
 {
-	char *name = NULL;
-	int argc = ZEND_NUM_ARGS();
-	size_t name_len;
-
-	char *result = NULL;
-	char *prefix = "hello world, ";
-
-#ifndef FAST_ZPP
-	if (zend_parse_parameters(argc TSRMLS_CC, "s", &name, &name_len) == FAILURE) 
-		return;
-#else
-	ZEND_PARSE_PARAMETERS_START(1, 1)
-		 Z_PARAM_STRING(name, name_len)
-	ZEND_PARSE_PARAMETERS_END();
-#endif
-
-	result = (char *) ecalloc(strlen(prefix) + name_len + 1, sizeof(char));
-	strncat(result, prefix, strlen(prefix));
-	strncat(result, name, name_len);
-
-	ZVAL_STRING(return_value, result);
-        efree(result);
+   TIPI_GLOBALS_DEMO_G(global_value)++;
+   RETURN_LONG(TIPI_GLOBALS_DEMO_G(global_value));
 }
 /* }}} */
 
 
-/* {{{ php_tipi_demo01_init_globals
- */
-/* Uncomment this function if you have INI entries
-static void php_tipi_demo01_init_globals(zend_tipi_demo01_globals *tipi_demo01_globals)
+static void php_tipi_globals_demo_init_globals(zend_tipi_globals_demo_globals *tipi_globals_demo_globals)
 {
-	tipi_demo01_globals->global_value = 0;
-	tipi_demo01_globals->global_string = NULL;
+	tipi_globals_demo_globals->global_value = 10;
 }
-*/
-/* }}} */
 
 /* {{{ PHP_MINIT_FUNCTION
  */
-PHP_MINIT_FUNCTION(tipi_demo01)
+PHP_MINIT_FUNCTION(tipi_globals_demo)
 {
-	/* If you have INI entries, uncomment these lines
-	REGISTER_INI_ENTRIES();
-	*/
+	ZEND_INIT_MODULE_GLOBALS(tipi_globals_demo, php_tipi_globals_demo_init_globals, NULL);
 	return SUCCESS;
 }
 /* }}} */
 
 /* {{{ PHP_MSHUTDOWN_FUNCTION
  */
-PHP_MSHUTDOWN_FUNCTION(tipi_demo01)
+PHP_MSHUTDOWN_FUNCTION(tipi_globals_demo)
 {
-	/* uncomment this line if you have INI entries
-	UNREGISTER_INI_ENTRIES();
-	*/
 	return SUCCESS;
 }
 /* }}} */
@@ -138,11 +105,13 @@ PHP_MSHUTDOWN_FUNCTION(tipi_demo01)
 /* Remove if there's nothing to do at request start */
 /* {{{ PHP_RINIT_FUNCTION
  */
-PHP_RINIT_FUNCTION(tipi_demo01)
+PHP_RINIT_FUNCTION(tipi_globals_demo)
 {
-#if defined(COMPILE_DL_TIPI_DEMO01) && defined(ZTS)
+#if defined(COMPILE_DL_TIPI_GLOBALS_DEMO) && defined(ZTS)
 	ZEND_TSRMLS_CACHE_UPDATE();
 #endif
+
+	TIPI_GLOBALS_DEMO_G(global_value) = 10;
 	return SUCCESS;
 }
 /* }}} */
@@ -150,7 +119,7 @@ PHP_RINIT_FUNCTION(tipi_demo01)
 /* Remove if there's nothing to do at request end */
 /* {{{ PHP_RSHUTDOWN_FUNCTION
  */
-PHP_RSHUTDOWN_FUNCTION(tipi_demo01)
+PHP_RSHUTDOWN_FUNCTION(tipi_globals_demo)
 {
 	return SUCCESS;
 }
@@ -158,10 +127,10 @@ PHP_RSHUTDOWN_FUNCTION(tipi_demo01)
 
 /* {{{ PHP_MINFO_FUNCTION
  */
-PHP_MINFO_FUNCTION(tipi_demo01)
+PHP_MINFO_FUNCTION(tipi_globals_demo)
 {
 	php_info_print_table_start();
-	php_info_print_table_header(2, "tipi_demo01 support", "enabled");
+	php_info_print_table_header(2, "tipi_globals_demo support", "enabled");
 	php_info_print_table_end();
 
 	/* Remove comments if you have entries in php.ini
@@ -170,38 +139,38 @@ PHP_MINFO_FUNCTION(tipi_demo01)
 }
 /* }}} */
 
-/* {{{ tipi_demo01_functions[]
+/* {{{ tipi_globals_demo_functions[]
  *
- * Every user visible function must have an entry in tipi_demo01_functions[].
+ * Every user visible function must have an entry in tipi_globals_demo_functions[].
  */
-const zend_function_entry tipi_demo01_functions[] = {
-	PHP_FE(confirm_tipi_demo01_compiled,	NULL)		/* For testing, remove later. */
-	PHP_FE(tipi_hello_world,	NULL)
-	PHP_FE_END	/* Must be the last line in tipi_demo01_functions[] */
+const zend_function_entry tipi_globals_demo_functions[] = {
+	PHP_FE(confirm_tipi_globals_demo_compiled,	NULL)		/* For testing, remove later. */
+	PHP_FE(tipi_get_global_var,	NULL)
+	PHP_FE_END	/* Must be the last line in tipi_globals_demo_functions[] */
 };
 /* }}} */
 
-/* {{{ tipi_demo01_module_entry
+/* {{{ tipi_globals_demo_module_entry
  */
-zend_module_entry tipi_demo01_module_entry = {
+zend_module_entry tipi_globals_demo_module_entry = {
 	STANDARD_MODULE_HEADER,
-	"tipi_demo01",
-	tipi_demo01_functions,
-	PHP_MINIT(tipi_demo01),
-	PHP_MSHUTDOWN(tipi_demo01),
-	PHP_RINIT(tipi_demo01),		/* Replace with NULL if there's nothing to do at request start */
-	PHP_RSHUTDOWN(tipi_demo01),	/* Replace with NULL if there's nothing to do at request end */
-	PHP_MINFO(tipi_demo01),
-	PHP_TIPI_DEMO01_VERSION,
+	"tipi_globals_demo",
+	tipi_globals_demo_functions,
+	PHP_MINIT(tipi_globals_demo),
+	PHP_MSHUTDOWN(tipi_globals_demo),
+	PHP_RINIT(tipi_globals_demo),		/* Replace with NULL if there's nothing to do at request start */
+	PHP_RSHUTDOWN(tipi_globals_demo),	/* Replace with NULL if there's nothing to do at request end */
+	PHP_MINFO(tipi_globals_demo),
+	PHP_TIPI_GLOBALS_DEMO_VERSION,
 	STANDARD_MODULE_PROPERTIES
 };
 /* }}} */
 
-#ifdef COMPILE_DL_TIPI_DEMO01
+#ifdef COMPILE_DL_TIPI_GLOBALS_DEMO
 #ifdef ZTS
 ZEND_TSRMLS_CACHE_DEFINE();
 #endif
-ZEND_GET_MODULE(tipi_demo01)
+ZEND_GET_MODULE(tipi_globals_demo)
 #endif
 
 /*

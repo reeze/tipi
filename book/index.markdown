@@ -108,7 +108,14 @@
     * 第一节 扩展开发概述
     * [第二节 创建第一个扩展][extension-hello-world]
         + [扩展中参数的解析][zend-parse-parameters]
-
+        + [扩展中使用函数][extension-php-function]
+    * [第三节 使用全局变量][global-var]
+        + [原理分析][global-var-analysis]
+    * [第四节 使用 ini 指令][ini-set]
+        + [配合全局变量使用 ini 指令][ini-set-with-global-var]
+        + [原理分析][ini-set-analysis]
+    * [第五节 使用资源][zend-resource]
+        + [原理分析][zend-resource-analysis]
 - 第十二章 文件和流
 	* stream wrapper
 
@@ -241,6 +248,14 @@
 
 [extension-hello-world]:    ?p=chapt11/11-02-00-extension-hello-world 
 [zend-parse-parameters]:    ?p=chapt11/11-02-01-zend-parse-parameters
+[extension-php-function]:   ?p=chapt11/11-02-02-php-function
+[global-var]:               ?p=chapt11/11-03-00-global-var
+[global-var-analysis]:      ?p=chapt11/11-03-01-global-var
+[ini-set]:                  ?p=chapt11/11-04-00-ini-set
+[ini-set-with-global-var]:  ?p=chapt11/11-04-01-ini-set
+[ini-set-analysis]:         ?p=chapt11/11-04-02-ini-set
+[zend-resource]:            ?p=chapt11/11-05-00-zend-resource
+[zend-resource-analysis]:   ?p=chapt11/11-05-01-zend-resource
 
 [php-loop]:                 ?p=chapt16/16-01-00-php-loop
 [php-foreach]:              ?p=chapt16/16-01-01-php-foreach

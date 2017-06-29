@@ -1,0 +1,105 @@
+# 第四节 使用 INI 指令
+
+有些时候我们可能希望一些初始化的配置项从 `php.ini` 里读取的，所以我们这里学习下添加 INI 指令。
+添加的方式有两种：一种是直接添加，另一种是配合全局变量。
+
+## 准备
+
+我们准备一个简单地扩展 demo，这个步骤不再重复说明，请参考前一节
+
+    [c]
+    [root@localhost ext]# cat ini.proto
+    string get_demo_init_value()
+    [root@localhost ext]# ./ext_skel --extname=tipi_ini_demo --proto=ini.proto
+
+## 使用 PHP_INI_ENTRY 添加
+
+### 声明
+
+`PHP_INI_ENTRY` 宏
+
+    [c]
+    /* main/php_ini.h */
+    #define PHP_INI_ENTRY		ZEND_INI_ENTRY
+    /* Zend/zend_ini.h */
+    ZEND_INI_ENTRY(name, default_value, modifiable, on_modify)
+    
+参数        	  |描述
+--------------|------------------------------------------------
+name          |ini 指令名
+default_value |默认值
+modifiable    |ini 指令可以被修改的位域
+on_modify     |修改 ini 指令的回调函数
+
+modifiable 可分为四种状态机：
+
+* ZEND_INI_USER  能够被用户脚本更改
+* ZEND_INI_PERDIR 能够在 .htaccess中更改
+* ZEND_INI_SYSTEM 能够在php.ini或http.conf等系统文件更改
+* ZEND_INI_ALL 能在所有地方更改
+
+关于 `on_modify` 参数的使用在下一小节使用 `STD_PHP_INI_ENTRY` 宏中使用
+
+打开`tipi_ini_demo.c`的`PHP_INI_BEGIN`宏和`PHP_INI_END`宏的注释。这里仅演示一个配置项
+
+    [c]
+    PHP_INI_BEGIN()
+        PHP_INI_ENTRY("tipi_ini_demo.global_value", "42", PHP_INI_ALL, NULL)
+    PHP_INI_END()
+
+### 注册
+
+    [c]
+    PHP_MINIT_FUNCTION(tipi_ini_demo)
+    {
+       REGISTER_INI_ENTRIES();
+       return SUCCESS;
+    }
+
+### 注销
+
+    [c]
+    PHP_MSHUTDOWN_FUNCTION(tipi_ini_demo)
+    {
+       UNREGISTER_INI_ENTRIES();
+       return SUCCESS;
+    }
+
+### 使用
+
+    [c]
+    PHP_FUNCTION(get_demo_init_value)
+    {
+       RETURN_LONG(INI_INT("tipi_ini_demo.global_value"));
+    }
+
+### 编译测试
+
+编译的步骤不再重复说明，请参考本章开头的方式
+
+    [shell]
+    [root@localhost tipi_ini_demo]# php7 -d"extension=tipi_ini_demo.so" -r "var_dump(get_demo_init_value());"
+    int(42)
+
+执行结果为42。然后编辑 `php.ini` 
+
+    [shell]
+    vim /usr/local/php7/etc/php.ini
+    
+添加指令
+
+    [shell]
+    tipi_ini_demo.global_value = 100
+    
+重新运行，结果则是 100 了，说明 `php.ini` 指令配置成功。
+
+    [shell]
+    php7 -d"extension=tipi_ini_demo.so" -r "var_dump(get_demo_init_value());\
+    	ini_set('tipi_ini_demo.global_value',200);\
+    	var_dump(ini_get('tipi_ini_demo.global_value'));"
+    int(100)
+    string(3) "200"
+
+运行时修改正常。
+
+
