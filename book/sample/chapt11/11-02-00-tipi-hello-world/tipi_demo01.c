@@ -96,7 +96,8 @@ PHP_FUNCTION(tipi_hello_world)
 	strncat(result, prefix, strlen(prefix));
 	strncat(result, name, name_len);
 
-	RETURN_STRING(result);
+	ZVAL_STRING(return_value, result);
+        efree(result);
 }
 /* }}} */
 

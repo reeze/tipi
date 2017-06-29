@@ -50,7 +50,7 @@ PHP的强项目前还是在Web开发方面。
     int main(int argc, char *argv[])
     {
         if (argc <= 1) {
-            printf("Usage: embed4 scriptfile";);
+            printf("Usage: embed4 scriptfile");
             return -1;
         }
         startup_php();
@@ -151,7 +151,7 @@ main函数：
     int main(int argc, char *argv[])
     {
         if (argc <= 1) {
-            printf("Usage: embed4 scriptfile";);
+            printf("Usage: embed4 scriptfile");
             return -1;
         }
         startup_php();
@@ -202,7 +202,7 @@ main函数：
     };
     /* }}} */
 
-在这个定义中我们看到了若干的NULl定义，在前面一小节中说到SAPI时，我们是以cookie的读取为例，
+在这个定义中我们看到了若干的NULL定义，在前面一小节中说到SAPI时，我们是以cookie的读取为例，
 在这里也有读取cookie的实现——php_embed_read_cookies函数，但是这个函数的实现是一个空指针NULL。
 
 而这里的flush实现与Apache的不同:
