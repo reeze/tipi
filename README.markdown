@@ -37,6 +37,7 @@ TIPI项目是一个自发项目,	项目主要关注PHP的内部实现, 以及PHP
 * er    <http://www.zhangabc.com>   er@zhangabc.com
 * phppan <http://www.phppan.com/>   phppan.p@gmail.com
 * HonestQiao <http://www.wapm.cn/>  honestqiao@gmail.com
+* mengkang <https://mengkang.net>   i@zhoumengkang.com
 
 或者发给所有组员: team@php-internals.com
 
