@@ -286,7 +286,7 @@ function_name=iMethod  |  type=2  |  fn_flags=258</li>
 zend_do_end_class_declaration函数用来处理接口和类的中间代码
 这两个函数在Zend/zend_complie.c文件中可以找到其实现。
 
-在zend_do_begin_class_declaration中，首先会对传入的类名作一个转化，统一成小写，这也是为什么类名不区分大小的原因，如下代码
+在zend_do_begin_class_declaration中，首先会对传入的类名作一个转化，统一成小写，这也是为什么类名不区分大小写的原因，如下代码
 
     [php]
     <?php
