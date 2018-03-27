@@ -597,6 +597,30 @@ class GeSHi {
         }
         $this->set_language_path($path);
     }
+    /**
+     * Creates a new GeSHi object, with source and language
+     *
+     * @param string The source code to highlight
+     * @param string The language to highlight the source with
+     * @param string The path to the language file directory. <b>This
+     *               is deprecated!</b> I've backported the auto path
+     *               detection from the 1.1.X dev branch, so now it
+     *               should be automatically set correctly. If you have
+     *               renamed the language directory however, you will
+     *               still need to set the path using this parameter or
+     *               {@link GeSHi->set_language_path()}
+     * @since 1.0.0
+     */
+    function __construct($source = '', $language = '', $path = '')
+    {
+        if (!empty($source)) {
+            $this->set_source($source);
+        }
+        if (!empty($language)) {
+            $this->set_language($language);
+        }
+        $this->set_language_path($path);
+    }
 
     /**
      * Returns an error message associated with the last GeSHi operation,
