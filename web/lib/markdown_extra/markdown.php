@@ -262,8 +262,29 @@ class Markdown_Parser {
 		asort($this->span_gamut);
 	}
 
+	function __construct()
+    {
+        $this->_initDetab();
+        $this->prepareItalicsAndBold();
 
-	# Internal hashes used during transformation.
+        $this->nested_brackets_re =
+            str_repeat('(?>[^\[\]]+|\[', $this->nested_brackets_depth).
+            str_repeat('\])*', $this->nested_brackets_depth);
+
+        $this->nested_url_parenthesis_re =
+            str_repeat('(?>[^()\s]+|\(', $this->nested_url_parenthesis_depth).
+            str_repeat('(?>\)))*', $this->nested_url_parenthesis_depth);
+
+        $this->escape_chars_re = '['.preg_quote($this->escape_chars).']';
+
+        # Sort document, block, and span gamut in ascendent priority order.
+        asort($this->document_gamut);
+        asort($this->block_gamut);
+        asort($this->span_gamut);
+    }
+
+
+    # Internal hashes used during transformation.
 	var $urls = array();
 	var $titles = array();
 	var $html_hashes = array();
@@ -1697,9 +1718,36 @@ class MarkdownExtra_Parser extends Markdown_Parser {
 		
 		parent::Markdown_Parser();
 	}
-	
-	
-	# Extra variables used during extra transformations.
+
+	function __construct()
+    {
+        # Add extra escapable characters before parent constructor
+        # initialize the table.
+        $this->escape_chars .= ':|';
+
+        # Insert extra document, block, and span transformations.
+        # Parent constructor will do the sorting.
+        $this->document_gamut += array(
+            "doFencedCodeBlocks" => 5,
+            "stripFootnotes"     => 15,
+            "stripAbbreviations" => 25,
+            "appendFootnotes"    => 50,
+        );
+        $this->block_gamut += array(
+            "doFencedCodeBlocks" => 5,
+            "doTables"           => 15,
+            "doDefLists"         => 45,
+        );
+        $this->span_gamut += array(
+            "doFootnotes"        => 5,
+            "doAbbreviations"    => 70,
+        );
+
+        parent::__construct();
+    }
+
+
+    # Extra variables used during extra transformations.
 	var $footnotes = array();
 	var $footnotes_ordered = array();
 	var $abbr_desciptions = array();
